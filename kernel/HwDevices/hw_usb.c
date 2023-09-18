@@ -29,6 +29,7 @@
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
+extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 
 uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf)
 {
@@ -65,8 +66,29 @@ uint32_t hw_send_usb(uint8_t* ptr, uint16_t len)
 {
 	if (( HWMngr[HW_USB].process == Asys.current_process ) && ( len != 0 ))
 	{
-		return (uint32_t )CDC_Transmit_FS(ptr, len);
+		if ( (queue_insert(&HwQueues[HW_USB],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
+		{
+			return (uint32_t )CDC_Transmit_FS(ptr, len);
+		}
 	}
 	return 0xffffffff;
 }
+
+
+void USB_TxCpltCallback(void)
+{
+uint8_t		numbuf,*ptr;
+uint16_t 	len;
+
+	if ( HWMngr[HW_USB].status == HWMAN_STATUS_ALLOCATED)
+	{
+		ptr = queue_extract(&HwQueues[HW_USB], &numbuf, &len);
+		if (  numbuf )
+		{
+			CDC_Transmit_FS(ptr, len);
+		}
+	}
+}
+
+
 
