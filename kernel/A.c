@@ -137,6 +137,7 @@ void A_TimeDebug_Low(void)
 
 __weak void A_PreOS_Init(void)
 {
+	MX_USB_Device_Init();
 }
 
 __weak void A_PreScheduler_Init(void)
