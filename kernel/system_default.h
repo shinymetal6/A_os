@@ -194,6 +194,7 @@
 #define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
 #define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
 #define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
+#define SYSTEM_STACKS			__attribute__((section(".osStacks")))  __attribute__ ((aligned (32)))
 /* In the case above we have6 stacks ( 6Kbytes )  and the area is 16Kbytes, the structures can be placed
  * at the beginning of osSegment
  */

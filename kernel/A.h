@@ -26,6 +26,7 @@
 #define MAX_PROCESS				5
 #define USR_PROCESS_NUMBER		(MAX_PROCESS-1)
 #define MAX_TIMERS				8
+#define MAX_SEMAPHORES			32
 #define	MAILBOX_NUM				8
 #define	PERIPHERAL_NUM			32
 
@@ -109,7 +110,7 @@ typedef struct
 {
 	void 		(*user_process)(uint32_t);
 	uint16_t	stack_size;
-	uint16_t	process_number;
+	uint8_t		process_number;
 }USRprcs_t;
 
 typedef struct
@@ -145,7 +146,6 @@ extern	uint8_t *queue_extract(HWMngr_queue_t *queue, uint8_t *numbuf, uint16_t *
 extern	uint32_t create_queue(HWMngr_queue_t *queue,uint32_t peripheral);
 extern	uint32_t destroy_queue(HWMngr_queue_t *queue,uint32_t peripheral);
 extern	uint32_t get_queue_len(HWMngr_queue_t *queue);
-
 
 extern	void MX_USB_DEVICE_Init(void);
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);

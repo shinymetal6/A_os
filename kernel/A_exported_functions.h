@@ -83,13 +83,14 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_DELAY					0
 #define	HW_TIMER					1
 #define	HW_MBX						2
-#define	HW_UART1					3
-#define	HW_UART2					4
-#define	HW_UART3					5
-#define	HW_I2C1						6
-#define	HW_I2C2						7
-#define	HW_SPI1						8
-#define	HW_SPI2						9
+#define	HW_SEMAPHORE				4
+#define	HW_UART1					5
+#define	HW_UART2					6
+#define	HW_UART3					7
+#define	HW_I2C1						8
+#define	HW_I2C2						9
+#define	HW_SPI1						10
+#define	HW_SPI2						11
 /* timers start from 16 */
 #define	HW_TIM4						19
 #define	HW_USB						31
@@ -98,6 +99,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_DELAY					(1<<HW_DELAY)
 #define	EVENT_TIMER					(1<<HW_TIMER)
 #define	EVENT_MBX					(1<<HW_MBX)
+#define	EVENT_SEMAPHORE				(1<<HW_SEMAPHORE)
 #define	EVENT_UART1_IRQ				(1<<HW_UART1)
 #define	EVENT_UART2_IRQ				(1<<HW_UART2)
 #define	EVENT_UART3_IRQ				(1<<HW_UART3)
@@ -111,6 +113,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_DELAY			EVENT_DELAY
 #define	SUSPEND_ON_TIMER			EVENT_TIMER
 #define	SUSPEND_ON_MBX				EVENT_MBX
+#define	SUSPEND_ON_SEMAPHORE		EVENT_SEMAPHORE
 #define	SUSPEND_ON_UART1_IRQ		EVENT_UART1_IRQ
 #define	SUSPEND_ON_UART2_IRQ		EVENT_UART2_IRQ
 #define	SUSPEND_ON_UART3_IRQ		EVENT_UART3_IRQ
@@ -124,6 +127,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_DELAY			SUSPEND_ON_DELAY
 #define	WAKEUP_FROM_TIMER			SUSPEND_ON_TIMER
 #define	WAKEUP_FROM_MBX				SUSPEND_ON_MBX
+#define	WAKEUP_FROM_SEMAPHORE		SUSPEND_ON_SEMAPHORE
 #define	WAKEUP_FROM_UART1_IRQ		SUSPEND_ON_UART1_IRQ
 #define	WAKEUP_FROM_UART2_IRQ		SUSPEND_ON_UART2_IRQ
 #define	WAKEUP_FROM_UART3_IRQ		SUSPEND_ON_UART3_IRQ
@@ -137,6 +141,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_DELAY				HW_DELAY
 #define	DEVICE_TIMER				HW_TIMER
 #define	DEVICE_MBX					HW_MBX
+#define	DEVICE_SEMAPHORE			HW_SEMAPHORE
 #define	DEVICE_UART1				HW_UART1
 #define	DEVICE_UART2				HW_UART2
 #define	DEVICE_UART3				HW_UART3

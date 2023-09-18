@@ -26,12 +26,13 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 
-SYSTEM_RAM	Asys_t			Asys;
-SYSTEM_RAM	MEMpool_t		MEMpool[POOL_NUM];
-SYSTEM_RAM 	PCB_t 			process[MAX_PROCESS];
-SYSTEM_RAM	HWMngr_t		HWMngr[PERIPHERAL_NUM];
-//SYSTEM_RAM	HWMngr_queue_t	HWMngr_queue;
-SYSTEM_RAM	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
+SYSTEM_RAM		Asys_t			Asys;
+SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
+SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
+SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
+
+SYSTEM_STACKS	uint32_t		stacks_start[32768/sizeof(uint32_t)];
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
@@ -116,9 +117,6 @@ void A_init_mem(void)
 	A_bzero((uint8_t *)(SCHED_STACK_START-SIZE_PROCESS_STACK),SIZE_PROCESS_STACK*MAX_PROCESS);
 }
 
-void A_InitIpAddress(void)
-{
-}
 
 void A_enable_processor_faults(void)
 {
@@ -137,26 +135,32 @@ void A_TimeDebug_Low(void)
 	HAL_GPIO_WritePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin,GPIO_PIN_RESET);
 }
 
-void A_start(void)
+__weak void A_PreOS_Init(void)
 {
-#ifdef	LWIP_ENABLED
-	A_InitIpAddress();
-	MX_LWIP_Init(&A_IpAddr);
-#endif
-#ifdef	USBDEV_ENABLED
-#ifndef	STM32F746xx
-	MX_USB_DEVICE_Init();
-#endif
-#endif
-	__disable_irq();
+}
+
+__weak void A_PreScheduler_Init(void)
+{
+}
+
+__weak void A_IrqPriority_Init(void)
+{
 	HAL_NVIC_SetPriority(PendSV_IRQn,  PendSV_PRIORITY, 0);		/* Make PendSV_IRQn lower priority */
 	HAL_NVIC_SetPriority(SysTick_IRQn, SysTick_PRIORITY, 0);	/* Make PendSV_IRQn lower priority */
-	A_enable_processor_faults();
+}
 
+void A_start(void)
+{
+	A_PreOS_Init();
+	__disable_irq();
+
+	A_enable_processor_faults();
+	A_IrqPriority_Init();
 	init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);
 	A_mem_init();
+	A_PreScheduler_Init();
 	switch_sp_to_psp();
 
 	__enable_irq();
