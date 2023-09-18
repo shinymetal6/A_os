@@ -134,6 +134,10 @@ typedef struct
 	uint8_t		GW_ADDR3;
 }A_IpAddr_t;
 
+extern	void A_PreOS_Init(void);
+extern	void A_PreScheduler_Init(void);
+extern	void A_IrqPriority_Init(void);
+
 extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 extern	void schedule(void);

@@ -135,21 +135,6 @@ void A_TimeDebug_Low(void)
 	HAL_GPIO_WritePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin,GPIO_PIN_RESET);
 }
 
-__weak void A_PreOS_Init(void)
-{
-	MX_USB_Device_Init();
-}
-
-__weak void A_PreScheduler_Init(void)
-{
-}
-
-__weak void A_IrqPriority_Init(void)
-{
-	HAL_NVIC_SetPriority(PendSV_IRQn,  PendSV_PRIORITY, 0);		/* Make PendSV_IRQn lower priority */
-	HAL_NVIC_SetPriority(SysTick_IRQn, SysTick_PRIORITY, 0);	/* Make PendSV_IRQn lower priority */
-}
-
 void A_start(void)
 {
 	A_PreOS_Init();
