@@ -49,7 +49,7 @@ __weak extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 __weak void A_PreOS_Init(void)
 {
 	MX_USB_Device_Init();
-	//MX_LWIP_Init(&A_IpAddr);
+	MX_LWIP_Init(&A_IpAddr);
 }
 
 __weak void A_PreScheduler_Init(void)
