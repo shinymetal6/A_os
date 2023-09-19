@@ -126,6 +126,7 @@ void A_enable_processor_faults(void)
 	SCB->SHCSR |= SCB_SHCSR_USGFAULTENA_Msk;
 }
 
+#if defined DEBUG_PIN_Pin
 void A_TimeDebug_High(void)
 {
 	HAL_GPIO_WritePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin,GPIO_PIN_SET);
@@ -135,6 +136,7 @@ void A_TimeDebug_Low(void)
 {
 	HAL_GPIO_WritePin(DEBUG_PIN_GPIO_Port, DEBUG_PIN_Pin,GPIO_PIN_RESET);
 }
+#endif
 
 void A_start(void)
 {
