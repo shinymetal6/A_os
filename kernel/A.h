@@ -26,7 +26,7 @@
 #define MAX_PROCESS				5
 #define USR_PROCESS_NUMBER		(MAX_PROCESS-1)
 #define MAX_TIMERS				8
-#define MAX_SEMAPHORES			32
+#define MAX_SEMAPHORES			8
 #define	MAILBOX_NUM				8
 #define	PERIPHERAL_NUM			32
 
@@ -117,6 +117,13 @@ typedef struct
 {
 	int32_t		(*svc_func)(int32_t,int32_t,int32_t,int32_t);
 }SVCfunc_t;
+
+typedef struct
+{
+	int8_t		semaphore[MAX_SEMAPHORES];
+	int8_t		semaphore_waiting_process[MAX_SEMAPHORES];
+	int32_t		semaphore_timeout[MAX_SEMAPHORES];
+}Semaphores_t;
 
 typedef struct
 {

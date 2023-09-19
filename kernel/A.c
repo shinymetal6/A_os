@@ -31,7 +31,7 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
-
+SYSTEM_RAM		Semaphores_t	Semaphores;
 SYSTEM_STACKS	uint32_t		stacks_start[32768/sizeof(uint32_t)];
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
@@ -111,6 +111,7 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
 void A_init_mem(void)
 {
 	A_bzero((uint8_t *)&Asys,sizeof(Asys));
+	A_bzero((uint8_t *)&Semaphores,sizeof(Semaphores));
 	A_bzero((uint8_t *)HWMngr,sizeof(HWMngr));
 	A_bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	A_bzero((uint8_t *)process,sizeof(process));
