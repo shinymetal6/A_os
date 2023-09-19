@@ -60,6 +60,7 @@
 #define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
 #define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
 #define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
+#define SYSTEM_STACKS			__attribute__((section(".osStacks")))  __attribute__ ((aligned (32)))
 /* In the case above we have6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
  * at the beginning of osSegment
  */
@@ -77,19 +78,13 @@
 #define HSI_CLOCK         		250000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 
-//#define	LWIP_ENABLED			1
-//#define	USBDEV_ENABLED			1
-//#define	USBDEV_IS_FS			1
-//#define	USBHOST_ENABLED			1
-
-//#define	NFC_ENABLED		1
-#if defined NFC_ENABLED
-#define ST25R3916B
-#endif
-
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		14
 #define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart3;
+#define	CONSOLE				huart3
+
 #endif
 
 #ifdef	STM32F746xx
@@ -215,6 +210,10 @@
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		14
 #define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart1;
+#define	CONSOLE				huart1
+
 #endif
 #ifndef ASSIGNED
 #error "Processor not implemented"

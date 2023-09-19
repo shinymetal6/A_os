@@ -70,6 +70,7 @@ extern	uint32_t allocate_hw(uint32_t peripheral);
 /* hwmanager : usb */
 extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
+extern	uint32_t send_console(uint8_t *ptr,uint16_t len);
 
 /* support functions */
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);

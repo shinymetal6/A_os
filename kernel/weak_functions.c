@@ -20,9 +20,22 @@
  *      Author: fil
  */
 #include "main.h"
+#include "A.h"
 #include "system_default.h"
 
+extern	A_IpAddr_t	A_IpAddr;
+
 __weak void MX_USB_Device_Init(void)
+{
+
+}
+
+__weak void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
+{
+
+}
+
+__weak void MX_LWIP_Process(void)
 {
 
 }
@@ -36,6 +49,7 @@ __weak extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 __weak void A_PreOS_Init(void)
 {
 	MX_USB_Device_Init();
+	MX_LWIP_Init(&A_IpAddr);
 }
 
 __weak void A_PreScheduler_Init(void)

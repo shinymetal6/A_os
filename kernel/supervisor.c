@@ -40,9 +40,7 @@ void supervisor(void)
 			reset_orphaned_chunks(Asys.failed_process);
 			Asys.failed_process = Asys.fail_rsn = 0;
 		}
-#ifdef	LWIP_ENABLED
 		MX_LWIP_Process();
-#endif
 	}
 }
 
