@@ -28,22 +28,27 @@
 #include "../hwmanager.h"
 #include "../system_default.h"
 
+#ifdef CONSOLE
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
 extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
+#endif
 
 uint32_t	set_uart1_rx_buffer(uint8_t *rx_buf)
 {
+#ifdef CONSOLE
 	if ( HWMngr[HW_UART1].process == Asys.current_process )
 	{
 		HWMngr[HW_UART1].rx_buf = rx_buf;
 		return 0;
 	}
+#endif
 	return 255;
 }
 
 uint32_t send_console(uint8_t *ptr,uint16_t len)
 {
+#ifdef CONSOLE
 	if ( HWMngr[HW_UART1].process == Asys.current_process )
 	{
 		if ( (queue_insert(&HwQueues[HW_UART1],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
@@ -51,9 +56,11 @@ uint32_t send_console(uint8_t *ptr,uint16_t len)
 			return  HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
 		}
 	}
+#endif
 	return 255;
 }
 
+#ifdef CONSOLE
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t		numbuf,*ptr;
@@ -67,3 +74,4 @@ uint16_t 	len;
 		}
 	}
 }
+#endif

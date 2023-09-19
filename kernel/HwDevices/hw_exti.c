@@ -32,6 +32,8 @@ extern	void st25r3916Isr( void );
 
 void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
 {
+#if defined ST25R391X_INT_Pin
 	if ( GPIO_Pin == ST25R391X_INT_Pin)
 		st25r3916Isr();
+#endif
 }
