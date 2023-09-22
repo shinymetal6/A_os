@@ -25,6 +25,11 @@
 
 extern	A_IpAddr_t	A_IpAddr;
 
+__weak void supervisor_callback(void)
+{
+
+}
+
 __weak void MX_USB_Device_Init(void)
 {
 

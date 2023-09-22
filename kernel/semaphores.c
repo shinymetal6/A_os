@@ -25,6 +25,8 @@
 #include "A_exported_functions.h"
 
 extern	Semaphores_t	Semaphores;
+extern	PCB_t 			process[MAX_PROCESS];
+extern	Asys_t			Asys;
 
 uint32_t destroy_semaphore(uint8_t semaphore_id)
 {
@@ -35,21 +37,30 @@ uint32_t destroy_semaphore(uint8_t semaphore_id)
 	return 0;
 }
 
+uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id)
+{
+	Semaphores.semaphore_waiting_process[semaphore_id] = 0;
+	return 0;
+}
+
+uint32_t	sem_err = 0;
+
 uint32_t get_semaphore(uint8_t semaphore_id,uint8_t semaphore_flag,uint32_t semaphore_timeout)
 {
 uint32_t	ret_val = SEMAPHORE_RED;
+uint32_t	wakeup;
+
 	if ( (semaphore_flag & SEMAPHORE_SUSPEND_IF_RED) != SEMAPHORE_SUSPEND_IF_RED)
 	{
-		if ((Semaphores.semaphore[semaphore_id] ==  SEMAPHORE_GREEN ) || (Semaphores.semaphore[semaphore_id] ==  Asys.current_process ))
+		if (Semaphores.semaphore[semaphore_id] == SEMAPHORE_FREE )
 		{
-			Semaphores.semaphore[semaphore_id] = Asys.current_process;
-			Semaphores.semaphore_timeout[semaphore_id] = Asys.g_tick_count + semaphore_timeout;
+			Semaphores.semaphore[semaphore_id] =  Asys.current_process;
 			ret_val = SEMAPHORE_GREEN;
 		}
 	}
 	else
 	{
-		if ((Semaphores.semaphore[semaphore_id] ==  SEMAPHORE_GREEN ) || (Semaphores.semaphore[semaphore_id] ==  Asys.current_process ))
+		if ((Semaphores.semaphore[semaphore_id] ==  SEMAPHORE_FREE ) || (Semaphores.semaphore[semaphore_id] ==  Asys.current_process ))
 		{
 			Semaphores.semaphore[semaphore_id] = Asys.current_process;
 			Semaphores.semaphore_timeout[semaphore_id] = Asys.g_tick_count + semaphore_timeout;
@@ -59,21 +70,64 @@ uint32_t	ret_val = SEMAPHORE_RED;
 		{
 			if ( Semaphores.semaphore_waiting_process[semaphore_id] == 0 )
 			{
-				Semaphores.semaphore_waiting_process[semaphore_id] = Asys.current_process;
 				if ( semaphore_timeout )
 				{
 					Semaphores.semaphore_timeout[semaphore_id] = Asys.g_tick_count + semaphore_timeout;
-					wait_event( EVENT_SEMAPHORE_TIMEOUT );
+					Semaphores.semaphore_waiting_process[semaphore_id] = Asys.current_process;
+					wakeup = wait_event( EVENT_SEMAPHORE | EVENT_SEMAPHORE_TIMEOUT );
+					if (( wakeup & WAKEUP_FROM_SEMAPHORE_TIMEOUT) == WAKEUP_FROM_SEMAPHORE_TIMEOUT )
+					{
+						Semaphores.semaphore_waiting_process[semaphore_id] = 0;
+						ret_val = SEMAPHORE_TIMEOUT;
+					}
+					else if (( wakeup & WAKEUP_FROM_SEMAPHORE) == WAKEUP_FROM_SEMAPHORE )
+					{
+						Semaphores.semaphore_waiting_process[semaphore_id] = 0;
+						ret_val = SEMAPHORE_GREEN;
+					}
+					else
+						sem_err++;
 				}
 				else
-					wait_event(EVENT_SEMAPHORE );
+				{
+					Semaphores.semaphore_waiting_process[semaphore_id] = Asys.current_process;
+					wakeup = wait_event( EVENT_SEMAPHORE );
+					if (( wakeup & WAKEUP_FROM_SEMAPHORE) == WAKEUP_FROM_SEMAPHORE )
+					{
+						Semaphores.semaphore_waiting_process[semaphore_id] = 0;
+						ret_val = SEMAPHORE_GREEN;
+					}
+					else
+						sem_err++;
+				}
 				Semaphores.semaphore[semaphore_id] = Asys.current_process;
-				ret_val = SEMAPHORE_GREEN;
 			}
+			else if ( Semaphores.semaphore_waiting_process[semaphore_id] == Asys.current_process )
+				ret_val = SEMAPHORE_ALREADY_SET;
 			else
 				ret_val = SEMAPHORE_UNAVAILABLE;
 		}
 	}
 	return ret_val;
+}
+
+void check_semaphores(void)
+{
+register uint8_t	i,j;
+
+	for( i = 1 ; i < MAX_PROCESS ; i++)
+	{
+		if((process[i].wait_event & SUSPEND_ON_SEMAPHORE) == SUSPEND_ON_SEMAPHORE)
+		{
+			for( j = 0 ; j < MAX_SEMAPHORES ; j++)
+			{
+				if ((Semaphores.semaphore[j] == i ) && (Asys.g_tick_count >= Semaphores.semaphore_timeout[j] ))
+				{
+					process[i].current_state |= PROCESS_READY_STATE;
+					activate_process(i,WAKEUP_FROM_SEMAPHORE_TIMEOUT,j);
+				}
+			}
+		}
+	}
 }
 

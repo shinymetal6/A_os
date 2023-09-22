@@ -47,10 +47,8 @@ void update_next_task(void)
 	{
 		Asys.current_process++;
 		Asys.current_process %= MAX_TASKS;
-		/******************************************************************/
-		if ( Asys.current_process == 0 )
+		if ( Asys.current_process == 0 )	// run supervisor each time Asys.current_process rolls to 0
 			return;
-		/******************************************************************/
 		state = process[Asys.current_process].current_state;
 		if (( state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 		{

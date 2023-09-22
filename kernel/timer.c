@@ -26,7 +26,6 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 
-
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
 
@@ -44,40 +43,7 @@ int32_t A_GetTick(void)
 	return Asys.g_tick_count;
 }
 
-/*
-uint32_t HAL_GetTick(void)
-{
-  return Asys.g_tick_count;
-}
 
-void HAL_Delay(uint32_t tick_count)
-{
-uint32_t tickstart = HAL_GetTick();
-uint32_t wait = tick_count;
-
-	if ( Asys.g_os_started == 0 )
-	{
-		// Add a freq to guarantee minimum wait
-		if (wait < HAL_MAX_DELAY)
-		{
-		wait += (uint32_t)(uwTickFreq);
-		}
-
-		while ((HAL_GetTick() - tickstart) < wait)
-		{
-		}
-	}
-	else
-	{
-		__disable_irq();
-		process[Asys.current_process].delay_value = Asys.g_tick_count + tick_count;
-		if ( Asys.current_process )	// supervisor is constantly enabled
-			process[Asys.current_process].wait_event = SUSPEND_ON_DELAY;
-		suspend();
-		__enable_irq();
-	}
-}
-*/
 void task_delay(uint32_t tick_count)
 {
 	__disable_irq();
@@ -91,7 +57,7 @@ void task_delay(uint32_t tick_count)
 	__enable_irq();
 }
 
-void unblock_tasks(void)
+void check_timers(void)
 {
 register uint8_t	i,j;
 
@@ -133,7 +99,8 @@ void  SysTick_Handler(void)
 	if ( Asys.g_os_started )
 	{
 		update_global_tick_count();
-		unblock_tasks();
+		check_timers();
+		check_semaphores();
 		//pend the pendsv exception
 		SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	}

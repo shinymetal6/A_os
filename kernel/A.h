@@ -120,6 +120,7 @@ typedef struct
 
 typedef struct
 {
+	int8_t		active_semaphores;
 	int8_t		semaphore[MAX_SEMAPHORES];
 	int8_t		semaphore_waiting_process[MAX_SEMAPHORES];
 	int32_t		semaphore_timeout[MAX_SEMAPHORES];
@@ -158,6 +159,7 @@ extern	uint32_t create_queue(HWMngr_queue_t *queue,uint32_t peripheral);
 extern	uint32_t destroy_queue(HWMngr_queue_t *queue,uint32_t peripheral);
 extern	uint32_t get_queue_len(HWMngr_queue_t *queue);
 
+extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);
 

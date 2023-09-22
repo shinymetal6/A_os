@@ -26,6 +26,7 @@
 #include "scheduler.h"
 
 extern	void MX_LWIP_Process(void);
+extern	void supervisor_callback(void);
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 extern	PCB_t 		process[MAX_PROCESS];
 
@@ -41,6 +42,7 @@ void supervisor(void)
 			Asys.failed_process = Asys.fail_rsn = 0;
 		}
 		MX_LWIP_Process();
+		supervisor_callback();
 	}
 }
 

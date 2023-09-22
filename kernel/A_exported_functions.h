@@ -81,6 +81,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 /* semaphores */
 extern	uint32_t get_semaphore(uint8_t semaphore_id,uint8_t semaphore_flag,uint32_t semaphore_timeout);
 extern	uint32_t destroy_semaphore(uint8_t semaphore_id);
+extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 
 #define	SEMAPHORE_ID_0				0
 #define	SEMAPHORE_ID_1				1
@@ -93,10 +94,14 @@ extern	uint32_t destroy_semaphore(uint8_t semaphore_id);
 /* semaphore_timeout */
 #define	SEMAPHORE_WAIT_FOREVER		0x00
 /* semaphore_flag */
+#define	SEMAPHORE_NO_SUSPEND		0x00
 #define	SEMAPHORE_SUSPEND_IF_RED	0x01
 /* semaphore returns */
+#define	SEMAPHORE_FREE				0x00
 #define	SEMAPHORE_GREEN				0x00
 #define	SEMAPHORE_RED				0x01
+#define	SEMAPHORE_TIMEOUT			0x02
+#define	SEMAPHORE_ALREADY_SET		0x40000000
 #define	SEMAPHORE_UNAVAILABLE		0x80000000
 
 
