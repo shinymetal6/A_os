@@ -53,7 +53,6 @@ MEMORY
 SECTIONS
 {
 	.osMemPool 0x200b0000 : {KEEP(*(.osMemPool))}
-	.osStacks  0x200b8000 : {KEEP(*(.osStacks))}
 	.osSegment 0x28000000 : {KEEP(*(.osSegment))}
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :

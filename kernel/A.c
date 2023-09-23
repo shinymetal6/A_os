@@ -32,7 +32,6 @@ SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 SYSTEM_RAM		Semaphores_t	Semaphores;
-SYSTEM_STACKS	uint32_t		stacks_start[32768/sizeof(uint32_t)];
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
