@@ -100,19 +100,23 @@ extern	UART_HandleTypeDef 	huart3;
 #define	POOL_NUM			    (RAM_END-RAM_START)/POOL_SIZE
 #define POOL_RAM				__attribute__((section(".osMemPool"))) __attribute__ ((aligned (32)))
 /* defines for system & stack pool, in top of ram */
-/* Stacks start from top and last 12K ( SIZE_PROCESS_STACK * 6 )
+/* Stacks start from top
  * At the bottom there are the OS structures:
  * MEMpool	: 	8 uint8_t
  * process	: 	14 uint32_t
  * Asys		:	9 uint32_t equiv
  * HWMngr	:	9 uint32_t equiv
+ * Starting from bottom :
+ * In the case above :
+ * MEMpool * POOL_NUM ( 1024 bytes ) + process ( 56bytes ) + Asys ( 36 bytes ) + HWMngr ( 36 bytes )
+ * So 2048 bytes are enough
  */
 /* Note : SRAM_START must be equal to osSegment in ld file */
 #define SRAM_START               0x2004C000U
-#define SIZE_STACKS              ( (16) * (1024))
+#define SIZE_STACKS              ( (8) * (1024))
 #define SRAM_END                 ((SRAM_START) + (SIZE_STACKS) )
-#define SIZE_PROCESS_STACK       2048U
-#define SIZE_SCHED_STACK         2048U
+#define SIZE_PROCESS_STACK       1024U
+#define SIZE_SCHED_STACK         1024U
 #define P1_STACK_START           SRAM_END
 #define P2_STACK_START           ( (SRAM_END) - (1 * SIZE_PROCESS_STACK) )
 #define P3_STACK_START           ( (SRAM_END) - (2 * SIZE_PROCESS_STACK) )
@@ -120,12 +124,9 @@ extern	UART_HandleTypeDef 	huart3;
 #define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
 #define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
 #define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
-/* In the case above :
- * we have 6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
+#define SYSTEM_STACKS			__attribute__((section(".osStacks")))  __attribute__ ((aligned (32)))
+/* In the case above we have6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
  * at the beginning of osSegment
- * In the case above :
- * MEMpool * POOL_NUM ( 1024 bytes ) + process ( 56bytes ) + Asys ( 36 bytes ) + HWMngr ( 36 bytes )
- * So 2048 bytes are enough starting from SRAM_START
  */
 
 #define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
@@ -138,17 +139,16 @@ extern	UART_HandleTypeDef 	huart3;
 #define	LED_3_GPIOBIT			LED2_YELLOW_Pin
 
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		200000000U
+#define HSI_CLOCK         		250000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
-
-//#define	LWIP_ENABLED			1
-#define	USBDEV_ENABLED			1
-//#define	USBDEV_IS_FS			1
-//#define	USBHOST_ENABLED			1
 
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		14
 #define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart3;
+#define	CONSOLE				huart3
+
 #endif
 
 #ifdef	STM32L431xx
