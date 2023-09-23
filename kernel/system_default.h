@@ -178,10 +178,10 @@ extern	UART_HandleTypeDef 	huart3;
 /* Note : SRAM_START must be equal to osSegment in ld file */
 /* Here is used the area SRAM4 in the U series */
 #define SRAM_START               0x10002000U
-#define SIZE_STACKS              ( (16) * (1024))
+#define SIZE_STACKS              ( (4) * (1024))
 #define SRAM_END                 ((SRAM_START) + (SIZE_STACKS) )
-#define SIZE_PROCESS_STACK       1024U
-#define SIZE_SCHED_STACK         1024U
+#define SIZE_PROCESS_STACK       512U
+#define SIZE_SCHED_STACK         512U
 #define P1_STACK_START           SRAM_END
 #define P2_STACK_START           ( (SRAM_END) - (1 * SIZE_PROCESS_STACK) )
 #define P3_STACK_START           ( (SRAM_END) - (2 * SIZE_PROCESS_STACK) )
