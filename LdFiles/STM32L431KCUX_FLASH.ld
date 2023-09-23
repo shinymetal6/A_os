@@ -55,7 +55,6 @@ SECTIONS
 {
 	.osMemPool 0x10000000 : {KEEP(*(.osMemPool))}
 	.osSegment 0x10002000 : {KEEP(*(.osSegment))}
-	.osStacks 0x20008000 : {KEEP(*(.osStacks))}
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :
   {
