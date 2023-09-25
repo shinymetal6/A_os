@@ -78,7 +78,11 @@ uint32_t	wakeup;
 					while(1)
 					{
 						while ( (wakeup & (WAKEUP_FROM_SEMAPHORE | WAKEUP_FROM_SEMAPHORE_TIMEOUT)) == 0)
+						{
+							if ( wakeup & SEMAPHORE_ERRORS_MASK)
+								process[Asys.current_process].semaphore_flags = wakeup >> 28;
 							wakeup = wait_event( EVENT_SEMAPHORE | EVENT_SEMAPHORE_TIMEOUT );
+						}
 						if (( wakeup & WAKEUP_FROM_SEMAPHORE_TIMEOUT) == WAKEUP_FROM_SEMAPHORE_TIMEOUT )
 						{
 							Semaphores.semaphore_waiting_process[semaphore_id] = 0;

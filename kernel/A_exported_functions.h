@@ -101,8 +101,10 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	SEMAPHORE_GREEN				0x00
 #define	SEMAPHORE_RED				0x01
 #define	SEMAPHORE_TIMEOUT			0x02
+#define	SEMAPHORE_OTHER_EVENT		0x20000000
 #define	SEMAPHORE_ALREADY_SET		0x40000000
 #define	SEMAPHORE_UNAVAILABLE		0x80000000
+#define	SEMAPHORE_ERRORS_MASK		0xF0000000
 
 
 /* peripherals */
@@ -120,7 +122,7 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	HW_SPI2						11
 /* timers start from 16 */
 #define	HW_TIM4						19
-#define	HW_USB						31
+#define	HW_USB						23
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)

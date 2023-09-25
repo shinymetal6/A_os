@@ -37,6 +37,7 @@ typedef struct
 	uint8_t		mbx_number;
 	uint32_t	wakeup_rsn;
 	uint32_t	wakeup_flags;
+	uint8_t		semaphore_flags;
 	uint32_t	current_timer[MAX_TIMERS];
 	uint32_t	timer_value[MAX_TIMERS];
 	uint8_t		timer_flags[MAX_TIMERS];
