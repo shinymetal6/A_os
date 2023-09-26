@@ -123,7 +123,7 @@ extern	UART_HandleTypeDef 	huart3;
 #define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
 #define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
 #define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
-/* In the case above we have6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
+/* In the case above we have6 stacks ( 6Kbytes )  and the area is 16Kbytes, the structures can be placed
  * at the beginning of osSegment
  */
 
@@ -137,7 +137,7 @@ extern	UART_HandleTypeDef 	huart3;
 #define	LED_3_GPIOBIT			LED2_YELLOW_Pin
 
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		250000000U
+#define HSI_CLOCK         		216000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 
 #define	PendSV_PRIORITY			15
@@ -146,6 +146,9 @@ extern	UART_HandleTypeDef 	huart3;
 
 extern	UART_HandleTypeDef 	huart3;
 #define	CONSOLE				huart3
+
+// Uncomment this out if you want a fixed ip
+#undef LWIP_DHCP
 
 #endif
 
