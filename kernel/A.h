@@ -143,6 +143,7 @@ typedef struct
 }A_IpAddr_t;
 
 extern	void A_PreOS_Init(void);
+extern	void A_Processor_Quirks(void);
 extern	void A_PreScheduler_Init(void);
 extern	void A_IrqPriority_Init(void);
 

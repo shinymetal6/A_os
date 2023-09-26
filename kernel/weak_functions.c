@@ -45,6 +45,11 @@ __weak void MX_LWIP_Process(void)
 
 }
 
+__weak void MX_USB_HOST_Process(void)
+{
+
+}
+
 __weak extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len)
 {
 	return 0;
@@ -55,6 +60,10 @@ __weak void A_PreOS_Init(void)
 {
 	MX_USB_Device_Init();
 	MX_LWIP_Init(&A_IpAddr);
+}
+
+__weak void A_Processor_Quirks(void)
+{
 }
 
 __weak void A_PreScheduler_Init(void)

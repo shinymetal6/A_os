@@ -142,6 +142,7 @@ void A_start(void)
 {
 	A_PreOS_Init();
 	__disable_irq();
+	A_Processor_Quirks();
 
 	A_enable_processor_faults();
 	A_IrqPriority_Init();
