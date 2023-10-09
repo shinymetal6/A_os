@@ -114,8 +114,8 @@ extern	UART_HandleTypeDef 	huart3;
 #define SRAM_START               0x2004C000U
 #define SIZE_STACKS              ( (8) * (1024))
 #define SRAM_END                 ((SRAM_START) + (SIZE_STACKS) )
-#define SIZE_PROCESS_STACK       1024U
-#define SIZE_SCHED_STACK         1024U
+#define SIZE_PROCESS_STACK       2048U
+#define SIZE_SCHED_STACK         2048U
 #define P1_STACK_START           SRAM_END
 #define P2_STACK_START           ( (SRAM_END) - (1 * SIZE_PROCESS_STACK) )
 #define P3_STACK_START           ( (SRAM_END) - (2 * SIZE_PROCESS_STACK) )
@@ -123,18 +123,12 @@ extern	UART_HandleTypeDef 	huart3;
 #define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
 #define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
 #define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
-/* In the case above we have6 stacks ( 6Kbytes )  and the area is 16Kbytes, the structures can be placed
+/* In the case above we have6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
  * at the beginning of osSegment
  */
 
 #define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
 #define	DEBUG_GPIOBIT			PG6_Debug_Pin
-#define	LED_1_GPIOPORT			LED3_RED_GPIO_Port
-#define	LED_1_GPIOBIT			LED3_RED_Pin
-#define	LED_2_GPIOPORT			LED1_GREEN_GPIO_Port
-#define	LED_2_GPIOBIT			LED1_GREEN_Pin
-#define	LED_3_GPIOPORT			LED2_YELLOW_GPIO_Port
-#define	LED_3_GPIOBIT			LED2_YELLOW_Pin
 
 #define TICK_HZ 				1000U
 #define HSI_CLOCK         		216000000U
@@ -144,8 +138,10 @@ extern	UART_HandleTypeDef 	huart3;
 #define	SysTick_PRIORITY		14
 #define	ASSIGNED				1
 
-extern	UART_HandleTypeDef 	huart3;
-#define	CONSOLE				huart3
+extern	UART_HandleTypeDef 		huart3;
+#define	CONSOLE					huart3
+
+#define	QSPI_ENABLED			1
 
 // Uncomment this out if you want a fixed ip
 #undef LWIP_DHCP

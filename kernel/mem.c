@@ -79,24 +79,21 @@ uint8_t		*mem_ptr=(uint8_t *)POOL_START;
 MEMpool_t	*p = MEMpool;
 
 	__disable_irq();
-	if ((( Asys.system_flags & SYS_MEM_DEFRAG_REQUEST ) == SYS_MEM_DEFRAG_REQUEST) & (Asys.num_buf_in_use == 0))
-	{
 #ifdef	DEBUG_MEM_DEFRAG_ON_PG6
-		A_Debug_Set_One();
+	A_Debug_Set_One();
 #endif
-		Asys.first_mem = (uint8_t *)&p[0];
-		for(i=0;i<POOL_NUM;i++)
-		{
-			p[i].nxt_link = (uint8_t *)&p[i+1];
-			p[i].pre_link = (i > 0) ? (uint8_t *)&p[i-1] : 0;
-			mem_ptr += POOL_SIZE;
-		}
-		p[i-1].nxt_link = 0;
-		Asys.system_flags &= ~SYS_MEM_DEFRAG_REQUEST;
+	Asys.first_mem = (uint8_t *)&p[0];
+	for(i=0;i<POOL_NUM;i++)
+	{
+		p[i].nxt_link = (uint8_t *)&p[i+1];
+		p[i].pre_link = (i > 0) ? (uint8_t *)&p[i-1] : 0;
+		mem_ptr += POOL_SIZE;
+	}
+	p[i-1].nxt_link = 0;
+	Asys.system_flags &= ~SYS_MEM_DEFRAG_REQUEST;
 #ifdef	DEBUG_MEM_DEFRAG_ON_PG6
 	A_Debug_Set_Zero();
 #endif
-	}
 	__enable_irq();
 }
 

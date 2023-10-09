@@ -58,7 +58,14 @@ typedef struct
 	uint16_t	rxlen;
 	uint32_t	flags;
 	uint8_t		*rx_buf;
+	uint16_t	rx_buf_index;
+	uint16_t	rx_buf_max_len;
+	uint16_t	timeout;
+	uint16_t	timeout_reload_value;
 }HWMngr_t;
+/* flags */
+#define	HWMAN_TIMEOUT_ENABLED	0x80000000
+
 
 #define	HWMAN_STATUS_FREE		0
 #define	HWMAN_STATUS_ALLOCATED	1
@@ -103,7 +110,9 @@ typedef struct
 }Asys_t;
 
 /* system_flags */
-#define	SYS_MEM_DEFRAG_REQUEST	0x00000001
+/* this is set by a get_mem to signal the supervisor that
+ * at least one buffer has been used, so defrag can start*/
+#define	SYS_MEM_DEFRAG_REQUEST	0x80000000
 
 /* user processes */
 typedef struct

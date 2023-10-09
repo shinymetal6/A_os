@@ -36,6 +36,7 @@ void update_global_tick_count(void)
 	Asys.g_tick_count++;
 	// update the HAL timer, if someone need it
 	uwTick++;
+	HAL_UART_RxTimeoutCheckCallback();
 }
 
 int32_t A_GetTick(void)

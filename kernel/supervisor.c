@@ -36,7 +36,7 @@ void supervisor(void)
 {
 	while(1)
 	{
-		if ( Asys.num_buf_in_use == 0 )
+		if ((( Asys.system_flags & SYS_MEM_DEFRAG_REQUEST ) == SYS_MEM_DEFRAG_REQUEST) & (Asys.num_buf_in_use == 0))
 			defrag_mem();
 		if ( Asys.failed_process )
 		{

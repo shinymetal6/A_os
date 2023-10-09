@@ -62,3 +62,9 @@ void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size)
 		size--;
 	}
 }
+
+void A_bmemcpy(uint8_t *dest,uint8_t *source,uint16_t size)
+{
+	while(size--)
+		*dest++=*source++;
+}

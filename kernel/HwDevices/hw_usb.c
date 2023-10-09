@@ -33,9 +33,9 @@ extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 
 uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf)
 {
-	if ( HWMngr[HW_USB].process == Asys.current_process )
+	if ( HWMngr[HW_USB_DEVICE].process == Asys.current_process )
 	{
-		HWMngr[HW_USB].rx_buf = rx_buf;
+		HWMngr[HW_USB_DEVICE].rx_buf = rx_buf;
 		return 0;
 	}
 	return 255;
@@ -43,13 +43,13 @@ uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf)
 
 uint32_t hw_UsbPktReceived(uint8_t* Buf, uint32_t Len)
 {
-uint8_t	*dest_ptr = HWMngr[HW_USB].rx_buf;
+uint8_t	*dest_ptr = HWMngr[HW_USB_DEVICE].rx_buf;
 	if ( dest_ptr != NULL )
 	{
-		HWMngr[HW_USB].rxlen = Len;
+		HWMngr[HW_USB_DEVICE].rxlen = Len;
 		A_memcpy(dest_ptr,Buf,Len);
 		dest_ptr[Len] = 0;
-		activate_process(HWMngr[HW_USB].process,WAKEUP_FROM_USB_IRQ,HW_USB_RX_COMPLETE_FLAG);
+		activate_process(HWMngr[HW_USB_DEVICE].process,WAKEUP_FROM_USB_DEVICE_IRQ,HW_USB_RX_COMPLETE_FLAG);
 		return	Len;
 	}
 	return 0;
@@ -64,9 +64,9 @@ extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 uint32_t hw_send_usb(uint8_t* ptr, uint16_t len)
 {
-	if (( HWMngr[HW_USB].process == Asys.current_process ) && ( len != 0 ))
+	if (( HWMngr[HW_USB_DEVICE].process == Asys.current_process ) && ( len != 0 ))
 	{
-		if ( (queue_insert(&HwQueues[HW_USB],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
+		if ( (queue_insert(&HwQueues[HW_USB_DEVICE],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
 		{
 			return (uint32_t )CDC_Transmit_FS(ptr, len);
 		}
@@ -80,9 +80,9 @@ void USB_TxCpltCallback(void)
 uint8_t		numbuf,*ptr;
 uint16_t 	len;
 
-	if ( HWMngr[HW_USB].status == HWMAN_STATUS_ALLOCATED)
+	if ( HWMngr[HW_USB_DEVICE].status == HWMAN_STATUS_ALLOCATED)
 	{
-		ptr = queue_extract(&HwQueues[HW_USB], &numbuf, &len);
+		ptr = queue_extract(&HwQueues[HW_USB_DEVICE], &numbuf, &len);
 		if (  numbuf )
 		{
 			CDC_Transmit_FS(ptr, len);

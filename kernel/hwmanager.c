@@ -130,13 +130,13 @@ uint16_t get_rx_len(uint32_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
-	return HWMngr[HW_USB].rxlen;
+	return HWMngr[HW_USB_DEVICE].rxlen;
 }
 
 uint32_t get_peripheral_flags(uint32_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
-	return HWMngr[HW_USB].flags;
+	return HWMngr[HW_USB_DEVICE].flags;
 }
 

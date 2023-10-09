@@ -43,6 +43,20 @@ extern	uint32_t destroy_timer(uint8_t timer_id);
 extern	uint8_t get_timer_expired(void);
 extern	int32_t A_GetTick(void);
 
+/* qspi */
+#if defined QSPI_ENABLED
+extern	uint8_t A_qspi_erase_block(QSPI_HandleTypeDef *A_hqspi,uint32_t BlockAddress);
+extern	uint8_t A_qspi_erase_chip(QSPI_HandleTypeDef *A_hqspi);
+extern	uint8_t A_qspi_write(QSPI_HandleTypeDef *A_hqspi,uint8_t* data,uint32_t addr, uint32_t size);
+extern	uint8_t A_qspi_read(QSPI_HandleTypeDef *A_hqspi, uint8_t* data,uint32_t addr, uint32_t size);
+extern	uint8_t A_qspi_enable_write(QSPI_HandleTypeDef *A_hqspi);
+extern	uint8_t A_qspi_disable_write(QSPI_HandleTypeDef *A_hqspi);
+extern	QSPI_HandleTypeDef *A_qspi_init(void);
+#endif
+
+/* lcd */
+extern	void LCD_Config(void);
+
 /* compatibility */
 extern	void 	A_Error_Handler(char * file, int line);
 
@@ -68,9 +82,15 @@ extern	void 	A_Error_Handler(char * file, int line);
 extern	uint32_t allocate_hw(uint32_t peripheral);
 
 /* hwmanager : usb */
-extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
-extern	uint32_t send_console(uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
+
+/* hwmanager : uart */
+extern	uint32_t hw_send_uart(uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_receive_uart(uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t timeout);
+extern	void HAL_UART_RxTimeoutCheckCallback(void);
+extern	uint16_t hw_get_uart_receive_len(void);
+
 
 /* support functions */
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
@@ -106,8 +126,7 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	SEMAPHORE_UNAVAILABLE		0x80000000
 #define	SEMAPHORE_ERRORS_MASK		0xF0000000
 
-
-/* peripherals */
+/* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
 #define	HW_DELAY					0
 #define	HW_TIMER					1
 #define	HW_MBX						2
@@ -118,11 +137,19 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	HW_UART3					7
 #define	HW_I2C1						8
 #define	HW_I2C2						9
-#define	HW_SPI1						10
-#define	HW_SPI2						11
-/* timers start from 16 */
-#define	HW_TIM4						19
-#define	HW_USB						23
+#define	HW_I2C3						10
+#define	HW_SPI1						11
+#define	HW_SPI2						12
+#define	HW_SPI3						13
+#define	HW_QSPI						14
+#define	HW_I2S1						15
+#define	HW_I2S2						16
+#define	HW_TIM1						17
+#define	HW_TIM2						18
+#define	HW_TIM3						19
+#define	HW_TIM4						20
+#define	HW_USB_DEVICE				26
+#define	HW_USB_HOST					27
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)
@@ -135,10 +162,19 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	EVENT_UART3_IRQ					(1<<HW_UART3)
 #define	EVENT_I2C1_IRQ					(1<<HW_I2C1)
 #define	EVENT_I2C2_IRQ					(1<<HW_I2C2)
+#define	EVENT_I2C3_IRQ					(1<<HW_I2C3)
 #define	EVENT_SPI1_IRQ					(1<<HW_SPI1)
 #define	EVENT_SPI2_IRQ					(1<<HW_SPI2)
+#define	EVENT_SPI3_IRQ					(1<<HW_SPI3)
+#define	EVENT_QSPI_IRQ					(1<<HW_QSPI)
+#define	EVENT_I2S1_IRQ					(1<<HW_I2S1)
+#define	EVENT_I2S2_IRQ					(1<<HW_I2S2)
+#define	EVENT_TIM1_IRQ					(1<<HW_TIM1)
+#define	EVENT_TIM2_IRQ					(1<<HW_TIM2)
+#define	EVENT_TIM3_IRQ					(1<<HW_TIM3)
 #define	EVENT_TIM4_IRQ					(1<<HW_TIM4)
-#define	EVENT_USB_IRQ					(1<<HW_USB)
+#define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
+#define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
 /* suspend_mode */
 #define	SUSPEND_ON_DELAY				EVENT_DELAY
 #define	SUSPEND_ON_TIMER				EVENT_TIMER
@@ -150,10 +186,19 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	SUSPEND_ON_UART3_IRQ			EVENT_UART3_IRQ
 #define	SUSPEND_ON_I2C1_IRQ				EVENT_I2C1_IRQ
 #define	SUSPEND_ON_I2C2_IRQ				EVENT_I2C2_IRQ
+#define	SUSPEND_ON_I2C3_IRQ				EVENT_I2C3_IRQ
 #define	SUSPEND_ON_SPI1_IRQ				EVENT_SPI1_IRQ
 #define	SUSPEND_ON_SPI2_IRQ				EVENT_SPI2_IRQ
+#define	SUSPEND_ON_SPI3_IRQ				EVENT_SPI3_IRQ
+#define	SUSPEND_ON_QSPI_IRQ				EVENT_QSPI_IRQ
+#define	SUSPEND_ON_I2S1_IRQ				EVENT_I2S1_IRQ
+#define	SUSPEND_ON_I2S2_IRQ				EVENT_I2S2_IRQ
+#define	SUSPEND_ON_TIM1_IRQ				EVENT_TIM1_IRQ
+#define	SUSPEND_ON_TIM2_IRQ				EVENT_TIM2_IRQ
+#define	SUSPEND_ON_TIM3_IRQ				EVENT_TIM3_IRQ
 #define	SUSPEND_ON_TIM4_IRQ				EVENT_TIM4_IRQ
-#define	SUSPEND_ON_USB_IRQ				EVENT_USB_IRQ
+#define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
+#define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
 /* wakeup_flags */
 #define	WAKEUP_FROM_DELAY				SUSPEND_ON_DELAY
 #define	WAKEUP_FROM_TIMER				SUSPEND_ON_TIMER
@@ -165,10 +210,19 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	WAKEUP_FROM_UART3_IRQ			SUSPEND_ON_UART3_IRQ
 #define	WAKEUP_FROM_I2C1_IRQ			SUSPEND_ON_I2C1_IRQ
 #define	WAKEUP_FROM_I2C2_IRQ			SUSPEND_ON_I2C2_IRQ
+#define	WAKEUP_FROM_I2C3_IRQ			SUSPEND_ON_I2C3_IRQ
 #define	WAKEUP_FROM_SPI1_IRQ			SUSPEND_ON_SPI1_IRQ
 #define	WAKEUP_FROM_SPI2_IRQ			SUSPEND_ON_SPI2_IRQ
+#define	WAKEUP_FROM_SPI3_IRQ			SUSPEND_ON_SPI3_IRQ
+#define	WAKEUP_FROM_QSPI_IRQ			SUSPEND_ON_QSPI_IRQ
+#define	WAKEUP_FROM_I2S1_IRQ			SUSPEND_ON_I2S1_IRQ
+#define	WAKEUP_FROM_I2S2_IRQ			SUSPEND_ON_I2S2_IRQ
+#define	WAKEUP_FROM_TIM1_IRQ			SUSPEND_ON_TIM1_IRQ
+#define	WAKEUP_FROM_TIM2_IRQ			SUSPEND_ON_TIM2_IRQ
+#define	WAKEUP_FROM_TIM3_IRQ			SUSPEND_ON_TIM3_IRQ
 #define	WAKEUP_FROM_TIM4_IRQ			SUSPEND_ON_TIM4_IRQ
-#define	WAKEUP_FROM_USB_IRQ				SUSPEND_ON_USB_IRQ
+#define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
+#define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
 /* device_flags */
 #define	DEVICE_DELAY					HW_DELAY
 #define	DEVICE_TIMER					HW_TIMER
@@ -180,9 +234,18 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	DEVICE_UART3					HW_UART3
 #define	DEVICE_I2C1						HW_I2C1
 #define	DEVICE_I2C2						HW_I2C2
+#define	DEVICE_I2C3						HW_I2C3
 #define	DEVICE_SPI1						HW_SPI1
 #define	DEVICE_SPI2						HW_SPI2
+#define	DEVICE_SPI3						HW_SPI3
+#define	DEVICE_QSPI						HW_QSPI
+#define	DEVICE_I2S1						HW_I2S1
+#define	DEVICE_I2S2						HW_I2S2
+#define	DEVICE_TIM1						HW_TIM1
+#define	DEVICE_TIM2						HW_TIM2
+#define	DEVICE_TIM3						HW_TIM3
 #define	DEVICE_TIM4						HW_TIM4
-#define	DEVICE_USB						HW_USB
+#define	DEVICE_USB_DEVICE				HW_USB_DEVICE
+#define	DEVICE_USB_HOST					HW_USB_HOST
 
 #endif /* KERNEL_A_EXPORTED_FUNCTIONS_H_ */
