@@ -35,6 +35,11 @@ uint32_t	i;
 uint8_t		*mem_ptr;
 MEMpool_t	*p = MEMpool;
 
+	mem_ptr = (uint8_t *)POOL_END;
+	*mem_ptr++ = 0xde;
+	*mem_ptr++ = 0xad;
+	*mem_ptr++ = 0xbe;
+	*mem_ptr++ = 0xef;
 	mem_ptr = (uint8_t *)POOL_START;
 	Asys.first_data_address= (uint32_t )POOL_START;
 	Asys.first_mem = (uint8_t *)&p[0];
@@ -46,7 +51,7 @@ MEMpool_t	*p = MEMpool;
 		p[i].chunk_count = 0;
 		p[i].chunk_index = 0;
 		p[i].process = p[i].flags = 0;
-		mem_ptr += POOL_SIZE;
+		mem_ptr += POOL_CHUNK_SIZE;
 	}
 	p[i-1].nxt_link = 0;
 }
@@ -87,7 +92,7 @@ MEMpool_t	*p = MEMpool;
 	{
 		p[i].nxt_link = (uint8_t *)&p[i+1];
 		p[i].pre_link = (i > 0) ? (uint8_t *)&p[i-1] : 0;
-		mem_ptr += POOL_SIZE;
+		mem_ptr += POOL_CHUNK_SIZE;
 	}
 	p[i-1].nxt_link = 0;
 	Asys.system_flags &= ~SYS_MEM_DEFRAG_REQUEST;
@@ -108,8 +113,8 @@ uint16_t find_chunk_by_size(uint16_t size)
 MEMpool_t	*p = (MEMpool_t *)Asys.first_mem;
 uint16_t	num_buf,i;
 
-	num_buf = size / POOL_SIZE;
-	if ( size > (num_buf*POOL_SIZE))
+	num_buf = size / POOL_CHUNK_SIZE;
+	if ( size > (num_buf*POOL_CHUNK_SIZE))
 		num_buf += 1;
 	Asys.first_of_list = Asys.last_of_list = p;
 	i = num_buf;
@@ -187,7 +192,7 @@ MEMpool_t	*p,*first_list_pool,*insert_pool;
 uint8_t		chunk_count,i;
 
 	__disable_irq();
-	mem_addr_val = ((uint32_t ) data_ptr - Asys.first_data_address) / POOL_SIZE;
+	mem_addr_val = ((uint32_t ) data_ptr - Asys.first_data_address) / POOL_CHUNK_SIZE;
 	p = (MEMpool_t *)&MEMpool[mem_addr_val];
 
 	// 1. check if single buffer or linked list buffers

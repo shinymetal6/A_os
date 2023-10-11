@@ -70,11 +70,18 @@ uint32_t *pPSP,i,j;
 	process[3].current_state = PROCESS_READY_STATE;
 	process[4].current_state = PROCESS_READY_STATE;
 
+	/*
 	process[0].psp_value = IDLE_STACK_START;
 	process[1].psp_value = P1_STACK_START;
 	process[2].psp_value = P2_STACK_START;
 	process[3].psp_value = P3_STACK_START;
 	process[4].psp_value = P4_STACK_START;
+	*/
+	process[0].psp_value = IDLE_STACK_START;
+	process[1].psp_value = FIRST_PRC_STACK_START;
+	process[2].psp_value = process[1].psp_value - UserProcesses[0].stack_size;
+	process[3].psp_value = process[2].psp_value - UserProcesses[1].stack_size;
+	process[4].psp_value = process[3].psp_value - UserProcesses[2].stack_size;
 
 	process[0].task_handler = supervisor;
 	process[1].task_handler = supervisor_process1;
@@ -114,7 +121,7 @@ void A_init_mem(void)
 	A_bzero((uint8_t *)HWMngr,sizeof(HWMngr));
 	A_bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	A_bzero((uint8_t *)process,sizeof(process));
-	A_bzero((uint8_t *)(SCHED_STACK_START-SIZE_PROCESS_STACK),SIZE_PROCESS_STACK*MAX_PROCESS);
+	//A_bzero((uint8_t *)(SCHED_STACK_START-SIZE_PROCESS_STACK),SIZE_PROCESS_STACK*MAX_PROCESS);
 }
 
 void A_enable_processor_faults(void)

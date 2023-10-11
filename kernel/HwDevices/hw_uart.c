@@ -35,40 +35,12 @@ extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 uint8_t	rx_char;
 #endif
 
-#ifdef OLD_HWUART
-uint32_t hw_set_uart_rx_buffer(uint8_t *rx_buf)
+uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len)
 {
 #ifdef CONSOLE
-	if ( HWMngr[HW_UART1].process == Asys.current_process )
+	if ( HWMngr[uart].process == Asys.current_process )
 	{
-		HWMngr[HW_UART1].rx_buf = rx_buf;
-		HAL_UART_Receive_IT(&huart1, &rx_char, 1);
-		return 0;
-	}
-#endif
-	return 255;
-}
-
-uint32_t	set_uart1_rx_buffer(uint8_t *rx_buf,uint16_t rx_buf_max_len)
-{
-#ifdef CONSOLE
-	if ( HWMngr[HW_UART1].process == Asys.current_process )
-	{
-		HWMngr[HW_UART1].rx_buf = rx_buf;
-		HWMngr[HW_UART1].rx_buf_max_len = rx_buf_max_len;
-		return 0;
-	}
-#endif
-	return 255;
-}
-#endif
-
-uint32_t hw_send_uart(uint8_t *ptr,uint16_t len)
-{
-#ifdef CONSOLE
-	if ( HWMngr[HW_UART1].process == Asys.current_process )
-	{
-		if ( (queue_insert(&HwQueues[HW_UART1],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
+		if ( (queue_insert(&HwQueues[uart],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
 		{
 			return  HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
 		}
@@ -78,32 +50,32 @@ uint32_t hw_send_uart(uint8_t *ptr,uint16_t len)
 }
 
 
-uint32_t hw_receive_uart(uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t timeout)
+uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t timeout)
 {
 #ifdef CONSOLE
-	if ( HWMngr[HW_UART1].process == Asys.current_process )
+	if ( HWMngr[uart].process == Asys.current_process )
 	{
-		HWMngr[HW_UART1].rx_buf = rx_buf;
-		HWMngr[HW_UART1].rx_buf_max_len = rx_buf_max_len;
+		HWMngr[uart].rx_buf = rx_buf;
+		HWMngr[uart].rx_buf_max_len = rx_buf_max_len;
 		if ( timeout )
 		{
-			HWMngr[HW_UART1].timeout = HWMngr[HW_UART1].timeout_reload_value = timeout;
-			HWMngr[HW_UART1].flags |= HWMAN_TIMEOUT_ENABLED;
+			HWMngr[uart].timeout = HWMngr[uart].timeout_reload_value = timeout;
+			HWMngr[uart].flags |= HWMAN_TIMEOUT_ENABLED;
 		}
-		HWMngr[HW_UART1].rx_buf_index = 0;
-		HAL_UART_Receive_IT(&huart1, &rx_char, 1);
+		HWMngr[uart].rx_buf_index = 0;
+		HAL_UART_Receive_IT(&CONSOLE, &rx_char, 1);
 		return 0;
 	}
 #endif
 	return 255;
 }
 
-uint16_t hw_get_uart_receive_len(void)
+uint16_t hw_get_uart_receive_len(uint32_t uart)
 {
 #ifdef CONSOLE
-	if ( HWMngr[HW_UART1].status == HWMAN_STATUS_ALLOCATED)
-		if ( HWMngr[HW_UART1].process == Asys.current_process )
-			return HWMngr[HW_UART1].rxlen;
+	if ( HWMngr[uart].status == HWMAN_STATUS_ALLOCATED)
+		if ( HWMngr[uart].process == Asys.current_process )
+			return HWMngr[uart].rxlen;
 	return 0;
 #endif
 	return 0;
@@ -117,6 +89,22 @@ uint16_t 	len;
 	if ( HWMngr[HW_UART1].status == HWMAN_STATUS_ALLOCATED)
 	{
 		ptr = queue_extract(&HwQueues[HW_UART1], &numbuf, &len);
+		if (  numbuf )
+		{
+			HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
+		}
+	}
+	if ( HWMngr[HW_UART2].status == HWMAN_STATUS_ALLOCATED)
+	{
+		ptr = queue_extract(&HwQueues[HW_UART2], &numbuf, &len);
+		if (  numbuf )
+		{
+			HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
+		}
+	}
+	if ( HWMngr[HW_UART3].status == HWMAN_STATUS_ALLOCATED)
+	{
+		ptr = queue_extract(&HwQueues[HW_UART3], &numbuf, &len);
 		if (  numbuf )
 		{
 			HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
@@ -140,7 +128,35 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 		}
 	}
-	HAL_UART_Receive_IT(&huart1, &rx_char, 1);
+	if ( HWMngr[HW_UART2].status == HWMAN_STATUS_ALLOCATED)
+	{
+		if ( HWMngr[HW_UART2].rx_buf != NULL )
+		{
+			HWMngr[HW_UART2].rx_buf[HWMngr[HW_UART2].rx_buf_index] = rx_char;
+			HWMngr[HW_UART2].rx_buf_index++;
+			if ( HWMngr[HW_UART2].rx_buf_index == HWMngr[HW_UART2].rx_buf_max_len)
+			{
+				HWMngr[HW_UART2].rxlen = HWMngr[HW_UART2].rx_buf_index;
+				HWMngr[HW_UART2].rx_buf_index = 0;
+				activate_process(HWMngr[HW_UART2].process,WAKEUP_FROM_UART2_IRQ,1);
+			}
+		}
+	}
+	if ( HWMngr[HW_UART3].status == HWMAN_STATUS_ALLOCATED)
+	{
+		if ( HWMngr[HW_UART3].rx_buf != NULL )
+		{
+			HWMngr[HW_UART3].rx_buf[HWMngr[HW_UART3].rx_buf_index] = rx_char;
+			HWMngr[HW_UART3].rx_buf_index++;
+			if ( HWMngr[HW_UART3].rx_buf_index == HWMngr[HW_UART3].rx_buf_max_len)
+			{
+				HWMngr[HW_UART3].rxlen = HWMngr[HW_UART3].rx_buf_index;
+				HWMngr[HW_UART3].rx_buf_index = 0;
+				activate_process(HWMngr[HW_UART1].process,WAKEUP_FROM_UART3_IRQ,1);
+			}
+		}
+	}
+	HAL_UART_Receive_IT(&CONSOLE, &rx_char, 1);
 }
 
 void HAL_UART_RxTimeoutCheckCallback(void)
@@ -162,6 +178,52 @@ void HAL_UART_RxTimeoutCheckCallback(void)
 							HWMngr[HW_UART1].rxlen = HWMngr[HW_UART1].rx_buf_index;
 							HWMngr[HW_UART1].rx_buf_index = 0;
 							activate_process(HWMngr[HW_UART1].process,WAKEUP_FROM_UART1_IRQ,1);
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( HWMngr[HW_UART2].status == HWMAN_STATUS_ALLOCATED)
+	{
+		if ( HWMngr[HW_UART2].rx_buf != NULL )
+		{
+			if ( HWMngr[HW_UART2].rx_buf_index != 0 )
+			{
+				if (( HWMngr[HW_UART2].flags & HWMAN_TIMEOUT_ENABLED) == HWMAN_TIMEOUT_ENABLED)
+				{
+					if ( HWMngr[HW_UART2].timeout )
+					{
+						HWMngr[HW_UART2].timeout --;
+						if ( HWMngr[HW_UART2].timeout == 0 )
+						{
+							HWMngr[HW_UART2].timeout = HWMngr[HW_UART2].timeout_reload_value;
+							HWMngr[HW_UART2].rxlen = HWMngr[HW_UART2].rx_buf_index;
+							HWMngr[HW_UART2].rx_buf_index = 0;
+							activate_process(HWMngr[HW_UART2].process,WAKEUP_FROM_UART2_IRQ,1);
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( HWMngr[HW_UART3].status == HWMAN_STATUS_ALLOCATED)
+	{
+		if ( HWMngr[HW_UART3].rx_buf != NULL )
+		{
+			if ( HWMngr[HW_UART3].rx_buf_index != 0 )
+			{
+				if (( HWMngr[HW_UART3].flags & HWMAN_TIMEOUT_ENABLED) == HWMAN_TIMEOUT_ENABLED)
+				{
+					if ( HWMngr[HW_UART3].timeout )
+					{
+						HWMngr[HW_UART3].timeout --;
+						if ( HWMngr[HW_UART3].timeout == 0 )
+						{
+							HWMngr[HW_UART3].timeout = HWMngr[HW_UART3].timeout_reload_value;
+							HWMngr[HW_UART3].rxlen = HWMngr[HW_UART3].rx_buf_index;
+							HWMngr[HW_UART3].rx_buf_index = 0;
+							activate_process(HWMngr[HW_UART3].process,WAKEUP_FROM_UART3_IRQ,1);
 						}
 					}
 				}

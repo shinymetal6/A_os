@@ -86,10 +86,10 @@ extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
 extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 
 /* hwmanager : uart */
-extern	uint32_t hw_send_uart(uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_receive_uart(uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t timeout);
+extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t timeout);
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
-extern	uint16_t hw_get_uart_receive_len(void);
+extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
 
 
 /* support functions */
