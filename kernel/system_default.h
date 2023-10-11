@@ -51,6 +51,8 @@
 extern	UART_HandleTypeDef 	huart3;
 #define	CONSOLE				huart3
 
+#define	BOARD_NAME			"STM32H743ZI2-NUCLEO"
+
 #endif
 
 #ifdef	STM32H563xx
@@ -116,67 +118,7 @@ extern	UART_HandleTypeDef 	huart3;
 
 #endif
 
-#ifdef	STM32F746xx
-/* defines for memory pool, in bottom of ram */
-/* The pool should be aligned on 64K boundary if possible */
-/* Note : RAM_START must be equal to osMemPool in ld file */
-#define RAM_START               0x20040000U
-#define SIZE_RAM                ( (32) * (1024))
-#define RAM_END                 ((RAM_START) + (SIZE_RAM) )
-#define	POOL_START			    RAM_START
-#define	POOL_END			    RAM_END
-#define	POOL_SIZE			    256
-#define	POOL_NUM			    (RAM_END-RAM_START)/POOL_SIZE
-#define POOL_RAM				__attribute__((section(".osMemPool"))) __attribute__ ((aligned (32)))
-/* defines for system & stack pool, in top of ram */
-/* Stacks start from top
- * At the bottom there are the OS structures:
- * MEMpool	: 	8 uint8_t
- * process	: 	14 uint32_t
- * Asys		:	9 uint32_t equiv
- * HWMngr	:	9 uint32_t equiv
- * Starting from bottom :
- * In the case above :
- * MEMpool * POOL_NUM ( 1024 bytes ) + process ( 56bytes ) + Asys ( 36 bytes ) + HWMngr ( 36 bytes )
- * So 2048 bytes are enough
- */
-/* Note : SRAM_START must be equal to osSegment in ld file */
-#define SRAM_START               0x2004C000U
-#define SIZE_STACKS              ( (8) * (1024))
-#define SRAM_END                 ((SRAM_START) + (SIZE_STACKS) )
-#define SIZE_PROCESS_STACK       2048U
-#define SIZE_SCHED_STACK         2048U
-#define P1_STACK_START           SRAM_END
-#define P2_STACK_START           ( (SRAM_END) - (1 * SIZE_PROCESS_STACK) )
-#define P3_STACK_START           ( (SRAM_END) - (2 * SIZE_PROCESS_STACK) )
-#define P4_STACK_START           ( (SRAM_END) - (3 * SIZE_PROCESS_STACK) )
-#define IDLE_STACK_START         ( (SRAM_END) - (4 * SIZE_PROCESS_STACK) )
-#define SCHED_STACK_START        ( (SRAM_END) - (5 * SIZE_PROCESS_STACK) )
-#define SYSTEM_RAM				__attribute__((section(".osSegment"))) __attribute__ ((aligned (32)))
-/* In the case above we have6 stacks ( 12Kbytes )  and the area is 16Kbytes, the structures can be placed
- * at the beginning of osSegment
- */
 
-#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
-#define	DEBUG_GPIOBIT			PG6_Debug_Pin
-
-#define TICK_HZ 				1000U
-#define HSI_CLOCK         		216000000U
-#define SYSTICK_TIM_CLK   		HSI_CLOCK
-
-#define	PendSV_PRIORITY			15
-#define	SysTick_PRIORITY		14
-#define	ASSIGNED				1
-
-extern	UART_HandleTypeDef 		huart3;
-#define	CONSOLE					huart3
-
-#define	QSPI_ENABLED			1
-
-// Uncomment this out if you want a fixed ip
-#undef LWIP_DHCP
-
-#endif
 
 #ifdef	STM32L431xx
 /* defines for memory pool, in top of ram*/
@@ -274,8 +216,39 @@ extern	UART_HandleTypeDef 		huart3;
 extern	UART_HandleTypeDef 	huart1;
 #define	CONSOLE				huart1
 
+#define	BOARD_NAME			"STM32U575-NUCLEO"
+
 #endif
 
+#ifdef	STM32F746xx
+/* Memories */
+#define	POOL_START			     0x20040000
+/* Note : SRAM_START must be equal to osSegment in ld file */
+#define SRAM_START               0x20048000
+#define SRAM_SIZE                32768
+
+/* I/O */
+#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+
+#define TICK_HZ 				1000U
+#define HSI_CLOCK         		216000000U
+#define SYSTICK_TIM_CLK   		HSI_CLOCK
+
+#define	PendSV_PRIORITY			15
+#define	SysTick_PRIORITY		14
+#define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart1;
+#define	CONSOLE				huart1
+
+#define	QSPI_ENABLED			1
+
+#define	BOARD_NAME			"STM32F746G-DISCO"
+// Uncomment this out if you want a fixed ip
+#undef LWIP_DHCP
+
+#endif
 
 #ifndef ASSIGNED
 #error "Processor not implemented"

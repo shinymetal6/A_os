@@ -23,6 +23,7 @@ https://www.fernhillsoftware.com/help/drivers/modbus/modbus-protocol.html#writeS
 #include "main.h"
 #include "A_modbus.h"
 #include "A_modbus_rtu.h"
+#include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 #include <stdio.h>
 #include <string.h>
 
@@ -218,7 +219,7 @@ static uint8_t A_rtu_modbus_report_slave_info(uint8_t *buf)
 uint16_t	number_of_bytes;
 	A_modbus.tx_packet[0] = A_modbus.modbus_addr;
 	A_modbus.tx_packet[1] = buf[1];
-	sprintf((char *)&A_modbus.tx_packet[3],"%x%s %s %s %s %s",A_MODBUS_RTU_RUN_INDICATOR,A_MODBUS_RTU_INFO,A_MODBUS_RTU_INFO_VER,A_MODBUS_RTU_MBFW_VER,A_MODBUS_RTU_MBFW_DATE,A_MODBUS_RTU_MBFW_TIME);
+	sprintf((char *)&A_modbus.tx_packet[3],"%x%s %s %s %s %s\nBoard : %s",A_MODBUS_RTU_RUN_INDICATOR,A_MODBUS_RTU_INFO,A_MODBUS_RTU_INFO_VER,A_MODBUS_RTU_MBFW_VER,A_MODBUS_RTU_MBFW_DATE,A_MODBUS_RTU_MBFW_TIME,BOARD_NAME);
 	number_of_bytes = strlen((char *)&A_modbus.tx_packet[3]);
 	A_modbus.tx_packet[2] = number_of_bytes;
 	A_modbus.crc = crc( A_modbus.tx_packet, number_of_bytes+3);
