@@ -121,7 +121,8 @@ void A_init_mem(void)
 	A_bzero((uint8_t *)HWMngr,sizeof(HWMngr));
 	A_bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	A_bzero((uint8_t *)process,sizeof(process));
-	//A_bzero((uint8_t *)(SCHED_STACK_START-SIZE_PROCESS_STACK),SIZE_PROCESS_STACK*MAX_PROCESS);
+	A_bzero((uint8_t *)POOL_START,(uint32_t )POOL_SIZE);
+	A_bzero((uint8_t *)SRAM_START,(uint16_t )SRAM_SIZE);
 }
 
 void A_enable_processor_faults(void)

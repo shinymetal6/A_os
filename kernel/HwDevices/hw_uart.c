@@ -111,9 +111,13 @@ uint16_t 	len;
 		}
 	}
 }
-
+uint8_t trxbuf[32],t_index=0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
+	trxbuf[t_index] = rx_char;
+	t_index++;
+	t_index &= 0x1f;
+
 	if ( HWMngr[HW_UART1].status == HWMAN_STATUS_ALLOCATED)
 	{
 		if ( HWMngr[HW_UART1].rx_buf != NULL )
@@ -152,7 +156,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			{
 				HWMngr[HW_UART3].rxlen = HWMngr[HW_UART3].rx_buf_index;
 				HWMngr[HW_UART3].rx_buf_index = 0;
-				activate_process(HWMngr[HW_UART1].process,WAKEUP_FROM_UART3_IRQ,1);
+				activate_process(HWMngr[HW_UART3].process,WAKEUP_FROM_UART3_IRQ,1);
 			}
 		}
 	}
