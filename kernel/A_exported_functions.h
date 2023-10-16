@@ -54,9 +54,6 @@ extern	uint8_t A_qspi_disable_write(QSPI_HandleTypeDef *A_hqspi);
 extern	QSPI_HandleTypeDef *A_qspi_init(void);
 #endif
 
-/* lcd */
-extern	void LCD_Config(void);
-
 /* compatibility */
 extern	void 	A_Error_Handler(char * file, int line);
 
@@ -91,9 +88,11 @@ extern	uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_ma
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
 extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
 
-
 /* support functions */
+extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
+extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
+extern	void A_bmemcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
