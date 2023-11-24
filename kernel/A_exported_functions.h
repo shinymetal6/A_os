@@ -255,10 +255,11 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 /* drivers */
 /* nrf24l01 */
 extern	uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode,uint8_t* nrf_address);
-extern	uint8_t nrf24l01_get_tx_irq(void);
 extern	uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address);
+extern	uint8_t nrf24l01_get_tx_irq_goto_rx(void);
 extern	uint8_t nrf24l01_set_rx_address(uint8_t* rx_address );
 extern	uint8_t nrf24l01_rx(uint8_t* rx_payload);
+extern	uint8_t nrf24l01_get_status(void);
 #include "../drivers/nrf24l01/nrf24l01_driver.h"
 /* nrf24l01 end */
 

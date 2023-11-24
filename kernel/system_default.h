@@ -277,6 +277,7 @@ extern	UART_HandleTypeDef 	huart2;
 #undef LWIP_DHCP
 
 #endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

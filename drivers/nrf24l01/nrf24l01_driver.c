@@ -156,18 +156,30 @@ uint8_t nrf24l01_status;
 	return nrf24l01_status;
 }
 
-uint8_t nrf24l01_get_tx_irq(void)
+uint8_t nrf24l01_get_tx_irq_goto_rx(void)
 {
 uint8_t nrf24l01_status;
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70);
 	nrf24l01_ce_low();
+	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
+	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x3b);						// go to rx : pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
+	HAL_Delay(1);
+	nrf24l01_ce_high();
 	return nrf24l01_status;
+}
+
+uint8_t nrf24l01_get_status(void)
+{
+	return nrf24l01_read_register(NRF24L01_REG_STATUS);
 }
 
 uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address)
 {
 uint8_t nrf24l01_status;
+	nrf24l01_ce_low();
+	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
+	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
 	nrf24l01_write_multiple_register(NRF24L01_REG_TX_ADDR,tx_address,5);
 	nrf24l01_write_multiple_register(NRF24L01_REG_RX_ADDR_P0,tx_address,5);
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
