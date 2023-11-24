@@ -138,12 +138,4 @@ typedef enum
 #define NRF24L01_IRQ_IS_TX_DS			0x20
 #define NRF24L01_IRQ_IS_MAX_RT			0x10
 
-
-
-extern	uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode,uint8_t* nrf_address);
-extern	uint8_t nrf24l01_get_tx_irq(void);
-extern	uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address);
-extern	uint8_t nrf24l01_set_rx_address(uint8_t* rx_address );
-extern	uint8_t nrf24l01_rx(uint8_t* rx_payload);
-
 #endif /* NRF24L01_DRIVER_H_ */
