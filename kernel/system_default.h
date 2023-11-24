@@ -220,6 +220,63 @@ extern	UART_HandleTypeDef 	huart1;
 
 #endif
 
+#ifdef	STM32F446xx
+/* Memories */
+#define	POOL_START			     0x20004000
+/* Note : SRAM_START must be equal to osSegment in ld file */
+#define SRAM_START               0x20008000
+#define SRAM_SIZE                32768
+
+/* I/O */
+#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+
+#define TICK_HZ 				1000U
+#define HSI_CLOCK         		180000000U
+#define SYSTICK_TIM_CLK   		HSI_CLOCK
+
+#define	PendSV_PRIORITY			15
+#define	SysTick_PRIORITY		14
+#define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart1;
+#define	CONSOLE				huart1
+
+#define	BOARD_NAME			"STM32F446RE-NUCLEO"
+// Uncomment this out if you want a fixed ip
+#undef LWIP_DHCP
+
+#endif
+
+#ifdef	STM32L152xE
+/* Memories */
+#define	POOL_START			     0x20004000
+/* Note : SRAM_START must be equal to osSegment in ld file */
+#define SRAM_START               0x20008000
+#define SRAM_SIZE                32768
+
+/* I/O */
+#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+#define	LED_GPIOPORT			LD2_LED_GPIO_Port
+#define	LED_GPIOBIT				LD2_LED_Pin
+
+#define TICK_HZ 				1000U
+#define HSI_CLOCK         		180000000U
+#define SYSTICK_TIM_CLK   		HSI_CLOCK
+
+#define	PendSV_PRIORITY			15
+#define	SysTick_PRIORITY		14
+#define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart2;
+#define	CONSOLE				huart2
+
+#define	BOARD_NAME			"STM32L152RE-NUCLEO"
+// Uncomment this out if you want a fixed ip
+#undef LWIP_DHCP
+
+#endif
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

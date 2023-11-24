@@ -108,9 +108,12 @@ uint32_t __attribute__ ((noinline)) wait_event(uint32_t events)
 {
 uint32_t wake;
 	__disable_irq();
-	process[Asys.current_process].wait_event = events;
-	process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
-	schedule();
+	if ( process[Asys.current_process].wakeup_rsn == 0 )
+	{
+		process[Asys.current_process].wait_event = events;
+		process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
+		schedule();
+	}
 	wake = process[Asys.current_process].wakeup_rsn;
 	process[Asys.current_process].wakeup_rsn = 0;
 	__enable_irq();

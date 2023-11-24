@@ -146,12 +146,8 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	HW_QSPI						17
 #define	HW_I2S1						18
 #define	HW_I2S2						19
-#define	HW_TIM1						20
-#define	HW_TIM2						21
-#define	HW_TIM3						22
-#define	HW_TIM4						23
-#define	HW_TIM5						24
-#define	HW_TIM6						25
+#define	HW_TIM						20
+#define	HW_NRF24L01					21
 #define	HW_USB_DEVICE				26
 #define	HW_USB_HOST					27
 
@@ -176,10 +172,8 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	EVENT_QSPI_IRQ					(1<<HW_QSPI)
 #define	EVENT_I2S1_IRQ					(1<<HW_I2S1)
 #define	EVENT_I2S2_IRQ					(1<<HW_I2S2)
-#define	EVENT_TIM1_IRQ					(1<<HW_TIM1)
-#define	EVENT_TIM2_IRQ					(1<<HW_TIM2)
-#define	EVENT_TIM3_IRQ					(1<<HW_TIM3)
-#define	EVENT_TIM4_IRQ					(1<<HW_TIM4)
+#define	EVENT_TIM_IRQ					(1<<HW_TIM)
+#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
 #define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
 #define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
 /* suspend_mode */
@@ -203,10 +197,8 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	SUSPEND_ON_QSPI_IRQ				EVENT_QSPI_IRQ
 #define	SUSPEND_ON_I2S1_IRQ				EVENT_I2S1_IRQ
 #define	SUSPEND_ON_I2S2_IRQ				EVENT_I2S2_IRQ
-#define	SUSPEND_ON_TIM1_IRQ				EVENT_TIM1_IRQ
-#define	SUSPEND_ON_TIM2_IRQ				EVENT_TIM2_IRQ
-#define	SUSPEND_ON_TIM3_IRQ				EVENT_TIM3_IRQ
-#define	SUSPEND_ON_TIM4_IRQ				EVENT_TIM4_IRQ
+#define	SUSPEND_ON_TIM_IRQ				EVENT_TIM_IRQ
+#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
 #define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
 #define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
 /* wakeup_flags */
@@ -230,10 +222,8 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	WAKEUP_FROM_QSPI_IRQ			SUSPEND_ON_QSPI_IRQ
 #define	WAKEUP_FROM_I2S1_IRQ			SUSPEND_ON_I2S1_IRQ
 #define	WAKEUP_FROM_I2S2_IRQ			SUSPEND_ON_I2S2_IRQ
-#define	WAKEUP_FROM_TIM1_IRQ			SUSPEND_ON_TIM1_IRQ
-#define	WAKEUP_FROM_TIM2_IRQ			SUSPEND_ON_TIM2_IRQ
-#define	WAKEUP_FROM_TIM3_IRQ			SUSPEND_ON_TIM3_IRQ
-#define	WAKEUP_FROM_TIM4_IRQ			SUSPEND_ON_TIM4_IRQ
+#define	WAKEUP_FROM_TIM_IRQ				SUSPEND_ON_TIM_IRQ
+#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
 #define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
 #define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
 /* device_flags */
@@ -257,10 +247,8 @@ extern	uint32_t remove_from_waiting_semaphore(uint8_t semaphore_id);
 #define	DEVICE_QSPI						HW_QSPI
 #define	DEVICE_I2S1						HW_I2S1
 #define	DEVICE_I2S2						HW_I2S2
-#define	DEVICE_TIM1						HW_TIM1
-#define	DEVICE_TIM2						HW_TIM2
-#define	DEVICE_TIM3						HW_TIM3
-#define	DEVICE_TIM4						HW_TIM4
+#define	DEVICE_TIM						HW_TIM
+#define	DEVICE_NRF24L01					HW_NRF24L01
 #define	DEVICE_USB_DEVICE				HW_USB_DEVICE
 #define	DEVICE_USB_HOST					HW_USB_HOST
 

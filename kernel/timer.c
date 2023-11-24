@@ -44,6 +44,13 @@ int32_t A_GetTick(void)
 	return Asys.g_tick_count;
 }
 
+uint32_t HAL_GetTick(void)
+{
+	if ( Asys.g_os_started )
+		return Asys.g_tick_count;
+	else
+		return uwTick;
+}
 
 void task_delay(uint32_t tick_count)
 {

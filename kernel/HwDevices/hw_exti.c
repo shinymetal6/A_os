@@ -37,3 +37,13 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
 		st25r3916Isr();
 #endif
 }
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+#if defined EXTI4_NRFIRQ_Pin
+	if(GPIO_Pin == EXTI4_NRFIRQ_Pin)
+	{
+		activate_process(1,WAKEUP_FROM_NRF24L01_IRQ,0);
+	}
+#endif
+}
