@@ -53,6 +53,7 @@
 /* User Configurations */
 extern	SPI_HandleTypeDef 					hspi2;
 #define NRF24L01_SPI						hspi2
+#define NRF24L01_SPI_TIMEOUT				2000
 
 #define NRF24L01_SPI_CS_PIN_PORT			SPI2_SS_GPIO_Port
 #define NRF24L01_SPI_CS_PIN_NUMBER			SPI2_SS_Pin

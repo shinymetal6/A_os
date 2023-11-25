@@ -52,8 +52,8 @@ uint8_t status;
 uint8_t read_val;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Receive(&NRF24L01_SPI, &read_val, 1, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Receive(&NRF24L01_SPI, &read_val, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 	return read_val;
 }
@@ -65,22 +65,10 @@ uint8_t status;
 uint8_t write_val = value;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Transmit(&NRF24L01_SPI, &write_val, 1, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Transmit(&NRF24L01_SPI, &write_val, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 	return write_val;
-}
-
-uint8_t nrf24l01_write_multiple_register(uint8_t reg, uint8_t *values,uint8_t reg_num)
-{
-uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
-uint8_t status;
-
-	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Transmit(&NRF24L01_SPI, values, reg_num, 2000);
-	nrf24l01_cs_high();
-	return 0;
 }
 
 uint8_t nrf24l01_read_multiple_register(uint8_t reg, uint8_t *values,uint8_t reg_num)
@@ -89,10 +77,22 @@ uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
 uint8_t status;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Receive(&NRF24L01_SPI,values, reg_num, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Receive(&NRF24L01_SPI,values, reg_num, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 	return status;
+}
+
+uint8_t nrf24l01_write_multiple_register(uint8_t reg, uint8_t *values,uint8_t reg_num)
+{
+uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
+uint8_t status;
+
+	nrf24l01_cs_low();
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Transmit(&NRF24L01_SPI, values, reg_num, NRF24L01_SPI_TIMEOUT);
+	nrf24l01_cs_high();
+	return 0;
 }
 
 void nrf24l01_flush_rx_fifo()
@@ -101,7 +101,7 @@ uint8_t command = NRF24L01_CMD_FLUSH_RX;
 uint8_t status;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 }
 
@@ -111,7 +111,7 @@ uint8_t command = NRF24L01_CMD_FLUSH_TX;
 uint8_t status;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 }
 
@@ -121,8 +121,8 @@ uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 uint8_t status;
 
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Receive(&NRF24L01_SPI, rx_payload, NRF24L01_PAYLOAD_LENGTH, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Receive(&NRF24L01_SPI, rx_payload, NRF24L01_PAYLOAD_LENGTH, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 	return status;
 }
@@ -134,8 +134,8 @@ uint8_t status;
 
 	nrf24l01_flush_tx_fifo();
 	nrf24l01_cs_low();
-	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, 2000);
-	HAL_SPI_Transmit(&NRF24L01_SPI, tx_payload, NRF24L01_PAYLOAD_LENGTH, 2000);
+	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
+	HAL_SPI_Transmit(&NRF24L01_SPI, tx_payload, NRF24L01_PAYLOAD_LENGTH, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
 	return status;
 }
@@ -166,7 +166,6 @@ uint8_t nrf24l01_status;
 	nrf24l01_ce_low();
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x3b);						// go to rx : pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
-	//HAL_Delay(1);
 	nrf24l01_ce_high();
 	return nrf24l01_status;
 }
@@ -180,27 +179,22 @@ uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address)
 {
 uint8_t nrf24l01_status;
 	nrf24l01_ce_low();
-	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
-	//HAL_Delay(1);
-	task_delay(1);
+	task_delay(1);															// need to wait at least 130uSec for radio switch
 	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70);						// clear irqs
-	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
-	HAL_Delay(1);
 	nrf24l01_write_multiple_register(NRF24L01_REG_TX_ADDR,tx_address,5);
 	nrf24l01_write_multiple_register(NRF24L01_REG_RX_ADDR_P0,tx_address,5);
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_STATUS, nrf24l01_status & 0x40);
 	nrf24l01_write_tx_fifo(tx_payload);
 	nrf24l01_ce_high();
-	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
-	return nrf24l01_status;
+	return nrf24l01_read_register(NRF24L01_REG_STATUS);
 }
 
 uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode , uint8_t* nrf_address)
 {
-uint8_t nrf24l01_status,nrf24l01_config;
+uint8_t nrf24l01_status;
 	nrf24l01_ce_low();
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x08);
 	nrf24l01_write_register(NRF24L01_REG_EN_AA, 0x3f);
@@ -209,7 +203,6 @@ uint8_t nrf24l01_status,nrf24l01_config;
 	nrf24l01_write_register(NRF24L01_REG_SETUP_RETR, 0xff);	// 4000 uS , 15 retransmit
 	nrf24l01_write_register(NRF24L01_REG_RF_CH, MHz - 2400);
 	nrf24l01_write_register(NRF24L01_REG_RF_SETUP, 0x07 | ((bps << 3) & 0x08 ));
-	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70 );
 	nrf24l01_write_register(NRF24L01_REG_DYNPD, 0x00);
 	nrf24l01_write_register(NRF24L01_REG_FEATURE, 0x00);
 
@@ -245,9 +238,8 @@ uint8_t nrf24l01_status,nrf24l01_config;
 
 
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
-	nrf24l01_config = nrf24l01_read_register(NRF24L01_REG_CONFIG);
 
 	if ( mode == NRF24L01_MODE_RX )
 		nrf24l01_ce_high();
-	return nrf24l01_status | nrf24l01_config;
+	return nrf24l01_status;
 }
