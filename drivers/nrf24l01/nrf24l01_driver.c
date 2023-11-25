@@ -23,6 +23,8 @@
 #include "main.h"
 #include "nrf24l01_driver.h"
 
+extern	void task_delay(uint32_t tick_count);
+
 void nrf24l01_cs_high()
 {
 	HAL_GPIO_WritePin(NRF24L01_SPI_CS_PIN_PORT, NRF24L01_SPI_CS_PIN_NUMBER, GPIO_PIN_SET);
@@ -164,7 +166,7 @@ uint8_t nrf24l01_status;
 	nrf24l01_ce_low();
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x3b);						// go to rx : pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
-	HAL_Delay(1);
+	//HAL_Delay(1);
 	nrf24l01_ce_high();
 	return nrf24l01_status;
 }
@@ -178,8 +180,14 @@ uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address)
 {
 uint8_t nrf24l01_status;
 	nrf24l01_ce_low();
+	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
+	//HAL_Delay(1);
+	task_delay(1);
+	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70);						// clear irqs
+	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
+	HAL_Delay(1);
 	nrf24l01_write_multiple_register(NRF24L01_REG_TX_ADDR,tx_address,5);
 	nrf24l01_write_multiple_register(NRF24L01_REG_RX_ADDR_P0,tx_address,5);
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
@@ -224,10 +232,15 @@ uint8_t nrf24l01_status,nrf24l01_config;
 
 	nrf24l01_flush_rx_fifo();
 	nrf24l01_flush_tx_fifo();
+
 	if ( mode == NRF24L01_MODE_TX )
+	{
 		nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x4a);						// pup, crc en 1 bytes,tx, rx dr irq disabled
+	}
 	if ( mode == NRF24L01_MODE_RX )
+	{
 		nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x3b);						// pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
+	}
 	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70);
 
 
@@ -236,6 +249,5 @@ uint8_t nrf24l01_status,nrf24l01_config;
 
 	if ( mode == NRF24L01_MODE_RX )
 		nrf24l01_ce_high();
-
 	return nrf24l01_status | nrf24l01_config;
 }

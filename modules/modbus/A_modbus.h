@@ -23,8 +23,6 @@
 #ifndef A_MODBUS_H_
 #define A_MODBUS_H_
 
-//#define A_MODBUS_SW_CRC	1
-
 extern	UART_HandleTypeDef 					huart1;
 #define	MODBUS_UART							huart1
 
