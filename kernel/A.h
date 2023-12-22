@@ -107,12 +107,18 @@ typedef struct
 	uint8_t		process_bus_fault[MAX_PROCESS];
 	uint8_t		process_mem_manage_fault[MAX_PROCESS];
 	uint8_t		process_usage_fault[MAX_PROCESS];
+	uint8_t		flash_on_board;
+	uint8_t		flash_id;
+	uint32_t 	flash_size;
 }Asys_t;
 
 /* system_flags */
 /* this is set by a get_mem to signal the supervisor that
  * at least one buffer has been used, so defrag can start*/
 #define	SYS_MEM_DEFRAG_REQUEST	0x80000000
+/* 	flash_on_board */
+#define	ASYS_FLASH_NOT_FOUND		0x00
+#define	ASYS_FLASH_FOUND			0x01
 
 /* user processes */
 typedef struct
