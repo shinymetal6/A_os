@@ -23,7 +23,37 @@
 #ifndef KERNEL_SYSTEM_DEFAULT_H_
 #define KERNEL_SYSTEM_DEFAULT_H_
 
+#define	FY_201023_00	1
 #ifdef	STM32H743xx
+#ifdef	FY_201023_00
+/* Memories */
+#define	POOL_START			    0x38000000
+/* Note : SRAM_START must be equal to osSegment in ld file */
+#define SRAM_START               0x38000000
+#define SRAM_SIZE                65536
+
+/* I/O */
+#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+#define	LED_1_GPIOPORT			LED_GPIO_Port
+#define	LED_1_GPIOBIT			LED_Pin
+
+/* Clock */
+#define TICK_HZ 				1000U
+#define HSI_CLOCK         		480000000U
+#define SYSTICK_TIM_CLK   		HSI_CLOCK
+/* Others */
+#define	PendSV_PRIORITY			15
+#define	SysTick_PRIORITY		14
+#define	ASSIGNED				1
+
+extern	UART_HandleTypeDef 	huart3;
+#define	CONSOLE				huart3
+#define	QSPI_ENABLED			1
+#define	QSPI_WINBOND			1
+
+#define	BOARD_NAME			"FY-201023-00"
+#else
 /* Memories */
 #define	POOL_START			    0x38000000
 /* Note : SRAM_START must be equal to osSegment in ld file */
@@ -53,6 +83,7 @@ extern	UART_HandleTypeDef 	huart3;
 
 #define	BOARD_NAME			"STM32H743ZI2-NUCLEO"
 
+#endif
 #endif
 
 #ifdef	STM32H563xx

@@ -21,26 +21,27 @@
  */
 
 #include "main.h"
+#include "../../kernel/system_default.h"
 #include "nrf24l01_driver.h"
 
 extern	void task_delay(uint32_t tick_count);
 
-void nrf24l01_cs_high()
+void nrf24l01_cs_high(void)
 {
 	HAL_GPIO_WritePin(NRF24L01_SPI_CS_PIN_PORT, NRF24L01_SPI_CS_PIN_NUMBER, GPIO_PIN_SET);
 }
 
-void nrf24l01_cs_low()
+void nrf24l01_cs_low(void)
 {
 	HAL_GPIO_WritePin(NRF24L01_SPI_CS_PIN_PORT, NRF24L01_SPI_CS_PIN_NUMBER, GPIO_PIN_RESET);
 }
 
-void nrf24l01_ce_high()
+void nrf24l01_ce_high(void)
 {
 	HAL_GPIO_WritePin(NRF24L01_CE_PIN_PORT, NRF24L01_CE_PIN_NUMBER, GPIO_PIN_SET);
 }
 
-void nrf24l01_ce_low()
+void nrf24l01_ce_low(void)
 {
 	HAL_GPIO_WritePin(NRF24L01_CE_PIN_PORT, NRF24L01_CE_PIN_NUMBER, GPIO_PIN_RESET);
 }
