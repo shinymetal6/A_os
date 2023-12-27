@@ -45,13 +45,14 @@ extern	int32_t A_GetTick(void);
 
 /* qspi */
 #if defined QSPI_ENABLED
-extern	uint8_t A_qspi_erase_block(QSPI_HandleTypeDef *A_hqspi,uint32_t BlockAddress);
-extern	uint8_t A_qspi_erase_chip(QSPI_HandleTypeDef *A_hqspi);
-extern	uint8_t A_qspi_write(QSPI_HandleTypeDef *A_hqspi,uint8_t* data,uint32_t addr, uint32_t size);
-extern	uint8_t A_qspi_read(QSPI_HandleTypeDef *A_hqspi, uint8_t* data,uint32_t addr, uint32_t size);
-extern	uint8_t A_qspi_enable_write(QSPI_HandleTypeDef *A_hqspi);
-extern	uint8_t A_qspi_disable_write(QSPI_HandleTypeDef *A_hqspi);
 extern	QSPI_HandleTypeDef *A_qspi_init(void);
+extern	uint8_t A_qspi_erase_block(uint32_t BlockAddress);
+extern	uint8_t A_qspi_erase_chip(void);
+extern	uint8_t A_qspi_write(uint8_t* data,uint32_t addr, uint32_t size);
+extern	uint8_t A_qspi_read( uint8_t* data,uint32_t addr, uint32_t size);
+extern	uint8_t A_qspi_enable_write(void);
+extern	uint8_t A_qspi_disable_write(void);
+
 #endif
 
 /* compatibility */
@@ -77,6 +78,7 @@ extern	void 	A_Error_Handler(char * file, int line);
 
 /* hwmanager */
 extern	uint32_t allocate_hw(uint32_t peripheral);
+extern	uint32_t deallocate_hw(uint32_t peripheral);
 
 /* hwmanager : usb */
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);

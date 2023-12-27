@@ -51,49 +51,8 @@
 
 /* User Configurations */
 
-#ifdef STM32H743xx
-#ifdef FY_201023_00
-
-extern	SPI_HandleTypeDef 					hspi1;
-#define NRF24L01_SPI						hspi1
-#define NRF24L01_SPI_TIMEOUT				2000
-
-#define NRF24L01_SPI_CS_PIN_PORT			ISM_SS_GPIO_Port
-#define NRF24L01_SPI_CS_PIN_NUMBER			ISM_SS_Pin
-
-#define NRF24L01_CE_PIN_PORT				ISM_CE_GPIO_Port
-#define NRF24L01_CE_PIN_NUMBER				ISM_CE_Pin
-
-#define NRF24L01_IRQ_PIN_PORT				ISM_IRQ_GPIO_Port
-#define NRF24L01_IRQ_PIN_NUMBER				ISM_IRQ_Pin
-#endif
-
-#else
-
-extern	SPI_HandleTypeDef 					hspi2;
-#define NRF24L01_SPI						hspi2
-#define NRF24L01_SPI_TIMEOUT				2000
-
-#define NRF24L01_SPI_CS_PIN_PORT			SPI2_SS_GPIO_Port
-#define NRF24L01_SPI_CS_PIN_NUMBER			SPI2_SS_Pin
-
-#define NRF24L01_CE_PIN_PORT				NRF24_CE_GPIO_Port
-#define NRF24L01_CE_PIN_NUMBER				NRF24_CE_Pin
-
-#define NRF24L01_IRQ_PIN_PORT				EXTI4_NRFIRQ_GPIO_Port
-#define NRF24L01_IRQ_PIN_NUMBER				EXTI4_NRFIRQ_Pin
-#endif
 
 #define NRF24L01_PAYLOAD_LENGTH				32     // 1 - 32bytes
-
-/* nRF24L01+ typedefs */
-/*
-typedef uint8_t count;
-typedef uint8_t widths;
-typedef uint8_t length;
-typedef uint16_t delay;
-*/
-//typedef uint16_t channel;
 
 typedef enum
 {

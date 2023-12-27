@@ -24,6 +24,7 @@
 #define KERNEL_SYSTEM_DEFAULT_H_
 
 #define	FY_201023_00	1
+
 #ifdef	STM32H743xx
 #ifdef	FY_201023_00
 /* Memories */
@@ -49,8 +50,31 @@
 
 extern	UART_HandleTypeDef 	huart3;
 #define	CONSOLE				huart3
+
 #define	QSPI_ENABLED			1
-#define	QSPI_WINBOND			1
+#define	ISM_ENABLED				1
+#undef 	LWIP_DHCP
+
+
+#ifdef QSPI_ENABLED
+	#define	QSPI_WINBOND			1
+	extern	QSPI_HandleTypeDef 	hqspi;
+	#define	HQSPI1				hqspi
+#endif // #ifdef QSPI_ENABLED
+#ifdef ISM_ENABLED
+	extern	SPI_HandleTypeDef 					hspi1;
+	#define NRF24L01_SPI						hspi1
+	#define NRF24L01_SPI_TIMEOUT				2000
+
+	#define NRF24L01_SPI_CS_PIN_PORT			ISM_SS_GPIO_Port
+	#define NRF24L01_SPI_CS_PIN_NUMBER			ISM_SS_Pin
+
+	#define NRF24L01_CE_PIN_PORT				ISM_CE_GPIO_Port
+	#define NRF24L01_CE_PIN_NUMBER				ISM_CE_Pin
+
+	#define NRF24L01_IRQ_PIN_PORT				ISM_IRQ_GPIO_Port
+	#define NRF24L01_IRQ_PIN_NUMBER				ISM_IRQ_Pin
+#endif // #ifdef ISM_ENABLED
 
 #define	BOARD_NAME			"FY-201023-00"
 #else
@@ -241,6 +265,22 @@ extern	UART_HandleTypeDef 	huart2;
 extern	UART_HandleTypeDef 	huart2;
 #define	CONSOLE				huart2
 
+#define	ISM_ENABLED				1
+
+#ifdef ISM_ENABLED
+	extern	SPI_HandleTypeDef 					hspi2;
+	#define NRF24L01_SPI						hspi2
+	#define NRF24L01_SPI_TIMEOUT				2000
+
+	#define NRF24L01_SPI_CS_PIN_PORT			SPI2_SS_GPIO_Port
+	#define NRF24L01_SPI_CS_PIN_NUMBER			SPI2_SS_Pin
+
+	#define NRF24L01_CE_PIN_PORT				NRF24_CE_GPIO_Port
+	#define NRF24L01_CE_PIN_NUMBER				NRF24_CE_Pin
+
+	#define NRF24L01_IRQ_PIN_PORT				EXTI4_NRFIRQ_GPIO_Port
+	#define NRF24L01_IRQ_PIN_NUMBER				EXTI4_NRFIRQ_Pin
+#endif // #ifdef ISM_ENABLED
 #define	BOARD_NAME			"STM32L152RE-NUCLEO"
 // Uncomment this out if you want a fixed ip
 #undef LWIP_DHCP

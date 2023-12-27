@@ -24,12 +24,12 @@
 #define KERNEL_HWDEVICES_HW_QSPI_H_
 #if defined QSPI_ENABLED
 
-extern	uint8_t qspi_Erase_Chip(QSPI_HandleTypeDef *QSPIHandle);
-extern	uint8_t qspi_Erase_Block(QSPI_HandleTypeDef *QSPIHandle,uint32_t BlockAddress);
-extern	uint8_t qspi_Write(QSPI_HandleTypeDef *QSPIHandle,uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
-extern	uint8_t qspi_Read(QSPI_HandleTypeDef *QSPIHandle,uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
-extern	uint8_t qspi_WriteEnable(QSPI_HandleTypeDef *QSPIHandle);
-extern	uint8_t qspi_WriteDisable(QSPI_HandleTypeDef *QSPIHandle);
+extern	uint8_t qspi_Erase_Chip(void);
+extern	uint8_t qspi_Erase_Block(uint32_t BlockAddress);
+extern	uint8_t qspi_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size);
+extern	uint8_t qspi_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
+extern	uint8_t qspi_WriteEnable(void);
+extern	uint8_t qspi_WriteDisable(void);
 
 extern	QSPI_HandleTypeDef *qspi_init(void);
 #endif

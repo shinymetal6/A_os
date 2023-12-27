@@ -33,46 +33,46 @@
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
 
-uint8_t A_qspi_enable_write(QSPI_HandleTypeDef *A_hqspi,uint32_t BlockAddress)
+uint8_t A_qspi_enable_write(void)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	 return qspi_WriteEnable(A_hqspi);
+	 return qspi_WriteEnable();
 }
 
-uint8_t A_qspi_disable_write(QSPI_HandleTypeDef *A_hqspi,uint32_t BlockAddress)
+uint8_t A_qspi_disable_write(void)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	 return qspi_WriteDisable(A_hqspi);
+	 return qspi_WriteDisable();
 }
 
-uint8_t A_qspi_erase_block(QSPI_HandleTypeDef *A_hqspi,uint32_t BlockAddress)
+uint8_t A_qspi_erase_block(uint32_t BlockAddress)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	 return qspi_Erase_Block(A_hqspi,BlockAddress);
+	 return qspi_Erase_Block(BlockAddress);
 }
 
-uint8_t A_qspi_erase_chip(QSPI_HandleTypeDef *A_hqspi)
+uint8_t A_qspi_erase_chip(void)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	 return qspi_Erase_Chip(A_hqspi);
+	 return qspi_Erase_Chip();
 }
 
-uint8_t A_qspi_write(QSPI_HandleTypeDef *A_hqspi,uint8_t* data,uint32_t addr, uint32_t size)
+uint8_t A_qspi_write(uint8_t* data,uint32_t addr, uint32_t size)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	return qspi_Write(A_hqspi,data, addr, size);
+	return qspi_Write(data, addr, size);
 }
 
-uint8_t A_qspi_read(QSPI_HandleTypeDef *A_hqspi,uint8_t* data,uint32_t addr, uint32_t size)
+uint8_t A_qspi_read(uint8_t* data,uint32_t addr, uint32_t size)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	return qspi_Read(A_hqspi,data, addr, size);
+	return qspi_Read(data, addr, size);
 }
 
 QSPI_HandleTypeDef *A_qspi_init(void)

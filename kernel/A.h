@@ -74,6 +74,17 @@ typedef struct
 
 typedef struct
 {
+	uint8_t 	process;
+	uint8_t		status;
+}IrqMngr_t;
+/* flags */
+#define	IRQMAN_TIMEOUT_ENABLED	0x80000000
+#define	IRQMAN_FREE		0
+#define	IRQMAN_ALLOCATED	1
+
+
+typedef struct
+{
 	uint32_t	peripheral;
 	uint8_t 	process;
 	uint8_t		*ptr[HWMAN_QUEUE_LEN];

@@ -30,6 +30,7 @@ SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 SYSTEM_RAM		Semaphores_t	Semaphores;
 
@@ -50,7 +51,7 @@ A_IpAddr_t	A_IpAddr =
 		.GW_ADDR2 		= 10,
 		.GW_ADDR3 		= 1
 };
-A_IpAddr_t	A_DhcpIpAddr;
+SYSTEM_RAM	A_IpAddr_t	A_DhcpIpAddr;
 
 uint32_t	UsbDeviceId0 = 0xdeadbeef;
 uint32_t	UsbDeviceId1 = 0xbeefdead;
@@ -148,6 +149,9 @@ void A_TimeDebug_Low(void)
 
 void A_start(void)
 {
+#if defined ETH_NRST_Pin
+	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_SET);
+#endif
 	A_PreOS_Init();
 	__disable_irq();
 	A_Processor_Quirks();
