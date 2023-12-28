@@ -11,14 +11,17 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : A_os
+ * Project : fy-201023-00 
 */
 /*
- * nrf24l01_driver.h
+ * nrf24l01.h
  *
- *  Created on: Oct 25, 2023
+ *  Created on: Dec 28, 2023
  *      Author: fil
  */
+
+#ifndef DRIVERS_NRF24L01_NRF24L01_H_
+#define DRIVERS_NRF24L01_NRF24L01_H_
 
 /* nucleo L053
  * nrf24_irq	CN10-34
@@ -46,11 +49,6 @@
  * CN7-20  --> module->1
  *
  */
-#ifndef NRF24L01_DRIVER_H_
-#define NRF24L01_DRIVER_H_
-
-/* User Configurations */
-
 
 #define NRF24L01_PAYLOAD_LENGTH				32     // 1 - 32bytes
 
@@ -117,4 +115,11 @@ typedef enum
 #define NRF24L01_IRQ_IS_TX_DS			0x20
 #define NRF24L01_IRQ_IS_MAX_RT			0x10
 
-#endif /* NRF24L01_DRIVER_H_ */
+extern	uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode,uint8_t* nrf_address);
+extern	uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address);
+extern	uint8_t nrf24l01_get_tx_irq_goto_rx(void);
+extern	uint8_t nrf24l01_set_rx_address(uint8_t* rx_address );
+extern	uint8_t nrf24l01_rx(uint8_t* rx_payload);
+extern	uint8_t nrf24l01_get_status(void);
+
+#endif /* DRIVERS_NRF24L01_NRF24L01_H_ */

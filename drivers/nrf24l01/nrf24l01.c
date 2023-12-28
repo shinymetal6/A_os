@@ -11,18 +11,17 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : A_os
+ * Project : fy-201023-00 
 */
 /*
- * nrf24l01_driver.c
+ * nrf24l01.c
  *
- *  Created on: Oct 25, 2023
+ *  Created on: Dec 28, 2023
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"
-#include "nrf24l01_driver.h"
+#include "nrf24l01.h"
 
 extern	void task_delay(uint32_t tick_count);
 
@@ -244,3 +243,5 @@ uint8_t nrf24l01_status;
 		nrf24l01_ce_high();
 	return nrf24l01_status;
 }
+
+
