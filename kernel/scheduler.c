@@ -63,7 +63,6 @@ void update_next_task(void)
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
     //1. initialize the PSP with TASK1 stack start address
-
 	//get the value of psp of current_task
 	__asm volatile ("PUSH {LR}"); //preserve LR which connects back to main()
 	__asm volatile ("BL get_psp_value");
