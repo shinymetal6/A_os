@@ -23,6 +23,10 @@
 #include "A.h"
 #include "system_default.h"
 
+#ifdef CODEC_NAU88C22
+extern	void Nau88c22_Init(void);
+#endif
+
 extern	A_IpAddr_t	A_IpAddr;
 
 __weak void supervisor_callback(void)
@@ -60,6 +64,10 @@ __weak void A_PreOS_Init(void)
 {
 	MX_USB_Device_Init();
 	MX_LWIP_Init(&A_IpAddr);
+
+#ifdef CODEC_NAU88C22
+	Nau88c22_Init();
+#endif
 }
 
 __weak void A_Processor_Quirks(void)
@@ -75,4 +83,16 @@ __weak void A_IrqPriority_Init(void)
 	HAL_NVIC_SetPriority(PendSV_IRQn,  PendSV_PRIORITY, 0);		/* Make PendSV_IRQn lower priority */
 	HAL_NVIC_SetPriority(SysTick_IRQn, SysTick_PRIORITY, 0);	/* Make PendSV_IRQn lower priority */
 }
+
+__weak void irq0_callback(void)
+{
+
+}
+
+__weak void irq1_callback(void)
+{
+
+}
+
+
 

@@ -21,18 +21,19 @@
  */
 #include "main.h"
 #include "../../kernel/system_default.h"
-#include "nrf24l01.h"
 
+#ifdef	ISM_ENABLED
+#include "nrf24l01.h"
 extern	void task_delay(uint32_t tick_count);
 
 void nrf24l01_cs_high(void)
 {
-	HAL_GPIO_WritePin(NRF24L01_SPI_CS_PIN_PORT, NRF24L01_SPI_CS_PIN_NUMBER, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(NRF24L01_SS_PIN_PORT, NRF24L01_SS_PIN_NUMBER, GPIO_PIN_SET);
 }
 
 void nrf24l01_cs_low(void)
 {
-	HAL_GPIO_WritePin(NRF24L01_SPI_CS_PIN_PORT, NRF24L01_SPI_CS_PIN_NUMBER, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(NRF24L01_SS_PIN_PORT, NRF24L01_SS_PIN_NUMBER, GPIO_PIN_RESET);
 }
 
 void nrf24l01_ce_high(void)
@@ -244,4 +245,4 @@ uint8_t nrf24l01_status;
 	return nrf24l01_status;
 }
 
-
+#endif	//#ifdef	ISM_ENABLED

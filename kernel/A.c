@@ -34,6 +34,7 @@ SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 SYSTEM_RAM		Semaphores_t	Semaphores;
 
+//
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
 A_IpAddr_t	A_IpAddr =

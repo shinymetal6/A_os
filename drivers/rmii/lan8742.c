@@ -18,7 +18,10 @@
   ******************************************************************************
   */  
 
-/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+#include "../../kernel/system_default.h"
+
+#ifdef	ETH_ENABLED
 #include "lan8742.h"
 
 /** @addtogroup BSP
@@ -662,3 +665,4 @@ int32_t LAN8742_GetITStatus(lan8742_Object_t *pObj, uint32_t Interrupt)
   * @}
   */      
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif

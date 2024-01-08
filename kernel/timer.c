@@ -57,7 +57,7 @@ void task_delay(uint32_t tick_count)
 	__disable_irq();
 	if(Asys.current_process)
 	{
-		process[Asys.current_process].block_count = Asys.g_tick_count + tick_count;
+		process[Asys.current_process].delay_value = Asys.g_tick_count + tick_count;
 		process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
 		process[Asys.current_process].wait_event = SUSPEND_ON_DELAY;
 		schedule();

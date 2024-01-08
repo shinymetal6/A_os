@@ -23,92 +23,199 @@
 #ifndef KERNEL_SYSTEM_DEFAULT_H_
 #define KERNEL_SYSTEM_DEFAULT_H_
 
-#define	FY_201023_00	1
+//#define	FY_201023_00	1
+#define	BB1xx_743
 
 #ifdef	STM32H743xx
-#ifdef	FY_201023_00
-/* Memories */
-#define	POOL_START			    0x38000000
-/* Note : SRAM_START must be equal to osSegment in ld file */
-#define SRAM_START               0x38000000
-#define SRAM_SIZE                65536
+	#ifdef	FY_201023_00
+		/* Memories */
+		#define	POOL_START			    0x38000000
+		/* Note : SRAM_START must be equal to osSegment in ld file */
+		#define SRAM_START               0x38000000
+		#define SRAM_SIZE                65536
 
-/* I/O */
-#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
-#define	DEBUG_GPIOBIT			PG6_Debug_Pin
-#define	LED_1_GPIOPORT			LED_GPIO_Port
-#define	LED_1_GPIOBIT			LED_Pin
+		/* I/O */
+		#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+		#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+		#define	LED_1_GPIOPORT			LED_GPIO_Port
+		#define	LED_1_GPIOBIT			LED_Pin
 
-/* Clock */
-#define TICK_HZ 				1000U
-#define HSI_CLOCK         		480000000U
-#define SYSTICK_TIM_CLK   		HSI_CLOCK
-/* Others */
-#define	PendSV_PRIORITY			15
-#define	SysTick_PRIORITY		14
-#define	ASSIGNED				1
+		/* Clock */
+		#define TICK_HZ 				1000U
+		#define HSI_CLOCK         		480000000U
+		#define SYSTICK_TIM_CLK   		HSI_CLOCK
+		/* Others */
+		#define	PendSV_PRIORITY			15
+		#define	SysTick_PRIORITY		14
+		#define	ASSIGNED				1
 
-extern	UART_HandleTypeDef 	huart3;
-#define	CONSOLE				huart3
+		extern	UART_HandleTypeDef 	huart3;
+		#define	CONSOLE				huart3
 
-#define	QSPI_ENABLED			1
-#define	ISM_ENABLED				1
-#undef 	LWIP_DHCP
+		#define	QSPI_ENABLED			1
+		#define	WIRELESS_ENABLED		1
+		#define	WIRELESS_NRF24L01		1
+		#define	LORA_ENABLED			1
+		#define	ETH_ENABLED				1
+		#undef 	LWIP_DHCP
 
 
-#ifdef QSPI_ENABLED
-	#define	QSPI_WINBOND			1
-	extern	QSPI_HandleTypeDef 	hqspi;
-	#define	HQSPI1				hqspi
-#endif // #ifdef QSPI_ENABLED
-#ifdef ISM_ENABLED
-	extern	SPI_HandleTypeDef 					hspi1;
-	#define NRF24L01_SPI						hspi1
-	#define NRF24L01_SPI_TIMEOUT				2000
+		#ifdef QSPI_ENABLED
+			#define	QSPI_WINBOND			1
+			extern	QSPI_HandleTypeDef 	hqspi;
+			#define	HQSPI1				hqspi
+		#endif // #ifdef QSPI_ENABLED
+		#ifdef WIRELESS_ENABLED
+			#ifdef WIRELESS_NRF24L01
+				extern	SPI_HandleTypeDef 					hspi1;
+				#define NRF24L01_SPI						hspi1
+				#define NRF24L01_SPI_TIMEOUT				2000
 
-	#define NRF24L01_SPI_CS_PIN_PORT			ISM_SS_GPIO_Port
-	#define NRF24L01_SPI_CS_PIN_NUMBER			ISM_SS_Pin
+				#define NRF24L01_SS_PIN_PORT				ISM_SS_GPIO_Port
+				#define NRF24L01_SS_PIN_NUMBER				ISM_SS_Pin
 
-	#define NRF24L01_CE_PIN_PORT				ISM_CE_GPIO_Port
-	#define NRF24L01_CE_PIN_NUMBER				ISM_CE_Pin
+				#define NRF24L01_CE_PIN_PORT				ISM_CE_GPIO_Port
+				#define NRF24L01_CE_PIN_NUMBER				ISM_CE_Pin
 
-	#define NRF24L01_IRQ_PIN_PORT				ISM_IRQ_GPIO_Port
-	#define NRF24L01_IRQ_PIN_NUMBER				ISM_IRQ_Pin
-#endif // #ifdef ISM_ENABLED
+				#define NRF24L01_IRQ_PIN_PORT				ISM_IRQ_GPIO_Port
+				#define NRF24L01_IRQ_PIN_NUMBER				ISM_IRQ_Pin
+			#endif // #ifdef WIRELESS_NRF24L01
+			#ifdef LORA_ENABLED
+				extern	SPI_HandleTypeDef 					hspi1;
+				#define SX126X_SPI							hspi1
+				#define SX126X_SPI_TIMEOUT					2000
 
-#define	BOARD_NAME			"FY-201023-00"
-#else
-/* Memories */
-#define	POOL_START			    0x38000000
-/* Note : SRAM_START must be equal to osSegment in ld file */
-#define SRAM_START               0x38000000
-#define SRAM_SIZE                65536
+				#define SX126X_SS_PIN_PORT					SX126x_SS_GPIO_Port
+				#define SX126X_SS_PIN_NUMBER				SX126x_SS_Pin
 
-/* I/O */
-#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
-#define	DEBUG_GPIOBIT			PG6_Debug_Pin
-#define	LED_1_GPIOPORT			LD1_GPIO_Port
-#define	LED_1_GPIOBIT			LD1_Pin
-#define	LED_3_GPIOPORT			LD3_GPIO_Port
-#define	LED_3_GPIOBIT			LD3_Pin
-#define	BUTTON_GPIOPORT			B1_GPIO_Port
-#define	BUTTON_GPIOBIT			B1_Pin
-/* Clock */
-#define TICK_HZ 				1000U
-#define HSI_CLOCK         		480000000U
-#define SYSTICK_TIM_CLK   		HSI_CLOCK
-/* Others */
-#define	PendSV_PRIORITY			15
-#define	SysTick_PRIORITY		14
-#define	ASSIGNED				1
+				#define SX126X_BUSY_PIN_PORT				SX126x_BUSY_GPIO_Port
+				#define SX126X_BUSY_PIN_NUMBER				SX126x_BUSY_Pin
 
-extern	UART_HandleTypeDef 	huart3;
-#define	CONSOLE				huart3
+				#define SX126X_DIO1_PIN_PORT				SX126x_DIO1_GPIO_Port
+				#define SX126X_DIO1_PIN_NUMBER				SX126x_DIO1_Pin
 
-#define	BOARD_NAME			"STM32H743ZI2-NUCLEO"
+				#define SX126X_RESET_GPIO_Port				SX126x_RESET_GPIO_Port
+				#define SX126X_RESET_Pin					SX126x_RESET_Pin
+			#endif // #ifdef LORA_ENABLED
+		#endif // #ifdef WIRELESS_ENABLED
+		#define	BOARD_NAME			"FY-201023-00"
+	#endif
+	#ifdef BB1xx_743
+		/* Memories */
+		#define	POOL_START			    0x38000000
+		/* Note : SRAM_START must be equal to osSegment in ld file */
+		#define SRAM_START               0x38000000
+		#define SRAM_SIZE                65536
 
-#endif
-#endif
+		/* I/O */
+			/*
+		#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+		#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+		*/
+		#define	LED_1_GPIOPORT			LED_GPIO_Port
+		#define	LED_1_GPIOBIT			LED_Pin
+
+		/* Clock */
+		#define TICK_HZ 				1000U
+		#define HSI_CLOCK         		480000000U
+		#define SYSTICK_TIM_CLK   		HSI_CLOCK
+		/* Others */
+		#define	PendSV_PRIORITY			15
+		#define	SysTick_PRIORITY		14
+		#define	ASSIGNED				1
+
+		extern	UART_HandleTypeDef 	huart3;
+		#define	CONSOLE				huart3
+
+		#define	QSPI_ENABLED			1
+		//#define	WIRELESS_ENABLED		1
+		#define	LCD_096_ENABLED			1
+		#define	ENCODER_ENABLED			1
+		#define	CODEC_ENABLED			1
+		#define	CODEC_NAU88C22			1
+
+		#ifdef QSPI_ENABLED
+			#define	QSPI_WINBOND			1
+			extern	QSPI_HandleTypeDef 	hqspi;
+			#define	HQSPI1				hqspi
+		#endif // #ifdef QSPI_ENABLED
+
+		#ifdef LCD_096_ENABLED
+			extern SPI_HandleTypeDef hspi1;
+			#define ST7735_SPI_PORT hspi1
+			#define ST7735_SPI_TIMEOUT					2000
+
+			#define ST7735_CS_GPIO_Port					LCD_SS_GPIO_Port
+			#define ST7735_CS_Pin						LCD_SS_Pin
+
+			#define ST7735_DC_GPIO_Port					LCD_DC_GPIO_Port
+			#define ST7735_DC_Pin						LCD_DC_Pin
+
+			#define ST7735_RES_GPIO_Port				LCD_RESET_GPIO_Port
+			#define ST7735_RES_Pin						LCD_RESET_Pin
+
+		#endif // #ifdef LCD_096_ENABLED
+
+		#ifdef ENCODER_ENABLED
+			#define ENCODER_BTN_Port					ENCODER1_BUTTON_GPIO_Port
+			#define ENCODER_BTN_Pin						ENCODER1_BUTTON_Pin
+
+			#define ENCODER_CLOCK_Port					ENCODER1_CLOCK_GPIO_Port
+			#define ENCODER_CLOCK_Pin					ENCODER1_CLOCK_Pin
+
+			#define ENCODER_DATA_Port					ENCODER1_DATA_GPIO_Port
+			#define ENCODER_DATA_Pin					ENCODER1_DATA_Pin
+
+		#endif // #ifdef ENCODER_ENABLED
+
+		#ifdef CODEC_ENABLED
+			#ifdef CODEC_NAU88C22
+				#define NAU88C22_ADDR		(0x1a << 1)
+				#define NAU88C22_TIMEOUT	(1000)
+				extern	I2C_HandleTypeDef 	hi2c1;
+				#define	NAU88C22_I2C		hi2c1
+				extern	I2S_HandleTypeDef 	hi2s2;
+				#define	NAU88C22_I2S		hi2s2
+				#define	EXT_FREQ_12_288MHZ	1
+			#endif // #ifdef CODEC_NAU88C22
+		#endif // #ifdef CODEC_ENABLED
+
+		#define DMA_RAM				__attribute__((section(".dmaSegment"))) __attribute__ ((aligned (32)))
+
+		#define	BOARD_NAME			"BB1xx_743"
+	#endif
+	#ifdef STM32H743ZI2_NUCLEO
+	/* Memories */
+	#define	POOL_START			    0x38000000
+	/* Note : SRAM_START must be equal to osSegment in ld file */
+	#define SRAM_START               0x38000000
+	#define SRAM_SIZE                65536
+
+	/* I/O */
+	#define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
+	#define	DEBUG_GPIOBIT			PG6_Debug_Pin
+	#define	LED_1_GPIOPORT			LD1_GPIO_Port
+	#define	LED_1_GPIOBIT			LD1_Pin
+	#define	LED_3_GPIOPORT			LD3_GPIO_Port
+	#define	LED_3_GPIOBIT			LD3_Pin
+	#define	BUTTON_GPIOPORT			B1_GPIO_Port
+	#define	BUTTON_GPIOBIT			B1_Pin
+	/* Clock */
+	#define TICK_HZ 				1000U
+	#define HSI_CLOCK         		480000000U
+	#define SYSTICK_TIM_CLK   		HSI_CLOCK
+	/* Others */
+	#define	PendSV_PRIORITY			15
+	#define	SysTick_PRIORITY		14
+	#define	ASSIGNED				1
+
+	extern	UART_HandleTypeDef 	huart3;
+	#define	CONSOLE				huart3
+
+	#define	BOARD_NAME			"STM32H743ZI2_NUCLEO"
+
+	#endif
+#endif	//#ifdef	STM32H743xx
 
 #ifdef	STM32H563xx
 /* Memories */
@@ -265,9 +372,9 @@ extern	UART_HandleTypeDef 	huart2;
 extern	UART_HandleTypeDef 	huart2;
 #define	CONSOLE				huart2
 
-#define	ISM_ENABLED				1
+#define	WIRELESS_ENABLED				1
 
-#ifdef ISM_ENABLED
+#ifdef WIRELESS_ENABLED
 	extern	SPI_HandleTypeDef 					hspi2;
 	#define NRF24L01_SPI						hspi2
 	#define NRF24L01_SPI_TIMEOUT				2000
@@ -280,7 +387,7 @@ extern	UART_HandleTypeDef 	huart2;
 
 	#define NRF24L01_IRQ_PIN_PORT				EXTI4_NRFIRQ_GPIO_Port
 	#define NRF24L01_IRQ_PIN_NUMBER				EXTI4_NRFIRQ_Pin
-#endif // #ifdef ISM_ENABLED
+#endif // #ifdef WIRELESS_ENABLED
 #define	BOARD_NAME			"STM32L152RE-NUCLEO"
 // Uncomment this out if you want a fixed ip
 #undef LWIP_DHCP
