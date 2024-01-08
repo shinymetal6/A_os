@@ -27,6 +27,7 @@ extern	void task_delay(uint32_t tick_count);
 #ifdef CODEC_NAU88C22
 #include "nau88c22.h"
 
+uint16_t	nau88c22_shadowregs[NAU88C22_NUM_REGS];
 Nau88c22_t	Nau88c22[] =
 {
 		{
@@ -197,9 +198,15 @@ uint8_t Nau88c22_CheckPresent(void)
 void Nau88c22_WriteReg(uint8_t reg_address, uint16_t reg_data)
 {
 uint8_t i2c_data[2];
+	nau88c22_shadowregs[reg_address] = reg_data;
 	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
 	i2c_data[1] = reg_data & 0xff;
 	HAL_I2C_Mem_Write(&NAU88C22_I2C, NAU88C22_ADDR, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_TIMEOUT);
+}
+
+uint16_t Nau88c22_ReadReg(uint8_t reg_address)
+{
+	return nau88c22_shadowregs[reg_address];
 }
 
 void Nau88c22_Init(void)

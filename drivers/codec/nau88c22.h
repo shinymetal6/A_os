@@ -82,6 +82,7 @@ typedef struct
 #define NAU88C22_OUT2_MIXER_CONTROL			0x38
 #define NAU88C22_OUT1_MIXER_CONTROL			0x39
 
+#define NAU88C22_NUM_REGS					79
 extern	void Nau88c22_Init(void);
 extern	void Nau88c22_SetHPVolume(uint8_t volume);
 
