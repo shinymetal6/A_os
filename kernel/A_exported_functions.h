@@ -96,6 +96,11 @@ extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 extern	void A_bmemcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 
+/* audio */
+extern	uint32_t *InitAudioBuffers(void);
+extern	uint8_t StartAudioBuffers(uint32_t* audio_buffer);
+
+
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 

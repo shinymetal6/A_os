@@ -169,7 +169,9 @@
 		#endif // #ifdef ENCODER_ENABLED
 
 		#ifdef CODEC_ENABLED
+			#define AUDIO_BUF_SIZE 			256
 			#ifdef CODEC_NAU88C22
+				#define SYNTH_ENGINE_ENABLE	1
 				#define NAU88C22_ADDR		(0x1a << 1)
 				#define NAU88C22_TIMEOUT	(1000)
 				extern	I2C_HandleTypeDef 	hi2c1;
