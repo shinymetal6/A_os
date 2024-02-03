@@ -81,13 +81,19 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 	{
 		if ( xmodem_struct.state == XMODEM_SEND_NAK )
 		{
+			xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr;
+			xmodem_struct.data_count = 0;
 			hw_send_uart(xmodem_struct.uart,&nak_char,1);
 		}
 		else
 		{
 			xmodem_struct.xtimeout++;
 			if ( xmodem_struct.xtimeout > 5 )
+			{
 				hw_send_uart(xmodem_struct.uart,&nak_char,1);
+				xmodem_struct.xtimeout = 0;
+				xmodem_struct.state = XMODEM_SEND_NAK;
+			}
 		}
 	}
 	if (( wakeup & (WAKEUP_FROM_UART1_IRQ | WAKEUP_FROM_UART2_IRQ | WAKEUP_FROM_UART3_IRQ)) != 0)
@@ -101,6 +107,8 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 				hw_send_uart(xmodem_struct.uart,&ak_char,1);
 				xmodem_struct.state = XMODEM_SEND_NAK;
 				xmodem_struct.xtimeout = 0;
+				xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr;
+				xmodem_struct.data_count = 0;
 			}
 		}
 		else if ( pkt_len == 132 )
@@ -125,7 +133,7 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 
 uint8_t xmodem_allocate_area(uint8_t *data_ptr)
 {
-	xmodem_struct.data_ptr = data_ptr;
+	xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr = data_ptr;
 	xmodem_struct.data_count = 0;
 	return 0;
 }
