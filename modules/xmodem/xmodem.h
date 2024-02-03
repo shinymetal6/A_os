@@ -48,6 +48,10 @@
 #define	XMODEM_CS		131
 #define	XMODEM1K_LEN	1024
 
+#define	XMODEM_SEND_NAK		0
+#define	XMODEM_DATA_PHASE	1
+#define	XMODEM_TIMEOUT		500
+
 typedef struct
 {
 	uint16_t	data_len;
@@ -56,6 +60,10 @@ typedef struct
 	uint8_t		cs;
 	uint8_t		crch;
 	uint8_t		crcl;
+	uint8_t		state;
+	uint8_t		xtimeout;
+	uint32_t	uart;
+	uint8_t		rxbuf[XMODEM_LEN+4];
 	uint8_t		*data_ptr;
 	uint32_t	data_count;
 }xmodem_t;

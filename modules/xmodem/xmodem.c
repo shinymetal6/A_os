@@ -22,6 +22,8 @@
 
 #include "main.h"
 #include "xmodem.h"
+#include "../../kernel/A_exported_functions.h"
+
 #include <string.h>
 
 uint8_t 	xmodem_sm;
@@ -68,11 +70,73 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 		return 1;
 }
 
+extern	UART_HandleTypeDef huart3;
+uint8_t ret;
+uint16_t	pkt_len;
+void xmodem_process(uint32_t wakeup)
+{
+uint8_t		ak_char=0x06, nak_char=0x15;
+
+	if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
+	{
+		if ( xmodem_struct.state == XMODEM_SEND_NAK )
+		{
+			hw_send_uart(xmodem_struct.uart,&nak_char,1);
+		}
+		else
+		{
+			xmodem_struct.xtimeout++;
+			if ( xmodem_struct.xtimeout > 5 )
+				hw_send_uart(xmodem_struct.uart,&nak_char,1);
+		}
+	}
+	if (( wakeup & (WAKEUP_FROM_UART1_IRQ | WAKEUP_FROM_UART2_IRQ | WAKEUP_FROM_UART3_IRQ)) != 0)
+	{
+		xmodem_struct.state = XMODEM_DATA_PHASE;
+		pkt_len = hw_get_uart_receive_len(xmodem_struct.uart);
+		if ( pkt_len == 1 )
+		{
+			if ( xmodem_struct.rxbuf[0] == 0x04 )
+			{
+				hw_send_uart(xmodem_struct.uart,&ak_char,1);
+				xmodem_struct.state = XMODEM_SEND_NAK;
+				xmodem_struct.xtimeout = 0;
+			}
+		}
+		else if ( pkt_len == 132 )
+		{
+			if ( xmodem_line_parser(xmodem_struct.rxbuf))
+			{
+				hw_send_uart(xmodem_struct.uart,&nak_char,1);
+			}
+			else
+			{
+				hw_send_uart(xmodem_struct.uart,&ak_char,1);
+			}
+			xmodem_struct.xtimeout = 0;
+		}
+		else
+		{
+			xmodem_struct.xtimeout = 0;
+			hw_send_uart(xmodem_struct.uart,&nak_char,1);
+		}
+	}
+}
+
 uint8_t xmodem_allocate_area(uint8_t *data_ptr)
 {
 	xmodem_struct.data_ptr = data_ptr;
 	xmodem_struct.data_count = 0;
-
 	return 0;
+}
+
+void xmodem_init(uint32_t uart,uint8_t *data_ptr)
+{
+	hw_receive_uart_sentinel(uart,xmodem_struct.rxbuf,XMODEM_LEN+4,X_SOH, X_EOT,XMODEM_TIMEOUT);
+
+	xmodem_allocate_area(data_ptr);
+	xmodem_struct.uart = uart;
+	xmodem_struct.state = XMODEM_SEND_NAK;
+	xmodem_struct.xtimeout = 0;
 }
 
