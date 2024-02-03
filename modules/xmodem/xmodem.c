@@ -55,7 +55,11 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 	xmodem_struct.addri = buf[XMODEM_ADDRI];
 	if ( xmodem_struct.data_len == XMODEM_LEN )
 		xmodem_struct.cs = buf[XMODEM_CS];
-	memcpy(xmodem_line,&buf[3],xmodem_struct.data_len);
+	xmodem_struct.data_count += xmodem_struct.data_len;
+	if ( xmodem_struct.data_count > 0xffff )	// at 128K stop transfers
+		return 1;
+	memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
+	xmodem_struct.data_ptr += xmodem_struct.data_len;
 	if ( buf[0] == X_SOH)
 		return xmodem_calc_csum(buf);
 	else if ( buf[0] == X_STX)
@@ -63,3 +67,12 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 	else
 		return 1;
 }
+
+uint8_t xmodem_allocate_area(uint8_t *data_ptr)
+{
+	xmodem_struct.data_ptr = data_ptr;
+	xmodem_struct.data_count = 0;
+
+	return 0;
+}
+

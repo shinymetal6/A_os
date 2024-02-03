@@ -56,6 +56,8 @@ typedef struct
 	uint8_t		cs;
 	uint8_t		crch;
 	uint8_t		crcl;
+	uint8_t		*data_ptr;
+	uint32_t	data_count;
 }xmodem_t;
 
 
