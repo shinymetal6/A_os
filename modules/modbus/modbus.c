@@ -14,22 +14,23 @@
  * Project : u575_modbus 
 */
 /*
- * A_modbus.c
+ * modbus.c
  *
  *  Created on: Oct 5, 2023
  *      Author: fil
  */
 
 #include "main.h"
-#include "A_modbus.h"
-#include "A_modbus_rtu.h"
+#include "modbus.h"
+#include "modbus_rtu.h"
+#include "../../kernel/A_exported_functions.h"
 
 A_modbus_t			A_modbus;
 A_modbus_inout_t	A_modbus_inout;
 
 #ifndef A_MODBUS_SW_CRC
 // Internal init to be agnostic about IDE setup
-uint8_t A_modbus_CRC_Init(void)
+uint8_t modbus_CRC_Init(void)
 {
 	hcrc.Instance = CRC;
 	hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_DISABLE;
@@ -44,20 +45,29 @@ uint8_t A_modbus_CRC_Init(void)
 }
 #endif
 
-void A_modbus_init(uint8_t address,uint8_t mode,uint32_t uart)
+void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size)
 {
 #ifndef A_MODBUS_SW_CRC
 	HAL_CRC_DeInit(&hcrc);
-	A_modbus_CRC_Init();
+	modbus_CRC_Init();
 #endif
-	A_modbus.modbus_state = mode;
 	A_modbus.modbus_addr = address;
 	A_modbus.modbus_uart = uart;
+	A_modbus.modbus_rx_packet_ptr = data_ptr;
+	hw_receive_uart_sentinel(uart,A_modbus.modbus_rx_packet_ptr,1024,address, address,MODBUS_TIMEOUT);
 }
 
-uint8_t A_modbus_process(uint8_t *buf, uint16_t len)
+uint8_t modbus_process(void)
 {
-	if (( A_modbus.modbus_state & MODBUS_RTU_MODE) == MODBUS_RTU_MODE )
-		return A_rtu_modbus_process(buf,len);
-	return 0;
+uint16_t len;
+	len = hw_get_uart_receive_len(A_modbus.modbus_uart);
+	return rtu_modbus_process(A_modbus.modbus_rx_packet_ptr,len);
+}
+
+uint8_t modbus_get_coil(uint16_t coil_number)
+{
+uint8_t tmp_coil;
+	tmp_coil = A_modbus_inout.coils[coil_number>>3];
+	tmp_coil >>= (coil_number & 0x07);
+	return tmp_coil & 0x01;
 }

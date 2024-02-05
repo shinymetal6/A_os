@@ -108,8 +108,13 @@ extern	uint32_t *InitAudioBuffers(void);
 extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
 
 /* xmodem */
-extern	uint8_t xmodem_line_parser(uint8_t *buf);
+extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
+extern	void xmodem_process(uint32_t wakeup);
 
+/* modbus */
+extern	void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
+extern	uint8_t modbus_process(void);
+extern	uint8_t modbus_get_coil(uint16_t coil_number);
 
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);

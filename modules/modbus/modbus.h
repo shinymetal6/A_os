@@ -20,8 +20,8 @@
  *      Author: fil
  */
 
-#ifndef A_MODBUS_H_
-#define A_MODBUS_H_
+#ifndef MODBUS_H_
+#define MODBUS_H_
 
 extern	UART_HandleTypeDef 					huart1;
 #define	MODBUS_UART							huart1
@@ -33,6 +33,7 @@ extern	CRC_HandleTypeDef 					hcrc;
 #endif
 
 #define	MODBUS_EOP_TIMER					10
+#define	MODBUS_TIMEOUT						100
 
 #define	A_MODBUS_PKT_SIZE					513
 #define MODBUS_BROADCAST_ADDRESS    0
@@ -52,11 +53,11 @@ extern	CRC_HandleTypeDef 					hcrc;
 
 typedef struct {
 	uint8_t		modbus_addr;
-	uint8_t		modbus_state;
+	uint8_t		*modbus_rx_packet_ptr;
 	uint8_t		modbus_uart;
-	uint8_t		tx_packet[A_MODBUS_PKT_SIZE];
-	uint8_t		tx_packet_len;
-	uint16_t 	crc;
+	uint8_t		modbus_tx_packet[A_MODBUS_PKT_SIZE];
+	uint8_t		modbus_tx_packet_len;
+	uint16_t 	modbus_crc;
 } A_modbus_t;
 
 /* modbus_state */

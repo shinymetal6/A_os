@@ -26,6 +26,7 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 #include "kernel_opt.h"
+#include <strings.h>
 
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
