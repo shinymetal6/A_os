@@ -27,27 +27,26 @@
 #ifndef MODBUS_RTU_H_
 #define MODBUS_RTU_H_
 
-#define	A_MODBUS_RTU_ADDRESS_PHASE			0x00
-#define	A_MODBUS_RTU_FC_PHASE				0x01
-#define	A_MODBUS_RTU_DATA_PHASE				0x02
+#define	MODBUS_RTU_ADDRESS_PHASE			0x00
+#define	MODBUS_RTU_FC_PHASE					0x01
+#define	MODBUS_RTU_DATA_PHASE				0x02
 
-#define	A_MODBUS_RTU_READ					0x00
-#define	A_MODBUS_RTU_WRITTEN				0x01
-#define	A_MODBUS_RTU_ERR_ILLEGAL_FC			0x80
-#define	A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS	0x81
-#define	A_MODBUS_RTU_ERR_ILLEGAL_DATA		0x82
-#define	A_MODBUS_RTU_ERR_SLAVE_ERROR		0x83
+#define	MODBUS_RTU_READ						0x00
+#define	MODBUS_RTU_WRITTEN					0x01
+#define	MODBUS_RTU_ERR_ILLEGAL_FC			0x80
+#define	MODBUS_RTU_ERR_ILLEGAL_ADDRESS		0x81
+#define	MODBUS_RTU_ERR_ILLEGAL_DATA			0x82
+#define	MODBUS_RTU_ERR_SLAVE_ERROR			0x83
 
-#define	A_MODBUS_RTU_INFO					"A_ModBus "
-#define	A_MODBUS_RTU_INFO_VER				"RTU V1.0 "
-#define	A_MODBUS_RTU_MBFW_VER				"\n FW : V1.0 \n Author : FV\n"
-#define	A_MODBUS_RTU_MBFW_DATE				__DATE__
-#define	A_MODBUS_RTU_MBFW_TIME				__TIME__
-#define	A_MODBUS_RTU_RUN_INDICATOR			0xff
+#define	MODBUS_RTU_INFO						"A_os ModBus "
+#define	MODBUS_RTU_INFO_VER					"RTU V1.0 "
+#define	MODBUS_RTU_MBFW_VER					"\n FW : V1.0 \n Author : FV\n"
+#define	MODBUS_RTU_MBFW_DATE				__DATE__
+#define	MODBUS_RTU_MBFW_TIME				__TIME__
+#define	MODBUS_RTU_RUN_INDICATOR			0xff
 
-#define	A_MODBUS_RTU_EXCEPTION				0x80
+#define	MODBUS_RTU_EXCEPTION				0x80
 
 extern	uint32_t rtu_modbus_process(uint8_t *buf, uint16_t len);
 
-
-#endif /* A_MODBUS_H_ */
+#endif /* MODBUS_H_ */

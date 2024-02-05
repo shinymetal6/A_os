@@ -14,7 +14,7 @@
  * Project : u575_modbus 
 */
 /*
- * A_modbus.h
+ * modbus.h
  *
  *  Created on: Oct 5, 2023
  *      Author: fil
@@ -26,8 +26,8 @@
 extern	UART_HandleTypeDef 					huart1;
 #define	MODBUS_UART							huart1
 
-//#define	A_MODBUS_SW_CRC							1
-#ifndef A_MODBUS_SW_CRC
+//#define	MODBUS_SW_CRC							1
+#ifndef MODBUS_SW_CRC
 extern	CRC_HandleTypeDef 					hcrc;
 #define	MODBUS_CRC							hcrc
 #endif
@@ -35,18 +35,18 @@ extern	CRC_HandleTypeDef 					hcrc;
 #define	MODBUS_EOP_TIMER					10
 #define	MODBUS_TIMEOUT						100
 
-#define	A_MODBUS_PKT_SIZE					513
-#define MODBUS_BROADCAST_ADDRESS    0
+#define	MODBUS_PKT_SIZE						513
+#define MODBUS_BROADCAST_ADDRESS    		0
 
-#define	A_MODBUS_READ_COIL					0x01
-#define	A_MODBUS_READ_DISCRETE_INPUT		0x02
-#define	A_MODBUS_READ_REGISTER				0x03
-#define	A_MODBUS_READ_INPUT_REGISTER		0x04
-#define	A_MODBUS_WRITE_COIL					0x05
-#define	A_MODBUS_WRITE_REGISTER				0x06
-#define	A_MODBUS_WRITE_MULTIPLE_COILS		0x0f
-#define	A_MODBUS_WRITE_MULTIPLE_REGISTERS	0x10
-#define A_MODBUS_FC_REPORT_SLAVE_ID			0x11
+#define	MODBUS_READ_COIL					0x01
+#define	MODBUS_READ_DISCRETE_INPUT			0x02
+#define	MODBUS_READ_REGISTER				0x03
+#define	MODBUS_READ_INPUT_REGISTER			0x04
+#define	MODBUS_WRITE_COIL					0x05
+#define	MODBUS_WRITE_REGISTER				0x06
+#define	MODBUS_WRITE_MULTIPLE_COILS			0x0f
+#define	MODBUS_WRITE_MULTIPLE_REGISTERS		0x10
+#define MODBUS_FC_REPORT_SLAVE_ID			0x11
 
 #define MODBUS_FC_MASK_WRITE_REGISTER       0x16
 #define MODBUS_FC_WRITE_AND_READ_REGISTERS  0x17
@@ -55,7 +55,7 @@ typedef struct {
 	uint8_t		modbus_addr;
 	uint8_t		*modbus_rx_packet_ptr;
 	uint8_t		modbus_uart;
-	uint8_t		modbus_tx_packet[A_MODBUS_PKT_SIZE];
+	uint8_t		modbus_tx_packet[MODBUS_PKT_SIZE];
 	uint8_t		modbus_tx_packet_len;
 	uint16_t 	modbus_crc;
 } A_modbus_t;
@@ -80,4 +80,4 @@ typedef struct {
 	uint8_t		multiple_input_registers[A_MAX_REGS];
 } A_modbus_inout_t;
 
-#endif /* A_MODBUS_H_ */
+#endif /* MODBUS_H_ */

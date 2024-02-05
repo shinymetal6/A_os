@@ -31,16 +31,7 @@ extern	A_modbus_t			A_modbus;
 extern	A_modbus_inout_t	A_modbus_inout;
 extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
 
-// weak functions for external interface
-__weak uint8_t rtu_write_coil_from_modbus(uint16_t coil_index, uint8_t coil_value)
-{
-	return 0;
-}
 
-__weak uint8_t rtu_write_reg_from_modbus(uint16_t register_index, uint8_t register_value)
-{
-	return 0;
-}
 
 uint8_t rtu_set_in_to_modbus(uint16_t discrete_in_index, uint8_t discrete_in_value)
 {
@@ -72,7 +63,7 @@ uint8_t A_set_reg_to_modbus(uint8_t register_index, uint8_t register_value)
 
 uint16_t	crc(uint8_t *data,uint32_t len)
 {
-#ifdef A_MODBUS_SW_CRC
+#ifdef MODBUS_SW_CRC
 uint16_t crc = 0xffff,i,pos;
 
 	for (pos = 0; pos < len; pos++)
@@ -144,10 +135,10 @@ uint16_t	number_of_bytes,bit_index,coil_discrete_number,i;
 
 	switch(buf[1])
 	{
-	case	A_MODBUS_READ_COIL :
+	case	MODBUS_READ_COIL :
 		ptr = A_modbus_inout.coils;
 		break;
-	case	A_MODBUS_READ_DISCRETE_INPUT :
+	case	MODBUS_READ_DISCRETE_INPUT :
 		ptr = A_modbus_inout.discrete_input;
 		break;
 	default:
@@ -157,9 +148,9 @@ uint16_t	number_of_bytes,bit_index,coil_discrete_number,i;
 	bit_index = (buf[2] <<8 ) | buf[3];
 	coil_discrete_number = (buf[4] <<8 ) | buf[5];
 	if ( bit_index > A_MAX_COILS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
+		return MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
 	if ((bit_index+coil_discrete_number) > A_MAX_COILS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_DATA;
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
 
 	number_of_bytes = get_coils_discrete_in(ptr,bit_index,coil_discrete_number);
 
@@ -174,7 +165,7 @@ uint16_t	number_of_bytes,bit_index,coil_discrete_number,i;
 	A_modbus.modbus_tx_packet[number_of_bytes+3] = A_modbus.modbus_crc;
 	A_modbus.modbus_tx_packet[number_of_bytes+4] = A_modbus.modbus_crc>>8;
 	A_modbus.modbus_tx_packet_len = number_of_bytes+5;
-	return A_MODBUS_RTU_READ;
+	return MODBUS_RTU_READ;
 }
 
 static uint8_t rtu_modbus_read_regs_iregs(uint8_t *buf)
@@ -186,15 +177,15 @@ uint16_t	number_of_bytes,reg_index,i;
 	reg_index *=2;
 	number_of_bytes = (buf[4]<<8 ) | buf[5];
 	if ( reg_index > A_MAX_REGS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
+		return MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
 	if ((reg_index+number_of_bytes) > A_MAX_REGS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_DATA;
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
 	switch(buf[1])
 	{
-	case	A_MODBUS_READ_REGISTER :
+	case	MODBUS_READ_REGISTER :
 		ptr = A_modbus_inout.holding_registers;
 		break;
-	case	A_MODBUS_READ_INPUT_REGISTER :
+	case	MODBUS_READ_INPUT_REGISTER :
 		ptr = A_modbus_inout.input_registers;
 		break;
 	default:	return 1;
@@ -211,7 +202,7 @@ uint16_t	number_of_bytes,reg_index,i;
 	A_modbus.modbus_tx_packet[number_of_bytes*2+3] = A_modbus.modbus_crc;
 	A_modbus.modbus_tx_packet[number_of_bytes*2+4] = A_modbus.modbus_crc>>8;
 	A_modbus.modbus_tx_packet_len = number_of_bytes*2+5;
-	return A_MODBUS_RTU_READ;
+	return MODBUS_RTU_READ;
 }
 
 static uint8_t rtu_modbus_report_slave_info(uint8_t *buf)
@@ -219,14 +210,21 @@ static uint8_t rtu_modbus_report_slave_info(uint8_t *buf)
 uint16_t	number_of_bytes;
 	A_modbus.modbus_tx_packet[0] = A_modbus.modbus_addr;
 	A_modbus.modbus_tx_packet[1] = buf[1];
-	sprintf((char *)&A_modbus.modbus_tx_packet[3],"%x%s %s %s %s %s\nBoard : %s",A_MODBUS_RTU_RUN_INDICATOR,A_MODBUS_RTU_INFO,A_MODBUS_RTU_INFO_VER,A_MODBUS_RTU_MBFW_VER,A_MODBUS_RTU_MBFW_DATE,A_MODBUS_RTU_MBFW_TIME,BOARD_NAME);
+	sprintf((char *)&A_modbus.modbus_tx_packet[3],"%x%s %s %s %s %s\nBoard : %s",
+			MODBUS_RTU_RUN_INDICATOR,
+			MODBUS_RTU_INFO,
+			MODBUS_RTU_INFO_VER,
+			MODBUS_RTU_MBFW_VER,
+			MODBUS_RTU_MBFW_DATE,
+			MODBUS_RTU_MBFW_TIME,
+			BOARD_NAME);
 	number_of_bytes = strlen((char *)&A_modbus.modbus_tx_packet[3]);
 	A_modbus.modbus_tx_packet[2] = number_of_bytes;
 	A_modbus.modbus_crc = crc( A_modbus.modbus_tx_packet, number_of_bytes+3);
 	A_modbus.modbus_tx_packet[number_of_bytes+3] = A_modbus.modbus_crc;
 	A_modbus.modbus_tx_packet[number_of_bytes+4] = A_modbus.modbus_crc>>8;
 	A_modbus.modbus_tx_packet_len = number_of_bytes+5;
-	return A_MODBUS_RTU_READ;
+	return MODBUS_RTU_READ;
 }
 
 static void rtu_modbus_write_reply(uint8_t *buf)
@@ -245,12 +243,12 @@ static uint8_t rtu_write_mb_register(uint8_t *buf)
 uint16_t	reg_index;
 	reg_index = (buf[2]<<8 ) | buf[3];
 	if ( reg_index > A_MAX_REGS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
+		return MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
 	reg_index *= 2;
 	A_modbus_inout.holding_registers[reg_index] = buf[4];
 	A_modbus_inout.holding_registers[reg_index+1] = buf[5];
 	rtu_modbus_write_reply(buf);
-	return rtu_write_reg_from_modbus(reg_index,(buf[4]<<8) | buf[5]);
+	return MODBUS_RTU_WRITTEN;
 }
 
 static uint8_t rtu_modbus_write_multiple_regs(uint8_t *buf)
@@ -259,48 +257,17 @@ uint16_t	reg_start,byte_count,i,k;
 	reg_start = (buf[2]<<8 ) | buf[3];
 	byte_count = buf[6];
 	if ( reg_start > A_MAX_REGS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
+		return MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
 	if ((reg_start+byte_count) > A_MAX_REGS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_DATA;
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
 
 	for(i=0,k=reg_start;i<byte_count;i++,k++)
 	{
 		A_modbus_inout.holding_registers[k] = buf[i+7];
-		rtu_write_reg_from_modbus(k,A_modbus_inout.holding_registers[k]);
 	}
 	rtu_modbus_write_reply(buf);
-	return 0;
+	return MODBUS_RTU_WRITTEN;
 }
-
-static uint8_t rtu_modbus_set_coils(uint8_t *buf,uint16_t	coil_start, uint16_t coil_num)
-{
-uint16_t	i,j,rx_index,byte_index,bit_offset,byte_count,byte_op,byte_rx;
-
-	byte_count = coil_start+coil_num;
-	byte_index = coil_start / 8;
-	bit_offset = coil_start - (byte_index*8);
-	rx_index = 0;
-	for(i=coil_start,j=bit_offset;i<byte_count;i++,j++)
-	{
-		if ( j == 8 )
-		{
-			j = 0;
-			rx_index++;
-			byte_index++;
-		}
-		if ( coil_num == 1 )
-			byte_rx = buf[rx_index+4];
-		else
-			byte_rx = buf[rx_index+7];
-		byte_op = (byte_rx | (1 << j));
-		A_modbus_inout.coils[byte_index] &= byte_op;
-		A_modbus_inout.coils[byte_index] |= (byte_rx & byte_op);
-		rtu_write_coil_from_modbus(i,byte_op>>j);
-		rtu_modbus_write_reply(buf);
-	}
-	return 0;
-}
-
 
 static uint8_t rtu_modbus_write_single_coil(uint8_t *buf)
 {
@@ -312,17 +279,15 @@ uint16_t	bit_index = ((buf[2] << 8 ) | buf[3]) & 0x07;
 	else if (( buf[4] == 0x00 ) && ( buf[5] == 0x00  ))
 		A_modbus_inout.coils[byte_index] &= ~(1 << (bit_index & 0x0f));
 	else
-		return A_MODBUS_RTU_ERR_ILLEGAL_DATA;
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
 	rtu_modbus_write_reply(buf);
-	return A_MODBUS_RTU_WRITTEN;
+	return MODBUS_RTU_WRITTEN;
 }
-
 
 static uint8_t rtu_modbus_write_multiple_coils(uint8_t *buf)
 {
 uint16_t	coil_start,coil_num,number_of_bytes;
 uint16_t	byte_start,byte_index,bit_index,i;
-
 
 	coil_start = (buf[2]<<8 ) | buf[3];
 	coil_num = (buf[4]<<8 ) | buf[5];
@@ -330,9 +295,11 @@ uint16_t	byte_start,byte_index,bit_index,i;
 	byte_index = 0;
 
 	if ( coil_start > A_MAX_COILS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
+		return MODBUS_RTU_ERR_ILLEGAL_ADDRESS;
 	if ((coil_start+coil_num) > A_MAX_COILS )
-		return A_MODBUS_RTU_ERR_ILLEGAL_DATA;
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
+	if (number_of_bytes > A_MAX_COILS*8 )
+		return MODBUS_RTU_ERR_ILLEGAL_DATA;
 
 	byte_start = ((buf[2]<<8 ) | buf[3]) >> 3;
 	bit_index = coil_start & 0x07;
@@ -345,14 +312,14 @@ uint16_t	byte_start,byte_index,bit_index,i;
 			byte_start++;
 			byte_index++;
 		}
-		if ( buf[7+byte_index] & (7 - bit_index) )
+		if ( buf[7+byte_index] & (1 << (bit_index)) )
 			A_modbus_inout.coils[byte_start] |= 1<<bit_index;
 		else
 			A_modbus_inout.coils[byte_start] &= ~(1 << bit_index);
 	}
 
 	rtu_modbus_write_reply(buf);
-	return A_MODBUS_RTU_WRITTEN;
+	return MODBUS_RTU_WRITTEN;
 }
 
 uint32_t rtu_modbus_process(uint8_t *buf, uint16_t len)
@@ -365,26 +332,26 @@ uint8_t	ret_val = 1;
 			return 1;
 		switch(buf[1])
 		{
-		case	A_MODBUS_READ_COIL					:
-		case	A_MODBUS_READ_DISCRETE_INPUT			:
+		case	MODBUS_READ_COIL					:
+		case	MODBUS_READ_DISCRETE_INPUT			:
 			ret_val = rtu_modbus_read_coils_discrete_in(buf);
 			break;
-		case	A_MODBUS_READ_REGISTER				:
-		case	A_MODBUS_READ_INPUT_REGISTER		:
+		case	MODBUS_READ_REGISTER				:
+		case	MODBUS_READ_INPUT_REGISTER		:
 			ret_val = rtu_modbus_read_regs_iregs(buf);
 			break;
-		case	A_MODBUS_WRITE_COIL					:
+		case	MODBUS_WRITE_COIL					:
 			ret_val = rtu_modbus_write_single_coil(buf);
-		case	A_MODBUS_WRITE_REGISTER				:
+		case	MODBUS_WRITE_REGISTER				:
 			ret_val = rtu_write_mb_register(buf);
 			break;
-		case	A_MODBUS_WRITE_MULTIPLE_COILS		:
+		case	MODBUS_WRITE_MULTIPLE_COILS		:
 			ret_val = rtu_modbus_write_multiple_coils(buf);
 			break;
-		case	A_MODBUS_WRITE_MULTIPLE_REGISTERS	:
+		case	MODBUS_WRITE_MULTIPLE_REGISTERS	:
 			ret_val = rtu_modbus_write_multiple_regs(buf);
 			break;
-		case A_MODBUS_FC_REPORT_SLAVE_ID:
+		case MODBUS_FC_REPORT_SLAVE_ID:
 			ret_val = rtu_modbus_report_slave_info(buf);
 			ret_val = 1;
 			break;
@@ -393,9 +360,19 @@ uint8_t	ret_val = 1;
 			break;
 		}
 	}
-	if ( ret_val >= A_MODBUS_RTU_ERR_ILLEGAL_FC )
+	if ( ret_val >= MODBUS_RTU_ERR_ILLEGAL_FC )
 		rtu_modbus_exception(buf,ret_val);
 	hw_send_uart(A_modbus.modbus_uart,A_modbus.modbus_tx_packet, A_modbus.modbus_tx_packet_len);
 	return ret_val;
 }
 
+// weak functions for external interface
+__weak uint8_t rtu_write_coil_from_modbus(uint16_t coil_index)
+{
+	return 0;
+}
+
+__weak uint8_t rtu_write_reg_from_modbus(uint16_t register_index)
+{
+	return 0;
+}
