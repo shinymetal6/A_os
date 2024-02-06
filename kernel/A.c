@@ -33,8 +33,6 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
-SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
-SYSTEM_RAM		Semaphores_t	Semaphores;
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
@@ -113,9 +111,7 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
 void A_init_mem(void)
 {
 	bzero((uint8_t *)&Asys,sizeof(Asys));
-	bzero((uint8_t *)&Semaphores,sizeof(Semaphores));
 	bzero((uint8_t *)HWMngr,sizeof(HWMngr));
-	bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	bzero((uint8_t *)process,sizeof(process));
 	bzero((uint8_t *)POOL_START,(uint32_t )POOL_SIZE);
 	bzero((uint8_t *)SRAM_START,(uint16_t )SRAM_SIZE);
@@ -188,6 +184,8 @@ uint32_t DWT_Delay_Init(void)
 
 void A_MPU_Config(void)
 {
+#ifdef	STM32H743xx
+
   MPU_Region_InitTypeDef MPU_InitStruct = {0};
 
   /* Disables the MPU */
@@ -210,6 +208,7 @@ void A_MPU_Config(void)
   HAL_MPU_ConfigRegion(&MPU_InitStruct);
   /* Enables the MPU */
   HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
+#endif
 }
 
 void A_start(void)

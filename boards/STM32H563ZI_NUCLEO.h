@@ -1,35 +1,19 @@
-/* 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Project : A_os
-*/
 /*
- * STM32H743ZI2_NUCLEO.h
+ * STM32H563ZI_NUCLEO.h
  *
- *  Created on: Jan 24, 2024
+ *  Created on: Feb 6, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32H743ZI2_NUCLEO_H_
-#define BOARDS_STM32H743ZI2_NUCLEO_H_
-
-#ifdef	STM32H743xx
+#ifndef BOARDS_STM32H563ZI_NUCLEO_H_
+#define BOARDS_STM32H563ZI_NUCLEO_H_
 
 /* Memories */
-#define	POOL_START			    0x38000000
-/* Note : SRAM_START must be equal to osSegment in ld file */
-#define SRAM_START               0x38000000
-#define SRAM_SIZE                65536
+/* Note : POOL_START must be equal to osMemPool in ld file */
+#define	POOL_START			    0x20090000
+/* Note : SRAM_START must be equal to .osSysRam in ld file */
+#define SRAM_START               0x20080000
+#define SRAM_SIZE                32768
 
 /* I/O */
 #define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
@@ -46,7 +30,7 @@
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		480000000U
+#define HSI_CLOCK         		248000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 #define	PendSV_PRIORITY			15
@@ -90,11 +74,10 @@ extern	UART_HandleTypeDef 	huart3;
 #define OSCILLATORS_RAM		__attribute__((section(".oscillators"))) __attribute__ ((aligned (32)))
 #define AUDIOBUFS_RAM		__attribute__((section(".audiobufs")))   __attribute__ ((aligned (32)))
 */
+	/*
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+*/
+#define	BOARD_NAME			"STM32H563ZI-NUCLEO"
 
-#define	BOARD_NAME			"STM32H743ZI2_NUCLEO"
-
-#endif //#ifdef	STM32H743xx
-
-#endif /* BOARDS_STM32H743ZI2_NUCLEO_H_ */
+#endif /* BOARDS_STM32H563ZI_NUCLEO_H_ */

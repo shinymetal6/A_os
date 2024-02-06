@@ -22,7 +22,7 @@
 ******************************************************************************
 ** @attention
 **
-** Copyright (c) 2023 STMicroelectronics.
+** Copyright (c) 2024 STMicroelectronics.
 ** All rights reserved.
 **
 ** This software is licensed under terms that can be found in the LICENSE file
@@ -51,9 +51,13 @@ MEMORY
 /* Sections */
 SECTIONS
 {
-	.osMemPool 0x20090000 : {KEEP(*(.osMemPool))}
-	.osStacks  0x20098000 : {KEEP(*(.osStacks))}
-	.osSegment 0x20080000 : {KEEP(*(.osSegment))}
+	.osSysRam	  			0x20080000 : {. = ALIGN(4); KEEP(*(.osSysRam))}
+	
+	_mempool_start      = LOADADDR(.osMemPool);
+	.osMemPool  		0x20090000 : {. = ALIGN(4); KEEP(*(.osMemPool))}
+    _mempool_end        = LOADADDR(.osMemPoolEnd);
+	.osMemPoolEnd  		0x20098000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
+	
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :
   {
