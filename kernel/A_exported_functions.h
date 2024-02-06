@@ -101,8 +101,6 @@ extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
 /* support functions */
 extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
-
-
 /* audio */
 extern	uint32_t *InitAudioBuffers(void);
 extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
@@ -119,27 +117,26 @@ extern	uint8_t modbus_get_coil(uint16_t coil_number);
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
-
 /* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
 #define	HW_DELAY					0
 #define	HW_TIMER					1
 #define	HW_MBX						2
-#define	HW_UART1					5
-#define	HW_UART2					6
-#define	HW_UART3					7
-#define	HW_UART4					8
-#define	HW_I2C1						9
-#define	HW_I2C2						10
-#define	HW_SPI1						11
-#define	HW_SPI2						12
-#define	HW_QSPI						13
-#define	HW_I2S1						14
-#define	HW_I2S2						15
-#define	HW_TIM						16
-#define	HW_EXT_INT					17
-#define	HW_ADC1						18
-#define	HW_ADC2						18
-#define	HW_DAC						20
+#define	HW_UART1					3
+#define	HW_UART2					4
+#define	HW_UART3					5
+#define	HW_UART4					6
+#define	HW_I2C1						7
+#define	HW_I2C2						8
+#define	HW_SPI1						9
+#define	HW_SPI2						10
+#define	HW_QSPI						11
+#define	HW_I2S1						12
+#define	HW_I2S2						13
+#define	HW_TIM						14
+#define	HW_EXT_INT					15
+#define	HW_ADC1						16
+#define	HW_ADC2						17
+#define	HW_DAC						18
 #define	HW_NRF24L01					28
 #define	HW_USB_DEVICE				29
 #define	HW_USB_HOST					30
