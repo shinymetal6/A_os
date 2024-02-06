@@ -24,7 +24,7 @@
 #define KERNEL_A_EXPORTED_FUNCTIONS_H_
 
 /* System */
-extern	/* uint32_t */ void wait_event(uint32_t events);
+extern	void wait_event(uint32_t events);
 
 extern	uint8_t get_current_process(void);
 extern	uint32_t get_activation_flags(void);
