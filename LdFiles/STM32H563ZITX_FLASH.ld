@@ -57,7 +57,9 @@ SECTIONS
 	.osMemPool  		0x20090000 : {. = ALIGN(4); KEEP(*(.osMemPool))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
 	.osMemPoolEnd  		0x20098000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
-	
+
+	_fdata_start = LOADADDR(.isr_vector);
+  	
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :
   {
@@ -66,6 +68,13 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
+  .aos_nver :
+  {
+    . = ALIGN(4);
+    KEEP(*(.aos_nver)) /* aos name and version */
+    . = ALIGN(4);
+  } >FLASH
+  
   /* The program code and other data into "FLASH" Rom type memory */
   .text :
   {
@@ -153,6 +162,15 @@ SECTIONS
 
   } >RAM AT> FLASH
 
+    _fdata_end = LOADADDR(.flash_end);
+  .flash_end :
+  {
+    . = ALIGN(4);
+    _sflash_end_start = .;        /* create a global symbol at data start */
+    . = ALIGN(4);
+    _eflash_end_start = .;        /* define a global symbol at data end */
+  } > FLASH
+  
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);
   .bss :

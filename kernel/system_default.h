@@ -46,22 +46,30 @@
 #endif
 
 /* common for all processors */
+// memory pool defines
 #define	POOL_CHUNK_SIZE		    256
 #define	POOL_NUM			    32
 #define	POOL_SIZE			    (POOL_CHUNK_SIZE*POOL_NUM)
 #define	POOL_END			    (POOL_START+POOL_SIZE)
 #define SRAM_END                 ((SRAM_START) + (SRAM_SIZE) )
+// system defines
 #define SIZE_SCHED_STACK         4096U
 #define SCHED_STACK_START        SRAM_END
 #define IDLE_STACK_START         (SCHED_STACK_START - SIZE_SCHED_STACK)
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 #define SYSTEM_RAM				__attribute__((section(".osSysRam"))) __attribute__ ((aligned (32)))
+#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
+// interrupts priorities
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12
 #define	Exti0_PRIORITY			13
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
-
+// versioning
+#define	A_OS_NAME				"Aos"
+#define	A_OS_VERSION			"2014.02"
+#define	DEFAULT_APP_NAME		"Sample apps"
+#define	DEFAULT_APP_VERSION		"2014.02.rc01.1"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

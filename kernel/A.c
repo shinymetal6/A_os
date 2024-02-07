@@ -34,6 +34,11 @@ SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 
+VERSIONING	uint8_t			a_os_name[32] 		= A_OS_NAME;
+VERSIONING	uint8_t			a_os_version[32] 	= A_OS_VERSION;
+VERSIONING	__weak uint8_t	app_name[32] 		= DEFAULT_APP_NAME;
+VERSIONING	__weak uint8_t	app_version[32] 	= DEFAULT_APP_VERSION;
+
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
 A_IpAddr_t	A_IpAddr =
