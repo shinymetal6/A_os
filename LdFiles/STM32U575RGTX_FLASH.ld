@@ -5,8 +5,8 @@
 **
 **  Author      : STM32CubeIDE
 **
-**  Abstract    : Linker script for STM32U575xI Device from STM32U5 series
-**                      2048Kbytes FLASH
+**  Abstract    : Linker script for STM32U575xG Device from STM32U5 series
+**                      1024Kbytes FLASH
 **                      784Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
@@ -46,13 +46,22 @@ MEMORY
 {
   RAM	(xrw)	: ORIGIN = 0x20000000,	LENGTH = 768K
   SRAM4	(xrw)	: ORIGIN = 0x28000000,	LENGTH = 16K
-  FLASH	(rx)	: ORIGIN = 0x08000000,	LENGTH = 2048K
+  FLASH	(rx)	: ORIGIN = 0x08000000,	LENGTH = 1024K
 }
 
 /* Sections */
 SECTIONS
 {
-	.osSegment 0x20090000 : {KEEP(*(.osSegment))}
+	_osSysRam_start     = LOADADDR(.osSysRamStart);
+	.osSysRamStart 		0x200b0000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
+	_osSysRam_end       = LOADADDR(.osSysRamEnd);
+	.osSysRamEnd 		0x200c0000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	
+	_mempool_start      = LOADADDR(.osMemPoolStart);
+	.osMemPoolStart		0x20002000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+    _mempool_end        = LOADADDR(.osMemPoolEnd);
+	.osMemPoolEnd  		0x20008000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
+
 
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :

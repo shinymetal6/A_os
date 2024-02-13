@@ -23,11 +23,36 @@
 #ifndef BOARDS_STM32H743ZI2_NUCLEO_H_
 #define BOARDS_STM32H743ZI2_NUCLEO_H_
 
+#ifdef OLD
 /* Memories */
 #define	POOL_START			    0x38000000
 /* Note : SRAM_START must be equal to osSegment in ld file */
 #define SRAM_START               0x38000000
 #define SRAM_SIZE                65536
+#endif
+/* Memories */
+
+// memory pool defines
+extern	uint8_t					*_mempool_start,*_mempool_end;
+#define	POOL_START			    (uint32_t )(&_mempool_start)
+#define	POOL_END			    (uint32_t )(&_mempool_end)
+#define	POOL_CHUNK_SIZE		    1024
+#define	POOL_SIZE			    (POOL_END - POOL_START)
+// POOL_NUM must be a constant value to compile
+#define	POOL_NUM			    84
+
+// system defines
+extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
+#define SRAM_START				(uint32_t )(&_osSysRam_start)
+#define SRAM_END				(uint32_t )(&_osSysRam_end)
+#define SRAM_SIZE				(&_osSysRam_end - &_osSysRam_start)
+#define SIZE_SCHED_STACK		2048U
+#define SCHED_STACK_START		SRAM_END
+
+#define IDLE_STACK_START		(uint32_t )(&_osSysRam_end - SIZE_SCHED_STACK)
+#define SIZE_IDLE_STACK          2048U
+#define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
+
 
 /* I/O */
 #define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port

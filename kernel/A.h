@@ -112,6 +112,8 @@ typedef struct
 	uint8_t		*first_mem;
 	uint32_t	num_buf_in_use;
 	uint32_t	first_data_address;
+	uint32_t	mempool_available_size;
+	uint32_t	mempool_requested_size;
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
 	uint32_t	system_flags;
