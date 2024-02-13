@@ -24,7 +24,7 @@
 #define KERNEL_A_EXPORTED_FUNCTIONS_H_
 
 /* System */
-extern	/* uint32_t */ void wait_event(uint32_t events);
+extern	void wait_event(uint32_t events);
 
 extern	uint8_t get_current_process(void);
 extern	uint32_t get_activation_flags(void);
@@ -59,6 +59,10 @@ extern	uint8_t A_qspi_enable_write(void);
 extern	uint8_t A_qspi_disable_write(void);
 
 #endif
+
+/* flash */
+extern	uint32_t get_flash_storage_ptr(void);
+extern 	uint32_t get_flash_size(void);
 
 /* compatibility */
 extern	void 	A_Error_Handler(char * file, int line);

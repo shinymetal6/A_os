@@ -252,7 +252,7 @@ ITCM_AREA_CODE void flash_update(uint8_t *flash_data,uint32_t size)
 {
 uint8_t	status;
 	relocate_vtable_systick();
-	status = flash_write(flash_data,&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
+	status = flash_write(flash_data,(uint8_t *)&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
     if ( status  )
     	{ while(1);	}	// error so loop forever
 	CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);

@@ -68,11 +68,9 @@ void task_delay(uint32_t tick_count)
 	__enable_irq();
 }
 
-#define	DEBUG_OS
+//#define	DEBUG_OS
 #ifdef DEBUG_OS
-
 uint32_t 	last_woken_prc , last_tim_val , last_tim_id , last_gcount;
-
 #endif
 void check_timers(void)
 {
@@ -105,6 +103,8 @@ register uint8_t	i,j;
 							process[i].current_state |= PROCESS_READY_STATE;
 							if ((process[i].timer_flags[j] & TIMERFLAGS_FOREVER ) == TIMERFLAGS_FOREVER)
 								process[i].current_timer[j] = Asys.g_tick_count + process[i].timer_value[j];
+							else
+								process[i].timer_flags[j] &= ~TIMERFLAGS_ENABLED;
 							process[i].timer_expired |= (1<<j);
 							activate_process(i,WAKEUP_FROM_TIMER,1<<j);
 						}

@@ -27,19 +27,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include  "../../Core/usbd_ioreq.h"
 
-/** @addtogroup STM32_USB_DEVICE_LIBRARY
-  * @{
-  */
-
-/** @defgroup usbd_cdc
-  * @brief This file is the Header file for usbd_cdc.c
-  * @{
-  */
-
-
-/** @defgroup usbd_cdc_Exported_Defines
-  * @{
-  */
 #ifndef CDC_IN_EP
 #define CDC_IN_EP                                   0x81U  /* EP1 for data IN */
 #endif /* CDC_IN_EP */
@@ -84,18 +71,6 @@ extern "C" {
 #define CDC_SET_CONTROL_LINE_STATE                  0x22U
 #define CDC_SEND_BREAK                              0x23U
 
-/**
-  * @}
-  */
-
-
-/** @defgroup USBD_CORE_Exported_TypesDefinitions
-  * @{
-  */
-
-/**
-  * @}
-  */
 typedef struct
 {
   uint32_t bitrate;
@@ -128,29 +103,9 @@ typedef struct
   __IO uint32_t RxState;
 } USBD_CDC_HandleTypeDef;
 
-
-
-/** @defgroup USBD_CORE_Exported_Macros
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_CORE_Exported_Variables
-  * @{
-  */
-
 extern USBD_ClassTypeDef USBD_CDC;
 #define USBD_CDC_CLASS &USBD_CDC
-/**
-  * @}
-  */
 
-/** @defgroup USB_CORE_Exported_Functions
-  * @{
-  */
 uint8_t USBD_CDC_RegisterInterface(USBD_HandleTypeDef *pdev,
                                    USBD_CDC_ItfTypeDef *fops);
 
@@ -160,20 +115,10 @@ uint8_t USBD_CDC_SetTxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff,
 uint8_t USBD_CDC_SetRxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff);
 uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
 uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev);
-/**
-  * @}
-  */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif  /* __USB_CDC_H */
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 

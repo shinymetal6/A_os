@@ -36,6 +36,12 @@ SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 SYSTEM_RAM		Semaphores_t	Semaphores;
 
+#ifdef CUSTOM_RAM
+CUSTOM_RAM		uint32_t		CustomRamStart;
+CUSTOM_RAM_END	uint32_t		CustomRamEnd;
+#endif
+
+
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
 A_IpAddr_t	A_IpAddr =
@@ -117,8 +123,11 @@ void A_init_mem(void)
 	bzero((uint8_t *)HWMngr,sizeof(HWMngr));
 	bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	bzero((uint8_t *)process,sizeof(process));
-	bzero((uint8_t *)POOL_START,(uint32_t )POOL_SIZE);
-	bzero((uint8_t *)SRAM_START,(uint16_t )SRAM_SIZE);
+	bzero((uint8_t *)POOL_START,POOL_SIZE);
+	bzero((uint8_t *)SRAM_START,SRAM_SIZE);
+#ifdef CUSTOM_RAM
+	bzero((uint8_t *)CUSTOM_RAM_START,CUSTOM_RAM__SIZE);
+#endif
 }
 
 void A_enable_processor_faults(void)
@@ -157,33 +166,24 @@ void DWT_Delay_us(uint32_t au32_microseconds)
 
 uint32_t DWT_Delay_Init(void)
 {
-    /* Disable TRC */
-    CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk; // ~0x01000000;
-    /* Enable TRC */
-    CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
-
-    /* Disable clock cycle counter */
-    DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
-    /* Enable  clock cycle counter */
-    DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
-
-    /* Reset the clock cycle counter value */
-    DWT->CYCCNT = 0;
-
-    /* 3 NO OPERATION instructions */
-    __ASM volatile ("NOP");
-    __ASM volatile ("NOP");
-    __ASM volatile ("NOP");
-
-    /* Check if clock cycle counter has started */
-    if(DWT->CYCCNT)
-    {
-       return 0; /*clock cycle counter started*/
-    }
-    else
-    {
-      return 1; /*clock cycle counter not started*/
-    }
+	/* Disable TRC */
+	CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk; // ~0x01000000;
+	/* Enable TRC */
+	CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
+	/* Disable clock cycle counter */
+	DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
+	/* Enable  clock cycle counter */
+	DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
+	/* Reset the clock cycle counter value */
+	DWT->CYCCNT = 0;
+	/* 3 NO OPERATION instructions */
+	__ASM volatile ("NOP");
+	__ASM volatile ("NOP");
+	__ASM volatile ("NOP");
+	/* Check if clock cycle counter has started */
+	if(DWT->CYCCNT)
+		return 0; /*clock cycle counter started*/
+	return 1; /*clock cycle counter not started*/
 }
 
 void A_MPU_Config(void)

@@ -1,7 +1,22 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
 /*
  * AX_P2212157_CONC.h
  *
- *  Created on: Feb 12, 2024
+ *  Created on: Feb 13, 2024
  *      Author: fil
  */
 
@@ -30,6 +45,15 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define IDLE_STACK_START		(uint32_t )(&_osSysRam_end - SIZE_SCHED_STACK)
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
+
+// custom defines
+#define CUSTOM_RAM		__attribute__((section(".customRam_start")))	__attribute__ ((aligned (32)))
+#define CUSTOM_RAM_END	__attribute__((section(".customRam_end")))		__attribute__ ((aligned (32)))
+
+extern	uint8_t					*_customRam_start,*_customRam_end;
+#define CUSTOM_RAM_START		(uint32_t )(&_customRam_start)
+#define CUSTOM_RAM__END			(uint32_t )(&_customRam_end)
+#define CUSTOM_RAM__SIZE		(&_customRam_end - &_customRam_start)
 
 /* I/O */
 #define	HEARTBEAT_LED_GPIOPORT			HEARTBEAT_LED_GPIO_Port
@@ -90,12 +114,9 @@ extern	UART_HandleTypeDef 		huart2;
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
-/*
-#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))   __attribute__ ((aligned (32)))
-*/
+
 #define	BOARD_NAME			"AX_P2212157"
 #define	MACHINE_NAME		"Conc"
 #define	MACHINE_VERSION		"A"
-
 
 #endif /* BOARDS_AX_P2212157_CONC_H_ */
