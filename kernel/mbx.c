@@ -24,8 +24,8 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 #include "kernel_opt.h"
+#include <string.h>
 
-extern	uint8_t	current_process;
 extern	PCB_t process[MAX_PROCESS];
 
 void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size)
@@ -37,9 +37,9 @@ void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uin
 
 uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr)
 {
-	A_memcpy(buf_ptr,process[current_process].mbx[mailbox_number] ,process[current_process].mbx_size[mailbox_number]);
-	process[current_process].wakeup_rsn &= ~WAKEUP_FROM_MBX;
-	return process[current_process].mbx_size[mailbox_number];
+	memcpy(buf_ptr,process[Asys.current_process].mbx[mailbox_number] ,process[Asys.current_process].mbx_size[mailbox_number]);
+	process[Asys.current_process].wakeup_rsn &= ~WAKEUP_FROM_MBX;
+	return process[Asys.current_process].mbx_size[mailbox_number];
 }
 
 

@@ -88,6 +88,7 @@ extern	uint32_t deallocate_hw(uint32_t peripheral);
 /* hwmanager : usb */
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
 extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
+extern	uint16_t hw_UsbGetRXLen(void);
 
 /* hwmanager : uart */
 extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
@@ -97,6 +98,10 @@ extern	uint32_t hw_receive_uart_sentinel_clear(uint32_t uart);
 
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
 extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
+
+/* mailbox */
+extern void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size);
+extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
 
 /* support functions */
 extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
