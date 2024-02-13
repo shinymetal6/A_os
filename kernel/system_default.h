@@ -45,6 +45,9 @@
 	#ifdef AX_P2212157_CONC
 		#include "../boards/AX_P2212157_CONC.h"
 	#endif
+	#ifdef STM32U575ZIT_NUCLEO
+		#include "../boards/STM32U575ZITXQ_NUCLEO.h"
+	#endif
 #endif
 
 #ifndef ASSIGNED

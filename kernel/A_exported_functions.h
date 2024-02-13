@@ -143,6 +143,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_NRF24L01					28
 #define	HW_USB_DEVICE				29
 #define	HW_USB_HOST					30
+#define	HW_SLEEP_FOREVER			31
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)

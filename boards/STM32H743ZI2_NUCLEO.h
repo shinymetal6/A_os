@@ -23,13 +23,6 @@
 #ifndef BOARDS_STM32H743ZI2_NUCLEO_H_
 #define BOARDS_STM32H743ZI2_NUCLEO_H_
 
-#ifdef OLD
-/* Memories */
-#define	POOL_START			    0x38000000
-/* Note : SRAM_START must be equal to osSegment in ld file */
-#define SRAM_START               0x38000000
-#define SRAM_SIZE                65536
-#endif
 /* Memories */
 
 // memory pool defines
