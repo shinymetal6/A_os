@@ -41,7 +41,6 @@ CUSTOM_RAM		uint32_t		CustomRamStart;
 CUSTOM_RAM_END	uint32_t		CustomRamEnd;
 #endif
 
-
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
 A_IpAddr_t	A_IpAddr =

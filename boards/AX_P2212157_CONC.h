@@ -27,12 +27,13 @@
 
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
+extern	uint32_t				_mempool_size;
 #define	POOL_START			    (uint32_t )(&_mempool_start)
 #define	POOL_END			    (uint32_t )(&_mempool_end)
 #define	POOL_CHUNK_SIZE		    256
 #define	POOL_SIZE			    (&_mempool_end - &_mempool_start)
-// POOL_NUM must be a constant value to compile
-#define	POOL_NUM			    16
+// POOL_NUM must be a constant value to compile,
+#define	POOL_NUM			    (0x4000 / POOL_CHUNK_SIZE)
 
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;

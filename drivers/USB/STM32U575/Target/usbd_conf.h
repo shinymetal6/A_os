@@ -1,26 +1,27 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : usbd_conf.h
-  * @version        : v1.0_Cube
-  * @brief          : Header for usbd_conf.c file.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2022 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * usbd_conf.h
+ *
+ *  Created on: Feb 14, 2024
+ *      Author: fil
+ */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USBD_CONF__H__
-#define __USBD_CONF__H__
+#ifndef DRIVERS_USB_STM32U575_TARGET_USBD_CONF_H_
+#define DRIVERS_USB_STM32U575_TARGET_USBD_CONF_H_
 
 #ifdef __cplusplus
  extern "C" {
@@ -31,38 +32,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
+
+#ifdef	STM32U575xx
+
 #include "stm32u5xx.h"
 #include "stm32u5xx_hal.h"
 
-/* USER CODE BEGIN INCLUDE */
-
-/* USER CODE END INCLUDE */
-
-/** @addtogroup USBD_OTG_DRIVER
-  * @brief Driver for Usb device.
-  * @{
-  */
-
-/** @defgroup USBD_CONF USBD_CONF
-  * @brief Configuration file for Usb otg low level driver.
-  * @{
-  */
-
-/** @defgroup USBD_CONF_Exported_Variables USBD_CONF_Exported_Variables
-  * @brief Public variables.
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_CONF_Exported_Defines USBD_CONF_Exported_Defines
-  * @brief Defines for configuration of the Usb device.
-  * @{
-  */
-
-/*---------- -----------*/
 #define USBD_MAX_NUM_INTERFACES     1U
 /*---------- -----------*/
 #define USBD_MAX_NUM_CONFIGURATION     1U
@@ -75,21 +50,9 @@
 /*---------- -----------*/
 #define USBD_SELF_POWERED     1U
 
-/****************************************/
-/* #define for FS and HS identification */
+
 #define DEVICE_FS 		0
 #define DEVICE_HS 		1
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_CONF_Exported_Macros USBD_CONF_Exported_Macros
-  * @brief Aliases.
-  * @{
-  */
-/* Memory management macros make sure to use static memory allocation */
-/** Alias for memory allocation. */
 
 #define USBD_malloc         (void *)USBD_static_malloc
 
@@ -131,43 +94,13 @@
 #define USBD_DbgLog(...)
 #endif /* (USBD_DEBUG_LEVEL > 2U) */
 
-/**
-  * @}
-  */
-
-/** @defgroup USBD_CONF_Exported_Types USBD_CONF_Exported_Types
-  * @brief Types.
-  * @{
-  */
-
-/**
-  * @}
-  */
-
-/** @defgroup USBD_CONF_Exported_FunctionsPrototype USBD_CONF_Exported_FunctionsPrototype
-  * @brief Declaration of public functions for Usb device.
-  * @{
-  */
-
-/* Exported functions -------------------------------------------------------*/
 void *USBD_static_malloc(uint32_t size);
 void USBD_static_free(void *p);
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __USBD_CONF__H__ */
+#endif // #ifdef	STM32U575xx
 
+#endif /* DRIVERS_USB_STM32U575_TARGET_USBD_CONF_H_ */

@@ -50,7 +50,7 @@ uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,u
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
 		HWMngr[uart].sentinel_start = HWMngr[uart].sentinel_end = NO_SENTINEL;
-		HWMngr[uart].status |= HWMAN_SENTINEL_FOUND;
+		HWMngr[uart].status &= ~HWMAN_SENTINEL_ENABLE;
 		HWMngr[uart].rx_buf = rx_buf;
 		HWMngr[uart].rx_buf_max_len = rx_buf_max_len;
 		if ( timeout )
@@ -72,6 +72,7 @@ uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_
 		HWMngr[uart].sentinel_start = sentinel_start;
 		HWMngr[uart].sentinel_end = sentinel_end;
 		HWMngr[uart].status &= ~HWMAN_SENTINEL_FOUND;
+		HWMngr[uart].status |= HWMAN_SENTINEL_ENABLE;
 
 		HWMngr[uart].rx_buf = rx_buf;
 		HWMngr[uart].rx_buf_max_len = rx_buf_max_len;
@@ -110,41 +111,54 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 }
 
-uint8_t trxbuf[32],t_index=0;
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint32_t	i;
 	__disable_irq();
-	trxbuf[t_index] = rx_char;
-	t_index++;
-	t_index &= 0x1f;
 	for(i=HW_UART1;i<HW_UART4;i++)
 	{
 		if (( HWMngr[i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
 		{
-			if ( HWMngr[i].rx_buf != NULL )
+			if ( HWMngr[i].rx_buf == NULL )
 			{
-				if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) == 0)
+				HAL_UART_Receive_IT(huart, &rx_char, 1);
+				__enable_irq();
+				return;
+			}
+			if (( HWMngr[i].status & HWMAN_SENTINEL_ENABLE) == HWMAN_SENTINEL_ENABLE)
+			{
+				if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) != HWMAN_SENTINEL_FOUND)
 				{
-					if (( HWMngr[i].sentinel_start != 0) && (HWMngr[i].sentinel_end != 0))
+					if (( rx_char >= HWMngr[i].sentinel_start) && (rx_char <= HWMngr[i].sentinel_end ))
 					{
-						if (( rx_char >= HWMngr[i].sentinel_start) && (rx_char <= HWMngr[i].sentinel_end ))
-						{
-							HWMngr[i].status |= HWMAN_SENTINEL_FOUND;
-						}
+						HWMngr[i].status |= HWMAN_SENTINEL_FOUND;
+						HWMngr[i].rx_buf_index=0;
 					}
 				}
+
 				if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) == HWMAN_SENTINEL_FOUND)
 				{
 					HWMngr[i].rx_buf[HWMngr[i].rx_buf_index] = rx_char;
-					HWMngr[i].timeout = HWMngr[HW_UART3].timeout_reload_value;
+					HWMngr[i].timeout = HWMngr[i].timeout_reload_value;
 					HWMngr[i].rx_buf_index++;
 					if ( HWMngr[i].rx_buf_index == HWMngr[i].rx_buf_max_len)
 					{
 						HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 						HWMngr[i].rx_buf_index = 0;
+						HWMngr[i].status &= ~HWMAN_SENTINEL_FOUND;
 						activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART);
 					}
+				}
+			}
+			else
+			{
+				HWMngr[i].rx_buf[HWMngr[i].rx_buf_index] = rx_char;
+				HWMngr[i].rx_buf_index++;
+				if ( HWMngr[i].rx_buf_index == HWMngr[i].rx_buf_max_len)
+				{
+					HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
+					HWMngr[i].rx_buf_index = 0;
+					activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART);
 				}
 			}
 		}
@@ -171,10 +185,13 @@ uint32_t	i;
 							HWMngr[i].timeout --;
 							if ( HWMngr[i].timeout == 0 )
 							{
-								HWMngr[i].timeout = HWMngr[HW_UART3].timeout_reload_value;
-								HWMngr[i].rxlen = HWMngr[HW_UART3].rx_buf_index;
+								HWMngr[i].timeout = HWMngr[i].timeout_reload_value;
+								HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 								HWMngr[i].rx_buf_index = 0;
 								activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART);
+								if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) == HWMAN_SENTINEL_FOUND)
+									HWMngr[i].status &= ~HWMAN_SENTINEL_FOUND;
+
 							}
 						}
 					}
