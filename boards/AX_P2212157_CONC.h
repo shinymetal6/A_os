@@ -52,7 +52,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define CUSTOM_RAM_END	__attribute__((section(".customRam_end")))		__attribute__ ((aligned (32)))
 
 extern	uint8_t					*_customRam_start,*_customRam_end;
-#define CUSTOM_RAM_START		(uint32_t )(&_customRam_start)
+#define CUSTOM_RAM__START		(uint32_t )(&_customRam_start)
 #define CUSTOM_RAM__END			(uint32_t )(&_customRam_end)
 #define CUSTOM_RAM__SIZE		(&_customRam_end - &_customRam_start)
 
@@ -94,6 +94,7 @@ extern	uint8_t					*_customRam_start,*_customRam_end;
 
 /* Clock */
 #define TICK_HZ 				1000U
+//#define HSI_CLOCK         		160000000U
 #define HSI_CLOCK         		80000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */

@@ -11,30 +11,30 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : bb1xx_743_00 
+ * Project : A_os
 */
 /*
- * fonts.h
+ * fonts_ili9341.h
  *
- *  Created on: Jan 3, 2024
+ *  Created on: Feb 16, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ST7735_FONTS_H_
-#define DRIVERS_LCD_ST7735_FONTS_H_
+#ifndef DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_
+#define DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_
 
 #include <stdint.h>
 
 typedef struct {
     const uint8_t width;
-    const uint8_t height;
+    uint8_t height;
     const uint16_t *data;
-} FontDef;
+} ili9341_FontDef;
 
 
-extern  FontDef Font_7x10;
-extern 	FontDef Font_7x11;
-extern  FontDef Font_11x18;
-extern 	FontDef Font_16x26;
+extern ili9341_FontDef ili9341_Font_7x10;
+extern ili9341_FontDef ili9341_Font_11x18;
+extern ili9341_FontDef ili9341_Font_16x26;
 
-#endif /* DRIVERS_LCD_ST7735_FONTS_H_ */
+
+#endif /* DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_ */

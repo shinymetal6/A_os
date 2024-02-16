@@ -109,7 +109,8 @@ void __attribute__ ((noinline)) wait_event(uint32_t events)
 	__disable_irq();
 	process[Asys.current_process].wait_event = events;
 	process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
-	schedule();
+	if ( process[Asys.current_process].wakeup_rsn == 0 )
+		schedule();
 	__enable_irq();
 }
 

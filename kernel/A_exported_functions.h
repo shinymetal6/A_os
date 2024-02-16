@@ -96,6 +96,7 @@ extern	uint16_t hw_UsbGetRXLen(void);
 
 /* hwmanager : uart */
 extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len);
 extern	uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
 extern	uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
 extern	uint32_t hw_receive_uart_sentinel_clear(uint32_t uart);
@@ -256,12 +257,12 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_TIM_ID5				0x00000020
 #define	WAKEUP_FLAGS_TIM_ID6				0x00000040
 #define	WAKEUP_FLAGS_TIM_ID7				0x00000080
-#define	WAKEUP_FLAGS_UART					0x00000100
-#define	WAKEUP_FLAGS_UART_TO				0x00000200
-#define	WAKEUP_FLAGS_EXTI_D0				0x00000400
-#define	WAKEUP_FLAGS_EXTI_D1				0x00000800
-#define	WAKEUP_FLAGS_EXTI					0x00001000
-#define	WAKEUP_FLAGS_TEST					0x10000000
+#define	WAKEUP_FLAGS_UART_RX				0x00000100
+#define	WAKEUP_FLAGS_UART_TX				0x00000200
+#define	WAKEUP_FLAGS_UART_TO				0x00000400
+#define	WAKEUP_FLAGS_EXTI_D0				0x02000000
+#define	WAKEUP_FLAGS_EXTI_D1				0x04000000
+#define	WAKEUP_FLAGS_EXTI					0x08000000
 #define	WAKEUP_FLAGS_MBX					0x40000000
 #define	WAKEUP_FLAGS_HW_USB_RX_COMPLETE		0x80000000
 

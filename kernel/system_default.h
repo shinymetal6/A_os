@@ -33,6 +33,9 @@
 	#ifdef	BB2xx_743
 		#include "../boards/BB2xx_743.h"
 	#endif
+	#ifdef	VB1xx
+		#include "../boards/VB1xx.h"
+	#endif
 #endif	//#ifdef	STM32H743xx
 
 #ifdef	STM32H563xx

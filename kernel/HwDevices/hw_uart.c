@@ -45,6 +45,15 @@ uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len)
 	return 255;
 }
 
+
+uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len)
+{
+#ifdef CONSOLE
+	return HAL_UART_Transmit_DMA(&CONSOLE, ptr, len);
+#endif
+	return 255;
+}
+
 uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout)
 {
 	if ( HWMngr[uart].process == Asys.current_process )
@@ -108,7 +117,16 @@ uint16_t hw_get_uart_receive_len(uint32_t uart)
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-
+uint32_t	i;
+	__disable_irq();
+	for(i=HW_UART1;i<HW_UART4;i++)
+	{
+		if (( HWMngr[i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
+		{
+			activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_TX);
+		}
+	}
+	__enable_irq();
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -146,7 +164,7 @@ uint32_t	i;
 						HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 						HWMngr[i].rx_buf_index = 0;
 						HWMngr[i].status &= ~HWMAN_SENTINEL_FOUND;
-						activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART);
+						activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_RX);
 					}
 				}
 			}
@@ -158,7 +176,7 @@ uint32_t	i;
 				{
 					HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 					HWMngr[i].rx_buf_index = 0;
-					activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART);
+					activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_RX);
 				}
 			}
 		}
@@ -188,7 +206,7 @@ uint32_t	i;
 								HWMngr[i].timeout = HWMngr[i].timeout_reload_value;
 								HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 								HWMngr[i].rx_buf_index = 0;
-								activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART);
+								activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
 								if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) == HWMAN_SENTINEL_FOUND)
 									HWMngr[i].status &= ~HWMAN_SENTINEL_FOUND;
 

@@ -125,7 +125,7 @@ void A_init_mem(void)
 	bzero((uint8_t *)POOL_START,POOL_SIZE);
 	bzero((uint8_t *)SRAM_START,SRAM_SIZE);
 #ifdef CUSTOM_RAM
-	bzero((uint8_t *)CUSTOM_RAM_START,CUSTOM_RAM__SIZE);
+	bzero((uint8_t *)CUSTOM_RAM__START,CUSTOM_RAM__SIZE);
 #endif
 }
 

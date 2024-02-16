@@ -23,7 +23,7 @@
 #ifndef DRIVERS_LCD_ST7735_ST7735_H_
 #define DRIVERS_LCD_ST7735_ST7735_H_
 
-#include "fonts.h"
+#include "fonts_7735.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
