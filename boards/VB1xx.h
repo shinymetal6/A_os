@@ -166,11 +166,12 @@ extern	UART_HandleTypeDef 	huart4;
 #endif // #ifdef CODEC_ENABLED
 
 
-#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))   __attribute__ ((aligned (32)))
+#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  __attribute__ ((aligned (32)))
 #define OSCILLATORS_RAM		__attribute__((section(".oscillators"))) __attribute__ ((aligned (32)))
 #define AUDIOBUFS_RAM		__attribute__((section(".audiobufs")))   __attribute__ ((aligned (32)))
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+#define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 __attribute__ ((aligned (32))) const
 
 #define	BOARD_NAME			"VB1xx"
 #define	MACHINE_NAME		"Vb101_VCO"

@@ -33,7 +33,7 @@
 extern OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
 extern	float	delta_k_phase;
 
-__attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
+FLASH_DATA_TABLE  int16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
 {
 		0,402,803,1205,1605,2005,2403,2800,3196,3589,3980,4369,4755,5139,5519,5896,
 		6269,6639,7004,7365,7722,8075,8422,8764,9101,9433,9759,10079,10393,10700,11002,11296,
@@ -61,7 +61,7 @@ OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_square_tab[WAVETABLE
 OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_tri_tab[WAVETABLE_SIZE];
 OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_noise_tab[WAVETABLE_SIZE];
 
-__attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[MIDI_NOTES] =
+FLASH_DATA_TABLE float	rom_midi_freq[MIDI_NOTES] =
 {
 		8.176,
 		8.662,

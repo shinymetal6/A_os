@@ -31,26 +31,31 @@
 
 uint8_t	fillbuff[FILLSIZE];
 
-static void ILI9341_Select() {
+static void ILI9341_Select(void)
+{
     HAL_GPIO_WritePin(ILI9341_CS_GPIO_Port, ILI9341_CS_Pin, GPIO_PIN_RESET);
 }
 
-void ILI9341_Unselect() {
+void ILI9341_Unselect(void)
+{
     HAL_GPIO_WritePin(ILI9341_CS_GPIO_Port, ILI9341_CS_Pin, GPIO_PIN_SET);
 }
 
-static void ILI9341_Reset() {
+static void ILI9341_Reset(void)
+{
     HAL_GPIO_WritePin(ILI9341_RES_GPIO_Port, ILI9341_RES_Pin, GPIO_PIN_RESET);
     HAL_Delay(5);
     HAL_GPIO_WritePin(ILI9341_RES_GPIO_Port, ILI9341_RES_Pin, GPIO_PIN_SET);
 }
 
-static void ILI9341_WriteCommand(uint8_t cmd) {
+static void ILI9341_WriteCommand(uint8_t cmd)
+{
     HAL_GPIO_WritePin(ILI9341_DC_GPIO_Port, ILI9341_DC_Pin, GPIO_PIN_RESET);
     HAL_SPI_Transmit(&ILI9341_SPI_PORT, &cmd, sizeof(cmd), ILI9341_SPI_TIMEOUT);
 }
 
-static void ILI9341_WriteData(uint8_t* buff, size_t buff_size) {
+static void ILI9341_WriteData(uint8_t* buff, size_t buff_size)
+{
     HAL_GPIO_WritePin(ILI9341_DC_GPIO_Port, ILI9341_DC_Pin, GPIO_PIN_SET);
 
     // split data in small chunks because HAL can't send more then 64K at once
@@ -93,7 +98,8 @@ static void ILI9341_SetAddressWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint
     ILI9341_WriteCommand(0x2C); // RAMWR
 }
 
-void ILI9341_Init() {
+void ILI9341_Init(void)
+{
     ILI9341_Reset();
 
     // command list is based on https://github.com/martnak/STM32-ILI9341
@@ -310,7 +316,8 @@ void ILI9341_Init() {
 
 }
 
-void ILI9341_DrawPixel(uint16_t x, uint16_t y, uint16_t color) {
+void ILI9341_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
+{
     if((x >= ILI9341_WIDTH) || (y >= ILI9341_HEIGHT))
         return;
 
@@ -403,7 +410,8 @@ static void ILI9341_WriteChar(uint16_t x, uint16_t y, char ch, ili9341_FontDef f
     }
 }
 
-void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor) {
+void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor)
+{
     ILI9341_Select();
 
     while(*str) {
@@ -429,7 +437,8 @@ void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDe
     ILI9341_Unselect();
 }
 
-void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color) {
+void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+{
 	uint32_t	i,fillsize,fillbufindex;
     // clipping
     if((x > ILI9341_WIDTH) || (y > ILI9341_HEIGHT)) return;
@@ -459,7 +468,8 @@ void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint1
     ILI9341_Unselect();
 }
 
-void ILI9341_FillScreen(uint16_t color) {
+void ILI9341_FillScreen(uint16_t color)
+{
 	ILI9341_FillRectangle(0, 0, ILI9341_WIDTH, ILI9341_HEIGHT, color);
 }
 
@@ -475,10 +485,17 @@ void ILI9341_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uin
     ILI9341_WriteDmaData((uint8_t*)data, sizeof(uint16_t)*w*h);
 }
 
-void ILI9341_InvertColors(bool invert) {
+void ILI9341_InvertColors(bool invert)
+{
     ILI9341_Select();
     ILI9341_WriteCommand(invert ? 0x21 /* INVON */ : 0x20 /* INVOFF */);
     ILI9341_Unselect();
 }
+
+void test_ili(void)
+{
+	ILI9341_WriteString(0, 0, "CIAO", ili9341_Font_7x10, 0, 0);
+}
+
 
 #endif // #ifdef	LCD_2I8_ENABLED
