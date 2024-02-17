@@ -280,6 +280,13 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/lcd_st7735/lcd_7735.h"
 	extern	void Draw_Logo(uint16_t *logo);
 #endif // #ifdef LCD_096_ENABLED
+#ifdef LCD_2I8_ENABLED
+	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
+	extern	void LcdClearScreen(uint16_t color);
+	extern	void LcdInit(void);
+	extern	void LcdDrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
+	extern	void LcdWriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor);
+#endif // #ifdef LCD_096_ENABLED
 #ifdef ADC_ENABLED
 	#include "../drivers/internal_adc/internal_adc.h"
 	extern	uint8_t IntAdc_Start(void);

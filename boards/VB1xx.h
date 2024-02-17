@@ -171,6 +171,9 @@ extern	UART_HandleTypeDef 	huart4;
 #define AUDIOBUFS_RAM		__attribute__((section(".audiobufs")))   __attribute__ ((aligned (32)))
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) __attribute__ ((aligned (32)))
+#define D2_BUFFER			__attribute__((section(".d2ram"))) 		 __attribute__ ((aligned (32)))
+
 #define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 __attribute__ ((aligned (32))) const
 
 #define	BOARD_NAME			"VB1xx"

@@ -366,7 +366,6 @@ void ST7735_ClearScreen(void)
     while(done == 0)
     	task_delay(1);
     ST7735_Unselect();
-
 }
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)

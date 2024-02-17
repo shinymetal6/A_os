@@ -39,10 +39,13 @@
 #define ILI9341_MADCTL_BGR 0x08
 #define ILI9341_MADCTL_MH  0x04
 
-/*** Redefine if necessary ***/
-//#define ILI9341_SPI_PORT hspi1
-
-
+#define	ZERO_BRIGHTNESS		0
+#define	LOW_BRIGHTNESS		30
+#define	HALF_BRIGHTNESS		500
+#define	Hi_BRIGHTNESS		750
+#define	FULL_BRIGHTNESS		1000
+extern	TIM_HandleTypeDef 	htim16;
+#define	BACKLIGHT_TIMER		htim16
 
 // default orientation
 
@@ -73,9 +76,7 @@
 
 /****************************/
 
-#define	FILLSIZE	ILI9341_WIDTH*ILI9341_HEIGHT*2
-#define	TXSIZE		8192
-
+#define	FBSIZE			32768
 
 // Color definitions
 #define	ILI9341_BLACK   0x0000
@@ -87,6 +88,15 @@
 #define ILI9341_YELLOW  0xFFE0
 #define ILI9341_WHITE   0xFFFF
 #define ILI9341_COLOR565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
+
+typedef struct
+{
+	uint16_t	brightness;
+	uint8_t		dma_done;
+
+}Video_t;
+
+
 
 // call before initializing any SPI devices
 void ILI9341_Unselect();
