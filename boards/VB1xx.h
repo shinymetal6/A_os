@@ -65,8 +65,8 @@ extern	UART_HandleTypeDef 	huart4;
 #define	QSPI_ENABLED			1
 #define	SDCARD_ENABLED			1
 //#define	WIRELESS_ENABLED		1
-//#define	LCD_096_ENABLED			1
-#define	LCD_2I8_ENABLED			1
+#define	LCD_096_ENABLED			1
+//#define	LCD_2I8_ENABLED			1
 #define	ENCODER_ENABLED			1
 #define	CODEC_ENABLED			1
 #define	CODEC_NAU88C22			1
@@ -165,6 +165,8 @@ extern	UART_HandleTypeDef 	huart4;
 	#endif // #ifdef CODEC_NAU88C22
 #endif // #ifdef CODEC_ENABLED
 
+#define	SAMPLE_FREQUENCY				48000
+#define	SAMPLE_PERIOD					(1.0F / SAMPLE_FREQUENCY)
 
 #define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  __attribute__ ((aligned (32)))
 #define OSCILLATORS_RAM		__attribute__((section(".oscillators"))) __attribute__ ((aligned (32)))

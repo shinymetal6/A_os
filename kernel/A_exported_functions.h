@@ -114,8 +114,25 @@ extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
 
 /* audio */
+
+#include "audio.h"
+
 extern	uint32_t *InitAudioBuffers(void);
 extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
+extern	void SetEffectMode(void);
+extern	void SetGeneratorMode(void);
+extern	void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start);
+extern	void SetMasterVolume(uint16_t volume);
+extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void InitOscillators(void);
+extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+
+/* effects */
+extern	void iir_init(void);
+extern	void iir_set_params(uint8_t type, uint16_t frequency, float iir_Q);
+extern	void iir(int16_t *filter_out , int16_t *filter_in);
+
 
 /* xmodem */
 extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);

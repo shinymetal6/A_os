@@ -21,11 +21,11 @@
  */
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
-#include "../../kernel/audio.h"				/* for audio parameters */
-#include "../../kernel/kernel_opt.h"
 
 #ifdef SYNTH_ENGINE_ENABLE
 
+#include "../../kernel/audio.h"				/* for audio parameters */
+#include "../../kernel/kernel_opt.h"
 #include "oscillators.h"
 #include "oscillator_core.h"
 #include "noise.h"
@@ -33,7 +33,7 @@
 extern OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
 extern	float	delta_k_phase;
 
-FLASH_DATA_TABLE  int16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
+__attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
 {
 		0,402,803,1205,1605,2005,2403,2800,3196,3589,3980,4369,4755,5139,5519,5896,
 		6269,6639,7004,7365,7722,8075,8422,8764,9101,9433,9759,10079,10393,10700,11002,11296,
@@ -61,7 +61,7 @@ OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_square_tab[WAVETABLE
 OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_tri_tab[WAVETABLE_SIZE];
 OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_noise_tab[WAVETABLE_SIZE];
 
-FLASH_DATA_TABLE float	rom_midi_freq[MIDI_NOTES] =
+__attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[MIDI_NOTES] =
 {
 		8.176,
 		8.662,
@@ -203,7 +203,7 @@ uint8_t		angle,osc_number;
 		osc_buffer[i] = 0;
 	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
 	{
-		if ( Oscillator[osc_number].state != OSC_OFF )
+		if ((Oscillator[osc_number].state & OSCILLATOR_ON ) == OSCILLATOR_ON )
 		{
 			Oscillator[osc_number].oscillator_age++;
 			for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
@@ -213,17 +213,15 @@ uint8_t		angle,osc_number;
 				osc_buffer_gen[i] = Oscillator[osc_number].wave[angle];
 				Oscillator[osc_number].current_phase += Oscillator[osc_number].delta_phase;
 				// zero crossing
-				if ( Oscillator[osc_number].state == OSC_GO_OFF)
+				if ((Oscillator[osc_number].state & OSCILLATOR_GO_OFF ) == OSCILLATOR_GO_OFF )
 				{
-					if ( (i > 1 ) && (i < (HALF_NUMBER_OF_AUDIO_SAMPLES -1 )))
+					if ( ( i > 1) && (i < WAVETABLE_SIZE-1 ))
 					{
-						if ( (( osc_buffer_gen[i-1] > 0 ) && (osc_buffer_gen[i] <0)) || (( osc_buffer_gen[i-1] < 0 ) && (osc_buffer_gen[i] > 0)) )
-						{
-							Oscillator[osc_number].state = OSC_OFF;
-						}
+						if ( (osc_buffer_gen[i-1] < 0 ) || (osc_buffer_gen[i] > 0) )
+							Oscillator[osc_number].state = ~( OSCILLATOR_ON | OSCILLATOR_GO_OFF);
 					}
 				}
-				if ( Oscillator[osc_number].state == OSC_OFF)
+				if ((Oscillator[osc_number].state & OSCILLATOR_ON ) != OSCILLATOR_ON )
 					osc_buffer_gen[i] = 0;
 				// zero crossing end
 

@@ -35,26 +35,17 @@ typedef struct _OscillatorsTypeDef
 	uint8_t 				midi_note;
 	uint8_t 				waveform;
 	int16_t					*wave;
-	/*
-	uint8_t 				adsr_state;
-	uint16_t 				adsr_prescaler;
-	uint16_t 				adsr_counter;
-	float					Alevel;
-	float					Dlevel;
-	float					Slevel;
-	float					Rlevel;
-	float					Avalue;
-	float					Dvalue;
-	float					Astep;
-	float					Dstep;
-	float					Rstep;
-	*/
 	uint16_t 				current_phase;
 	uint16_t 				delta_phase;
 	float 					detune;
 	uint8_t 				duty;
 	float 					volume;
 } OscillatorsTypeDef;
+
+/* state */
+#define	OSCILLATOR_ON					0x01
+#define	OSCILLATOR_GO_OFF				0x02
+#define	OSCILLATOR_GO_ON				0x04
 
 #define	INT_PRECISION					256
 #define	INT_PRECISION_SHIFT				(INT_PRECISION >> 5)
@@ -71,12 +62,12 @@ typedef struct _OscillatorsTypeDef
 #define	MIDI_NOTES						128
 
 #define	VOICES							4
-#define	SAMPLE_FREQUENCY				48000
-#define	SAMPLE_PERIOD					(1.0F / SAMPLE_FREQUENCY)
 
+/*
 #define	OSC_OFF							0
 #define	OSC_GO_OFF						1
 #define	OSC_ON							2
+*/
 
 #define	DUTY_SCALE	(256.0F/100.0F)
 

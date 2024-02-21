@@ -30,34 +30,18 @@ typedef struct
 
 typedef struct _AudioFlagsTypeDef
 {
-
 	uint8_t 	audio_flags;
-	uint8_t 	oscillator_flags;
-	uint8_t		osc_waves[4];
-	uint8_t 	osc_duty[4];
-
-	uint8_t 	osc_volume[4];	// range 0..10
-	uint8_t 	osc_duty_percent[4];
-
 	uint8_t 	control_flags;
+	float		master_volume;
 
 }AudioFlagsTypeDef;
 
 /* audio_flags values */
-#define	AUDIO_HALFBUFOUT_FLAG		0x08
-#define	AUDIO_OUT_READY_FLAG		0x80
-#define	AUDIO_HALFBUFIN_FLAG		0x04
-#define	AUDIO_IN_READY_FLAG			0x40
-
-/* oscillator_flags */
-#define	OSC_VOLUME_PENDING			0x01
-#define	OSC_DETUNE_PENDING			0x02
-#define	OSC_DUTY_PENDING			0x04
-#define	OSC_WAVE_PENDING			0x08
-#define	OSC_FM_PENDING				0x10
-#define	OSC_TUNE_PENDING			0x20
-//NOT USED							0x40
-#define	OSC_SRCFLAG					0x80	/* 0 is from Cv , 1 is from MIDI */
+#define	AUDIO_HALFBUFIN_FLAG		0x01
+#define	AUDIO_HALFBUFOUT_FLAG		0x02
+#define	AUDIO_OUT_READY_FLAG		0x10
+#define	AUDIO_IN_READY_FLAG			0x20
+#define	AUDIO_GENERATE_FLAG			0x80
 
 /* control_flags values */
 /*

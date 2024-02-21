@@ -31,11 +31,11 @@
 #pragma GCC optimize("Ofast")
 
 #include "audio.h"
-DMA_NOCACHE_RAM	WaveLR_t	 WaveLR_Out[AUDIO_BUF_SIZE];
-DMA_NOCACHE_RAM	WaveLR_t	WaveLR_In[AUDIO_BUF_SIZE];
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 
 OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
+extern	ControlAdcDef	ControlAdc;
+
 #define	OSCILLATORS	1
 
 uint8_t StartAudioBuffers(int16_t *audio_in_buffer,int16_t *audio_out_buffer)
@@ -74,30 +74,43 @@ extern uint16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 ITCM_AREA_CODE void IrqProcessSamples(void)
 {
 uint16_t	start,end,i;
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
-#ifdef	OSCILLATORS
-	RunOscillator32();
-	get_limits(&start,&end);
-	for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-	{
-		/*
-		WaveLR_Out[i+start].channel[AUDIO_LEFT_CH] = oscout_buffer[i];
-		WaveLR_Out[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
-		*/
-		audio_out[i+start].channel[AUDIO_LEFT_CH]  = oscout_buffer[i];
-		audio_out[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
-	}
-#else
-	get_limits(&start,&end);
-	for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-	{
-		audio_out[i+start].channel[AUDIO_LEFT_CH]  = audio_in[i+start].channel[AUDIO_LEFT_CH];
-		audio_out[i+start].channel[AUDIO_RIGHT_CH] = audio_in[i+start].channel[AUDIO_RIGHT_CH];
-	}
-#endif
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
-}
 
+//	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
+	{
+		HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
+
+		RunOscillator32();
+		get_limits(&start,&end);
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		{
+			audio_in[i+start].channel[AUDIO_LEFT_CH]  = oscout_buffer[i];
+			audio_in[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
+		}
+		Vca(audio_out ,audio_in,start);
+
+		/*
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		{
+			audio_out[i+start].channel[AUDIO_LEFT_CH]  = oscout_buffer[i];
+			audio_out[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
+		}
+		*/
+	}
+	/*
+	else
+	{
+		get_limits(&start,&end);
+		//Vca(audio_out ,audio_in,start);
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		{
+			audio_out[i+start].channel[AUDIO_LEFT_CH]  = audio_in[i+start].channel[AUDIO_LEFT_CH];
+			audio_out[i+start].channel[AUDIO_RIGHT_CH] = audio_in[i+start].channel[AUDIO_RIGHT_CH];
+		}
+	}
+	*/
+    HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
+
+}
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
@@ -113,6 +126,24 @@ ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
 	AudioFlags.audio_flags &= ~AUDIO_HALFBUFIN_FLAG;
 	AudioFlags.audio_flags |= AUDIO_IN_READY_FLAG;
 	IrqProcessSamples();
+}
+
+void SetEffectMode(void)
+{
+	AudioFlags.audio_flags &= ~AUDIO_GENERATE_FLAG;
+}
+
+void SetGeneratorMode(void)
+{
+	AudioFlags.audio_flags |= AUDIO_GENERATE_FLAG;
+}
+
+void SetMasterVolume(uint16_t volume)
+{
+	if ( volume < 100 )
+		AudioFlags.master_volume = (float )volume / 100.0F;
+	else
+		AudioFlags.master_volume = 1.0F;
 }
 
 #endif

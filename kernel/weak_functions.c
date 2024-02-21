@@ -72,9 +72,18 @@ __weak uint8_t MIDI_Receive_Callback(uint8_t* Buf, uint16_t Len)
 }
 
 /* os related */
+
+__weak void postpone_init(void)
+{
+
+}
+
 __weak void A_PreOS_Init(void)
 {
 #ifdef USB_ENABLED
+#ifdef	STM32U575xx
+	HAL_Delay(1000);
+#endif
 	MX_USB_Device_Init();
 #endif
 

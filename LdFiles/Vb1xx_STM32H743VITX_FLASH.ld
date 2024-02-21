@@ -57,15 +57,15 @@ SECTIONS
 	_osSysRam_start     = LOADADDR(.osSysRamStart);
 	.osSysRamStart 		0x20000000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
-	.osSysRamEnd 		0x20008000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	.osSysRamEnd 		0x20002000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 
 	_oscillators_start  = LOADADDR(.oscillators);
-	.oscillators	 	0x20008000 : {. = ALIGN(4); KEEP(*(.oscillators))}
-	_oscillators_end  	= LOADADDR(.audiobufs);
-	.audiobufs		 	0x2000C000 : {. = ALIGN(4); KEEP(*(.audiobufs))}
+	.oscillators	 	0x20002000 : {. = ALIGN(4); KEEP(*(.oscillators))}
+	_oscillators_end  	= LOADADDR(.oscillators_end);
+	.oscillators_end 	0x20010000 : {. = ALIGN(4); KEEP(*(.oscillators_end))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
-	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+	.osMemPoolStart		0x2001e000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
 	.osMemPoolEnd  		0x20020000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
 		
@@ -224,7 +224,7 @@ SECTIONS
   } >RAM_D1
 
   . = ALIGN(4);
-  .dtcmdata 0x20018000 :
+  .dtcmdata 0x2001e000 :
   {
     /* This is used by the startup in order to initialize the .bss section */
     _sdtcm = .;         /* define a global symbol at bss start */
