@@ -27,10 +27,8 @@
 #include "kernel_opt.h"
 
 #ifdef CODEC_ENABLED
-
-#pragma GCC optimize("Ofast")
-
 #include "audio.h"
+
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 
 OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;

@@ -31,8 +31,6 @@ extern	A_modbus_t			A_modbus;
 extern	A_modbus_inout_t	A_modbus_inout;
 extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
 
-
-
 uint8_t rtu_set_in_to_modbus(uint16_t discrete_in_index, uint8_t discrete_in_value)
 {
 uint16_t		byte_index,temp_in_index;

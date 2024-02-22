@@ -30,7 +30,6 @@
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
-extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 
 uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf)
 {
@@ -75,39 +74,17 @@ extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
 uint32_t hw_send_usb(uint8_t* ptr, uint16_t len)
 {
-#ifdef	USE_QUEUES
-	if (( HWMngr[HW_USB_DEVICE].process == Asys.current_process ) && ( len != 0 ))
-	{
-		if ( (queue_insert(&HwQueues[HW_USB_DEVICE],ptr,len) & HW_MNGR_QUEUE_WAS_EMPTY ) == HW_MNGR_QUEUE_WAS_EMPTY )
-		{
-			return (uint32_t )CDC_Transmit_FS(ptr, len);
-		}
-	}
-	return 0xffffffff;
-#else
 #ifdef	STM32U575xx
 	return (uint32_t )CDC_Transmit_HS(ptr, len);
 #else
 	return (uint32_t )CDC_Transmit_FS(ptr, len);
-#endif
 #endif
 }
 
 
 void USB_TxCpltCallback(void)
 {
-#ifdef	USE_QUEUES
-	uint8_t		numbuf,*ptr;
-	uint16_t 	len;
-	if ( HWMngr[HW_USB_DEVICE].status == HWMAN_STATUS_ALLOCATED)
-	{
-		ptr = queue_extract(&HwQueues[HW_USB_DEVICE], &numbuf, &len);
-		if (  numbuf )
-		{
-			CDC_Transmit_FS(ptr, len);
-		}
-	}
-#endif
+
 }
 
 

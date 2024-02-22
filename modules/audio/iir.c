@@ -24,6 +24,9 @@
 
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
+
+#ifdef SYNTH_ENGINE_ENABLE
+
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
@@ -96,3 +99,4 @@ void iir_init(void)
 	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, &iir_coeffs[0], &iir_state[0]);
 }
 
+#endif

@@ -88,23 +88,6 @@ typedef struct
 #define	IRQMAN_FREE		0
 #define	IRQMAN_ALLOCATED	1
 
-
-typedef struct
-{
-	uint32_t	peripheral;
-	uint8_t 	process;
-	uint8_t		*ptr[HWMAN_QUEUE_LEN];
-	uint16_t	len[HWMAN_QUEUE_LEN];
-	uint8_t		insertion_index;
-	uint8_t		extraction_index;
-	uint8_t		queued_bufs;
-}HWMngr_queue_t;
-#define	HW_MNGR_QUEUE_LEN	( sizeof(uint32_t) + sizeof(uint8_t) + sizeof(uint8_t *)*HWMAN_QUEUE_LEN + sizeof(uint16_t)*HWMAN_QUEUE_LEN +sizeof(uint8_t) + sizeof(uint8_t) )
-#define	HW_MNGR_QUEUE_NOT_OWNED	0x10000000
-#define	HW_MNGR_QUEUE_FULL		0x20000000
-#define	HW_MNGR_QUEUE_WAS_EMPTY	0x80000000
-
-
 typedef struct
 {
 	uint8_t		current_process;
@@ -160,14 +143,6 @@ typedef struct
 
 typedef struct
 {
-	int8_t		active_semaphores;
-	int8_t		semaphore[MAX_SEMAPHORES];
-	int8_t		semaphore_waiting_process[MAX_SEMAPHORES];
-	int32_t		semaphore_timeout[MAX_SEMAPHORES];
-}Semaphores_t;
-
-typedef struct
-{
 	uint8_t		IP_ADDR0;
 	uint8_t		IP_ADDR1;
 	uint8_t		IP_ADDR2;
@@ -193,14 +168,6 @@ extern	void schedule(void);
 extern	void A_mem_init(void);
 extern	void defrag_mem(void);
 extern	void reset_orphaned_chunks(uint8_t process);
-
-#ifdef	USE_QUEUES
-extern	uint32_t queue_insert(HWMngr_queue_t *queue, uint8_t *buf, uint16_t len);
-extern	uint8_t *queue_extract(HWMngr_queue_t *queue, uint8_t *numbuf, uint16_t *len);
-extern	uint32_t create_queue(HWMngr_queue_t *queue,uint32_t peripheral);
-extern	uint32_t destroy_queue(HWMngr_queue_t *queue,uint32_t peripheral);
-extern	uint32_t get_queue_len(HWMngr_queue_t *queue);
-#endif
 
 extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);

@@ -33,8 +33,6 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
-SYSTEM_RAM		HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
-SYSTEM_RAM		Semaphores_t	Semaphores;
 
 #ifdef CUSTOM_RAM
 CUSTOM_RAM		uint32_t		CustomRamStart;
@@ -43,6 +41,7 @@ CUSTOM_RAM_END	uint32_t		CustomRamEnd;
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
+#ifdef	ETH_ENABLED
 A_IpAddr_t	A_IpAddr =
 {
 		.IP_ADDR0 		= 192,
@@ -59,6 +58,7 @@ A_IpAddr_t	A_IpAddr =
 		.GW_ADDR3 		= 1
 };
 SYSTEM_RAM	A_IpAddr_t	A_DhcpIpAddr;
+#endif
 
 uint32_t	UsbDeviceId0 = 0xdeadbeef;
 uint32_t	UsbDeviceId1 = 0xbeefdead;
@@ -118,9 +118,7 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
 void A_init_mem(void)
 {
 	bzero((uint8_t *)&Asys,sizeof(Asys));
-	bzero((uint8_t *)&Semaphores,sizeof(Semaphores));
 	bzero((uint8_t *)HWMngr,sizeof(HWMngr));
-	bzero((uint8_t *)HwQueues,sizeof(HwQueues));
 	bzero((uint8_t *)process,sizeof(process));
 	bzero((uint8_t *)POOL_START,POOL_SIZE);
 	bzero((uint8_t *)SRAM_START,SRAM_SIZE);
@@ -216,8 +214,10 @@ void A_MPU_Config(void)
 
 void A_start(void)
 {
+#ifdef	ETH_ENABLED
 #if defined ETH_NRST_Pin
 	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_SET);
+#endif
 #endif
 	A_PreOS_Init();
 	__disable_irq();

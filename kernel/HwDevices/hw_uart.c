@@ -33,7 +33,6 @@
 #ifdef CONSOLE
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
-extern	HWMngr_queue_t	HwQueues[PERIPHERAL_NUM];
 uint8_t	rx_char;
 #endif
 

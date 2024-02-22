@@ -51,6 +51,11 @@ int16_t	left_buf_in[HALF_NUMBER_OF_AUDIO_SAMPLES],right_buf_in[HALF_NUMBER_OF_AU
 int16_t	left_buf_out[HALF_NUMBER_OF_AUDIO_SAMPLES],right_buf_out[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 //#define	VCA_ONLY
+#define	REVERB
+
+#ifndef REVERB
+#define	IIR
+#endif
 ITCM_AREA_CODE void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start)
 {
 uint32_t	i;
@@ -67,7 +72,8 @@ uint32_t	i;
 		buffer_out[i+start].channel[AUDIO_LEFT_CH]  = (int16_t )((float )buffer_in[i+start].channel[AUDIO_LEFT_CH] );
 		buffer_out[i+start].channel[AUDIO_RIGHT_CH] = (int16_t )((float )buffer_in[i+start].channel[AUDIO_RIGHT_CH]);
 	}
-#else
+#endif
+#ifdef IIR
 	for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
 		left_buf_in[i] = (int16_t )((float )buffer_in[i+start].channel[AUDIO_LEFT_CH]);
@@ -80,6 +86,13 @@ uint32_t	i;
 	{
 		buffer_out[i+start].channel[AUDIO_LEFT_CH]  = (int16_t )((float )left_buf_out[i] * AudioFlags.master_volume);
 		buffer_out[i+start].channel[AUDIO_RIGHT_CH] = (int16_t )((float )right_buf_out[i]* AudioFlags.master_volume);
+	}
+#endif
+#ifdef REVERB
+	for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+	{
+		buffer_out[i+start].channel[AUDIO_LEFT_CH]   = (int16_t )Do_Reverb((float )buffer_in[i+start].channel[AUDIO_LEFT_CH]);
+		buffer_out[i+start].channel[AUDIO_RIGHT_CH]  = (int16_t )Do_Reverb((float )buffer_in[i+start].channel[AUDIO_RIGHT_CH]);
 	}
 #endif
 }

@@ -111,8 +111,6 @@ extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
 /* support functions */
 extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
-
-
 /* audio */
 
 #include "audio.h"
@@ -132,7 +130,7 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	void iir_init(void);
 extern	void iir_set_params(uint8_t type, uint16_t frequency, float iir_Q);
 extern	void iir(int16_t *filter_out , int16_t *filter_in);
-
+extern	float Do_Reverb(float inSample);
 
 /* xmodem */
 extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
@@ -155,18 +153,20 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_UART2					6
 #define	HW_UART3					7
 #define	HW_UART4					8
-#define	HW_I2C1						9
-#define	HW_I2C2						10
-#define	HW_SPI1						11
-#define	HW_SPI2						12
-#define	HW_QSPI						13
-#define	HW_I2S1						14
-#define	HW_I2S2						15
-#define	HW_TIM						16
-#define	HW_EXT_INT					17
-#define	HW_ADC1						18
-#define	HW_ADC2						18
-#define	HW_DAC						20
+#define	HW_UART5					9
+#define	HW_UART6					10
+#define	HW_I2C1						11
+#define	HW_I2C2						12
+#define	HW_SPI1						13
+#define	HW_SPI2						14
+#define	HW_QSPI						15
+#define	HW_I2S1						16
+#define	HW_I2S2						17
+#define	HW_TIM						18
+#define	HW_EXT_INT					19
+#define	HW_ADC1						20
+#define	HW_ADC2						21
+#define	HW_DAC						22
 #define	HW_NRF24L01					28
 #define	HW_USB_DEVICE				29
 #define	HW_USB_HOST					30
@@ -180,6 +180,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_UART2_IRQ					(1<<HW_UART2)
 #define	EVENT_UART3_IRQ					(1<<HW_UART3)
 #define	EVENT_UART4_IRQ					(1<<HW_UART4)
+#define	EVENT_UART5_IRQ					(1<<HW_UART5)
+#define	EVENT_UART6_IRQ					(1<<HW_UART6)
 #define	EVENT_I2C1_IRQ					(1<<HW_I2C1)
 #define	EVENT_I2C2_IRQ					(1<<HW_I2C2)
 #define	EVENT_SPI1_IRQ					(1<<HW_SPI1)
@@ -203,6 +205,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_UART2_IRQ			EVENT_UART2_IRQ
 #define	SUSPEND_ON_UART3_IRQ			EVENT_UART3_IRQ
 #define	SUSPEND_ON_UART4_IRQ			EVENT_UART4_IRQ
+#define	SUSPEND_ON_UART5_IRQ			EVENT_UART5_IRQ
+#define	SUSPEND_ON_UART6_IRQ			EVENT_UART6_IRQ
 #define	SUSPEND_ON_I2C1_IRQ				EVENT_I2C1_IRQ
 #define	SUSPEND_ON_I2C2_IRQ				EVENT_I2C2_IRQ
 #define	SUSPEND_ON_SPI1_IRQ				EVENT_SPI1_IRQ
@@ -226,6 +230,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_UART2_IRQ			SUSPEND_ON_UART2_IRQ
 #define	WAKEUP_FROM_UART3_IRQ			SUSPEND_ON_UART3_IRQ
 #define	WAKEUP_FROM_UART4_IRQ			SUSPEND_ON_UART4_IRQ
+#define	WAKEUP_FROM_UART5_IRQ			SUSPEND_ON_UART5_IRQ
+#define	WAKEUP_FROM_UART6_IRQ			SUSPEND_ON_UART6_IRQ
 #define	WAKEUP_FROM_I2C1_IRQ			SUSPEND_ON_I2C1_IRQ
 #define	WAKEUP_FROM_I2C2_IRQ			SUSPEND_ON_I2C2_IRQ
 #define	WAKEUP_FROM_SPI1_IRQ			SUSPEND_ON_SPI1_IRQ
@@ -249,6 +255,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_UART2					HW_UART2
 #define	DEVICE_UART3					HW_UART3
 #define	DEVICE_UART4					HW_UART4
+#define	DEVICE_UART5					HW_UART5
+#define	DEVICE_UART6					HW_UART6
 #define	DEVICE_I2C1						HW_I2C1
 #define	DEVICE_I2C2						HW_I2C2
 #define	DEVICE_SPI1						HW_SPI1

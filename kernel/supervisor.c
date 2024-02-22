@@ -56,13 +56,6 @@ void supervisor(void)
 		MX_USB_HOST_Process();
 #endif
 		supervisor_callback();
-		/*
-#ifdef STM32H743xx
-	#ifdef POWERSAVE_ENABLED
-		HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON,PWR_SLEEPENTRY_WFI);
-	#endif
-#endif
-*/
 	}
 }
 

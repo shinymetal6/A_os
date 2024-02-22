@@ -30,34 +30,6 @@
 extern	MEMpool_t	MEMpool[POOL_NUM];
 extern	Asys_t		Asys;
 
-#ifdef OLD_MEM_INIT
-void A_mem_init(void)
-{
-uint32_t	i,pool_num=POOL_NUM;
-uint8_t		*mem_ptr;
-MEMpool_t	*p = MEMpool;
-
-	mem_ptr = (uint8_t *)POOL_START;
-	Asys.first_data_address= (uint32_t )POOL_START;
-	Asys.mempool_available_size = POOL_SIZE ;
-	Asys.mempool_requested_size = POOL_CHUNK_SIZE * POOL_NUM ;
-	if ( Asys.mempool_requested_size > Asys.mempool_available_size)
-		pool_num = Asys.mempool_available_size / POOL_CHUNK_SIZE;
-	Asys.first_mem = (uint8_t *)&p[0];
-//	for(i=0;i<pool_num;i++)
-	while(mem_ptr < (uint8_t *)& _mempool_end)
-	{
-		p[i].nxt_link = (uint8_t *)&p[i+1];
-		p[i].pre_link = (i > 0) ? (uint8_t *)&p[i-1] : 0;
-		p[i].mem_ptr = mem_ptr;
-		p[i].chunk_count = 0;
-		p[i].chunk_index = 0;
-		p[i].process = p[i].flags = 0;
-		mem_ptr += POOL_CHUNK_SIZE;
-	}
-	p[i-1].nxt_link = 0;
-}
-#else
 extern	uint8_t					*_mempool_start,*_mempool_end;
 void A_mem_init(void)
 {
@@ -81,7 +53,6 @@ uint32_t	pool_index;
 	}
 	p[pool_index-1].nxt_link = 0;
 }
-#endif
 
 void reset_orphaned_chunks(uint8_t process)
 {
@@ -111,9 +82,6 @@ uint8_t		*mem_ptr=(uint8_t *)POOL_START;
 MEMpool_t	*p = MEMpool;
 
 	__disable_irq();
-#ifdef	DEBUG_MEM_DEFRAG_ON_PG6
-	A_Debug_Set_One();
-#endif
 	Asys.first_mem = (uint8_t *)&p[0];
 	for(i=0;i<POOL_NUM;i++)
 	{
@@ -123,9 +91,6 @@ MEMpool_t	*p = MEMpool;
 	}
 	p[i-1].nxt_link = 0;
 	Asys.system_flags &= ~SYS_MEM_DEFRAG_REQUEST;
-#ifdef	DEBUG_MEM_DEFRAG_ON_PG6
-	A_Debug_Set_Zero();
-#endif
 	__enable_irq();
 }
 
