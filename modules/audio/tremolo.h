@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_TREMOLO_H_
 #define MODULES_AUDIO_TREMOLO_H_
 
-
+extern	void Tremolo_init(uint32_t Rate,uint32_t Depth);
+extern	void Tremolo_enable(void);
+extern	void Tremolo_disable(void);
+extern	void Do_Tremolo(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_TREMOLO_H_ */

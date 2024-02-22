@@ -19,7 +19,6 @@
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -28,53 +27,20 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "arm_math.h"
+#include "effects.h"
 
-#include <string.h>
-
-// parameters used
-static float parameterValues[3];
-static Parameter paramRate  = {"Rate[Hz] ",  0.1f, 0.1f,  1.0f}; // 0 to 1 hz
-static Parameter paramDepth = {"Depth[%] ", 10.0f, 0.0f,  100.0f}; // 0 to 100 %
-static Parameter paramDelay = {"Delay[ms]",  1.0f, 0.0f,  15.0f}; // 0 to 15ms
-static Parameter parameters[3];
-Effect flanger;
-
-/**
- *
- * @brief This function intialized the global
- *        flanger struct, this must be called
- *        before usage.
- *
- * @param None
- *
- * @retval None
- *
- */
-
-
-/**
- * @brief This function applies the flanger effect
- *        to the input buffer.
- *
- * @param inputData Pointer to the block of input data
- * @param outputData Pointer to the block of output data
- * @param offset The offset into the sample buffers
- *
- * @retval None
- *
- */
-void Do_Flanger(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE void Do_Flanger(int16_t* inputData, int16_t* outputData)
 {
-	if(flanger.on)
+uint16_t	i;
+
+	if ( (Effect[FLANGER_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		uint16_t maxDelay  = ((parameterValues[2])*44100)/1000;
-		float lfoFreq = parameterValues[0];
-		float lfoDepth = (parameterValues[1]/100.0f);
+		uint16_t maxDelay  = ((Effect[FLANGER_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
+		float lfoFreq = Effect[FLANGER_EFFECT_ID].parameter[0];
+		float lfoDepth = (Effect[FLANGER_EFFECT_ID].parameter[1]/100.0f);
 
-		for(int i = offset; i < offset+(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// get current sample
 			int16_t sample = (int16_t)outputData[i];
@@ -91,28 +57,47 @@ void Do_Flanger(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			// update phase
 			phase =  fmodf(phase + lfoFreq / (float)SAMPLE_FREQUENCY,1);
 		}
-	 }
+	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Flanger_init(void)
+void Flanger_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
 {
-	// init params
-	parameters[0] = paramRate;
-	parameters[1] = paramDepth;
-	parameters[2] = paramDelay;
+/*
+{"Rate[Hz] ",  0.1f, 0.1f,  1.0f}; // 0 to 1 hz
+{"Depth[%] ", 10.0f, 0.0f,  100.0f}; // 0 to 100 %
+{"Delay[ms]",  1.0f, 0.0f,  15.0f}; // 0 to 15ms
 
-	parameterValues[0] = 0.5f;
-	parameterValues[1] = 50.0f;
-	parameterValues[2] = 2.0f;
+typical values
+	parameter[0] = 0.5f;
+	parameter[1] = 50.0f;
+	parameter[2] = 2.0f;
+*/
 
-	// init effect object
-	strcpy( flanger.name, "Flanger" );
-	flanger.on = 0;
-	flanger.currentParam = 0;
-	flanger.paramNum = 3;
-	flanger.parameters = parameters;
-	flanger.processBuffer = Do_Flanger;
-	flanger.paramValues = parameterValues;
+	Effect[FLANGER_EFFECT_ID].parameter[0] = (float )Rate;
+	Effect[FLANGER_EFFECT_ID].parameter[1] = (float )Depth;
+	Effect[FLANGER_EFFECT_ID].parameter[2] = (float )Delay;
+	Effect[FLANGER_EFFECT_ID].num_params = 3;
+	sprintf(Effect[FLANGER_EFFECT_ID].effect_name,"Flanger");
+	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[0],"Rate");
+	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Depth");
+	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Delay[ms]");
+	Effect[FLANGER_EFFECT_ID].do_effect =  Do_Flanger;
+	Effect[FLANGER_EFFECT_ID].effect_enabled = 0;
+}
+
+void Flanger_enable(void)
+{
+	Effect[FLANGER_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Flanger_disable(void)
+{
+	Effect[FLANGER_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
 }
 
 #endif

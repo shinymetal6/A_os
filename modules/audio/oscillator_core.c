@@ -297,7 +297,7 @@ int16_t		tri_delta = MIN_SINEVAL;
 			tri_delta -= MAX_SINEVAL /  (WAVETABLE_SIZE/4);
 	}
 	// 2.4 create noise table
-	Noise_Gen(osc_noise_tab);
+	//Noise_Gen(osc_noise_tab);
 	// 3 setup default table -> sine
 	for(i=0;i<NUMOSCILLATORS;i++)
 	{

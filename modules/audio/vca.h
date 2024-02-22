@@ -14,35 +14,19 @@
  * Project : A_os
 */
 /*
- * effect.h
+ * vca.h
  *
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_EFFECT_H_
-#define MODULES_AUDIO_EFFECT_H_
+#ifndef MODULES_AUDIO_VCA_H_
+#define MODULES_AUDIO_VCA_H_
 
-typedef struct
-{
-	char name[40];
-	float tick;
-	float min;
-	float max;
-}Parameter;
+extern	void Vca_init(uint8_t Volume);
+extern	void Vca_enable(void);
+extern	void Vca_disable(void);
+extern	void Do_Vca(int16_t* inputData, int16_t* outputData);
 
-typedef struct
-{
-	int on;
-	char name[40];
-	int currentParam;
-	int paramNum;
-	Parameter* parameters;
-	float* paramValues;
-	void (*processBuffer)(
-			uint16_t* inputData,
-			uint16_t* outputData,
-			uint32_t offset);
-}Effect;
 
-#endif /* MODULES_AUDIO_EFFECT_H_ */
+#endif /* MODULES_AUDIO_VCA_H_ */

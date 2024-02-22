@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_WAH_H_
 #define MODULES_AUDIO_WAH_H_
 
-
+extern	void Wah_init(uint32_t CenterFrequency,uint32_t Rate,uint32_t Depth);
+extern	void Wah_enable(void);
+extern	void Wah_disable(void);
+extern	void Do_Wah(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_WAH_H_ */

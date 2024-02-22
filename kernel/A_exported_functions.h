@@ -130,7 +130,6 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	void iir_init(void);
 extern	void iir_set_params(uint8_t type, uint16_t frequency, float iir_Q);
 extern	void iir(int16_t *filter_out , int16_t *filter_in);
-extern	float Do_Reverb(float inSample);
 
 /* xmodem */
 extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);

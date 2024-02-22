@@ -22,7 +22,6 @@
 /*
  * https://github.com/JoeKenyon/GuitarEffectsPedal
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -31,40 +30,19 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "tremolo.h"
-#include "arm_math.h"
+#include "effects.h"
 
-
-#define TREMDEPTHIDX 0
-#define TREMRATEIDX  1
-static float parameterValues[2];
-static Parameter paramDepth = {"Depth[%]", 10.f, 0.0f, 100.f};
-static Parameter paramRate  = {"Rate[Hz]", 0.5f, 1.0f,  7.0f};
-static Parameter parameters[2];
-Effect tremolo;
-
-/*
- *
- * @brief This function will perfrom the tremolo effect
- *        on the data passed in.
- *
- * @param inputData Pointer to the block of input data
- * @param outputData Pointer to the block of output data
- * @param offset The offset into the sample buffer
- *
- * @retval None
- *
- */
-void Do_Tremolo(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE	void Do_Tremolo(int16_t* inputData, int16_t* outputData)
 {
-	if(tremolo.on)
+uint16_t	i;
+
+	if ( (Effect[TREMOLO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		float lfoFreq = parameterValues[TREMRATEIDX];
-		float lfoDepth = (parameterValues[TREMDEPTHIDX]/100.0f);
+		float lfoFreq = Effect[TREMOLO_EFFECT_ID].parameter[1] ;
+		float lfoDepth = (Effect[TREMOLO_EFFECT_ID].parameter[0]/100.0f);
 
-		for(int i = offset; i < offset+(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// get current sample
 			int16_t sample = (int16_t) outputData[i];
@@ -79,25 +57,38 @@ void Do_Tremolo(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			phase =  fmodf(phase + lfoFreq / 44100,1);
 		}
 	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Tremolo_init(void)
+void Tremolo_init(uint32_t Rate,uint32_t Depth)
 {
-	// init params
-	parameters[TREMDEPTHIDX] = paramDepth;
-	parameters[TREMRATEIDX] = paramRate;
+/*
+typical values
+	parameter[0] = "Depth[%]", 10.f, 0.0f, 100.f;
+	parameter[1] = "Rate[Hz]", 0.5f, 1.0f,  7.0f;
+*/
 
-	parameterValues[TREMDEPTHIDX] = 50.f;
-	parameterValues[TREMRATEIDX] = 5.0f;
-
-	// init effect object
-	strcpy( tremolo.name, "Tremolo" );
-	tremolo.on = 0;
-	tremolo.currentParam = 0;
-	tremolo.paramNum = 2;
-	tremolo.parameters = parameters;
-	tremolo.processBuffer = Do_Tremolo;
-	tremolo.paramValues = parameterValues;
+	Effect[TREMOLO_EFFECT_ID].parameter[0] = (float )Depth;
+	Effect[TREMOLO_EFFECT_ID].parameter[1] = (float )Rate;
+	Effect[TREMOLO_EFFECT_ID].num_params = 2;
+	sprintf(Effect[TREMOLO_EFFECT_ID].effect_name,"Tremolo");
+	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[0],"Depth");
+	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[1],"Rate");
+	Effect[TREMOLO_EFFECT_ID].do_effect =  Do_Tremolo;
+	Effect[TREMOLO_EFFECT_ID].effect_enabled = 0;
 }
 
+void Tremolo_enable(void)
+{
+	Effect[TREMOLO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Tremolo_disable(void)
+{
+	Effect[TREMOLO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+}
 #endif

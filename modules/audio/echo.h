@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_ECHO_H_
 #define MODULES_AUDIO_ECHO_H_
 
-
+extern	void Echo_init(uint32_t Feedback,uint32_t Delay);
+extern	void Echo_enable(void);
+extern	void Echo_disable(void);
+extern	void Do_Echo(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_ECHO_H_ */

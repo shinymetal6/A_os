@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_NOISE_H_
 #define MODULES_AUDIO_NOISE_H_
 
-extern	void Noise_Gen(int16_t *noise_buffer_gen);
+extern	void Noise_init(uint32_t Rate,uint32_t Depth, uint32_t Delay);
+extern	void Noise_enable(void);
+extern	void Noise_disable(void);
+extern	void Do_Noise(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_NOISE_H_ */

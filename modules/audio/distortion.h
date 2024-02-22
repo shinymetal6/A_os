@@ -23,6 +23,16 @@
 #ifndef MODULES_AUDIO_DISTORTION_H_
 #define MODULES_AUDIO_DISTORTION_H_
 
+typedef struct _DistortionTypeDef
+{
+	float 					clipping;
+	float 					gain;
+	float 					clipping_coef;
+} DistortionTypeDef;
 
+extern	void Distortion_init(uint32_t Clipping,uint32_t Gain);
+extern	void Distortion_enable(void);
+extern	void Distortion_disable(void);
+extern	void Do_Distortion(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_DISTORTION_H_ */

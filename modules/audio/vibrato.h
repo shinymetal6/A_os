@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_VIBRATO_H_
 #define MODULES_AUDIO_VIBRATO_H_
 
-
+extern	void Vibrato_init(uint32_t Rate,uint32_t Depth, uint32_t Delay);
+extern	void Vibrato_enable(void);
+extern	void Vibrato_disable(void);
+extern	void Do_Vibrato(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_VIBRATO_H_ */

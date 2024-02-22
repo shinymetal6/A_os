@@ -19,7 +19,6 @@
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -28,7 +27,7 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "pitch_shift.h"
+#include "effects.h"
 
 int WtrP;
 float Rd_P;
@@ -40,15 +39,8 @@ float a0, a1, a2, b1, b2, hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
 
 int Buf[BufSize];
 
-void PitchShift_init(void)
-{
-	WtrP = 0;
-	Rd_P = 0.0f;
-	Shift = 1.4f;
-	CrossFade = 1.0f;
-}
 
-int PitchShift_HighPass (int inSample)
+ITCM_AREA_CODE int PitchShift_HighPass (int inSample)
 {
 	//300Hz high-pass, 96k
 	a0 = 0.9862117951198142f;
@@ -70,60 +62,103 @@ int PitchShift_HighPass (int inSample)
 	return (int) outSampleF;
 }
 
-int Do_PitchShift(int lSample, int rSample)
+ITCM_AREA_CODE void Do_PitchShift(int16_t* inputData, int16_t* outputData)
 {
-	int sum = lSample + rSample;
-	//sum up and do high-pass
-	sum=PitchShift_HighPass(sum);
+int16_t sum,i;
+	if ( (Effect[PITCHSHIFT_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		{
+			//sum up and do high-pass
+			sum=PitchShift_HighPass(*inputData);
 
-	//write to ringbuffer
-	Buf[WtrP] = sum;
+			//write to ringbuffer
+			Buf[WtrP] = sum;
 
-	//read fractional readpointer and generate 0° and 180° read-pointer in integer
-	int RdPtr_Int = roundf(Rd_P);
-	int RdPtr_Int2 = 0;
-	if (RdPtr_Int >= BufSize/2)
-		RdPtr_Int2 = RdPtr_Int - (BufSize/2);
+			//read fractional readpointer and generate 0° and 180° read-pointer in integer
+			int RdPtr_Int = roundf(Rd_P);
+			int RdPtr_Int2 = 0;
+			if (RdPtr_Int >= BufSize/2)
+				RdPtr_Int2 = RdPtr_Int - (BufSize/2);
+			else
+				RdPtr_Int2 = RdPtr_Int + (BufSize/2);
+
+			//read the two samples...
+			float Rd0 = (float) Buf[RdPtr_Int];
+			float Rd1 = (float) Buf[RdPtr_Int2];
+
+			//Check if first readpointer starts overlap with write pointer?
+			// if yes -> do cross-fade to second read-pointer
+			if (Overlap >= (WtrP-RdPtr_Int) && (WtrP-RdPtr_Int) >= 0 && Shift!=1.0f)
+			{
+				int rel = WtrP-RdPtr_Int;
+				CrossFade = ((float)rel)/(float)Overlap;
+			}
+			else if (WtrP-RdPtr_Int == 0)
+				CrossFade = 0.0f;
+
+			//Check if second readpointer starts overlap with write pointer?
+			// if yes -> do cross-fade to first read-pointer
+			if (Overlap >= (WtrP-RdPtr_Int2) && (WtrP-RdPtr_Int2) >= 0 && Shift!=1.0f)
+			{
+				int rel = WtrP-RdPtr_Int2;
+				CrossFade = 1.0f - ((float)rel)/(float)Overlap;
+			}
+			else if (WtrP-RdPtr_Int2 == 0)
+				CrossFade = 1.0f;
+
+
+			//do cross-fading and sum up
+			sum = (Rd0*CrossFade + Rd1*(1.0f-CrossFade));
+
+			//increment fractional read-pointer and write-pointer
+			Rd_P += Shift;
+			WtrP++;
+			if (WtrP == BufSize)
+				WtrP = 0;
+			if (roundf(Rd_P) >= BufSize)
+				Rd_P = 0.0f;
+			* outputData = sum;
+		}
+	}
 	else
-		RdPtr_Int2 = RdPtr_Int + (BufSize/2);
-
-	//read the two samples...
-	float Rd0 = (float) Buf[RdPtr_Int];
-	float Rd1 = (float) Buf[RdPtr_Int2];
-
-	//Check if first readpointer starts overlap with write pointer?
-	// if yes -> do cross-fade to second read-pointer
-	if (Overlap >= (WtrP-RdPtr_Int) && (WtrP-RdPtr_Int) >= 0 && Shift!=1.0f)
 	{
-		int rel = WtrP-RdPtr_Int;
-		CrossFade = ((float)rel)/(float)Overlap;
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
 	}
-	else if (WtrP-RdPtr_Int == 0)
-		CrossFade = 0.0f;
 
-	//Check if second readpointer starts overlap with write pointer?
-	// if yes -> do cross-fade to first read-pointer
-	if (Overlap >= (WtrP-RdPtr_Int2) && (WtrP-RdPtr_Int2) >= 0 && Shift!=1.0f)
-	{
-		int rel = WtrP-RdPtr_Int2;
-		CrossFade = 1.0f - ((float)rel)/(float)Overlap;
-	}
-	else if (WtrP-RdPtr_Int2 == 0)
-		CrossFade = 1.0f;
-
-
-	//do cross-fading and sum up
-	sum = (Rd0*CrossFade + Rd1*(1.0f-CrossFade));
-
-	//increment fractional read-pointer and write-pointer
-	Rd_P += Shift;
-	WtrP++;
-	if (WtrP == BufSize)
-		WtrP = 0;
-	if (roundf(Rd_P) >= BufSize)
-		Rd_P = 0.0f;
-	return sum;
 }
 
+void PitchShift_init(float Shift,float CrossFade)
+{
+	/*
+	 * 	Shift = 1.4f;
+	CrossFade = 1.0f;
+	 *
+	 */
+
+	Effect[PITCHSHIFT_EFFECT_ID].parameter[0] = Shift;
+	Effect[PITCHSHIFT_EFFECT_ID].parameter[1] = CrossFade;
+	Effect[PITCHSHIFT_EFFECT_ID].num_params = 2;
+	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_name,"PitchShift");
+	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[0],"Shift");
+	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[1],"CrossFade");
+	Effect[PITCHSHIFT_EFFECT_ID].do_effect =  Do_PitchShift;
+	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+
+	WtrP = 0;
+	Rd_P = 0.0f;
+}
+
+
+void PitchShift_enable(void)
+{
+	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void PitchShift_disable(void)
+{
+	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+}
 #endif
 

@@ -19,7 +19,6 @@
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -28,40 +27,31 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "distortion.h"
-#include "arm_math.h"
+#include "effects.h"
 
-#define DISTORTIONCLIPIDX 0
-#define DISTORTIONGAINIDX  1
-static float parameterValues[2];
-static Parameter paramClip  = {"Clipping[%]", 10.f, 0.0f, 100.f};
-static Parameter paramGain  = {"Gain[%]    ", 10.0f, 100.0f, 350.0f};
-static Parameter parameters[2];
-Effect distortion;
+OSCILLATORS_RAM	DistortionTypeDef	DistortionData;
 
 // threshold_min - ( (0/100) * x)  = threshold_min
 // threshold_min - ( (100/100) * x)  = threshold_max
-static float clipping = 50.0f; // 50%
-static float gain = 150.0f;
-static const float clipping_coef = 20000.0f - 15000.0f;
 
-void Do_Distortion(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE void Do_Distortion(int16_t* inputData, int16_t* outputData)
 {
-	if(distortion.on)
+uint16_t	i;
+
+	if ( (Effect[DISTORSION_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
-		gain = parameterValues[DISTORTIONGAINIDX]/100;
-		clipping = parameterValues[DISTORTIONCLIPIDX];
+		DistortionData.gain = Effect[DISTORSION_EFFECT_ID].parameter[1]/100;
+		DistortionData.clipping = Effect[DISTORSION_EFFECT_ID].parameter[0];
 
-		int16_t threshold = 10000.0f - ((clipping/100) * clipping_coef);
+		int16_t threshold = 10000.0f - ((DistortionData.clipping/100) * DistortionData.clipping_coef);
 
-		for(int i = offset; i < offset+(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// get current sample
 			int16_t sample = (int16_t)outputData[i];
 
 			// apply input gain
-			sample *= gain;
+			sample *= DistortionData.gain;
 
 			// check if above threshold
 			if(fabsf(sample) >= threshold)
@@ -74,25 +64,44 @@ void Do_Distortion(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			outputData[i] = (uint16_t)sample;
 		}
 	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Distortion_init(void)
+void Distortion_init(uint32_t Clipping,uint32_t Gain)
 {
-	// init params
-	parameters[DISTORTIONCLIPIDX] = paramClip;
-	parameters[DISTORTIONGAINIDX] = paramGain;
+/*
+typical values
+	parameter[0] = clipping = 50.0f; // 50%
+	parameter[1] = gain = 150.0f;
+*/
 
-	parameterValues[DISTORTIONCLIPIDX] = clipping;
-	parameterValues[DISTORTIONGAINIDX] = gain;
+	Effect[DISTORSION_EFFECT_ID].parameter[0] = (float )Clipping;
+	Effect[DISTORSION_EFFECT_ID].parameter[1] = (float )Gain;
+	Effect[DISTORSION_EFFECT_ID].num_params = 2;
+	sprintf(Effect[DISTORSION_EFFECT_ID].effect_name,"Distorsion");
+	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[0],"Clipping");
+	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[1],"Gain");
+	Effect[DISTORSION_EFFECT_ID].do_effect =  Do_Distortion;
+	Effect[DISTORSION_EFFECT_ID].effect_enabled = 0;
 
-	// init effect object
-	strcpy( distortion.name, "DISTORTION" );
-	distortion.on = 0;
-	distortion.currentParam = 0;
-	distortion.paramNum = 2;
-	distortion.parameters = parameters;
-	distortion.processBuffer = Do_Distortion;
-	distortion.paramValues = parameterValues;
+	DistortionData.clipping = 50.0f; // 50%
+	DistortionData.gain = 150.0f;
+	DistortionData.clipping_coef = 20000.0f - 15000.0f;
 }
+
+void Distortion_enable(void)
+{
+	Effect[DISTORSION_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Distortion_disable(void)
+{
+	Effect[DISTORSION_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+}
+
 
 #endif

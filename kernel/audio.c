@@ -28,6 +28,7 @@
 
 #ifdef CODEC_ENABLED
 #include "audio.h"
+#include "../modules/audio/effects.h"
 
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 
@@ -81,10 +82,9 @@ uint16_t	start,end,i;
 		get_limits(&start,&end);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
-			audio_in[i+start].channel[AUDIO_LEFT_CH]  = oscout_buffer[i];
-			audio_in[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
+			Do_Vca((int16_t *)&oscout_buffer[i], &audio_in[i+start].channel[AUDIO_LEFT_CH]);
+			Do_Vca((int16_t *)&oscout_buffer[i], &audio_in[i+start].channel[AUDIO_RIGHT_CH]);
 		}
-		Vca(audio_out ,audio_in,start);
 
 		/*
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)

@@ -23,6 +23,9 @@
 #ifndef MODULES_AUDIO_PITCH_SHIFT_H_
 #define MODULES_AUDIO_PITCH_SHIFT_H_
 
-
+extern	void PitchShift_init(float Shift,float CrossFade);
+extern	void PitchShift_enable(void);
+extern	void PitchShift_disable(void);
+extern	void Do_PitchShift(int16_t* inputData, int16_t* outputData);
 
 #endif /* MODULES_AUDIO_PITCH_SHIFT_H_ */

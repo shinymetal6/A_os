@@ -19,7 +19,6 @@
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -28,28 +27,20 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "vibrato.h"
-#include "arm_math.h"
+#include "effects.h"
 
-static float parameterValues[3];
-static Parameter paramRate  = {"Rate[Hz] ",  1.0f, 4.0f,  15.0f}; // 0 to 1 hz
-static Parameter paramDepth = {"Depth[%] ", 10.0f, 0.0f,  100.0f}; // 0 to 100 %
-static Parameter paramDelay = {"Delay[ms]",  1.0f, 4.0f,  10.0f}; // 0 to 15ms
-static Parameter parameters[3];
-Effect vibrato;
-
-
-void Do_Vibrato(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE void Do_Vibrato(int16_t* inputData, int16_t* outputData)
 {
-	if(vibrato.on)
+uint16_t	i;
+
+	if ( (Effect[VIBRATO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		uint16_t maxDelay  = ((parameterValues[2])*SAMPLE_FREQUENCY)/1000;
-		float lfoFreq = parameterValues[0];
-		float lfoDepth = (parameterValues[1]/100.0f);
+		uint16_t maxDelay  = ((Effect[VIBRATO_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
+		float lfoFreq = Effect[VIBRATO_EFFECT_ID].parameter[0];
+		float lfoDepth = (Effect[VIBRATO_EFFECT_ID].parameter[1]/100.0f);
 
-		for(int i = offset; i < offset+(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// get the modulated delay
 			uint16_t delaySamples = (uint16_t)(1+(maxDelay/2)*(1-(lfoDepth * arm_cos_f32(2*PI*phase))));
@@ -64,27 +55,41 @@ void Do_Vibrato(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			phase =  fmodf(phase + lfoFreq / 44100,1);
 		}
 	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Vibrato_init(void)
+void Vibrato_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
 {
-	// init params
-	parameters[0] = paramRate;
-	parameters[1] = paramDepth;
-	parameters[2] = paramDelay;
+/*
+typical values
+	parameter[0] = "Depth[%]", 10.f, 0.0f, 100.f;
+	parameter[1] = "Rate[Hz]", 0.5f, 1.0f,  7.0f;
+*/
 
-	parameterValues[0] = 5.0f;
-	parameterValues[1] = 50.0f;
-	parameterValues[2] = 5.0f;
+	Effect[VIBRATO_EFFECT_ID].parameter[0] = (float )Rate;
+	Effect[VIBRATO_EFFECT_ID].parameter[1] = (float )Depth;
+	Effect[VIBRATO_EFFECT_ID].parameter[2] = (float )Delay;
+	Effect[VIBRATO_EFFECT_ID].num_params = 3;
+	sprintf(Effect[VIBRATO_EFFECT_ID].effect_name,"Vibrato");
+	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[0],"Rate");
+	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Depth");
+	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Delay");
+	Effect[VIBRATO_EFFECT_ID].do_effect =  Do_Vibrato;
+	Effect[VIBRATO_EFFECT_ID].effect_enabled = 0;
+}
 
-	// init effect object
-	strcpy( vibrato.name, "VIBRATO" );
-	vibrato.on = 0;
-	vibrato.currentParam = 0;
-	vibrato.paramNum = 3;
-	vibrato.parameters = parameters;
-	vibrato.processBuffer = Do_Vibrato;
-	vibrato.paramValues = parameterValues;
+void Vibrato_enable(void)
+{
+	Effect[VIBRATO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Vibrato_disable(void)
+{
+	Effect[VIBRATO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
 }
 
 #endif

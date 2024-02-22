@@ -27,20 +27,7 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "wah.h"
-#include "arm_math.h"
-
-// setup parameters
-#define WAHWAH_CENTRE_IDX  0
-#define WAHWAH_RATE_IDX    1
-#define WAHWAH_DEPTH_IDX   2
-static float parameterValues[3];
-static Parameter paramDepth       = {"Depth[%]       ", 10.f, 0.0f, 100.f};
-static Parameter paramRate        = {"Rate[Hz]       ", 1.0f, 1.0f,  10.0f};
-static Parameter paramCentreFreq  = {"Cutoff[Hz]", 100.0f, 100.0f,  4000.0f}; // 100 to 4000 hz
-static Parameter parameters[3];
-Effect wahwah;
+#include "effects.h"
 
 // bandpass filter coeff's.
 static float bp_a0, bp_a1, bp_a2, bp_b0, bp_b1, bp_b2;
@@ -48,12 +35,12 @@ static float bp_a0, bp_a1, bp_a2, bp_b0, bp_b1, bp_b2;
 // bandpass previous samples.
 static float bp_x1, bp_x2, bp_y1, bp_y2;
 
-static float currentCutoff = 440.0f;
+static float currentCenterFrequency = 440.0f;
 static float qFactor = 2.3f;
 
-static void new_bandpass()
+ITCM_AREA_CODE static void new_bandpass()
 {
-    float omega = 2 * PI * currentCutoff / SAMPLE_FREQUENCY;
+    float omega = 2 * PI * currentCenterFrequency / SAMPLE_FREQUENCY;
     float cosomega = arm_cos_f32(omega);
     float alpha = arm_sin_f32(omega) / (2 * qFactor);
 
@@ -65,7 +52,7 @@ static void new_bandpass()
     bp_a2 = 1 - alpha;
 }
 
-static int16_t apply_bandpass(int16_t inSample)
+ITCM_AREA_CODE static int16_t apply_bandpass(int16_t inSample)
 {
 	float x0 = (float)inSample;
 	float result =
@@ -86,16 +73,18 @@ static int16_t apply_bandpass(int16_t inSample)
 	return (int16_t)result;
 }
 
-void Do_Wah(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE void Do_Wah(int16_t* inputData, int16_t* outputData)
 {
-	if(wahwah.on)
+uint16_t	i;
+
+	if ( (Effect[WAH_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		float lfoFreq = parameterValues[WAHWAH_RATE_IDX];
-		float lfoDepth = parameterValues[WAHWAH_DEPTH_IDX]/100.0f;
-		float centreFreq = parameterValues[WAHWAH_CENTRE_IDX];
+		float lfoFreq = Effect[WAH_EFFECT_ID].parameter[1];
+		float lfoDepth = Effect[WAH_EFFECT_ID].parameter[2]/100.0f;
+		float centreFreq =Effect[WAH_EFFECT_ID].parameter[0];
 
-		for(int i = offset; i < offset+(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// update phase
 			phase = fmodf((phase + lfoFreq / 44100), 1);
@@ -104,7 +93,7 @@ void Do_Wah(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			float lfoSample = phase < 0.5 ? phase * 4 - 1 : 3 - 4 * phase;
 
 			// modulate bandpass cutoff
-			currentCutoff = (float)((lfoSample * lfoDepth * centreFreq) + centreFreq);
+			currentCenterFrequency = (float)((lfoSample * lfoDepth * centreFreq) + centreFreq);
 
 			// update bandpass filter
 			new_bandpass();
@@ -119,29 +108,44 @@ void Do_Wah(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			outputData[i] = (uint16_t) (sample);
 		}
 	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Wah_init(void)
+void Wah_init(uint32_t CenterFrequency,uint32_t Rate,uint32_t Depth)
 {
-	// init params
-	parameters[WAHWAH_CENTRE_IDX] = paramCentreFreq;
-	parameters[WAHWAH_RATE_IDX] = paramRate;
-	parameters[WAHWAH_DEPTH_IDX] = paramDepth;
+/*
+typical values
+	parameter[0] = "CenterFrequency[Hz]", 100.0f, 100.0f,  4000.0f; // 100 to 4000 hz , typ 550hz
+	parameter[1] = "Rate[Hz]       ", 1.0f, 1.0f,  10.0f // typ 70.0f;
+	parameter[2] = "Depth[%]       ", 10.f, 0.0f, 100.f // typ 4.0f;
+*/
 
-	parameterValues[WAHWAH_CENTRE_IDX] = 550.0f;
-	parameterValues[WAHWAH_RATE_IDX]   = 4.0f;
-	parameterValues[WAHWAH_DEPTH_IDX]  = 70.0f;
-
-	// init effect object
-	strcpy( wahwah.name, "Wah" );
-	wahwah.on = 0;
-	wahwah.currentParam = 0;
-	wahwah.paramNum = 3;
-	wahwah.parameters = parameters;
-	wahwah.processBuffer = Do_Wah;
-	wahwah.paramValues = parameterValues;
-
+	Effect[WAH_EFFECT_ID].parameter[0] = (float )CenterFrequency;
+	Effect[WAH_EFFECT_ID].parameter[1] = (float )Rate;
+	Effect[WAH_EFFECT_ID].parameter[2] = (float )Depth;
+	Effect[WAH_EFFECT_ID].num_params = 3;
+	sprintf(Effect[WAH_EFFECT_ID].effect_name,"Wah");
+	sprintf(Effect[WAH_EFFECT_ID].effect_param[0],"CenterFrequency");
+	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Rate");
+	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Depth");
+	Effect[WAH_EFFECT_ID].do_effect =  Do_Wah;
+	Effect[WAH_EFFECT_ID].effect_enabled = 0;
 	new_bandpass();
 }
+
+void Wah_enable(void)
+{
+	Effect[WAH_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Wah_disable(void)
+{
+	Effect[WAH_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+}
+
 
 #endif

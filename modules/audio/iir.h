@@ -35,4 +35,9 @@
 #define	IIR_COEFF_B1	3
 #define	IIR_COEFF_B2	4
 
+extern	void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q);
+extern	void Iir_enable(void);
+extern	void Iir_disable(void);
+extern	void Do_iir(int16_t *filter_in , int16_t *filter_out);
+
 #endif /* MODULES_AUDIO_IIR_H_ */

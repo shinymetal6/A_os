@@ -11,10 +11,10 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : bb1xx_743_00 
+ * Project : A_os
 */
 /*
- * vca.c
+ * effects.c
  *
  *  Created on: Feb 22, 2024
  *      Author: fil
@@ -28,31 +28,34 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
-ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData)
+
+OSCILLATORS_RAM	EffectsTypeDef		Effect[MAX_EFFECTS];
+OSCILLATORS_RAM	EffectsPipeTypeDef	EffectsPipe[MAX_EFFECTS];
+OSCILLATORS_RAM	static uint32_t	effects_in_pipe = 0;
+
+void EffectsSequencer(int16_t* inputData, int16_t* outputData)
 {
-	if ( (Effect[VCA_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
-			*outputData = (int16_t )((float )*inputData * Effect[VCA_EFFECT_ID].parameter[0]);
-	else
-			*outputData = *inputData;
+uint16_t i=0;
+	while(EffectsPipe[i].execute_effect != NULL)
+	{
+		EffectsPipe[i].execute_effect(inputData, outputData);
+		i++;
+	}
 }
 
-void Vca_init(uint8_t Volume)
+void ResetEffectsSequencer(void)
 {
-	Effect[VCA_EFFECT_ID].parameter[0] = (float )Volume / 100.0F;
-	Effect[VCA_EFFECT_ID].num_params = 1;
-	sprintf(Effect[VCA_EFFECT_ID].effect_name,"Vca");
-	sprintf(Effect[VCA_EFFECT_ID].effect_param[0],"Volume");
-	Effect[VCA_EFFECT_ID].do_effect =  Do_Echo;
-	Effect[VCA_EFFECT_ID].effect_enabled = 0;
+uint16_t i=0;
+	for(i=0;i<MAX_EFFECTS;i++)
+		EffectsPipe[i].execute_effect = 0;
+	effects_in_pipe = 0;
 }
 
-void Vca_enable(void)
+void InsertEffect(void 	(*do_effect))
 {
-	Effect[VCA_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	EffectsPipe[effects_in_pipe].execute_effect = do_effect;
+	effects_in_pipe++;
 }
 
-void Vca_disable(void)
-{
-	Effect[VCA_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
-}
-#endif //#ifdef SYNTH_ENGINE_ENABLE
+
+#endif

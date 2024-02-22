@@ -23,5 +23,9 @@
 #ifndef MODULES_AUDIO_FLANGER_H_
 #define MODULES_AUDIO_FLANGER_H_
 
+extern	void Do_Flanger(int16_t* inputData, int16_t* outputData);
+extern	void Flanger_init(uint32_t Rate,uint32_t Depth, uint32_t Delay);
+extern	void Flanger_enable(void);
+extern	void Flanger_disable(void);
 
 #endif /* MODULES_AUDIO_FLANGER_H_ */

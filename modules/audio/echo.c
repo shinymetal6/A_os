@@ -19,7 +19,6 @@
  *  Created on: Feb 22, 2024
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 
@@ -28,24 +27,16 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "effect.h"
-#include "echo.h"
-#include "arm_math.h"
+#include "effects.h"
 
-static float parameterValues[2];
-static Parameter paramDepth = {"Feedback[%] ", 5.0f, 0.0f,  100.0f}; // 0 to 100 %
-static Parameter paramDelay = {"Delay[ms]   ",  50.0f, 0.0f,  1000.0f}; // 0 to 15ms
-static Parameter parameters[2];
-Effect delay;
-
-void Do_Echo(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
+ITCM_AREA_CODE void Do_Echo(int16_t* inputData, int16_t* outputData)
 {
-	uint16_t delaySamples = ((parameterValues[1])*SAMPLE_FREQUENCY)/1000;
-	float feedbackGain = (parameterValues[0]/100.0f);
-
-	if(delay.on)
+uint16_t	i;
+	float feedbackGain = Effect[ECHO_EFFECT_ID].parameter[0];
+	uint16_t delaySamples = (uint16_t ) Effect[ECHO_EFFECT_ID].parameter[1];
+	if ( (Effect[ECHO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
-		for(int i = offset; i < offset +(HALF_NUMBER_OF_AUDIO_SAMPLES); i++)
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			// current sample
 			int16_t sample =  (int16_t)outputData[i];
@@ -60,26 +51,39 @@ void Do_Echo(uint16_t* inputData, uint16_t* outputData, uint32_t offset)
 			outputData[i] = (uint16_t) (sample + prevSample);
 		}
 	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
 }
 
-void Echo_init(void)
+void Echo_init(uint32_t Feedback,uint32_t Delay)
 {
-	// init params
-	parameters[0] = paramDepth;
-	parameters[1] = paramDelay;
+/*
+"Feedback[%]", 5.0f, 0.0f,  100.0f}; // 5 to 100 %
+"Delay[ms]   ",  50.0f, 0.0f,  1000.0f}; // 0 to 15ms
+*/
 
-	parameterValues[0] = 50.0f;
-	parameterValues[1] = 500.0f;
-
-	// init effect object
-	strcpy( delay.name, "Delay" );
-	delay.on = 0;
-	delay.currentParam = 0;
-	delay.paramNum = 2;
-	delay.parameters = parameters;
-	delay.processBuffer = Do_Echo;
-	delay.paramValues = parameterValues;
+	Effect[ECHO_EFFECT_ID].parameter[0] = (float )Feedback / 100.0F;
+	Effect[ECHO_EFFECT_ID].parameter[1] = (float )Delay * (float )SAMPLE_FREQUENCY / 1000.0F;
+	Effect[ECHO_EFFECT_ID].num_params = 2;
+	sprintf(Effect[ECHO_EFFECT_ID].effect_name,"Echo");
+	sprintf(Effect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
+	sprintf(Effect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
+	Effect[ECHO_EFFECT_ID].do_effect =  Do_Echo;
+	Effect[ECHO_EFFECT_ID].effect_enabled = 0;
 }
 
+
+void Echo_enable(void)
+{
+	Effect[ECHO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+}
+
+void Echo_disable(void)
+{
+	Effect[ECHO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+}
 
 #endif
