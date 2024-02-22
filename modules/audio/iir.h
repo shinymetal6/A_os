@@ -35,6 +35,7 @@
 #define	IIR_COEFF_B1	3
 #define	IIR_COEFF_B2	4
 
+extern	void Iir_set_params(uint8_t Type, uint16_t Frequency, float iir_Q);
 extern	void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q);
 extern	void Iir_enable(void);
 extern	void Iir_disable(void);

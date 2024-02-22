@@ -190,6 +190,18 @@ void Reverb_init(void)
 	ReverbData.ap2_g = 0.7f;
 	//buffer-pointer
 	ReverbData.cf0_p = ReverbData.cf1_p = ReverbData.cf2_p = ReverbData.cf3_p = ReverbData.ap0_p = ReverbData.ap1_p = ReverbData.ap2_p = 0;
+	bzero(cfbuf0,l_CB0);
+	bzero(cfbuf1,l_CB1);
+	bzero(cfbuf2,l_CB2);
+	bzero(cfbuf3,l_CB3);
+
+	ReverbData.cf0_lim = (uint32_t)(ReverbData.time*l_CB0);
+	ReverbData.cf1_lim = (uint32_t)(ReverbData.time*l_CB1);
+	ReverbData.cf2_lim = (uint32_t)(ReverbData.time*l_CB2);
+	ReverbData.cf3_lim = (uint32_t)(ReverbData.time*l_CB3);
+	ReverbData.ap0_lim = (uint32_t)(ReverbData.time*l_AP0);
+	ReverbData.ap1_lim = (uint32_t)(ReverbData.time*l_AP1);
+	ReverbData.ap2_lim = (uint32_t)(ReverbData.time*l_AP2);
 }
 
 void Reverb_enable(void)

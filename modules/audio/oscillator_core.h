@@ -61,7 +61,7 @@ typedef struct _OscillatorsTypeDef
 
 #define	MIDI_NOTES						128
 
-#define	VOICES							4
+#define	VOICES							2
 
 /*
 #define	OSC_OFF							0

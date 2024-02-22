@@ -35,12 +35,12 @@
 
 typedef struct _ReverbTypeDef
 {
-	int 	cf0_lim, cf1_lim, cf2_lim, cf3_lim, ap0_lim, ap1_lim, ap2_lim;
+	uint32_t 	cf0_lim, cf1_lim, cf2_lim, cf3_lim, ap0_lim, ap1_lim, ap2_lim;
 	float 	wet , time;
 	float 	apbuf0[l_AP0], apbuf1[l_AP1], apbuf2[l_AP2];
 	float 	cf0_g, cf1_g, cf2_g, cf3_g;
 	float 	ap0_g, ap1_g, ap2_g;
-	int 	cf0_p, cf1_p, cf2_p, cf3_p, ap0_p, ap1_p, ap2_p;
+	uint32_t 	cf0_p, cf1_p, cf2_p, cf3_p, ap0_p, ap1_p, ap2_p;
 } ReverbTypeDef;
 
 extern	void Reverb_init(void);

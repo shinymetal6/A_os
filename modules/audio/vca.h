@@ -27,6 +27,7 @@ extern	void Vca_init(uint8_t Volume);
 extern	void Vca_enable(void);
 extern	void Vca_disable(void);
 extern	void Do_Vca(int16_t* inputData, int16_t* outputData);
+extern	void Vca_setMasterVolume(uint8_t Volume);
 
 
 #endif /* MODULES_AUDIO_VCA_H_ */

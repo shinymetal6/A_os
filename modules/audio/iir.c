@@ -39,7 +39,7 @@ OSCILLATORS_RAM	float iir_coeffs [5];
 
 OSCILLATORS_RAM	arm_biquad_casd_df1_inst_f32 iirsettings;
 
-ITCM_AREA_CODE void iir_set_params(uint8_t Type, uint16_t Frequency, float iir_Q)
+ITCM_AREA_CODE void Iir_set_params(uint8_t Type, uint16_t Frequency, float iir_Q)
 {
 //good value for iir_Q is 0.7F;
 float  norm;
@@ -125,7 +125,7 @@ void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Depth");
 	Effect[IIR_EFFECT_ID].do_effect =  Do_iir;
 	Effect[IIR_EFFECT_ID].effect_enabled = 0;
-	iir_set_params(Type, Frequency, iir_Q);
+	Iir_set_params(Type, Frequency, iir_Q);
 	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, &iir_coeffs[0], &iir_state[0]);
 }
 

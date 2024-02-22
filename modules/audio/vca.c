@@ -36,6 +36,11 @@ ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData)
 			*outputData = *inputData;
 }
 
+void Vca_setMasterVolume(uint8_t Volume)
+{
+	Effect[VCA_EFFECT_ID].parameter[0] = (Volume <= 100) ? (float )Volume / 100.0F : 1.0F;
+}
+
 void Vca_init(uint8_t Volume)
 {
 	Effect[VCA_EFFECT_ID].parameter[0] = (float )Volume / 100.0F;

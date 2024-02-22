@@ -69,10 +69,12 @@ ITCM_AREA_CODE void get_limits(uint16_t *start,uint16_t *end)
 	}
 }
 extern uint16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
-
+uint16_t	t_buffer0[HALF_NUMBER_OF_AUDIO_SAMPLES];
+uint16_t	t_buffer1[HALF_NUMBER_OF_AUDIO_SAMPLES];
 ITCM_AREA_CODE void IrqProcessSamples(void)
 {
 uint16_t	start,end,i;
+
 
 //	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
 	{
@@ -80,12 +82,13 @@ uint16_t	start,end,i;
 
 		RunOscillator32();
 		get_limits(&start,&end);
+		Do_iir((int16_t *)&oscout_buffer[0],(int16_t *)&t_buffer1[0]);
+		//Do_Reverb((int16_t *)&t_buffer0[0],(int16_t *)&t_buffer1[0]);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
-			Do_Vca((int16_t *)&oscout_buffer[i], &audio_in[i+start].channel[AUDIO_LEFT_CH]);
-			Do_Vca((int16_t *)&oscout_buffer[i], &audio_in[i+start].channel[AUDIO_RIGHT_CH]);
+			Do_Vca((int16_t *)&t_buffer1[i], (int16_t *)&audio_out[i+start].channel[AUDIO_LEFT_CH]);
+			Do_Vca((int16_t *)&t_buffer1[i], (int16_t *)&audio_out[i+start].channel[AUDIO_RIGHT_CH]);
 		}
-
 		/*
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
