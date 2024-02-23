@@ -23,6 +23,16 @@
 #ifndef MODULES_AUDIO_PITCH_SHIFT_H_
 #define MODULES_AUDIO_PITCH_SHIFT_H_
 
+typedef struct _PitchShiftTypeDef
+{
+	int 	WtrP;
+	float 	Rd_P;
+	float 	Shift;
+	float 	CrossFade;
+	float 	a0, a1, a2, b1, b2, hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
+
+} PitchShiftTypeDef;
+
 extern	void PitchShift_init(float Shift,float CrossFade);
 extern	void PitchShift_enable(void);
 extern	void PitchShift_disable(void);

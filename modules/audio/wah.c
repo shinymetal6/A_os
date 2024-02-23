@@ -38,6 +38,8 @@ static float bp_x1, bp_x2, bp_y1, bp_y2;
 static float currentCenterFrequency = 440.0f;
 static float qFactor = 2.3f;
 
+OSCILLATORS_RAM	WahTypeDef	WahData;
+
 ITCM_AREA_CODE static void new_bandpass()
 {
     float omega = 2 * PI * currentCenterFrequency / SAMPLE_FREQUENCY;

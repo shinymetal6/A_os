@@ -23,6 +23,16 @@
 #ifndef MODULES_AUDIO_WAH_H_
 #define MODULES_AUDIO_WAH_H_
 
+typedef struct _WahTypeDef
+{
+	int 	WtrP;
+	float 	Rd_P;
+	float 	Shift;
+	float 	CrossFade;
+	float 	a0, a1, a2, b1, b2, hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
+
+} WahTypeDef;
+
 extern	void Wah_init(uint32_t CenterFrequency,uint32_t Rate,uint32_t Depth);
 extern	void Wah_enable(void);
 extern	void Wah_disable(void);
