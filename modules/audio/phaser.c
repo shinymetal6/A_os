@@ -75,7 +75,7 @@ ITCM_AREA_CODE void Do_Phaser(int16_t* inputData, int16_t* outputData)
 float 		d,xin,yout;
 int16_t		i;
 
-	if ( (Effect[PHASER_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[PHASER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -126,7 +126,7 @@ void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 	sprintf(Effect[PHASER_EFFECT_ID].effect_param[2],"Sweep Rate");
 	sprintf(Effect[PHASER_EFFECT_ID].effect_param[3],"Feedback");
 	Effect[PHASER_EFFECT_ID].do_effect =  Do_Phaser;
-	Effect[PHASER_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	PhaserData.wet = 0.3f;
 	PhaserData.dmin = 2 * Effect[PHASER_EFFECT_ID].parameter[0] / SAMPLE_FREQUENCY;
@@ -137,12 +137,12 @@ void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 
 void Phaser_enable(void)
 {
-	Effect[PHASER_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[PHASER_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Phaser_disable(void)
 {
-	Effect[PHASER_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

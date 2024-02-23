@@ -30,7 +30,7 @@
 #include "effects.h"
 ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData)
 {
-	if ( (Effect[VCA_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[VCA_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 			*outputData = (int16_t )((float )*inputData * Effect[VCA_EFFECT_ID].parameter[0]);
 	else
 			*outputData = *inputData;
@@ -48,16 +48,16 @@ void Vca_init(uint8_t Volume)
 	sprintf(Effect[VCA_EFFECT_ID].effect_name,"Vca");
 	sprintf(Effect[VCA_EFFECT_ID].effect_param[0],"Volume");
 	Effect[VCA_EFFECT_ID].do_effect =  Do_Echo;
-	Effect[VCA_EFFECT_ID].effect_enabled = 0;
+	Effect[VCA_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Vca_enable(void)
 {
-	Effect[VCA_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[VCA_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Vca_disable(void)
 {
-	Effect[VCA_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[VCA_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif //#ifdef SYNTH_ENGINE_ENABLE

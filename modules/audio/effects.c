@@ -40,6 +40,8 @@ uint16_t i=0;
 	{
 		EffectsPipe[i].execute_effect(inputData, outputData);
 		i++;
+		if ( i > WAH_EFFECT_ID )
+			return;
 	}
 }
 

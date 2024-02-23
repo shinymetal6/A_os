@@ -34,7 +34,7 @@ ITCM_AREA_CODE void Do_Echo(int16_t* inputData, int16_t* outputData)
 uint16_t	i;
 	float feedbackGain = Effect[ECHO_EFFECT_ID].parameter[0];
 	uint16_t delaySamples = (uint16_t ) Effect[ECHO_EFFECT_ID].parameter[1];
-	if ( (Effect[ECHO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[ECHO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -72,18 +72,18 @@ void Echo_init(uint32_t Feedback,uint32_t Delay)
 	sprintf(Effect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
 	sprintf(Effect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
 	Effect[ECHO_EFFECT_ID].do_effect =  Do_Echo;
-	Effect[ECHO_EFFECT_ID].effect_enabled = 0;
+	Effect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 
 void Echo_enable(void)
 {
-	Effect[ECHO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[ECHO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Echo_disable(void)
 {
-	Effect[ECHO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

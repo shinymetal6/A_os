@@ -79,7 +79,7 @@ ITCM_AREA_CODE void Do_PitchShift(int16_t* inputData, int16_t* outputData)
 {
 int16_t i;
 int16_t sum;
-	if ( (Effect[PITCHSHIFT_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[PITCHSHIFT_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -152,7 +152,7 @@ void PitchShift_init(float Shift,float CrossFade)
 	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[0],"Shift");
 	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[1],"CrossFade");
 	Effect[PITCHSHIFT_EFFECT_ID].do_effect =  Do_PitchShift;
-	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[PITCHSHIFT_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	WtrP = 0;
 
@@ -168,12 +168,12 @@ void PitchShift_init(float Shift,float CrossFade)
 
 void PitchShift_enable(void)
 {
-	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[PITCHSHIFT_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void PitchShift_disable(void)
 {
-	Effect[PITCHSHIFT_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[PITCHSHIFT_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif
 

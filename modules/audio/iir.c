@@ -90,7 +90,7 @@ ITCM_AREA_CODE void Do_iir(int16_t *filter_in , int16_t *filter_out)
 {
 uint32_t	i;
 
-	if ( (Effect[IIR_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[IIR_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for (i=0; i<HALF_NUMBER_OF_AUDIO_SAMPLES; i++)
 			iir_buf_in[i] = (float)filter_in[i];
@@ -124,19 +124,19 @@ void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Frequency");
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Depth");
 	Effect[IIR_EFFECT_ID].do_effect =  Do_iir;
-	Effect[IIR_EFFECT_ID].effect_enabled = 0;
+	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	Iir_set_params(Type, Frequency, iir_Q);
 	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, &iir_coeffs[0], &iir_state[0]);
 }
 
 void Iir_enable(void)
 {
-	Effect[IIR_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[IIR_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Iir_disable(void)
 {
-	Effect[IIR_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

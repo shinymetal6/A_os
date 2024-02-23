@@ -74,7 +74,7 @@ float process_moog2_filter(float input)
 ITCM_AREA_CODE void Do_Moog2(int16_t* inputData, int16_t* outputData)
 {
 	uint16_t	i;
-	if ( (Effect[MOOG2_F_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[MOOG2_F_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -97,17 +97,17 @@ void Moog2_init(float Cutoff,float Resonance)
 	sprintf(Effect[MOOG2_F_EFFECT_ID].effect_param[MOOG1_CUTOFF],"Cutoff");
 	sprintf(Effect[MOOG2_F_EFFECT_ID].effect_param[MOOG1_RESONANCE],"Resonance");
 	Effect[MOOG2_F_EFFECT_ID].do_effect =  Do_Moog2;
-	Effect[MOOG2_F_EFFECT_ID].effect_enabled = 0;
+	Effect[MOOG2_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Moog2_enable(void)
 {
-	Effect[MOOG2_F_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[MOOG2_F_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Moog2_disable(void)
 {
-	Effect[MOOG2_F_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[MOOG2_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

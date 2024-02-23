@@ -79,7 +79,7 @@ ITCM_AREA_CODE void Do_Wah(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[WAH_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[WAH_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
 		float lfoFreq = Effect[WAH_EFFECT_ID].parameter[1];
@@ -135,18 +135,18 @@ typical values
 	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Rate");
 	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Depth");
 	Effect[WAH_EFFECT_ID].do_effect =  Do_Wah;
-	Effect[WAH_EFFECT_ID].effect_enabled = 0;
+	Effect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	new_bandpass();
 }
 
 void Wah_enable(void)
 {
-	Effect[WAH_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[WAH_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Wah_disable(void)
 {
-	Effect[WAH_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 

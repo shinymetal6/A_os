@@ -33,7 +33,7 @@ ITCM_AREA_CODE void Do_Vibrato(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[VIBRATO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[VIBRATO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
 		uint16_t maxDelay  = ((Effect[VIBRATO_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
@@ -79,17 +79,17 @@ typical values
 	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Depth");
 	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Delay");
 	Effect[VIBRATO_EFFECT_ID].do_effect =  Do_Vibrato;
-	Effect[VIBRATO_EFFECT_ID].effect_enabled = 0;
+	Effect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Vibrato_enable(void)
 {
-	Effect[VIBRATO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[VIBRATO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Vibrato_disable(void)
 {
-	Effect[VIBRATO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

@@ -139,7 +139,7 @@ float Reverb(float inSample)
 void Do_Reverb(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
-	if ( (Effect[REVERB_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[REVERB_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 			outputData[i] = (int) ((1.0f-ReverbData.wet)*(float)inputData[i] + ReverbData.wet*Reverb((float)inputData[i]));
@@ -156,7 +156,7 @@ void Reverb_init(void)
 	Effect[REVERB_EFFECT_ID].num_params = 0;
 	sprintf(Effect[REVERB_EFFECT_ID].effect_name,"Reverb");
 	Effect[REVERB_EFFECT_ID].do_effect =  Do_Echo;
-	Effect[REVERB_EFFECT_ID].effect_enabled = 0;
+	Effect[REVERB_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	//define ReverbData.reverb_time delay 0.0 <-> 1.0 (max)
 	bzero((uint8_t *)&ReverbData,sizeof(ReverbData));
@@ -197,12 +197,12 @@ void Reverb_init(void)
 
 void Reverb_enable(void)
 {
-	Effect[REVERB_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[REVERB_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Reverb_disable(void)
 {
-	Effect[REVERB_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[REVERB_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif // #ifdef SYNTH_ENGINE_ENABLE

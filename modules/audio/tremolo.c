@@ -36,7 +36,7 @@ ITCM_AREA_CODE	void Do_Tremolo(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[TREMOLO_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[TREMOLO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
 		float lfoFreq = Effect[TREMOLO_EFFECT_ID].parameter[1] ;
@@ -79,16 +79,16 @@ typical values
 	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[0],"Depth");
 	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[1],"Rate");
 	Effect[TREMOLO_EFFECT_ID].do_effect =  Do_Tremolo;
-	Effect[TREMOLO_EFFECT_ID].effect_enabled = 0;
+	Effect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Tremolo_enable(void)
 {
-	Effect[TREMOLO_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[TREMOLO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Tremolo_disable(void)
 {
-	Effect[TREMOLO_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif

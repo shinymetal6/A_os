@@ -82,7 +82,7 @@ float t1, t2;              //temporary buffers
 ITCM_AREA_CODE void Do_Moog1(int16_t* inputData, int16_t* outputData)
 {
 	uint16_t	i;
-	if ( (Effect[MOOG1_F_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[MOOG1_F_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -105,17 +105,17 @@ void Moog1_init(float Cutoff,float Resonance)
 	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_CUTOFF],"Cutoff");
 	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_RESONANCE],"Resonance");
 	Effect[MOOG1_F_EFFECT_ID].do_effect =  Do_Moog1;
-	Effect[MOOG1_F_EFFECT_ID].effect_enabled = 0;
+	Effect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Moog1_enable(void)
 {
-	Effect[MOOG1_F_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[MOOG1_F_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Moog1_disable(void)
 {
-	Effect[MOOG1_F_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

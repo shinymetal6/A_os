@@ -38,7 +38,7 @@ ITCM_AREA_CODE void Do_Distortion(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[DISTORSION_EFFECT_ID].effect_enabled & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[DISTORSION_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		DistortionData.gain = Effect[DISTORSION_EFFECT_ID].parameter[1]/100;
 		DistortionData.clipping = Effect[DISTORSION_EFFECT_ID].parameter[0];
@@ -86,7 +86,7 @@ typical values
 	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[0],"Clipping");
 	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[1],"Gain");
 	Effect[DISTORSION_EFFECT_ID].do_effect =  Do_Distortion;
-	Effect[DISTORSION_EFFECT_ID].effect_enabled = 0;
+	Effect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	DistortionData.clipping = 50.0f; // 50%
 	DistortionData.gain = 150.0f;
@@ -95,12 +95,12 @@ typical values
 
 void Distortion_enable(void)
 {
-	Effect[DISTORSION_EFFECT_ID].effect_enabled |= EFFECT_ENABLED;
+	Effect[DISTORSION_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Distortion_disable(void)
 {
-	Effect[DISTORSION_EFFECT_ID].effect_enabled &= ~EFFECT_ENABLED;
+	Effect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 
