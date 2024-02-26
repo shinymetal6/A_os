@@ -36,22 +36,8 @@ OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
 
 extern uint16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-OSCILLATORS_RAM	uint16_t	pipe0 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe1 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe2 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe3 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe4 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe5 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe6 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe7 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe8 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe9 [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe10[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe11[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe12[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe13[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe14[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe15[HALF_NUMBER_OF_AUDIO_SAMPLES];
+OSCILLATORS_RAM	uint16_t	pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+OSCILLATORS_RAM	uint16_t	pipe0[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern	ControlAdcDef	ControlAdc;
 
@@ -89,32 +75,29 @@ ITCM_AREA_CODE void get_limits(uint16_t *start,uint16_t *end)
 	}
 }
 
+extern	void do_fft(int16_t *inputData, int16_t *outputData);
+uint16_t	pipe_used;
 ITCM_AREA_CODE void IrqProcessSamples(void)
 {
 uint16_t	start,end,i;
 
-
+//#define	TEST_OSCILLATORS
 //	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
 	{
 		HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
 
 		RunOscillator32();
 		get_limits(&start,&end);
-		//Do_iir((int16_t *)&oscout_buffer[0],(int16_t *)&pipe0[0]);
-		//Do_Reverb((int16_t *)&pipe0[0],(int16_t *)&pipe1[0]);
-		Do_PitchShift((int16_t *)&oscout_buffer[0],(int16_t *)&pipe0[0]);
+		PassThrough_enable();
+		Vca_disable();
+		Do_PassThrough((int16_t *)&oscout_buffer[0],(int16_t *)&pipe[0][0]);
+		for(pipe_used=0;pipe_used<8;pipe_used++)
+			Do_PassThrough((int16_t *)&pipe[pipe_used][0],(int16_t *)&pipe[pipe_used+1][0]);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
-			Do_Vca((int16_t *)&pipe0[i], (int16_t *)&audio_out[i+start].channel[AUDIO_LEFT_CH]);
-			Do_Vca((int16_t *)&pipe0[i], (int16_t *)&audio_out[i+start].channel[AUDIO_RIGHT_CH]);
+			Do_Vca((int16_t *)&pipe[pipe_used][i], (int16_t *)&audio_out[i+start].channel[AUDIO_LEFT_CH]);
+			Do_Vca((int16_t *)&pipe[pipe_used][i], (int16_t *)&audio_out[i+start].channel[AUDIO_RIGHT_CH]);
 		}
-		/*
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = oscout_buffer[i];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = oscout_buffer[i];
-		}
-		*/
 	}
 	/*
 	else

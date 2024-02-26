@@ -152,7 +152,7 @@ extern	UART_HandleTypeDef 	huart4;
 #endif // #ifdef ENCODER_ENABLED
 
 #ifdef CODEC_ENABLED
-	#define AUDIO_BUF_SIZE 			256
+	#define AUDIO_BUF_SIZE 			1024
 	#ifdef CODEC_NAU88C22
 		#define SYNTH_ENGINE_ENABLE	1
 		#define NAU88C22_ADDR		(0x1a << 1)

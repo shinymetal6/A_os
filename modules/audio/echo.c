@@ -71,7 +71,7 @@ void Echo_init(uint32_t Feedback,uint32_t Delay)
 	sprintf(Effect[ECHO_EFFECT_ID].effect_name,"Echo");
 	sprintf(Effect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
 	sprintf(Effect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
-	Effect[ECHO_EFFECT_ID].do_effect =  Do_Echo;
+	Effect[ECHO_EFFECT_ID].apply_effect =  Do_Echo;
 	Effect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

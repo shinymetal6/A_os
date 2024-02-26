@@ -78,7 +78,7 @@ typical values
 	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[0],"Rate");
 	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Depth");
 	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Delay");
-	Effect[VIBRATO_EFFECT_ID].do_effect =  Do_Vibrato;
+	Effect[VIBRATO_EFFECT_ID].apply_effect =  Do_Vibrato;
 	Effect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

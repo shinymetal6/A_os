@@ -85,7 +85,7 @@ typical values
 	sprintf(Effect[DISTORSION_EFFECT_ID].effect_name,"Distorsion");
 	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[0],"Clipping");
 	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[1],"Gain");
-	Effect[DISTORSION_EFFECT_ID].do_effect =  Do_Distortion;
+	Effect[DISTORSION_EFFECT_ID].apply_effect =  Do_Distortion;
 	Effect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	DistortionData.clipping = 50.0f; // 50%

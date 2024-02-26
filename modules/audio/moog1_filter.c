@@ -104,7 +104,7 @@ void Moog1_init(float Cutoff,float Resonance)
 	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_name,"Moog2 Filter");
 	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_CUTOFF],"Cutoff");
 	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_RESONANCE],"Resonance");
-	Effect[MOOG1_F_EFFECT_ID].do_effect =  Do_Moog1;
+	Effect[MOOG1_F_EFFECT_ID].apply_effect =  Do_Moog1;
 	Effect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

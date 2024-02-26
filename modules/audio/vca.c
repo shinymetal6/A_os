@@ -47,7 +47,7 @@ void Vca_init(uint8_t Volume)
 	Effect[VCA_EFFECT_ID].num_params = 1;
 	sprintf(Effect[VCA_EFFECT_ID].effect_name,"Vca");
 	sprintf(Effect[VCA_EFFECT_ID].effect_param[0],"Volume");
-	Effect[VCA_EFFECT_ID].do_effect =  Do_Echo;
+	Effect[VCA_EFFECT_ID].apply_effect =  Do_Vca;
 	Effect[VCA_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

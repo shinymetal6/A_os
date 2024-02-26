@@ -78,7 +78,7 @@ typical values
 	sprintf(Effect[TREMOLO_EFFECT_ID].effect_name,"Tremolo");
 	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[0],"Depth");
 	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[1],"Rate");
-	Effect[TREMOLO_EFFECT_ID].do_effect =  Do_Tremolo;
+	Effect[TREMOLO_EFFECT_ID].apply_effect =  Do_Tremolo;
 	Effect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

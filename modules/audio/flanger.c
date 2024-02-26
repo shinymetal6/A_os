@@ -86,7 +86,7 @@ typical values
 	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[0],"Rate");
 	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Depth");
 	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Delay[ms]");
-	Effect[FLANGER_EFFECT_ID].do_effect =  Do_Flanger;
+	Effect[FLANGER_EFFECT_ID].apply_effect =  Do_Flanger;
 	Effect[FLANGER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

@@ -123,7 +123,7 @@ void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Frequency");
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Depth");
-	Effect[IIR_EFFECT_ID].do_effect =  Do_iir;
+	Effect[IIR_EFFECT_ID].apply_effect =  Do_iir;
 	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	Iir_set_params(Type, Frequency, iir_Q);
 	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, &iir_coeffs[0], &iir_state[0]);

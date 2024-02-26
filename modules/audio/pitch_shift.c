@@ -151,7 +151,7 @@ void PitchShift_init(float Shift,float CrossFade)
 	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_name,"PitchShift");
 	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[0],"Shift");
 	sprintf(Effect[PITCHSHIFT_EFFECT_ID].effect_param[1],"CrossFade");
-	Effect[PITCHSHIFT_EFFECT_ID].do_effect =  Do_PitchShift;
+	Effect[PITCHSHIFT_EFFECT_ID].apply_effect =  Do_PitchShift;
 	Effect[PITCHSHIFT_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	WtrP = 0;

@@ -24,16 +24,17 @@
 #define MODULES_AUDIO_EFFECTS_H_
 
 #define	MAX_PARAMS		8
-#define	MAX_EFFECTS		16
+#define	MAX_EFFECTS		18
 
 typedef struct _EffectsTypeDef
 {
-	char 					effect_name[40];
-	char 					effect_param[MAX_PARAMS][40];
-	float 					parameter[MAX_PARAMS];
-	uint8_t 				num_params;
-	uint8_t 				effect_status;
-	void 					(*do_effect)(int16_t* inputData, int16_t* outputData);
+	uint8_t		*nxt_effect,*pre_effect;
+	char 		effect_name[40];
+	char 		effect_param[MAX_PARAMS][40];
+	float 		parameter[MAX_PARAMS];
+	uint8_t 	num_params;
+	uint8_t 	effect_status;
+	void 		(*apply_effect)(int16_t* inputData, int16_t* outputData);
 } EffectsTypeDef;
 /* effect_status */
 #define	EFFECT_WAVE_ON 0x01
@@ -43,17 +44,20 @@ typedef struct _EffectsTypeDef
 #define	DISTORSION_EFFECT_ID	1
 #define	ECHO_EFFECT_ID			2
 #define	FLANGER_EFFECT_ID		3
-#define	IIR_EFFECT_ID			4
-#define	MOOG1_F_EFFECT_ID		5
-#define	MOOG2_F_EFFECT_ID		6
-#define	NOISE_EFFECT_ID			7
-#define	PHASER_EFFECT_ID		8
-#define	PITCHSHIFT_EFFECT_ID	9
-#define	REVERB_EFFECT_ID		10
-#define	TREMOLO_EFFECT_ID		11
-#define	VIBRATO_EFFECT_ID		12
-#define	VCA_EFFECT_ID			13
-#define	WAH_EFFECT_ID			14
+#define	FFT_ID					4
+#define	IIR_EFFECT_ID			5
+#define	IIR_S_EFFECT_ID			6
+#define	MOOG1_F_EFFECT_ID		7
+#define	MOOG2_F_EFFECT_ID		8
+#define	NOISE_EFFECT_ID			9
+#define	PASSTHROUGH_EFFECT_ID	10
+#define	PHASER_EFFECT_ID		11
+#define	PITCHSHIFT_EFFECT_ID	12
+#define	REVERB_EFFECT_ID		13
+#define	TREMOLO_EFFECT_ID		14
+#define	VIBRATO_EFFECT_ID		15
+#define	VCA_EFFECT_ID			16
+#define	WAH_EFFECT_ID			17
 #define	LAST_EFFECT				WAH_EFFECT_ID
 
 typedef struct _EffectsPipeTypeDef
@@ -71,9 +75,11 @@ typedef struct _EffectsPipeTypeDef
 #include	"distortion.h"
 #include	"echo.h"
 #include	"flanger.h"
+#include	"fft.h"
 #include	"iir.h"
 #include	"moog_filters.h"
 #include	"noise.h"
+#include	"passthrough.h"
 #include	"phaser.h"
 #include	"pitch_shift.h"
 #include	"reverb.h"
@@ -86,6 +92,6 @@ extern	EffectsTypeDef	Effect[MAX_EFFECTS];
 
 extern	void EffectsSequencer(int16_t* inputData, int16_t* outputData);
 extern	void ResetEffectsSequencer(void);
-extern	void InsertEffect(void 	(*do_effect));
+extern	void InsertEffect(void 	(*do_effect),uint8_t position);
 
 #endif /* MODULES_AUDIO_EFFECTS_H_ */

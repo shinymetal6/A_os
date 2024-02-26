@@ -30,34 +30,53 @@
 #include "effects.h"
 
 OSCILLATORS_RAM	EffectsTypeDef		Effect[MAX_EFFECTS];
-OSCILLATORS_RAM	EffectsPipeTypeDef	EffectsPipe[MAX_EFFECTS];
-OSCILLATORS_RAM	static uint32_t	effects_in_pipe = 0;
+//OSCILLATORS_RAM	EffectsPipeTypeDef	EffectsPipe[MAX_EFFECTS];
+OSCILLATORS_RAM	static EffectsTypeDef		*first_effect_ptr;
 
 void EffectsSequencer(int16_t* inputData, int16_t* outputData)
 {
-uint16_t i=0;
-	while(EffectsPipe[i].execute_effect != NULL)
+uint16_t 	i;
+
+EffectsTypeDef	*effect = first_effect_ptr;
+
+	for(i=0;i<MAX_EFFECTS;i++)
 	{
-		EffectsPipe[i].execute_effect(inputData, outputData);
-		i++;
-		if ( i > WAH_EFFECT_ID )
-			return;
+		if ((effect->effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+		{
+			effect->apply_effect(inputData, outputData);
+		}
+		effect = (EffectsTypeDef *)&effect->nxt_effect;
 	}
 }
 
 void ResetEffectsSequencer(void)
 {
-uint16_t i=0;
-	for(i=0;i<MAX_EFFECTS;i++)
-		EffectsPipe[i].execute_effect = 0;
-	effects_in_pipe = 0;
 }
 
-void InsertEffect(void 	(*do_effect))
+void InsertEffect(void 	(*do_effect),uint8_t position)
 {
-	EffectsPipe[effects_in_pipe].execute_effect = do_effect;
-	effects_in_pipe++;
+
 }
 
+void InitEffectsSequencer(void)
+{
+uint16_t 	i;
+EffectsTypeDef	*effect = first_effect_ptr;
+
+	first_effect_ptr = &Effect[0];
+	effect = first_effect_ptr;
+	for(i=0;i<MAX_EFFECTS;i++)
+	{
+		effect->nxt_effect = (uint8_t *)&Effect[i+1];
+		bzero(effect->effect_name, sizeof(effect->effect_name));
+		bzero(effect->effect_param, sizeof(effect->effect_param));
+		bzero(effect->parameter, sizeof(effect->parameter));
+		effect->num_params = effect->effect_status = 0;
+		if ( i > 0 )
+			effect->pre_effect = (uint8_t *)&Effect[i-1];
+		else
+			effect->pre_effect = NULL;
+	}
+}
 
 #endif

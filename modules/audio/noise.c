@@ -62,7 +62,7 @@ void Noise_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
 {
 	Effect[NOISE_EFFECT_ID].num_params = 0;
 	sprintf(Effect[NOISE_EFFECT_ID].effect_name,"Noise");
-	Effect[NOISE_EFFECT_ID].do_effect =  Do_Noise;
+	Effect[NOISE_EFFECT_ID].apply_effect =  Do_Noise;
 	Effect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 

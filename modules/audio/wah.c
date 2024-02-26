@@ -134,7 +134,7 @@ typical values
 	sprintf(Effect[WAH_EFFECT_ID].effect_param[0],"CenterFrequency");
 	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Rate");
 	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Depth");
-	Effect[WAH_EFFECT_ID].do_effect =  Do_Wah;
+	Effect[WAH_EFFECT_ID].apply_effect =  Do_Wah;
 	Effect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	new_bandpass();
 }

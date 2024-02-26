@@ -125,7 +125,7 @@ void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 	sprintf(Effect[PHASER_EFFECT_ID].effect_param[1],"Frequency Max");
 	sprintf(Effect[PHASER_EFFECT_ID].effect_param[2],"Sweep Rate");
 	sprintf(Effect[PHASER_EFFECT_ID].effect_param[3],"Feedback");
-	Effect[PHASER_EFFECT_ID].do_effect =  Do_Phaser;
+	Effect[PHASER_EFFECT_ID].apply_effect =  Do_Phaser;
 	Effect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	PhaserData.wet = 0.3f;

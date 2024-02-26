@@ -155,7 +155,7 @@ void Reverb_init(void)
 {
 	Effect[REVERB_EFFECT_ID].num_params = 0;
 	sprintf(Effect[REVERB_EFFECT_ID].effect_name,"Reverb");
-	Effect[REVERB_EFFECT_ID].do_effect =  Do_Echo;
+	Effect[REVERB_EFFECT_ID].apply_effect =  Do_Echo;
 	Effect[REVERB_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	//define ReverbData.reverb_time delay 0.0 <-> 1.0 (max)

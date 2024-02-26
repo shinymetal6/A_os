@@ -107,7 +107,7 @@ uint32_t	osc_number,i;
 	{
 		Oscillator[osc_number].midi_note = midi_note;
 		freq = midi_freq[Oscillator[osc_number].midi_note] + Oscillator[osc_number].detune;
-		delta_phase = (float )WAVETABLE_SIZE / ((float )SAMPLE_FREQUENCY / freq);
+		delta_phase = (float )WAVETABLE_SIZE / ((float )(SAMPLE_FREQUENCY*(AUDIO_BUF_SIZE / 256)) / freq);
 		Oscillator[osc_number+i].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
 
 		Oscillator[osc_number+i].current_phase = 0;

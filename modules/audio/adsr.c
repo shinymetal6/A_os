@@ -107,7 +107,7 @@ void Adsr_init(uint32_t AttackRate,uint32_t AttackStartLevel,uint32_t DecayRate,
 	sprintf(Effect[ADSR_EFFECT_ID].effect_param[2],"DecayRate");
 	sprintf(Effect[ADSR_EFFECT_ID].effect_param[3],"SustainLevel");
 	sprintf(Effect[ADSR_EFFECT_ID].effect_param[4],"ReleaseRate");
-	Effect[ADSR_EFFECT_ID].do_effect =  Do_Adsr;
+	Effect[ADSR_EFFECT_ID].apply_effect =  Do_Adsr;
 	Effect[ADSR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	AdsrData.AttackRate = AttackRate;
