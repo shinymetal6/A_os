@@ -35,9 +35,9 @@ extern	EffectsTypeDef	Effect[MAX_EFFECTS];
 
 OSCILLATORS_RAM	IIR_S_TypeDef	IIR_S_Data;
 
-ITCM_AREA_CODE void Iir_S_calc_params(uint8_t Type, uint16_t Frequency, float iir_Q)
+ITCM_AREA_CODE void Iir_S_configure(uint8_t Type, uint16_t Frequency, float iir_Q)
 {
-//good value for iir_Q is 0.7F;
+//good value for iir_Q is 0.707F;
 float  norm;
 float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 
@@ -93,7 +93,7 @@ ITCM_AREA_CODE int16_t Iir_s (int16_t inSample)
 
 ITCM_AREA_CODE void Do_iir_s(int16_t *inputData, int16_t *outputData)
 {
-	if ( (Effect[IIR_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (Effect[IIR_S_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 		*outputData = Iir_s(*inputData);
 	else
 		*outputData = *inputData;
@@ -113,7 +113,7 @@ void Iir_S_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 	case	IIR_BAND_PASS :sprintf(Effect[IIR_S_EFFECT_ID].effect_param[0],"IIR Band Pass");break;
 	case	IIR_NOTCH     :sprintf(Effect[IIR_S_EFFECT_ID].effect_param[0],"IIR Notch");    break;
 	}
-	Iir_S_calc_params(Type,Frequency,iir_Q);
+	Iir_S_configure(Type,Frequency,iir_Q);
 
 	sprintf(Effect[IIR_S_EFFECT_ID].effect_param[1],"Frequency");
 	sprintf(Effect[IIR_S_EFFECT_ID].effect_param[1],"Depth");

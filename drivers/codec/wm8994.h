@@ -14,26 +14,21 @@
  * Project : A_os
 */
 /*
- * iir_s.h
+ * wm8994.h
  *
- *  Created on: Feb 24, 2024
+ *  Created on: Feb 26, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_IIR_S_H_
-#define MODULES_AUDIO_IIR_S_H_
+#ifndef DRIVERS_CODEC_WM8994_H_
+#define DRIVERS_CODEC_WM8994_H_
 
-typedef struct _IIR_S_TypeDef
-{
-	float a[3], b[3], hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
-} IIR_S_TypeDef;
+#define CODEC_WM8994_I2C_ADDRESS	0x34
+#define	WM8994_ID					0x8994
+#define WM8994_CHIPID_ADDR			0x00
+#define VOLUME_CONVERT(Volume)        (((Volume) > 100)? 100:((uint8_t)(((Volume) * 63) / 100)))
+#define VOLUME_IN_CONVERT(Volume)     (((Volume) >= 100)? 239:((uint8_t)(((Volume) * 240) / 100)))
+#define AUDIO_MUTE_ON                 1
+#define AUDIO_MUTE_OFF                0
 
-extern	void Iir_S_init(uint8_t Type, uint16_t Frequency, float iir_Q);
-extern	void Iir_S_enable(void);
-extern	void Iir_S_disable(void);
-extern	void Do_iir_s(int16_t *inputData, int16_t *outputData);
-extern	void Iir_S_configure(uint8_t Type, uint16_t Frequency, float iir_Q);
-
-
-
-#endif /* MODULES_AUDIO_IIR_S_H_ */
+#endif /* DRIVERS_CODEC_WM8994_H_ */

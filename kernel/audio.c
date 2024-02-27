@@ -27,6 +27,7 @@
 #include "kernel_opt.h"
 
 #ifdef CODEC_ENABLED
+#ifdef CODEC_NAU88C22
 #include "audio.h"
 #include "../modules/audio/effects.h"
 
@@ -34,10 +35,10 @@ DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 
 OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
 
-extern uint16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 OSCILLATORS_RAM	uint16_t	pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	uint16_t	pipe0[HALF_NUMBER_OF_AUDIO_SAMPLES];
+OSCILLATORS_RAM	int16_t		pipe0[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern	ControlAdcDef	ControlAdc;
 
@@ -88,15 +89,13 @@ uint16_t	start,end,i;
 
 		RunOscillator32();
 		get_limits(&start,&end);
-		PassThrough_enable();
-		Vca_disable();
-		Do_PassThrough((int16_t *)&oscout_buffer[0],(int16_t *)&pipe[0][0]);
-		for(pipe_used=0;pipe_used<8;pipe_used++)
-			Do_PassThrough((int16_t *)&pipe[pipe_used][0],(int16_t *)&pipe[pipe_used+1][0]);
+		Vca_s_enable();
+		Do_Vca(oscout_buffer,pipe0);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
-			Do_Vca((int16_t *)&pipe[pipe_used][i], (int16_t *)&audio_out[i+start].channel[AUDIO_LEFT_CH]);
-			Do_Vca((int16_t *)&pipe[pipe_used][i], (int16_t *)&audio_out[i+start].channel[AUDIO_RIGHT_CH]);
+//			Do_Vca_s((int16_t *)&oscout_buffer[i],(int16_t *)&pipe0[i]);
+			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe0[i];
+			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe0[i];
 		}
 	}
 	/*
@@ -149,4 +148,6 @@ void SetMasterVolume(uint16_t volume)
 		AudioFlags.master_volume = 1.0F;
 }
 
-#endif
+#endif // #ifdef CODEC_NAU88C22
+#endif // #ifdef CODEC_ENABLED
+

@@ -30,10 +30,14 @@
 #include "effects.h"
 ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData)
 {
-	if ( (Effect[VCA_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
-			*outputData = (int16_t )((float )*inputData * Effect[VCA_EFFECT_ID].parameter[0]);
-	else
-			*outputData = *inputData;
+uint32_t	i;
+	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+	{
+		if ( (Effect[VCA_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+				outputData[i] = (int16_t )((float )inputData[i] * Effect[VCA_EFFECT_ID].parameter[0]);
+		else
+				outputData[i] = inputData[i];
+	}
 }
 
 void Vca_setMasterVolume(uint8_t Volume)

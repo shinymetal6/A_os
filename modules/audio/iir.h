@@ -24,18 +24,17 @@
 #ifndef MODULES_AUDIO_IIR_H_
 #define MODULES_AUDIO_IIR_H_
 
+typedef struct _IIR_TypeDef
+{
+	float a[3], b[3], hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
+} IIR_TypeDef;
+
 #define	IIR_HIGH_PASS	0
 #define	IIR_LOW_PASS	1
 #define	IIR_BAND_PASS	2
 #define	IIR_NOTCH		3
 
-#define	IIR_COEFF_A0	0
-#define	IIR_COEFF_A1	1
-#define	IIR_COEFF_A2	2
-#define	IIR_COEFF_B1	3
-#define	IIR_COEFF_B2	4
-
-extern	void Iir_set_params(uint8_t Type, uint16_t Frequency, float iir_Q);
+extern	void Iir_configure(uint8_t Type, uint16_t Frequency, float iir_Q);
 extern	void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q);
 extern	void Iir_enable(void);
 extern	void Iir_disable(void);

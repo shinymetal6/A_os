@@ -24,7 +24,7 @@
 #define MODULES_AUDIO_EFFECTS_H_
 
 #define	MAX_PARAMS		8
-#define	MAX_EFFECTS		18
+#define	MAX_EFFECTS		19
 
 typedef struct _EffectsTypeDef
 {
@@ -57,7 +57,8 @@ typedef struct _EffectsTypeDef
 #define	TREMOLO_EFFECT_ID		14
 #define	VIBRATO_EFFECT_ID		15
 #define	VCA_EFFECT_ID			16
-#define	WAH_EFFECT_ID			17
+#define	VCA_S_EFFECT_ID			17
+#define	WAH_EFFECT_ID			18
 #define	LAST_EFFECT				WAH_EFFECT_ID
 
 typedef struct _EffectsPipeTypeDef
@@ -77,6 +78,7 @@ typedef struct _EffectsPipeTypeDef
 #include	"flanger.h"
 #include	"fft.h"
 #include	"iir.h"
+#include	"iir_s.h"
 #include	"moog_filters.h"
 #include	"noise.h"
 #include	"passthrough.h"
@@ -85,12 +87,14 @@ typedef struct _EffectsPipeTypeDef
 #include	"reverb.h"
 #include	"tremolo.h"
 #include	"vca.h"
+#include	"vca_s.h"
 #include	"vibrato.h"
 #include	"wah.h"
 
 extern	EffectsTypeDef	Effect[MAX_EFFECTS];
 
-extern	void EffectsSequencer(int16_t* inputData, int16_t* outputData);
+extern	void InitEffectsSequencer(void);
+extern	void EffectsSequencer(void);
 extern	void ResetEffectsSequencer(void);
 extern	void InsertEffect(void 	(*do_effect),uint8_t position);
 

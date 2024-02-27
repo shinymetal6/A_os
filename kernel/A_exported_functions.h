@@ -126,10 +126,6 @@ extern	void InitOscillators(void);
 extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 
-/* effects */
-extern	void iir_init(void);
-extern	void iir_set_params(uint8_t type, uint16_t frequency, float iir_Q);
-extern	void iir(int16_t *filter_out , int16_t *filter_in);
 
 /* xmodem */
 extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
@@ -314,6 +310,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #ifdef ADC_ENABLED
 	#include "../drivers/internal_adc/internal_adc.h"
 	extern	uint8_t IntAdc_Start(void);
+
 
 #endif // #ifdef ADC_ENABLED
 

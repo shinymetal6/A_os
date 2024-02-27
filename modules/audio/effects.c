@@ -30,10 +30,11 @@
 #include "effects.h"
 
 OSCILLATORS_RAM	EffectsTypeDef		Effect[MAX_EFFECTS];
-//OSCILLATORS_RAM	EffectsPipeTypeDef	EffectsPipe[MAX_EFFECTS];
 OSCILLATORS_RAM	static EffectsTypeDef		*first_effect_ptr;
 
-void EffectsSequencer(int16_t* inputData, int16_t* outputData)
+extern	uint16_t	pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+
+void EffectsSequencer(void)
 {
 uint16_t 	i;
 
@@ -43,7 +44,7 @@ EffectsTypeDef	*effect = first_effect_ptr;
 	{
 		if ((effect->effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 		{
-			effect->apply_effect(inputData, outputData);
+			effect->apply_effect((int16_t *)&pipe[i][0], (int16_t *)&pipe[i+1][0]);
 		}
 		effect = (EffectsTypeDef *)&effect->nxt_effect;
 	}

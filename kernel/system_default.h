@@ -53,6 +53,12 @@
 	#endif
 #endif
 
+#ifdef STM32F746xx
+	#ifdef STM32F746_GDISCO
+		#include "../boards/STM32F746G_DISCO.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

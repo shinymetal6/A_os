@@ -14,26 +14,19 @@
  * Project : A_os
 */
 /*
- * iir_s.h
+ * vca_s.h
  *
- *  Created on: Feb 24, 2024
+ *  Created on: Feb 27, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_IIR_S_H_
-#define MODULES_AUDIO_IIR_S_H_
+#ifndef MODULES_AUDIO_VCA_S_H_
+#define MODULES_AUDIO_VCA_S_H_
 
-typedef struct _IIR_S_TypeDef
-{
-	float a[3], b[3], hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
-} IIR_S_TypeDef;
+extern	void Vca_s_init(uint8_t Volume);
+extern	void Vca_s_enable(void);
+extern	void Vca_s_disable(void);
+extern	void Do_Vca_s(int16_t* inputData, int16_t* outputData);
+extern	void Vca_s_setMasterVolume(uint8_t Volume);
 
-extern	void Iir_S_init(uint8_t Type, uint16_t Frequency, float iir_Q);
-extern	void Iir_S_enable(void);
-extern	void Iir_S_disable(void);
-extern	void Do_iir_s(int16_t *inputData, int16_t *outputData);
-extern	void Iir_S_configure(uint8_t Type, uint16_t Frequency, float iir_Q);
-
-
-
-#endif /* MODULES_AUDIO_IIR_S_H_ */
+#endif /* MODULES_AUDIO_VCA_S_H_ */

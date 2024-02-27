@@ -35,13 +35,13 @@ extern	EffectsTypeDef	Effect[MAX_EFFECTS];
 
 //4 delayed samples per biquad
 OSCILLATORS_RAM	float iir_state [4];
-OSCILLATORS_RAM	float iir_coeffs [5];
-
+OSCILLATORS_RAM	IIR_TypeDef	IIR_Data;
+OSCILLATORS_RAM	float arm_iir_coeffs [5];
 OSCILLATORS_RAM	arm_biquad_casd_df1_inst_f32 iirsettings;
 
-ITCM_AREA_CODE void Iir_set_params(uint8_t Type, uint16_t Frequency, float iir_Q)
+ITCM_AREA_CODE void Iir_configure(uint8_t Type, uint16_t Frequency, float iir_Q)
 {
-//good value for iir_Q is 0.7F;
+//good value for iir_Q is 0.707F;
 float  norm;
 float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 
@@ -53,34 +53,41 @@ float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 	switch(Type)
 	{
 	case	IIR_HIGH_PASS	:
-		iir_coeffs[IIR_COEFF_A0] = 1.0F*norm;
-		iir_coeffs[IIR_COEFF_A1] = -2.0F * iir_coeffs[IIR_COEFF_A0];
-		iir_coeffs[IIR_COEFF_A2] = iir_coeffs[IIR_COEFF_A0];
-		iir_coeffs[IIR_COEFF_B1] = -(2.0F * (iir_K*iir_K - 1.0F)*norm);
-		iir_coeffs[IIR_COEFF_B2] = -(1.0F - iir_K / iir_Q + iir_K*iir_K) * norm;
+		IIR_Data.a[0] = 1.0F*norm;
+		IIR_Data.a[1] = -2.0F * IIR_Data.a[0];
+		IIR_Data.a[2] = IIR_Data.a[0];
+		IIR_Data.b[1] = -(2.0F * (iir_K*iir_K - 1.0F)*norm);
+		IIR_Data.b[2] = -(1.0F - iir_K / iir_Q + iir_K*iir_K) * norm;
 		break;
 	case	IIR_LOW_PASS	:
-		iir_coeffs[IIR_COEFF_A0] = iir_K * iir_K * norm;
-		iir_coeffs[IIR_COEFF_A1] = 2.0F * iir_coeffs[IIR_COEFF_A0];
-		iir_coeffs[IIR_COEFF_A2] = iir_coeffs[IIR_COEFF_A0];
-		iir_coeffs[IIR_COEFF_B1] = -2.0F * (iir_K * iir_K - 1.0F) * norm;
-		iir_coeffs[IIR_COEFF_B2] = -(1.0F - iir_K / iir_Q + iir_K * iir_K) * norm;
+		IIR_Data.a[0] = iir_K * iir_K * norm;
+		IIR_Data.a[1] = 2.0F * IIR_Data.a[0];
+		IIR_Data.a[2] = IIR_Data.a[0];
+		IIR_Data.b[1] = -2.0F * (iir_K * iir_K - 1.0F) * norm;
+		IIR_Data.b[2] = -(1.0F - iir_K / iir_Q + iir_K * iir_K) * norm;
 		break;
 	case	IIR_BAND_PASS	:
-		iir_coeffs[IIR_COEFF_A0] = iir_K /iir_Q * norm;
-		iir_coeffs[IIR_COEFF_A1] = 0.0f;
-		iir_coeffs[IIR_COEFF_A2] = -iir_coeffs[IIR_COEFF_A0];
-		iir_coeffs[IIR_COEFF_B1] = 2.0F * (iir_K*iir_K - 1.0F) * norm;
-		iir_coeffs[IIR_COEFF_B2] = (1.0F - iir_K / iir_Q + iir_K*iir_K) * norm;
+        IIR_Data.a[0] = iir_K / iir_Q * norm;
+        IIR_Data.a[1] = 0.0f;
+        IIR_Data.a[2] = -IIR_Data.a[0];
+        IIR_Data.b[1] = 2.0f * (iir_K * iir_K - 1.0f) * norm;
+        IIR_Data.b[2] = (1.0f - iir_K / iir_Q + iir_K * iir_K) * norm;
+        break;
+
 		break;
 	case	IIR_NOTCH	:
-        iir_coeffs[IIR_COEFF_A0] = (1.0F + iir_K * iir_K) * norm;
-        iir_coeffs[IIR_COEFF_A1] = 2.0F * (iir_K * iir_K - 1) * norm;
-        iir_coeffs[IIR_COEFF_A2] = iir_coeffs[IIR_COEFF_A0];
-        iir_coeffs[IIR_COEFF_B1] = iir_coeffs[IIR_COEFF_A1];
-        iir_coeffs[IIR_COEFF_B2] = (1.0F - iir_K / iir_Q + iir_K * iir_K) * norm;
+        IIR_Data.a[0] = (1.0F + iir_K * iir_K) * norm;
+        IIR_Data.a[1] = 2.0F * (iir_K * iir_K - 1) * norm;
+        IIR_Data.a[2] = IIR_Data.a[0];
+        IIR_Data.b[1] = IIR_Data.a[1];
+        IIR_Data.b[2] = (1.0F - iir_K / iir_Q + iir_K * iir_K) * norm;
         break;
 	}
+	arm_iir_coeffs[0] = IIR_Data.a[0];
+	arm_iir_coeffs[1] = IIR_Data.a[1];
+	arm_iir_coeffs[2] = IIR_Data.a[2];
+	arm_iir_coeffs[3] = IIR_Data.b[1];
+	arm_iir_coeffs[4] = IIR_Data.b[2];
 }
 
 OSCILLATORS_RAM	float iir_buf_in  [HALF_NUMBER_OF_AUDIO_SAMPLES];
@@ -125,8 +132,8 @@ void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Depth");
 	Effect[IIR_EFFECT_ID].apply_effect =  Do_iir;
 	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-	Iir_set_params(Type, Frequency, iir_Q);
-	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, &iir_coeffs[0], &iir_state[0]);
+	Iir_configure(Type, Frequency, iir_Q);
+	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, arm_iir_coeffs, &iir_state[0]);
 }
 
 void Iir_enable(void)

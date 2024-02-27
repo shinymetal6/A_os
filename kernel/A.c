@@ -148,8 +148,10 @@ void A_IrqPriority_Init(void)
 #endif //#ifdef ENCODER_ENABLED
 
 #ifdef	CODEC_ENABLED
+#ifdef	CODEC_NAU88C22
 	HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, I2STX_PRIORITY, 0); /* Make DMA1_Stream2_IRQn middle priority */
 	HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, I2SRX_PRIORITY, 0); /* Make DMA1_Stream3_IRQn middle priority */
+#endif //#ifdef CODEC_NAU88C22
 #endif //#ifdef CODEC_ENABLED
 }
 
