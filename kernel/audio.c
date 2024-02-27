@@ -89,29 +89,15 @@ uint16_t	start,end,i;
 
 		RunOscillator32();
 		get_limits(&start,&end);
-		Vca_s_enable();
-		Do_Vca(oscout_buffer,pipe0);
+//		Do_iir(oscout_buffer,pipe0);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
-//			Do_Vca_s((int16_t *)&oscout_buffer[i],(int16_t *)&pipe0[i]);
+			pipe0[i] = Do_Biquad_s(oscout_buffer[i]);
 			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe0[i];
 			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe0[i];
 		}
 	}
-	/*
-	else
-	{
-		get_limits(&start,&end);
-		//Vca(audio_out ,audio_in,start);
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = audio_in[i+start].channel[AUDIO_LEFT_CH];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = audio_in[i+start].channel[AUDIO_RIGHT_CH];
-		}
-	}
-	*/
     HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
-
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)

@@ -41,12 +41,12 @@ typedef struct _EffectsTypeDef
 #define	EFFECT_ENABLED 0x80
 
 #define	ADSR_EFFECT_ID			0
-#define	DISTORSION_EFFECT_ID	1
-#define	ECHO_EFFECT_ID			2
-#define	FLANGER_EFFECT_ID		3
-#define	FFT_ID					4
-#define	IIR_EFFECT_ID			5
-#define	IIR_S_EFFECT_ID			6
+#define	BIQUAD_S_EFFECT_ID		1
+#define	DISTORSION_EFFECT_ID	2
+#define	ECHO_EFFECT_ID			3
+#define	FLANGER_EFFECT_ID		4
+#define	FFT_ID					5
+#define	IIR_EFFECT_ID			6
 #define	MOOG1_F_EFFECT_ID		7
 #define	MOOG2_F_EFFECT_ID		8
 #define	NOISE_EFFECT_ID			9
@@ -73,12 +73,12 @@ typedef struct _EffectsPipeTypeDef
 #include 	"arm_math.h"
 
 #include	"adsr.h"
+#include	"biquad.h"
 #include	"distortion.h"
 #include	"echo.h"
 #include	"flanger.h"
 #include	"fft.h"
 #include	"iir.h"
-#include	"iir_s.h"
 #include	"moog_filters.h"
 #include	"noise.h"
 #include	"passthrough.h"
