@@ -28,37 +28,37 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
-ITCM_AREA_CODE void Do_Vca_s(int16_t *inputData, int16_t *outputData)
+ITCM_AREA_CODE int16_t Do_Vca_s(int16_t inputData)
 {
-	if ( (Effect[VCA_S_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
-			*outputData = (int16_t )((float )*inputData * Effect[VCA_S_EFFECT_ID].parameter[0]);
+	if ( (SingleSampleEffect[VCA_S_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+			return (int16_t )((float )inputData * SingleSampleEffect[VCA_S_EFFECT_ID].parameter[0]);
 	else
-			*outputData = *inputData;
+			return inputData;
 }
 
 void Vca_s_setMasterVolume(uint8_t Volume)
 {
-	Effect[VCA_S_EFFECT_ID].parameter[0] = (Volume <= 100) ? (float )Volume / 100.0F : 1.0F;
+	SingleSampleEffect[VCA_S_EFFECT_ID].parameter[0] = (Volume <= 100) ? (float )Volume / 100.0F : 1.0F;
 }
 
 void Vca_s_init(uint8_t Volume)
 {
-	Effect[VCA_S_EFFECT_ID].parameter[0] = (float )Volume / 100.0F;
-	Effect[VCA_S_EFFECT_ID].num_params = 1;
-	sprintf(Effect[VCA_S_EFFECT_ID].effect_name,"Vca");
-	sprintf(Effect[VCA_S_EFFECT_ID].effect_param[0],"Volume");
-	Effect[VCA_S_EFFECT_ID].apply_effect =  Do_Vca_s;
-	Effect[VCA_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	SingleSampleEffect[VCA_S_EFFECT_ID].parameter[0] = (float )Volume / 100.0F;
+	SingleSampleEffect[VCA_S_EFFECT_ID].num_params = 1;
+	sprintf(SingleSampleEffect[VCA_S_EFFECT_ID].effect_name,"Vca");
+	sprintf(SingleSampleEffect[VCA_S_EFFECT_ID].effect_param[0],"Volume");
+	SingleSampleEffect[VCA_S_EFFECT_ID].apply_effect =  Do_Vca_s;
+	SingleSampleEffect[VCA_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Vca_s_enable(void)
 {
-	Effect[VCA_S_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	SingleSampleEffect[VCA_S_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Vca_s_disable(void)
 {
-	Effect[VCA_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	SingleSampleEffect[VCA_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif //#ifdef SYNTH_ENGINE_ENABLE
 

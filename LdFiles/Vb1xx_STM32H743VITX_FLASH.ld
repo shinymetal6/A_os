@@ -62,7 +62,7 @@ SECTIONS
 	_oscillators_start  = LOADADDR(.oscillators);
 	.oscillators	 	0x20008000 : {. = ALIGN(4); KEEP(*(.oscillators))}
 	_oscillators_end  	= LOADADDR(.oscillators_end);
-	.oscillators_end	0x20018000 : {. = ALIGN(4); KEEP(*(.oscillators_end))}
+	.oscillators_end	0x2001E000 : {. = ALIGN(4); KEEP(*(.oscillators_end))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
 	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
@@ -224,7 +224,7 @@ SECTIONS
   } >RAM_D1
 
   . = ALIGN(4);
-  .dtcmdata 0x20018000 :
+  .dtcmdata 0x2001E000 :
   {
     /* This is used by the startup in order to initialize the .bss section */
     _sdtcm = .;         /* define a global symbol at bss start */

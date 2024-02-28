@@ -32,9 +32,9 @@
 ITCM_AREA_CODE void Do_Echo(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
-	float feedbackGain = Effect[ECHO_EFFECT_ID].parameter[0];
-	uint16_t delaySamples = (uint16_t ) Effect[ECHO_EFFECT_ID].parameter[1];
-	if ( (Effect[ECHO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	float feedbackGain = BlockEffect[ECHO_EFFECT_ID].parameter[0];
+	uint16_t delaySamples = (uint16_t ) BlockEffect[ECHO_EFFECT_ID].parameter[1];
+	if ( (BlockEffect[ECHO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -65,25 +65,25 @@ void Echo_init(uint32_t Feedback,uint32_t Delay)
 "Delay[ms]   ",  50.0f, 0.0f,  1000.0f}; // 0 to 15ms
 */
 
-	Effect[ECHO_EFFECT_ID].parameter[0] = (float )Feedback / 100.0F;
-	Effect[ECHO_EFFECT_ID].parameter[1] = (float )Delay * (float )SAMPLE_FREQUENCY / 1000.0F;
-	Effect[ECHO_EFFECT_ID].num_params = 2;
-	sprintf(Effect[ECHO_EFFECT_ID].effect_name,"Echo");
-	sprintf(Effect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
-	sprintf(Effect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
-	Effect[ECHO_EFFECT_ID].apply_effect =  Do_Echo;
-	Effect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[ECHO_EFFECT_ID].parameter[0] = (float )Feedback / 100.0F;
+	BlockEffect[ECHO_EFFECT_ID].parameter[1] = (float )Delay * (float )SAMPLE_FREQUENCY / 1000.0F;
+	BlockEffect[ECHO_EFFECT_ID].num_params = 2;
+	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_name,"Echo");
+	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
+	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
+	BlockEffect[ECHO_EFFECT_ID].apply_effect =  Do_Echo;
+	BlockEffect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 
 void Echo_enable(void)
 {
-	Effect[ECHO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[ECHO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Echo_disable(void)
 {
-	Effect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

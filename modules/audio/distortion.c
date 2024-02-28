@@ -38,10 +38,10 @@ ITCM_AREA_CODE void Do_Distortion(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[DISTORSION_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[DISTORSION_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
-		DistortionData.gain = Effect[DISTORSION_EFFECT_ID].parameter[1]/100;
-		DistortionData.clipping = Effect[DISTORSION_EFFECT_ID].parameter[0];
+		DistortionData.gain = BlockEffect[DISTORSION_EFFECT_ID].parameter[1]/100;
+		DistortionData.clipping = BlockEffect[DISTORSION_EFFECT_ID].parameter[0];
 
 		int16_t threshold = 10000.0f - ((DistortionData.clipping/100) * DistortionData.clipping_coef);
 
@@ -79,14 +79,14 @@ typical values
 	parameter[1] = gain = 150.0f;
 */
 
-	Effect[DISTORSION_EFFECT_ID].parameter[0] = (float )Clipping;
-	Effect[DISTORSION_EFFECT_ID].parameter[1] = (float )Gain;
-	Effect[DISTORSION_EFFECT_ID].num_params = 2;
-	sprintf(Effect[DISTORSION_EFFECT_ID].effect_name,"Distorsion");
-	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[0],"Clipping");
-	sprintf(Effect[DISTORSION_EFFECT_ID].effect_param[1],"Gain");
-	Effect[DISTORSION_EFFECT_ID].apply_effect =  Do_Distortion;
-	Effect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[DISTORSION_EFFECT_ID].parameter[0] = (float )Clipping;
+	BlockEffect[DISTORSION_EFFECT_ID].parameter[1] = (float )Gain;
+	BlockEffect[DISTORSION_EFFECT_ID].num_params = 2;
+	sprintf(BlockEffect[DISTORSION_EFFECT_ID].effect_name,"Distorsion");
+	sprintf(BlockEffect[DISTORSION_EFFECT_ID].effect_param[0],"Clipping");
+	sprintf(BlockEffect[DISTORSION_EFFECT_ID].effect_param[1],"Gain");
+	BlockEffect[DISTORSION_EFFECT_ID].apply_effect =  Do_Distortion;
+	BlockEffect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	DistortionData.clipping = 50.0f; // 50%
 	DistortionData.gain = 150.0f;
@@ -95,12 +95,12 @@ typical values
 
 void Distortion_enable(void)
 {
-	Effect[DISTORSION_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[DISTORSION_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Distortion_disable(void)
 {
-	Effect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[DISTORSION_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 

@@ -29,7 +29,7 @@
 
 #include "effects.h"
 
-extern	EffectsTypeDef	Effect[MAX_EFFECTS];
+extern	BlockEffectsTypeDef	BlockEffect[MAX_BLOCK_EFFECTS];
 
 MoogParametersTypeDef	Moog1Parameters;
 
@@ -39,10 +39,10 @@ MoogParametersTypeDef	Moog1Parameters;
 void Set_Filter1_Coefficients(void)
 {
 /*    Set coefficients given frequency & resonance [0.0...1.0] */
-	Moog1Parameters.q = 1.0F - Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF] ;
-	Moog1Parameters.p = Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF]  + 0.8F * Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF]  * Moog1Parameters.q;
+	Moog1Parameters.q = 1.0F - BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF] ;
+	Moog1Parameters.p = BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF]  + 0.8F * BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF]  * Moog1Parameters.q;
 	Moog1Parameters.f = Moog1Parameters.p + Moog1Parameters.p - 1.0F;
-	Moog1Parameters.q = Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_RESONANCE] * (1.0F + 0.5f * Moog1Parameters.q * (1.0F - Moog1Parameters.q + 5.6F * Moog1Parameters.q * Moog1Parameters.q));
+	Moog1Parameters.q = BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_RESONANCE] * (1.0F + 0.5f * Moog1Parameters.q * (1.0F - Moog1Parameters.q + 5.6F * Moog1Parameters.q * Moog1Parameters.q));
 }
 
 void Clear_Moog1_data(void)
@@ -82,7 +82,7 @@ float t1, t2;              //temporary buffers
 ITCM_AREA_CODE void Do_Moog1(int16_t* inputData, int16_t* outputData)
 {
 	uint16_t	i;
-	if ( (Effect[MOOG1_F_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[MOOG1_F_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -98,24 +98,24 @@ ITCM_AREA_CODE void Do_Moog1(int16_t* inputData, int16_t* outputData)
 
 void Moog1_init(float Cutoff,float Resonance)
 {
-	Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF] = Cutoff;
-	Effect[MOOG1_F_EFFECT_ID].parameter[MOOG1_RESONANCE] = Resonance;
-	Effect[MOOG1_F_EFFECT_ID].num_params = 2;
-	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_name,"Moog2 Filter");
-	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_CUTOFF],"Cutoff");
-	sprintf(Effect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_RESONANCE],"Resonance");
-	Effect[MOOG1_F_EFFECT_ID].apply_effect =  Do_Moog1;
-	Effect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_CUTOFF] = Cutoff;
+	BlockEffect[MOOG1_F_EFFECT_ID].parameter[MOOG1_RESONANCE] = Resonance;
+	BlockEffect[MOOG1_F_EFFECT_ID].num_params = 2;
+	sprintf(BlockEffect[MOOG1_F_EFFECT_ID].effect_name,"Moog2 Filter");
+	sprintf(BlockEffect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_CUTOFF],"Cutoff");
+	sprintf(BlockEffect[MOOG1_F_EFFECT_ID].effect_param[MOOG1_RESONANCE],"Resonance");
+	BlockEffect[MOOG1_F_EFFECT_ID].apply_effect =  Do_Moog1;
+	BlockEffect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Moog1_enable(void)
 {
-	Effect[MOOG1_F_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[MOOG1_F_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Moog1_disable(void)
 {
-	Effect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[MOOG1_F_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

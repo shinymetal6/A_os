@@ -31,7 +31,7 @@
 
 #include "effects.h"
 
-extern	EffectsTypeDef	Effect[MAX_EFFECTS];
+extern	BlockEffectsTypeDef	BlockEffect[MAX_BLOCK_EFFECTS];
 
 //4 delayed samples per biquad
 OSCILLATORS_RAM	float iir_state [4];
@@ -45,9 +45,9 @@ ITCM_AREA_CODE void Iir_configure(uint8_t Type, uint16_t Frequency, float iir_Q)
 float  norm;
 float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 
-	Effect[IIR_EFFECT_ID].parameter[0] = (float )Type;
-	Effect[IIR_EFFECT_ID].parameter[1] = (float )Frequency;
-	Effect[IIR_EFFECT_ID].parameter[2] = (float )iir_Q;
+	BlockEffect[IIR_EFFECT_ID].parameter[0] = (float )Type;
+	BlockEffect[IIR_EFFECT_ID].parameter[1] = (float )Frequency;
+	BlockEffect[IIR_EFFECT_ID].parameter[2] = (float )iir_Q;
 
 	norm = 1.0F / (1.0F + iir_K / iir_Q + iir_K * iir_K);
 	switch(Type)
@@ -93,15 +93,18 @@ float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 OSCILLATORS_RAM	float iir_buf_in  [HALF_NUMBER_OF_AUDIO_SAMPLES];
 OSCILLATORS_RAM	float iir_buf_out [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
+extern	void A_os_arm_biquad_cascade( const arm_biquad_casd_df1_inst_f32 * S, float32_t * pSrc, float32_t * pDst, uint32_t blockSize);
+
 ITCM_AREA_CODE void Do_iir(int16_t *filter_in , int16_t *filter_out)
 {
 uint32_t	i;
 
-	if ( (Effect[IIR_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[IIR_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for (i=0; i<HALF_NUMBER_OF_AUDIO_SAMPLES; i++)
 			iir_buf_in[i] = (float)filter_in[i];
-		arm_biquad_cascade_df1_f32 (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
+//		arm_biquad_cascade_df1_f32 (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
+		A_os_arm_biquad_cascade (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
 		for (i=0; i<HALF_NUMBER_OF_AUDIO_SAMPLES; i++)
 			filter_out[i] =	(int16_t)(iir_buf_out[i] );
 	}
@@ -115,35 +118,35 @@ uint32_t	i;
 
 void Iir_init(uint8_t Type, uint16_t Frequency, float iir_Q)
 {
-	Effect[IIR_EFFECT_ID].parameter[0] = (float )Type;
-	Effect[IIR_EFFECT_ID].parameter[1] = (float )Frequency;
-	Effect[IIR_EFFECT_ID].parameter[2] = (float )iir_Q;
-	Effect[IIR_EFFECT_ID].num_params = 3;
-	sprintf(Effect[IIR_EFFECT_ID].effect_name,"Iir");
+	BlockEffect[IIR_EFFECT_ID].parameter[0] = (float )Type;
+	BlockEffect[IIR_EFFECT_ID].parameter[1] = (float )Frequency;
+	BlockEffect[IIR_EFFECT_ID].parameter[2] = (float )iir_Q;
+	BlockEffect[IIR_EFFECT_ID].num_params = 3;
+	sprintf(BlockEffect[IIR_EFFECT_ID].effect_name,"Iir");
 	switch ( Type )
 	{
-	case	IIR_HIGH_PASS :sprintf(Effect[IIR_EFFECT_ID].effect_param[0],"IIR High Pass"); break;
-	case	IIR_LOW_PASS  :sprintf(Effect[IIR_EFFECT_ID].effect_param[0],"IIR Low Pass"); break;
-	case	IIR_BAND_PASS :sprintf(Effect[IIR_EFFECT_ID].effect_param[0],"IIR Band Pass"); break;
-	case	IIR_NOTCH     :sprintf(Effect[IIR_EFFECT_ID].effect_param[0],"IIR Notch"); break;
+	case	IIR_HIGH_PASS :sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[0],"IIR High Pass"); break;
+	case	IIR_LOW_PASS  :sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[0],"IIR Low Pass"); break;
+	case	IIR_BAND_PASS :sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[0],"IIR Band Pass"); break;
+	case	IIR_NOTCH     :sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[0],"IIR Notch"); break;
 	}
 
-	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Frequency");
-	sprintf(Effect[IIR_EFFECT_ID].effect_param[1],"Depth");
-	Effect[IIR_EFFECT_ID].apply_effect =  Do_iir;
-	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[1],"Frequency");
+	sprintf(BlockEffect[IIR_EFFECT_ID].effect_param[1],"Depth");
+	BlockEffect[IIR_EFFECT_ID].apply_effect =  Do_iir;
+	BlockEffect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	Iir_configure(Type, Frequency, iir_Q);
 	arm_biquad_cascade_df1_init_f32 ( &iirsettings, 1, arm_iir_coeffs, &iir_state[0]);
 }
 
 void Iir_enable(void)
 {
-	Effect[IIR_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[IIR_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Iir_disable(void)
 {
-	Effect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[IIR_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

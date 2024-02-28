@@ -79,12 +79,12 @@ ITCM_AREA_CODE void Do_Wah(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[WAH_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[WAH_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		float lfoFreq = Effect[WAH_EFFECT_ID].parameter[1];
-		float lfoDepth = Effect[WAH_EFFECT_ID].parameter[2]/100.0f;
-		float centreFreq =Effect[WAH_EFFECT_ID].parameter[0];
+		float lfoFreq = BlockEffect[WAH_EFFECT_ID].parameter[1];
+		float lfoDepth = BlockEffect[WAH_EFFECT_ID].parameter[2]/100.0f;
+		float centreFreq =BlockEffect[WAH_EFFECT_ID].parameter[0];
 
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -126,27 +126,27 @@ typical values
 	parameter[2] = "Depth[%]       ", 10.f, 0.0f, 100.f // typ 4.0f;
 */
 
-	Effect[WAH_EFFECT_ID].parameter[0] = (float )CenterFrequency;
-	Effect[WAH_EFFECT_ID].parameter[1] = (float )Rate;
-	Effect[WAH_EFFECT_ID].parameter[2] = (float )Depth;
-	Effect[WAH_EFFECT_ID].num_params = 3;
-	sprintf(Effect[WAH_EFFECT_ID].effect_name,"Wah");
-	sprintf(Effect[WAH_EFFECT_ID].effect_param[0],"CenterFrequency");
-	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Rate");
-	sprintf(Effect[WAH_EFFECT_ID].effect_param[1],"Depth");
-	Effect[WAH_EFFECT_ID].apply_effect =  Do_Wah;
-	Effect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[WAH_EFFECT_ID].parameter[0] = (float )CenterFrequency;
+	BlockEffect[WAH_EFFECT_ID].parameter[1] = (float )Rate;
+	BlockEffect[WAH_EFFECT_ID].parameter[2] = (float )Depth;
+	BlockEffect[WAH_EFFECT_ID].num_params = 3;
+	sprintf(BlockEffect[WAH_EFFECT_ID].effect_name,"Wah");
+	sprintf(BlockEffect[WAH_EFFECT_ID].effect_param[0],"CenterFrequency");
+	sprintf(BlockEffect[WAH_EFFECT_ID].effect_param[1],"Rate");
+	sprintf(BlockEffect[WAH_EFFECT_ID].effect_param[1],"Depth");
+	BlockEffect[WAH_EFFECT_ID].apply_effect =  Do_Wah;
+	BlockEffect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 	new_bandpass();
 }
 
 void Wah_enable(void)
 {
-	Effect[WAH_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[WAH_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Wah_disable(void)
 {
-	Effect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 

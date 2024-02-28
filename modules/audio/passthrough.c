@@ -38,20 +38,20 @@ uint32_t	i;
 
 void PassThrough_init(void)
 {
-	Effect[PASSTHROUGH_EFFECT_ID].num_params = 0;
-	sprintf(Effect[PASSTHROUGH_EFFECT_ID].effect_name,"PassThrough");
-	Effect[PASSTHROUGH_EFFECT_ID].apply_effect =  Do_PassThrough;
-	Effect[PASSTHROUGH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[PASSTHROUGH_EFFECT_ID].num_params = 0;
+	sprintf(BlockEffect[PASSTHROUGH_EFFECT_ID].effect_name,"PassThrough");
+	BlockEffect[PASSTHROUGH_EFFECT_ID].apply_effect =  Do_PassThrough;
+	BlockEffect[PASSTHROUGH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void PassThrough_enable(void)
 {
-	Effect[PASSTHROUGH_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[PASSTHROUGH_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void PassThrough_disable(void)
 {
-	Effect[PASSTHROUGH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[PASSTHROUGH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif //#ifdef SYNTH_ENGINE_ENABLE
 

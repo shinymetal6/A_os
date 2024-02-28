@@ -113,6 +113,9 @@ void  SysTick_Handler(void)
 	if ( Asys.g_os_started )
 	{
 		update_global_tick_count();
+#ifdef SYNTH_ENGINE_ENABLE
+		Do_Adsr_sm();
+#endif
 		check_timers();
 		//pend the pendsv exception
 		schedule();

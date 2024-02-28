@@ -35,13 +35,13 @@ OSCILLATORS_RAM	PhaserTypeDef	PhaserData;
 
 ITCM_AREA_CODE void Phaser_Rate_set(uint8_t val)
 {
-	Effect[PHASER_EFFECT_ID].parameter[2] = (MAX_RATE - MIN_RATE) / MIDI_MAX * val + MIN_RATE;
-	PhaserData.lfoInc = 2 * PI * Effect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
+	BlockEffect[PHASER_EFFECT_ID].parameter[2] = (MAX_RATE - MIN_RATE) / MIDI_MAX * val + MIN_RATE;
+	PhaserData.lfoInc = 2 * PI * BlockEffect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
 }
 
 ITCM_AREA_CODE void Phaser_Feedback_set(uint8_t val)
 {
-	Effect[PHASER_EFFECT_ID].parameter[3] = 0.999f * (float )val / MIDI_MAX;
+	BlockEffect[PHASER_EFFECT_ID].parameter[3] = 0.999f * (float )val / MIDI_MAX;
 }
 
 ITCM_AREA_CODE void Phaser_Wet_set(uint8_t val)
@@ -51,13 +51,13 @@ ITCM_AREA_CODE void Phaser_Wet_set(uint8_t val)
 
 ITCM_AREA_CODE void PhaserRate(float rate)
 {
-	Effect[PHASER_EFFECT_ID].parameter[2] = rate;
-	PhaserData.lfoInc = 2 * PI * Effect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
+	BlockEffect[PHASER_EFFECT_ID].parameter[2] = rate;
+	PhaserData.lfoInc = 2 * PI * BlockEffect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
 }
 
 ITCM_AREA_CODE void PhaserFeedback(float fdb)
 {
-	Effect[PHASER_EFFECT_ID].parameter[3] = fdb;
+	BlockEffect[PHASER_EFFECT_ID].parameter[3] = fdb;
 }
 
 ITCM_AREA_CODE static float allpass(float yin, int ind)
@@ -75,7 +75,7 @@ ITCM_AREA_CODE void Do_Phaser(int16_t* inputData, int16_t* outputData)
 float 		d,xin,yout;
 int16_t		i;
 
-	if ( (Effect[PHASER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[PHASER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -92,7 +92,7 @@ int16_t		i;
 
 			//calculate output
 
-			yout = allpass(xin + PhaserData.zm1 * Effect[PHASER_EFFECT_ID].parameter[3], 0);
+			yout = allpass(xin + PhaserData.zm1 * BlockEffect[PHASER_EFFECT_ID].parameter[3], 0);
 
 			for(i = 1; i < PH_STAGES; i++)
 			{
@@ -115,34 +115,34 @@ int16_t		i;
 
 void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 {
-	Effect[PHASER_EFFECT_ID].parameter[0] = (float )Fmin;		//200.f;
-	Effect[PHASER_EFFECT_ID].parameter[1] = (float )Fmax;		//1700.f;
-	Effect[PHASER_EFFECT_ID].parameter[2] = (float )SwRate;		// 0.1f;
-	Effect[PHASER_EFFECT_ID].parameter[3] = Feedback;			// 0.7f;
-	Effect[PHASER_EFFECT_ID].num_params = 4;
-	sprintf(Effect[PHASER_EFFECT_ID].effect_name,"Phaser");
-	sprintf(Effect[PHASER_EFFECT_ID].effect_param[0],"Frequency Min");
-	sprintf(Effect[PHASER_EFFECT_ID].effect_param[1],"Frequency Max");
-	sprintf(Effect[PHASER_EFFECT_ID].effect_param[2],"Sweep Rate");
-	sprintf(Effect[PHASER_EFFECT_ID].effect_param[3],"Feedback");
-	Effect[PHASER_EFFECT_ID].apply_effect =  Do_Phaser;
-	Effect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[PHASER_EFFECT_ID].parameter[0] = (float )Fmin;		//200.f;
+	BlockEffect[PHASER_EFFECT_ID].parameter[1] = (float )Fmax;		//1700.f;
+	BlockEffect[PHASER_EFFECT_ID].parameter[2] = (float )SwRate;		// 0.1f;
+	BlockEffect[PHASER_EFFECT_ID].parameter[3] = Feedback;			// 0.7f;
+	BlockEffect[PHASER_EFFECT_ID].num_params = 4;
+	sprintf(BlockEffect[PHASER_EFFECT_ID].effect_name,"Phaser");
+	sprintf(BlockEffect[PHASER_EFFECT_ID].effect_param[0],"Frequency Min");
+	sprintf(BlockEffect[PHASER_EFFECT_ID].effect_param[1],"Frequency Max");
+	sprintf(BlockEffect[PHASER_EFFECT_ID].effect_param[2],"Sweep Rate");
+	sprintf(BlockEffect[PHASER_EFFECT_ID].effect_param[3],"Feedback");
+	BlockEffect[PHASER_EFFECT_ID].apply_effect =  Do_Phaser;
+	BlockEffect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	PhaserData.wet = 0.3f;
-	PhaserData.dmin = 2 * Effect[PHASER_EFFECT_ID].parameter[0] / SAMPLE_FREQUENCY;
-	PhaserData.dmax = 2 * Effect[PHASER_EFFECT_ID].parameter[1] / SAMPLE_FREQUENCY;
-	PhaserData.lfoInc = 2 * PI * Effect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
+	PhaserData.dmin = 2 * BlockEffect[PHASER_EFFECT_ID].parameter[0] / SAMPLE_FREQUENCY;
+	PhaserData.dmax = 2 * BlockEffect[PHASER_EFFECT_ID].parameter[1] / SAMPLE_FREQUENCY;
+	PhaserData.lfoInc = 2 * PI * BlockEffect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
 }
 
 
 void Phaser_enable(void)
 {
-	Effect[PHASER_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[PHASER_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Phaser_disable(void)
 {
-	Effect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[PHASER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

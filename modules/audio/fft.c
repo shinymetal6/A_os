@@ -113,25 +113,25 @@ arm_rfft_fast_instance_f32 fft;
 
 void Fft_init(uint8_t WindowType)
 {
-	Effect[FFT_ID].parameter[0] = (float )WindowType;
-	Effect[FFT_ID].num_params = 1;
-	sprintf(Effect[FFT_ID].effect_name,"Fft");
-	sprintf(Effect[FFT_ID].effect_param[0],"Window Type");
+	BlockEffect[FFT_ID].parameter[0] = (float )WindowType;
+	BlockEffect[FFT_ID].num_params = 1;
+	sprintf(BlockEffect[FFT_ID].effect_name,"Fft");
+	sprintf(BlockEffect[FFT_ID].effect_param[0],"Window Type");
 
-	Effect[FFT_ID].apply_effect =  Do_Fft;
-	Effect[FFT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[FFT_ID].apply_effect =  Do_Fft;
+	BlockEffect[FFT_ID].effect_status &= ~EFFECT_ENABLED;
 
 	FftData.window_type = WindowType;
 }
 
 void Fft_enable(void)
 {
-	Effect[FFT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[FFT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Fft_disable(void)
 {
-	Effect[FFT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[FFT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

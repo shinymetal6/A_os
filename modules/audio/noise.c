@@ -37,7 +37,7 @@ ITCM_AREA_CODE void Do_Noise(int16_t* inputData, int16_t* outputData)
 {
 uint32_t	i;
 uint32_t random_number;
-	if ( (Effect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i+=2)
 		{
@@ -60,20 +60,20 @@ uint32_t random_number;
 
 void Noise_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
 {
-	Effect[NOISE_EFFECT_ID].num_params = 0;
-	sprintf(Effect[NOISE_EFFECT_ID].effect_name,"Noise");
-	Effect[NOISE_EFFECT_ID].apply_effect =  Do_Noise;
-	Effect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[NOISE_EFFECT_ID].num_params = 0;
+	sprintf(BlockEffect[NOISE_EFFECT_ID].effect_name,"Noise");
+	BlockEffect[NOISE_EFFECT_ID].apply_effect =  Do_Noise;
+	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Noise_enable(void)
 {
-	Effect[NOISE_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[NOISE_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Noise_disable(void)
 {
-	Effect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 

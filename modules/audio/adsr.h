@@ -34,11 +34,20 @@ typedef struct _AdsrTypeDef
 	float	 	SustainLevel;
 	uint32_t 	ReleaseRate;
 	float	 	ReleaseLevel,ReleaseDelta,ReleaseLevel_WORK;
+	float	 	OutLlevel;
 } AdsrTypeDef;
 
-#define	ATTACK		0
-#define	DECAY		1
-#define	SUSTAIN		2
-#define	RELEASE		3
+#define	IDLE		0
+#define	ATTACK		1
+#define	DECAY		2
+#define	SUSTAIN		3
+#define	RELEASE		4
+
+extern	void Adsr_set(uint32_t AttackRate,uint32_t AttackStartLevel,uint32_t DecayRate,uint32_t SustainLevel,uint32_t ReleaseRate);
+extern	void Do_Adsr_sm(void);
+extern	void Adsr_init(uint32_t AttackRate,uint32_t AttackStartLevel,uint32_t DecayRate,uint32_t SustainLevel,uint32_t ReleaseRate);
+extern	void Adsr_enable(void);
+extern	void Adsr_disable(void);
+
 
 #endif /* MODULES_AUDIO_ADSR_H_ */

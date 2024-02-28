@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * biquad.h
+ * biquad_s.h
  *
- *  Created on: Feb 27, 2024
+ *  Created on: Feb 28, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_BIQUAD_H_
-#define MODULES_AUDIO_BIQUAD_H_
+#ifndef MODULES_AUDIO_BIQUAD_S_H_
+#define MODULES_AUDIO_BIQUAD_S_H_
 
 typedef struct _BIQUAD_TypeDef
 {
@@ -40,9 +40,11 @@ typedef struct _BIQUAD_TypeDef
 
 
 extern int16_t Do_Biquad_s(int16_t inputData);
-extern	void Biquad_init(uint8_t Type, uint16_t Frequency, float iir_Q_BW, float resonance);
-extern	void Biquad_enable(void);
-extern	void Biquad_disable(void);
-extern	void Biquad_configure(int type, float Frequency, float iir_Q_BW, float resonance);
+extern	void Biquad_s_init(uint8_t Type, uint16_t Frequency, float iir_Q_BW, float resonance);
+extern	void Biquad_s_enable(void);
+extern	void Biquad_s_disable(void);
+extern	void Biquad_s_configure(uint8_t Type, float Frequency, float iir_Q_BW, float resonance);
+extern	int16_t Do_Biquad_s(int16_t inputData);
 
-#endif /* MODULES_AUDIO_BIQUAD_H_ */
+
+#endif /* MODULES_AUDIO_BIQUAD_S_H_ */

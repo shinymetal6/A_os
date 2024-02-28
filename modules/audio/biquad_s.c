@@ -14,11 +14,12 @@
  * Project : A_os
 */
 /*
- * biquad.c
+ * biquad_s.c
  *
- *  Created on: Feb 27, 2024
+ *  Created on: Feb 28, 2024
  *      Author: fil
  */
+
 /*
  * adapted from https://www.musicdsp.org/en/latest/Filters/64-biquad-c-code.html Tom St Denis
  */
@@ -31,7 +32,7 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "biquad.h"
+#include "biquad_s.h"
 #include "math.h"
 #include "effects.h"
 
@@ -55,9 +56,7 @@ ITCM_AREA_CODE int16_t Do_Biquad_s(int16_t inputData)
     return result;
 }
 
-/* sets up a BiQuad Filter */
-
-ITCM_AREA_CODE void Biquad_configure(int type, float Frequency, float iir_Q_BW, float resonance)
+ITCM_AREA_CODE void Biquad_s_configure(uint8_t Type, float Frequency, float iir_Q_BW, float resonance)
 {
 	float A,beta,omega, sn, cs, alpha;
 	float a0, a1, a2, b0, b1, b2;
@@ -69,7 +68,7 @@ ITCM_AREA_CODE void Biquad_configure(int type, float Frequency, float iir_Q_BW, 
     alpha = sn * sinh(M_LN2 /2 * iir_Q_BW * omega /sn);
     beta = sqrt(A + A);
 
-    switch (type)
+    switch (Type)
     {
     case BIQUAD_LOW_PASS:
         b0 = (1 - cs) /2;
@@ -143,28 +142,31 @@ ITCM_AREA_CODE void Biquad_configure(int type, float Frequency, float iir_Q_BW, 
     BIQUAD_Data.y1 = BIQUAD_Data.y2 = 0;
 }
 
-void Biquad_init(uint8_t Type, uint16_t Frequency, float iir_Q_BW, float resonance)
+void Biquad_s_init(uint8_t Type, uint16_t Frequency, float iir_Q_BW, float resonance)
 {
-	Effect[BIQUAD_S_EFFECT_ID].parameter[0] = (float )Type / 100.0F;
-	Effect[BIQUAD_S_EFFECT_ID].parameter[1] = (float )Frequency;
-	Effect[BIQUAD_S_EFFECT_ID].parameter[2] = iir_Q_BW;
-	Effect[BIQUAD_S_EFFECT_ID].num_params = 3;
-	sprintf(Effect[BIQUAD_S_EFFECT_ID].effect_name,"Biquad");
-	sprintf(Effect[BIQUAD_S_EFFECT_ID].effect_param[0],"Type");
-	sprintf(Effect[BIQUAD_S_EFFECT_ID].effect_param[1],"Frequency");
-	sprintf(Effect[BIQUAD_S_EFFECT_ID].effect_param[2],"Q / Bw");
-	Effect[BIQUAD_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].parameter[0] = (float )Type / 100.0F;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].parameter[1] = (float )Frequency;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].parameter[2] = iir_Q_BW;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].num_params = 3;
+	sprintf(SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_name,"Biquad");
+	sprintf(SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_param[0],"Type");
+	sprintf(SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_param[1],"Frequency");
+	sprintf(SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_param[2],"Q / Bw");
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].apply_effect =  Do_Biquad_s;
+
 	BIQUAD_Data.resonance = resonance;
 }
 
 
-void Biquad_enable(void)
+void Biquad_s_enable(void)
 {
-	Effect[BIQUAD_S_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
-void Biquad_disable(void)
+void Biquad_s_disable(void)
 {
-	Effect[BIQUAD_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	SingleSampleEffect[BIQUAD_S_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif
+

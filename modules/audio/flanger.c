@@ -33,12 +33,12 @@ ITCM_AREA_CODE void Do_Flanger(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		uint16_t maxDelay  = ((Effect[FLANGER_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
-		float lfoFreq = Effect[FLANGER_EFFECT_ID].parameter[0];
-		float lfoDepth = (Effect[FLANGER_EFFECT_ID].parameter[1]/100.0f);
+		uint16_t maxDelay  = ((BlockEffect[FLANGER_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
+		float lfoFreq = BlockEffect[FLANGER_EFFECT_ID].parameter[0];
+		float lfoDepth = (BlockEffect[FLANGER_EFFECT_ID].parameter[1]/100.0f);
 
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -78,26 +78,26 @@ typical values
 	parameter[2] = 2.0f;
 */
 
-	Effect[FLANGER_EFFECT_ID].parameter[0] = (float )Rate;
-	Effect[FLANGER_EFFECT_ID].parameter[1] = (float )Depth;
-	Effect[FLANGER_EFFECT_ID].parameter[2] = (float )Delay;
-	Effect[FLANGER_EFFECT_ID].num_params = 3;
-	sprintf(Effect[FLANGER_EFFECT_ID].effect_name,"Flanger");
-	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[0],"Rate");
-	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Depth");
-	sprintf(Effect[FLANGER_EFFECT_ID].effect_param[1],"Delay[ms]");
-	Effect[FLANGER_EFFECT_ID].apply_effect =  Do_Flanger;
-	Effect[FLANGER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[FLANGER_EFFECT_ID].parameter[0] = (float )Rate;
+	BlockEffect[FLANGER_EFFECT_ID].parameter[1] = (float )Depth;
+	BlockEffect[FLANGER_EFFECT_ID].parameter[2] = (float )Delay;
+	BlockEffect[FLANGER_EFFECT_ID].num_params = 3;
+	sprintf(BlockEffect[FLANGER_EFFECT_ID].effect_name,"Flanger");
+	sprintf(BlockEffect[FLANGER_EFFECT_ID].effect_param[0],"Rate");
+	sprintf(BlockEffect[FLANGER_EFFECT_ID].effect_param[1],"Depth");
+	sprintf(BlockEffect[FLANGER_EFFECT_ID].effect_param[1],"Delay[ms]");
+	BlockEffect[FLANGER_EFFECT_ID].apply_effect =  Do_Flanger;
+	BlockEffect[FLANGER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Flanger_enable(void)
 {
-	Effect[FLANGER_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[FLANGER_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Flanger_disable(void)
 {
-	Effect[FLANGER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[FLANGER_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif

@@ -20,7 +20,7 @@
  *      Author: fil
  */
 /*
- * https://github.com/JoeKenyon/GuitarEffectsPedal
+ * https://github.com/JoeKenyon/GuitarBlockEffectsPedal
  */
 #include "main.h"
 #include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
@@ -36,11 +36,11 @@ ITCM_AREA_CODE	void Do_Tremolo(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[TREMOLO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[TREMOLO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		float lfoFreq = Effect[TREMOLO_EFFECT_ID].parameter[1] ;
-		float lfoDepth = (Effect[TREMOLO_EFFECT_ID].parameter[0]/100.0f);
+		float lfoFreq = BlockEffect[TREMOLO_EFFECT_ID].parameter[1] ;
+		float lfoDepth = (BlockEffect[TREMOLO_EFFECT_ID].parameter[0]/100.0f);
 
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -72,23 +72,23 @@ typical values
 	parameter[1] = "Rate[Hz]", 0.5f, 1.0f,  7.0f;
 */
 
-	Effect[TREMOLO_EFFECT_ID].parameter[0] = (float )Depth;
-	Effect[TREMOLO_EFFECT_ID].parameter[1] = (float )Rate;
-	Effect[TREMOLO_EFFECT_ID].num_params = 2;
-	sprintf(Effect[TREMOLO_EFFECT_ID].effect_name,"Tremolo");
-	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[0],"Depth");
-	sprintf(Effect[TREMOLO_EFFECT_ID].effect_param[1],"Rate");
-	Effect[TREMOLO_EFFECT_ID].apply_effect =  Do_Tremolo;
-	Effect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[TREMOLO_EFFECT_ID].parameter[0] = (float )Depth;
+	BlockEffect[TREMOLO_EFFECT_ID].parameter[1] = (float )Rate;
+	BlockEffect[TREMOLO_EFFECT_ID].num_params = 2;
+	sprintf(BlockEffect[TREMOLO_EFFECT_ID].effect_name,"Tremolo");
+	sprintf(BlockEffect[TREMOLO_EFFECT_ID].effect_param[0],"Depth");
+	sprintf(BlockEffect[TREMOLO_EFFECT_ID].effect_param[1],"Rate");
+	BlockEffect[TREMOLO_EFFECT_ID].apply_effect =  Do_Tremolo;
+	BlockEffect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Tremolo_enable(void)
 {
-	Effect[TREMOLO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[TREMOLO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Tremolo_disable(void)
 {
-	Effect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[TREMOLO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 #endif

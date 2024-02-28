@@ -37,7 +37,7 @@ OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
 
 extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-OSCILLATORS_RAM	uint16_t	pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+OSCILLATORS_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 OSCILLATORS_RAM	int16_t		pipe0[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern	ControlAdcDef	ControlAdc;
@@ -82,10 +82,10 @@ ITCM_AREA_CODE void IrqProcessSamples(void)
 {
 uint16_t	start,end,i;
 
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
 //#define	TEST_OSCILLATORS
 //	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
 	{
-		HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
 
 		RunOscillator32();
 		get_limits(&start,&end);

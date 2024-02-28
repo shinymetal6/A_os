@@ -33,12 +33,12 @@ ITCM_AREA_CODE void Do_Vibrato(int16_t* inputData, int16_t* outputData)
 {
 uint16_t	i;
 
-	if ( (Effect[VIBRATO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	if ( (BlockEffect[VIBRATO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		static float phase = 0;
-		uint16_t maxDelay  = ((Effect[VIBRATO_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
-		float lfoFreq = Effect[VIBRATO_EFFECT_ID].parameter[0];
-		float lfoDepth = (Effect[VIBRATO_EFFECT_ID].parameter[1]/100.0f);
+		uint16_t maxDelay  = ((BlockEffect[VIBRATO_EFFECT_ID].parameter[2])*SAMPLE_FREQUENCY)/1000;
+		float lfoFreq = BlockEffect[VIBRATO_EFFECT_ID].parameter[0];
+		float lfoDepth = (BlockEffect[VIBRATO_EFFECT_ID].parameter[1]/100.0f);
 
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
@@ -70,26 +70,26 @@ typical values
 	parameter[1] = "Rate[Hz]", 0.5f, 1.0f,  7.0f;
 */
 
-	Effect[VIBRATO_EFFECT_ID].parameter[0] = (float )Rate;
-	Effect[VIBRATO_EFFECT_ID].parameter[1] = (float )Depth;
-	Effect[VIBRATO_EFFECT_ID].parameter[2] = (float )Delay;
-	Effect[VIBRATO_EFFECT_ID].num_params = 3;
-	sprintf(Effect[VIBRATO_EFFECT_ID].effect_name,"Vibrato");
-	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[0],"Rate");
-	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Depth");
-	sprintf(Effect[VIBRATO_EFFECT_ID].effect_param[1],"Delay");
-	Effect[VIBRATO_EFFECT_ID].apply_effect =  Do_Vibrato;
-	Effect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[VIBRATO_EFFECT_ID].parameter[0] = (float )Rate;
+	BlockEffect[VIBRATO_EFFECT_ID].parameter[1] = (float )Depth;
+	BlockEffect[VIBRATO_EFFECT_ID].parameter[2] = (float )Delay;
+	BlockEffect[VIBRATO_EFFECT_ID].num_params = 3;
+	sprintf(BlockEffect[VIBRATO_EFFECT_ID].effect_name,"Vibrato");
+	sprintf(BlockEffect[VIBRATO_EFFECT_ID].effect_param[0],"Rate");
+	sprintf(BlockEffect[VIBRATO_EFFECT_ID].effect_param[1],"Depth");
+	sprintf(BlockEffect[VIBRATO_EFFECT_ID].effect_param[1],"Delay");
+	BlockEffect[VIBRATO_EFFECT_ID].apply_effect =  Do_Vibrato;
+	BlockEffect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 void Vibrato_enable(void)
 {
-	Effect[VIBRATO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+	BlockEffect[VIBRATO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
 }
 
 void Vibrato_disable(void)
 {
-	Effect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+	BlockEffect[VIBRATO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 #endif
