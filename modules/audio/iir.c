@@ -103,8 +103,8 @@ uint32_t	i;
 	{
 		for (i=0; i<HALF_NUMBER_OF_AUDIO_SAMPLES; i++)
 			iir_buf_in[i] = (float)filter_in[i];
-//		arm_biquad_cascade_df1_f32 (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
-		A_os_arm_biquad_cascade (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
+		arm_biquad_cascade_df1_f32 (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
+//		A_os_arm_biquad_cascade (&iirsettings, (float32_t *)iir_buf_in, (float32_t * )iir_buf_out,HALF_NUMBER_OF_AUDIO_SAMPLES);
 		for (i=0; i<HALF_NUMBER_OF_AUDIO_SAMPLES; i++)
 			filter_out[i] =	(int16_t)(iir_buf_out[i] );
 	}

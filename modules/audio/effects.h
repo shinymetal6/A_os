@@ -24,7 +24,6 @@
 #define MODULES_AUDIO_EFFECTS_H_
 
 #define	MAX_PARAMS					8
-#define	MAX_BLOCK_EFFECTS			19
 #define	MAX_SINGLESAMPLE_EFFECTS	8
 
 typedef struct _BlockEffectsTypeDef
@@ -35,6 +34,7 @@ typedef struct _BlockEffectsTypeDef
 	float 		parameter[MAX_PARAMS];
 	uint8_t 	num_params;
 	uint8_t 	effect_status;
+	uint8_t 	current_order;
 	void 		(*apply_effect)(int16_t* inputData, int16_t* outputData);
 } BlockEffectsTypeDef;
 
@@ -46,6 +46,7 @@ typedef struct _SingleSampleEffectsTypeDef
 	float 		parameter[MAX_PARAMS];
 	uint8_t 	num_params;
 	uint8_t 	effect_status;
+	uint8_t 	current_order;
 	int16_t		(*apply_effect)(int16_t inputData);
 } SingleSampleEffectsTypeDef;
 
@@ -70,17 +71,18 @@ typedef struct _SingleSampleEffectsTypeDef
 #define	VIBRATO_EFFECT_ID		14
 #define	VCA_EFFECT_ID			15
 #define	WAH_EFFECT_ID			16
-#define	LAST_EFFECT				WAH_EFFECT_ID
+
+#define	MAX_BLOCK_EFFECTS		WAH_EFFECT_ID+1
 
 #define	BIQUAD_S_EFFECT_ID		0
 #define	VCA_S_EFFECT_ID			1
 
-typedef struct _EffectsPipeTypeDef
+typedef struct _EffectsOrderTypeDef
 {
-	uint8_t 				num_effects;
-	void 					(*execute_effect)(int16_t* inputData, int16_t* outputData);
-} EffectsPipeTypeDef;
-
+	uint8_t		effect_order[MAX_BLOCK_EFFECTS];
+	uint8_t		effect_order_index;
+} EffectsOrderTypeDef;
+#define	EFFECT_ORDER_NOT_USED	0x80
 
 #include 	<stdio.h>
 #include 	<string.h>
@@ -109,10 +111,12 @@ extern	BlockEffectsTypeDef			BlockEffect[MAX_BLOCK_EFFECTS];
 extern	SingleSampleEffectsTypeDef	SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
 
 extern	void InitEffectsSequencer(void);
-extern	void BlockEffectsSequencer(int16_t *sample_in , int16_t *sample_out);
+extern	uint16_t BlockEffectsSequencer(void);
 extern	void SingleSampleEffectsSequencer(void);
 extern	void ResetEffectsSequencer(void);
-extern	void InsertBlockEffect(void 	(*do_effect),uint8_t position);
+extern	void InsertBlockEffect(void (*do_effect),uint8_t position,uint8_t enabled);
+extern	void RemoveBlockEffect(void (*do_effect),uint8_t position);
+
 extern	void InsertSingleSampleEffect(void 	(*do_effect),uint8_t position);
 
 #endif /* MODULES_AUDIO_EFFECTS_H_ */

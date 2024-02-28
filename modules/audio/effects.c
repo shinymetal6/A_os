@@ -25,7 +25,7 @@
 #ifdef SYNTH_ENGINE_ENABLE
 
 #include "../../kernel/audio.h"				/* for audio parameters */
-#include "../../kernel/kernel_opt.h"
+//#include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
 
@@ -33,25 +33,27 @@ OSCILLATORS_RAM	BlockEffectsTypeDef					BlockEffect[MAX_BLOCK_EFFECTS];
 OSCILLATORS_RAM	SingleSampleEffectsTypeDef			SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
 
 OSCILLATORS_RAM	static BlockEffectsTypeDef			*first_block_effect_ptr;
-OSCILLATORS_RAM	static SingleSampleEffectsTypeDef	*first_single_sample_effect_ptr;
 OSCILLATORS_RAM int16_t								pipe_index,single_sample_index, single_sample_counter;
+
+OSCILLATORS_RAM	EffectsOrderTypeDef					EffectsOrder;
 
 extern	int16_t	pipe[MAX_BLOCK_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-void BlockEffectsSequencer(int16_t *sample_in , int16_t *sample_out)
+uint16_t BlockEffectsSequencer(void)
 {
-uint16_t 	i,k;
-
-BlockEffectsTypeDef	*effect = first_block_effect_ptr;
+uint16_t 	i,k,block_effect_index;
 
 	pipe_index = 0;
 	for(i=0;i<MAX_BLOCK_EFFECTS;i++)
 	{
-		if ( effect->apply_effect != NULL )
+		block_effect_index = EffectsOrder.effect_order[i];
+		if ( block_effect_index == EFFECT_ORDER_NOT_USED )
+			return pipe_index;
+		if ( BlockEffect[block_effect_index].apply_effect != NULL )
 		{
-			if ((effect->effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+			if ((BlockEffect[block_effect_index].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 			{
-				effect->apply_effect(pipe[pipe_index], pipe[pipe_index+1]);
+				BlockEffect[block_effect_index].apply_effect(pipe[pipe_index], pipe[pipe_index+1]);
 			}
 			else
 			{
@@ -60,9 +62,100 @@ BlockEffectsTypeDef	*effect = first_block_effect_ptr;
 			}
 			pipe_index++;
 		}
-		effect = (BlockEffectsTypeDef *)&effect->nxt_effect;
+	}
+	return pipe_index-1;
+}
+
+uint8_t FindBlockEffect(void 	(*do_effect))
+{
+uint8_t i;
+	for(i=0;i<MAX_BLOCK_EFFECTS;i++)
+	{
+		if ( BlockEffect[i].apply_effect == do_effect)
+			return i;
+	}
+	return EFFECT_ORDER_NOT_USED;
+}
+
+void InsertBlockEffect(void (*do_effect),uint8_t position,uint8_t enabled)
+{
+	EffectsOrder.effect_order[position] = FindBlockEffect(do_effect);
+	BlockEffect[position].current_order = position;
+	BlockEffect[position].effect_status = enabled;
+}
+
+void RemoveBlockEffect(void (*do_effect),uint8_t position)
+{
+uint8_t i, iposition = EffectsOrder.effect_order[position];
+	if ( BlockEffect[iposition].apply_effect == do_effect)
+	{
+		if ( EffectsOrder.effect_order[position+1] != EFFECT_ORDER_NOT_USED)
+		{
+			for(i=position+1;i<MAX_BLOCK_EFFECTS;i++)
+				EffectsOrder.effect_order[i-1] = EffectsOrder.effect_order[i];
+		}
+		else
+			EffectsOrder.effect_order[position] = EFFECT_ORDER_NOT_USED;
 	}
 }
+
+
+void InitBlockEffectsSequencer(void)
+{
+uint16_t 	i;
+BlockEffectsTypeDef	*effect = first_block_effect_ptr;
+
+	first_block_effect_ptr = &BlockEffect[0];
+	effect = first_block_effect_ptr;
+	effect->pre_effect = NULL;
+	for(i=1;i<MAX_BLOCK_EFFECTS;i++)
+	{
+		effect->nxt_effect = (uint8_t *)&BlockEffect[i+1];
+		bzero(effect->effect_name, sizeof(effect->effect_name));
+		bzero(effect->effect_param, sizeof(effect->effect_param));
+		bzero(effect->parameter, sizeof(effect->parameter));
+		effect->num_params = effect->effect_status = 0;
+		effect->pre_effect = (uint8_t *)&BlockEffect[i];
+		effect->current_order = 0;
+		effect ++;
+		EffectsOrder.effect_order[i] = EFFECT_ORDER_NOT_USED;
+	}
+}
+
+void InitEffectsSequencer(void)
+{
+	InitBlockEffectsSequencer();
+	pipe_index = single_sample_index = single_sample_counter = 0;
+}
+
+#ifdef SSSS
+
+OSCILLATORS_RAM	static SingleSampleEffectsTypeDef	*first_single_sample_effect_ptr;
+
+void ResetBlockEffectsSequencer(void)
+{
+}
+
+void InitSingleSampleEffectsSequencer(void)
+{
+uint16_t 	i;
+SingleSampleEffectsTypeDef	*effect = first_single_sample_effect_ptr;
+
+	first_single_sample_effect_ptr = &SingleSampleEffect[0];
+	effect = first_single_sample_effect_ptr;
+	effect->pre_effect = NULL;
+	for(i=1;i<MAX_BLOCK_EFFECTS;i++)
+	{
+		effect->nxt_effect = (uint8_t *)&SingleSampleEffect[i+1];
+		bzero(effect->effect_name, sizeof(effect->effect_name));
+		bzero(effect->effect_param, sizeof(effect->effect_param));
+		bzero(effect->parameter, sizeof(effect->parameter));
+		effect->num_params = effect->effect_status = 0;
+		effect->pre_effect = (uint8_t *)&BlockEffect[i];
+		effect ++;
+	}
+}
+
 
 void SingleSampleEffectsSequencer(void)
 {
@@ -92,66 +185,12 @@ SingleSampleEffectsTypeDef	*effect = first_single_sample_effect_ptr;
 	}
 }
 
-
-void ResetBlockEffectsSequencer(void)
-{
-}
-
-void InsertBlockEffect(void 	(*do_effect),uint8_t position)
-{
-
-}
-
 void InsertSingleSampleEffect(void 	(*do_effect),uint8_t position)
 {
 
 }
+#endif // #ifdef SSSS
 
-void InitBlockEffectsSequencer(void)
-{
-uint16_t 	i;
-BlockEffectsTypeDef	*effect = first_block_effect_ptr;
 
-	first_block_effect_ptr = &BlockEffect[0];
-	effect = first_block_effect_ptr;
-	effect->pre_effect = NULL;
-	for(i=1;i<MAX_BLOCK_EFFECTS;i++)
-	{
-		effect->nxt_effect = (uint8_t *)&BlockEffect[i+1];
-		bzero(effect->effect_name, sizeof(effect->effect_name));
-		bzero(effect->effect_param, sizeof(effect->effect_param));
-		bzero(effect->parameter, sizeof(effect->parameter));
-		effect->num_params = effect->effect_status = 0;
-		effect->pre_effect = (uint8_t *)&BlockEffect[i];
-		effect ++;
-	}
-}
+#endif // #ifdef SYNTH_ENGINE_ENABLE
 
-void InitSingleSampleEffectsSequencer(void)
-{
-uint16_t 	i;
-SingleSampleEffectsTypeDef	*effect = first_single_sample_effect_ptr;
-
-	first_single_sample_effect_ptr = &SingleSampleEffect[0];
-	effect = first_single_sample_effect_ptr;
-	effect->pre_effect = NULL;
-	for(i=1;i<MAX_BLOCK_EFFECTS;i++)
-	{
-		effect->nxt_effect = (uint8_t *)&SingleSampleEffect[i+1];
-		bzero(effect->effect_name, sizeof(effect->effect_name));
-		bzero(effect->effect_param, sizeof(effect->effect_param));
-		bzero(effect->parameter, sizeof(effect->parameter));
-		effect->num_params = effect->effect_status = 0;
-		effect->pre_effect = (uint8_t *)&BlockEffect[i];
-		effect ++;
-	}
-}
-
-void InitEffectsSequencer(void)
-{
-	InitBlockEffectsSequencer();
-	InitSingleSampleEffectsSequencer();
-	pipe_index = single_sample_index = single_sample_counter = 0;
-}
-
-#endif
