@@ -28,22 +28,21 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
-#include "fft.h"
 
-OSCILLATORS_RAM	arm_biquad_casd_df1_inst_f32 fft_iirsettings;
-OSCILLATORS_RAM	arm_rfft_fast_instance_f32 instance;
+AUDIO_FAST_RAM	arm_biquad_casd_df1_inst_f32 fft_iirsettings;
+AUDIO_FAST_RAM	arm_rfft_fast_instance_f32 instance;
 
 arm_status status;
 
 #define	FORWARD_FFT		0
 #define	INVERSE_FFT		1
 
-OSCILLATORS_RAM	float	float_window_coeffs[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float	float_window_coeffs[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-OSCILLATORS_RAM	float	float_inbuf[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	float	float_fft_outbuf[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	float	float_fft_outbuf_reverse[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	float	float_fftmag_outbuf[HALF_NUMBER_OF_AUDIO_SAMPLES/2];
+AUDIO_FAST_RAM	float	float_inbuf[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float	float_fft_outbuf[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float	float_fft_outbuf_reverse[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float	float_fftmag_outbuf[HALF_NUMBER_OF_AUDIO_SAMPLES/2];
 
 FftTypeDef	FftData;
 

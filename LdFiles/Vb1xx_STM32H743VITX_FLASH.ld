@@ -59,10 +59,10 @@ SECTIONS
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
 	.osSysRamEnd 		0x20008000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 
-	_oscillators_start  = LOADADDR(.oscillators);
-	.oscillators	 	0x20008000 : {. = ALIGN(4); KEEP(*(.oscillators))}
-	_oscillators_end  	= LOADADDR(.oscillators_end);
-	.oscillators_end	0x2001E000 : {. = ALIGN(4); KEEP(*(.oscillators_end))}
+	_dtcm_user_data_start  = LOADADDR(.dtcm_user_data);
+	.dtcm_user_data	 	0x20008000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
+	_dtcm_user_data_end  	= LOADADDR(.dtcm_user_data_end);
+	.dtcm_user_data_end	0x2001E000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
 	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}

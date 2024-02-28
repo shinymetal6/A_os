@@ -29,9 +29,11 @@
 
 #include "effects.h"
 
-extern	float phaser_sinetable[PHASER_SINETABLE_SIZE+1];
+extern	float rom_phaser_sinetable[PHASER_SINETABLE_SIZE+1];
 
-OSCILLATORS_RAM	PhaserTypeDef	PhaserData;
+AUDIO_FAST_RAM	float phaser_sinetable[PHASER_SINETABLE_SIZE+1];
+
+AUDIO_FAST_RAM	PhaserTypeDef	PhaserData;
 
 ITCM_AREA_CODE void Phaser_Rate_set(uint8_t val)
 {
@@ -115,6 +117,7 @@ int16_t		i;
 
 void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 {
+uint32_t	i;
 	BlockEffect[PHASER_EFFECT_ID].parameter[0] = (float )Fmin;		//200.f;
 	BlockEffect[PHASER_EFFECT_ID].parameter[1] = (float )Fmax;		//1700.f;
 	BlockEffect[PHASER_EFFECT_ID].parameter[2] = (float )SwRate;		// 0.1f;
@@ -132,6 +135,8 @@ void Phaser_init(uint32_t Fmin,uint32_t Fmax,uint32_t SwRate,float Feedback)
 	PhaserData.dmin = 2 * BlockEffect[PHASER_EFFECT_ID].parameter[0] / SAMPLE_FREQUENCY;
 	PhaserData.dmax = 2 * BlockEffect[PHASER_EFFECT_ID].parameter[1] / SAMPLE_FREQUENCY;
 	PhaserData.lfoInc = 2 * PI * BlockEffect[PHASER_EFFECT_ID].parameter[2] / SAMPLE_FREQUENCY;
+	for(i=0;i<PHASER_SINETABLE_SIZE+1;i++)
+		phaser_sinetable[i] = rom_phaser_sinetable[i];
 }
 
 

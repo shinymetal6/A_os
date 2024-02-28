@@ -34,10 +34,10 @@
 extern	BlockEffectsTypeDef	BlockEffect[MAX_BLOCK_EFFECTS];
 
 //4 delayed samples per biquad
-OSCILLATORS_RAM	float iir_state [4];
-OSCILLATORS_RAM	IIR_TypeDef	IIR_Data;
-OSCILLATORS_RAM	float arm_iir_coeffs [5];
-OSCILLATORS_RAM	arm_biquad_casd_df1_inst_f32 iirsettings;
+AUDIO_FAST_RAM	float iir_state [4];
+AUDIO_FAST_RAM	IIR_TypeDef	IIR_Data;
+AUDIO_FAST_RAM	float arm_iir_coeffs [5];
+AUDIO_FAST_RAM	arm_biquad_casd_df1_inst_f32 iirsettings;
 
 ITCM_AREA_CODE void Iir_configure(uint8_t Type, uint16_t Frequency, float iir_Q)
 {
@@ -90,8 +90,8 @@ float iir_K = tan(PI*(float)Frequency/(float )SAMPLE_FREQUENCY);
 	arm_iir_coeffs[4] = IIR_Data.b[2];
 }
 
-OSCILLATORS_RAM	float iir_buf_in  [HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	float iir_buf_out [HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float iir_buf_in  [HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	float iir_buf_out [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern	void A_os_arm_biquad_cascade( const arm_biquad_casd_df1_inst_f32 * S, float32_t * pSrc, float32_t * pDst, uint32_t blockSize);
 

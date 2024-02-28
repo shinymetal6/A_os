@@ -25,17 +25,17 @@
 #ifdef SYNTH_ENGINE_ENABLE
 
 #include "../../kernel/audio.h"				/* for audio parameters */
-//#include "../../kernel/kernel_opt.h"
+#include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
 
-OSCILLATORS_RAM	BlockEffectsTypeDef					BlockEffect[MAX_BLOCK_EFFECTS];
-OSCILLATORS_RAM	SingleSampleEffectsTypeDef			SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
+AUDIO_FAST_RAM	BlockEffectsTypeDef					BlockEffect[MAX_BLOCK_EFFECTS];
+AUDIO_FAST_RAM	SingleSampleEffectsTypeDef			SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
 
-OSCILLATORS_RAM	static BlockEffectsTypeDef			*first_block_effect_ptr;
-OSCILLATORS_RAM int16_t								pipe_index,single_sample_index, single_sample_counter;
+AUDIO_FAST_RAM	static BlockEffectsTypeDef			*first_block_effect_ptr;
+AUDIO_FAST_RAM int16_t								pipe_index,single_sample_index, single_sample_counter;
 
-OSCILLATORS_RAM	EffectsOrderTypeDef					EffectsOrder;
+AUDIO_FAST_RAM	EffectsOrderTypeDef					EffectsOrder;
 
 extern	int16_t	pipe[MAX_BLOCK_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
@@ -130,7 +130,7 @@ void InitEffectsSequencer(void)
 
 #ifdef SSSS
 
-OSCILLATORS_RAM	static SingleSampleEffectsTypeDef	*first_single_sample_effect_ptr;
+AUDIO_FAST_RAM	static SingleSampleEffectsTypeDef	*first_single_sample_effect_ptr;
 
 void ResetBlockEffectsSequencer(void)
 {

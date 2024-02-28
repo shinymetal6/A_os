@@ -25,11 +25,20 @@
 
 typedef struct _WahTypeDef
 {
+	/*
 	int 	WtrP;
 	float 	Rd_P;
 	float 	Shift;
 	float 	CrossFade;
 	float 	a0, a1, a2, b1, b2, hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
+	*/
+	float bp_a0, bp_a1, bp_a2, bp_b0, bp_b1, bp_b2;
+
+	float bp_x1, bp_x2, bp_y1, bp_y2;
+
+	float currentCenterFrequency;
+	float qFactor;
+
 
 } WahTypeDef;
 

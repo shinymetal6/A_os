@@ -40,7 +40,7 @@
 #define l_AP1 161*2
 #define l_AP2 46*2
 
-OSCILLATORS_RAM ReverbTypeDef ReverbData;
+AUDIO_FAST_RAM ReverbTypeDef ReverbData;
 
 //define buffer for comb- and allpassfilters
 D2_BUFFER float cfbuf0[l_CB0], cfbuf1[l_CB1], cfbuf2[l_CB2], cfbuf3[l_CB3];

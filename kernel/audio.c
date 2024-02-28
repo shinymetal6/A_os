@@ -33,11 +33,11 @@
 
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 
-OSCILLATORS_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
+AUDIO_FAST_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
 
 extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-OSCILLATORS_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern	ControlAdcDef	ControlAdc;
 

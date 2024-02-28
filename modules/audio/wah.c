@@ -29,48 +29,39 @@
 
 #include "effects.h"
 
-// bandpass filter coeff's.
-static float bp_a0, bp_a1, bp_a2, bp_b0, bp_b1, bp_b2;
+AUDIO_FAST_RAM	WahTypeDef	WahData;
 
-// bandpass previous samples.
-static float bp_x1, bp_x2, bp_y1, bp_y2;
-
-static float currentCenterFrequency = 440.0f;
-static float qFactor = 2.3f;
-
-OSCILLATORS_RAM	WahTypeDef	WahData;
-
-ITCM_AREA_CODE static void new_bandpass()
+ITCM_AREA_CODE static void wah_configure_bandpass()
 {
-    float omega = 2 * PI * currentCenterFrequency / SAMPLE_FREQUENCY;
+    float omega = 2 * PI * WahData.currentCenterFrequency / (float )SAMPLE_FREQUENCY;
     float cosomega = arm_cos_f32(omega);
-    float alpha = arm_sin_f32(omega) / (2 * qFactor);
+    float alpha = arm_sin_f32(omega) / (2 * WahData.qFactor);
 
-    bp_b0 = alpha;
-    bp_b1 = 0;
-    bp_b2 = -alpha;
-    bp_a0 = 1 + alpha;
-    bp_a1 = -2 * cosomega;
-    bp_a2 = 1 - alpha;
+    WahData.bp_b0 = alpha;
+    WahData.bp_b1 = 0;
+    WahData.bp_b2 = -alpha;
+    WahData.bp_a0 = 1 + alpha;
+    WahData.bp_a1 = -2 * cosomega;
+    WahData.bp_a2 = 1 - alpha;
 }
 
 ITCM_AREA_CODE static int16_t apply_bandpass(int16_t inSample)
 {
 	float x0 = (float)inSample;
 	float result =
-		(bp_b0 / bp_a0) * x0 +
-		(bp_b1 / bp_a0) * bp_x1 +
-		(bp_b2 / bp_a0) * bp_x2 -
-		(bp_a1 / bp_a0) * bp_y1 -
-		(bp_a2 / bp_a0) * bp_y2;
+		(WahData.bp_b0 / WahData.bp_a0) * x0 +
+		(WahData.bp_b1 / WahData.bp_a0) * WahData.bp_x1 +
+		(WahData.bp_b2 / WahData.bp_a0) * WahData.bp_x2 -
+		(WahData.bp_a1 / WahData.bp_a0) * WahData.bp_y1 -
+		(WahData.bp_a2 / WahData.bp_a0) * WahData.bp_y2;
 
 	// shift x1 to x2, sample to x1
 	// shift y1 to y2, result to y1
 	// simulate delay!!
-	bp_x2 = bp_x1;
-	bp_x1 = x0;
-	bp_y2 = bp_y1;
-	bp_y1 = result;
+	WahData.bp_x2 = WahData.bp_x1;
+	WahData.bp_x1 = x0;
+	WahData.bp_y2 = WahData.bp_y1;
+	WahData.bp_y1 = result;
 
 	return (int16_t)result;
 }
@@ -95,10 +86,10 @@ uint16_t	i;
 			float lfoSample = phase < 0.5 ? phase * 4 - 1 : 3 - 4 * phase;
 
 			// modulate bandpass cutoff
-			currentCenterFrequency = (float)((lfoSample * lfoDepth * centreFreq) + centreFreq);
+			WahData.currentCenterFrequency = (float)((lfoSample * lfoDepth * centreFreq) + centreFreq);
 
 			// update bandpass filter
-			new_bandpass();
+			wah_configure_bandpass();
 
 			// get current sample
 			int16_t sample = (int16_t) outputData[i];
@@ -136,7 +127,10 @@ typical values
 	sprintf(BlockEffect[WAH_EFFECT_ID].effect_param[1],"Depth");
 	BlockEffect[WAH_EFFECT_ID].apply_effect =  Do_Wah;
 	BlockEffect[WAH_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-	new_bandpass();
+
+	WahData.currentCenterFrequency = 440.0f;
+	WahData.qFactor = 2.3f;
+	wah_configure_bandpass();
 }
 
 void Wah_enable(void)

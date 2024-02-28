@@ -29,9 +29,8 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
-#include "adsr.h"
 
-AdsrTypeDef	AdsrData;
+AUDIO_FAST_RAM	AdsrTypeDef	AdsrData;
 
 // this should be called every 1 mSec
 ITCM_AREA_CODE void Do_Adsr_sm(void)

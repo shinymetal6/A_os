@@ -31,10 +31,10 @@
 #include "oscillators.h"
 #include "oscillator_core.h"
 
-OSCILLATORS_RAM					OscillatorsFlagsTypeDef			OscillatorsFlags;
+AUDIO_FAST_RAM					OscillatorsFlagsTypeDef			OscillatorsFlags;
 extern	AudioFlagsTypeDef		AudioFlags;
 
-OSCILLATORS_RAM	__attribute__ ((aligned (16))) OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16))) OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
 
 ITCM_AREA_CODE	uint32_t FindOscillatorByMidiNote(uint8_t midi_note)
 {

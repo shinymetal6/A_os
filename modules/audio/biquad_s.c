@@ -32,11 +32,9 @@
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
 
-#include "biquad_s.h"
-#include "math.h"
 #include "effects.h"
 
-OSCILLATORS_RAM	BIQUAD_TypeDef	BIQUAD_Data;
+AUDIO_FAST_RAM	BIQUAD_TypeDef	BIQUAD_Data;
 
 ITCM_AREA_CODE int16_t Do_Biquad_s(int16_t inputData)
 {

@@ -29,7 +29,7 @@
 
 #include "effects.h"
 
-MoogParametersTypeDef	Moog2Parameters;
+AUDIO_FAST_RAM	MoogParametersTypeDef	Moog2Parameters;
 
 #define	MOOG1_CUTOFF		0
 #define	MOOG1_RESONANCE		1

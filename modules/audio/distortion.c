@@ -29,7 +29,7 @@
 
 #include "effects.h"
 
-OSCILLATORS_RAM	DistortionTypeDef	DistortionData;
+AUDIO_FAST_RAM	DistortionTypeDef	DistortionData;
 
 // threshold_min - ( (0/100) * x)  = threshold_min
 // threshold_min - ( (100/100) * x)  = threshold_max

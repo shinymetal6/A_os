@@ -28,6 +28,7 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
+
 ITCM_AREA_CODE int16_t Do_Vca_s(int16_t inputData)
 {
 	if ( (SingleSampleEffect[VCA_S_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )

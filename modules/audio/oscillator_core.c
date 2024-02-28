@@ -53,13 +53,13 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t 
 		-6269,-5896,-5519,-5139,-4755,-4369,-3980,-3589,-3196,-2800,-2403,-2005,-1605,-1205,-803,-402,
 };
 
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer_gen[HALF_NUMBER_OF_AUDIO_SAMPLES];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t 	osc_sine_tab[WAVETABLE_SIZE];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_square_tab[WAVETABLE_SIZE];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_tri_tab[WAVETABLE_SIZE];
-OSCILLATORS_RAM	__attribute__ ((aligned (16)))	int16_t		osc_noise_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer_gen[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t 	osc_sine_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_square_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_tri_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_noise_tab[WAVETABLE_SIZE];
 
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[MIDI_NOTES] =
 {

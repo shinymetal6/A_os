@@ -31,7 +31,7 @@
 
 extern	BlockEffectsTypeDef	BlockEffect[MAX_BLOCK_EFFECTS];
 
-MoogParametersTypeDef	Moog1Parameters;
+AUDIO_FAST_RAM	MoogParametersTypeDef	Moog1Parameters;
 
 #define	MOOG1_CUTOFF		0
 #define	MOOG1_RESONANCE		1

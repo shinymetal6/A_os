@@ -28,6 +28,7 @@
 #include "../../kernel/kernel_opt.h"
 
 #include "effects.h"
+
 ITCM_AREA_CODE void Do_PassThrough(int16_t *inputData, int16_t *outputData)
 {
 uint32_t	i;
