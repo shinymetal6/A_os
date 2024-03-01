@@ -27,6 +27,7 @@
 #include "A_exported_functions.h"
 #include "kernel_opt.h"
 #include <strings.h>
+#include <stdio.h>
 
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
@@ -221,6 +222,7 @@ void A_start(void)
 	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_SET);
 #endif
 #endif
+	sprintf(Asys.version,"%s",A_OS_VERSION);
 	A_PreOS_Init();
 	__disable_irq();
 

@@ -54,6 +54,7 @@ extern	UART_HandleTypeDef 	huart1;
 
 #define	CODEC_ENABLED			1
 #define	CODEC_WM8994			1
+#define	DDC_SYSTEM				1
 
 #ifdef CODEC_ENABLED
 	#define AUDIO_BUF_SIZE 			1024

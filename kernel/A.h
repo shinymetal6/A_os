@@ -112,7 +112,9 @@ typedef struct
 	uint8_t		qspi_status;
 	uint8_t		qspi_id;
 	uint32_t 	qspi_size;
+	char		version[40];
 }Asys_t;
+
 
 /* system_flags */
 /* this is set by a get_mem to signal the supervisor that

@@ -77,8 +77,8 @@
 #define	Exti2_PRIORITY			13
 // versioning
 #define	A_OS_NAME				"Aos"
-#define	A_OS_VERSION			"2014.02"
+#define	A_OS_VERSION			"v2024.03.00-rc4"
 #define	DEFAULT_APP_NAME		"Sample apps"
-#define	DEFAULT_APP_VERSION		"2014.02.rc01.1"
+#define	DEFAULT_APP_VERSION		" "
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

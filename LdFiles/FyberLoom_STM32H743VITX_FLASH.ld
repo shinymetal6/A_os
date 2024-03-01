@@ -54,27 +54,35 @@ MEMORY
 /* Define output sections */
 SECTIONS
 {
-	.osSysRam	  			0x20000000 : {. = ALIGN(4); KEEP(*(.osSysRam))}
+	_osSysRam_start     = LOADADDR(.osSysRamStart);
+	.osSysRamStart 		0x20000000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
+	_osSysRam_end       = LOADADDR(.osSysRamEnd);
+	.osSysRamEnd 		0x20008000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+
+	_dtcm_user_data_start  = LOADADDR(.dtcm_user_data);
+	.dtcm_user_data	 	0x20008000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
+	_dtcm_user_data_end  	= LOADADDR(.dtcm_user_data_end);
+	.dtcm_user_data_end	0x2001E000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
 	
-	_mempool_start      = LOADADDR(.osMemPool);
-	.osMemPool  		0x20002000 : {. = ALIGN(4); KEEP(*(.osMemPool))}
+	_mempool_start      = LOADADDR(.osMemPoolStart);
+	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
-	.osMemPoolEnd  		0x20008000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
-	
+	.osMemPoolEnd  		0x20020000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
+		
 	_dmaNoCache_start   = LOADADDR(.dmaNoCache);
 	.dmaNoCache	        0x24070000 : {. = ALIGN(4); KEEP(*(.dmaNoCache))}
 	_dmaNoCache_end     = LOADADDR(.dmaNoCacheEnd);
 	.dmaNoCacheEnd      0x24080000 : {. = ALIGN(4); KEEP(*(.dmaNoCacheEnd))}
 	
-	_oscillators_start  = LOADADDR(.oscillators);
-	.oscillators	 	0x20010000 : {. = ALIGN(4); KEEP(*(.oscillators))}
-	_oscillators_end  	= LOADADDR(.audiobufs);
-	.audiobufs		 	0x20014000 : {. = ALIGN(4); KEEP(*(.audiobufs))}
-	
 	_d2ram_start      	= LOADADDR(.d2ram);
 	.d2ram		  		0x30000000 : {. = ALIGN(4); KEEP(*(.d2ram))}
     _d2ram_end       	= LOADADDR(.d2ramEnd);
 	.d2ramEnd  			0x30048000 : {. = ALIGN(4); KEEP(*(.d2ramEnd))}
+	
+	_framebuffer_start 	= LOADADDR(.framebuffer);
+	.framebuffer		0x38000000 : {. = ALIGN(4); KEEP(*(.framebuffer))}
+    _framebuffer_end    = LOADADDR(.framebufferEnd);
+	.framebufferEnd  	0x38010000 : {. = ALIGN(4); KEEP(*(.framebufferEnd))}
 	
 	
 	_fdata_start = LOADADDR(.isr_vector);
@@ -232,5 +240,4 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
-
 
