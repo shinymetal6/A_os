@@ -27,6 +27,7 @@
 
 #include "../../kernel/audio.h"				/* for audio parameters */
 #include "../../kernel/kernel_opt.h"
+#include "../../kernel/A_exported_functions.h"	/* setts adsr timer callback */
 
 #include "effects.h"
 
@@ -145,6 +146,7 @@ void Adsr_init(uint32_t AttackRate,uint32_t AttackStartLevel,uint32_t DecayRate,
 
 	AdsrData.state = IDLE;
 	AdsrData.OutLlevel = 1.0f;
+	set_after_check_timers_callback(Do_Adsr_sm);
 }
 
 

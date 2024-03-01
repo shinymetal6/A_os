@@ -32,13 +32,26 @@ extern	Asys_t		Asys;
 
 extern	__IO uint32_t uwTick;
 
+void 		(*before_check_timers_callback)(void) = HAL_UART_RxTimeoutCheckCallback;
+void 		(*after_check_timers_callback)(void)  = NULL;
+
+void set_before_check_timers_callback(void (*callback)(void))
+{
+	before_check_timers_callback = callback;
+}
+
+void set_after_check_timers_callback(void (*callback)(void))
+{
+	after_check_timers_callback = callback;
+}
+
 void update_global_tick_count(void)
 {
 	__disable_irq();
 	Asys.g_tick_count++;
 	// update the HAL timer, if someone need it
 	uwTick++;
-	HAL_UART_RxTimeoutCheckCallback();
+
 	__enable_irq();
 }
 
@@ -113,10 +126,14 @@ void  SysTick_Handler(void)
 	if ( Asys.g_os_started )
 	{
 		update_global_tick_count();
-#ifdef SYNTH_ENGINE_ENABLE
-		Do_Adsr_sm();
-#endif
+		if ( before_check_timers_callback != NULL)
+			before_check_timers_callback();
+
 		check_timers();
+
+		if ( after_check_timers_callback != NULL)
+			after_check_timers_callback();
+
 		//pend the pendsv exception
 		schedule();
 	}
