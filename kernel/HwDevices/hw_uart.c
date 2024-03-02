@@ -27,30 +27,23 @@
 #include "../A_exported_functions.h"
 #include "../hwmanager.h"
 #include "../system_default.h"
+#include "hw_uart.h"
 
 #define	NO_SENTINEL	0
 
-#ifdef CONSOLE
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
 uint8_t	rx_char;
-#endif
+extern	HW_Uart_t		HW_Uart[A_MAX_UART];
 
 uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len)
 {
-#ifdef CONSOLE
-	return  HAL_UART_Transmit_IT(&CONSOLE, ptr, len);
-#endif
-	return 255;
+	return  HAL_UART_Transmit_IT(HW_Uart[uart-HW_UART1].hwuart_handle, ptr, len);
 }
-
 
 uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len)
 {
-#ifdef CONSOLE
-	return HAL_UART_Transmit_DMA(&CONSOLE, ptr, len);
-#endif
-	return 255;
+	return HAL_UART_Transmit_DMA(HW_Uart[uart-HW_UART1].hwuart_handle, ptr, len);
 }
 
 uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout)
@@ -67,7 +60,7 @@ uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,u
 			HWMngr[uart].flags |= HWMAN_TIMEOUT_ENABLED;
 		}
 		HWMngr[uart].rx_buf_index = 0;
-		HAL_UART_Receive_IT(&CONSOLE, &rx_char, 1);
+		HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
 		return 0;
 	}
 	return 255;
@@ -90,7 +83,7 @@ uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_
 			HWMngr[uart].flags |= HWMAN_TIMEOUT_ENABLED;
 		}
 		HWMngr[uart].rx_buf_index = 0;
-		HAL_UART_Receive_IT(&CONSOLE, &rx_char, 1);
+		HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
 		return 0;
 	}
 	return 255;

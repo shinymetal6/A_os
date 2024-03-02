@@ -94,7 +94,14 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
-
+  
+  .aos_nver :
+  {
+    . = ALIGN(4);
+    KEEP(*(.aos_nver)) /* aos name and version */
+    . = ALIGN(4);
+  } >FLASH
+  
   /* The program code and other data goes into FLASH */
   .text :
   {

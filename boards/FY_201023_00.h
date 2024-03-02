@@ -61,8 +61,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	SysTick_PRIORITY		12
 #define	ASSIGNED				1
 
-extern	UART_HandleTypeDef 	huart3;
-#define	CONSOLE				huart3
+extern	UART_HandleTypeDef 	huart4;
+#define	CONSOLE				huart4
 
 #define	QSPI_ENABLED			1
 #define	WIRELESS_ENABLED		1

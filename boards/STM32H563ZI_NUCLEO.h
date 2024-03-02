@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * STM32H743ZI2_NUCLEO.h
+ * STM32H563ZI_NUCLEO.h
  *
- *  Created on: Jan 24, 2024
+ *  Created on: Mar 1, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32H743ZI2_NUCLEO_H_
-#define BOARDS_STM32H743ZI2_NUCLEO_H_
+#ifndef BOARDS_STM32H563ZI_NUCLEO_H_
+#define BOARDS_STM32H563ZI_NUCLEO_H_
 
 /* Memories */
 
@@ -50,19 +50,18 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 /* I/O */
 #define	DEBUG_GPIOPORT			PG6_Debug_GPIO_Port
 #define	DEBUG_GPIOBIT			PG6_Debug_Pin
-#define	LED_1_GPIOPORT			LD1_GPIO_Port
-#define	LED_1_GPIOBIT			LD1_Pin
-#define	LED_2_GPIOPORT			LD2_GPIO_Port
-#define	LED_2_GPIOBIT			LD2_Pin
-#define	LED_3_GPIOPORT			LD3_GPIO_Port
-#define	LED_3_GPIOBIT			LD3_Pin
-#define	BUTTON_GPIOPORT			B1_GPIO_Port
-#define	BUTTON_GPIOBIT			B1_Pin
-#define	ST25R3916B				1
+#define	LED_1_GPIOPORT			LED3_RED_GPIO_Port
+#define	LED_1_GPIOBIT			LED3_RED_Pin
+#define	LED_2_GPIOPORT			LED1_GREEN_GPIO_Port
+#define	LED_2_GPIOBIT			LED1_GREEN_Pin
+#define	LED_3_GPIOPORT			LED2_YELLOW_GPIO_Port
+#define	LED_3_GPIOBIT			LED2_YELLOW_Pin
+#define	BUTTON_GPIOPORT			USER_BUTTON_GPIO_Port
+#define	BUTTON_GPIOBIT			USER_BUTTON_Pin
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		480000000U
+#define HSI_CLOCK         		250000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 #define	PendSV_PRIORITY			15
@@ -72,9 +71,13 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 extern	UART_HandleTypeDef 	huart3;
 #define	CONSOLE				huart3
 
-#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
-#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+//#define	A_HAS_UART1			1
+//#define	A_HAS_UART2			1
+#define	A_HAS_UART3			1
+//#define	A_HAS_UART4			1
+//#define	A_HAS_UART5			1
+//#define	A_HAS_UART6			1
 
-#define	BOARD_NAME			"STM32H743ZI2_NUCLEO"
+#define	BOARD_NAME			"STM32H563ZI_NUCLEO"
 
-#endif /* BOARDS_STM32H743ZI2_NUCLEO_H_ */
+#endif /* BOARDS_STM32H563ZI_NUCLEO_H_ */

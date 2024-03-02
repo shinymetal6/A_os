@@ -78,6 +78,21 @@ typedef struct
 
 #define	HWMAN_QUEUE_LEN			16
 
+extern	UART_HandleTypeDef huart1;
+extern	UART_HandleTypeDef huart2;
+extern	UART_HandleTypeDef huart3;
+extern	UART_HandleTypeDef huart4;
+extern	UART_HandleTypeDef huart5;
+extern	UART_HandleTypeDef huart6;
+
+
+typedef struct _HW_Uart_t
+{
+	UART_HandleTypeDef 	*hwuart_handle;
+	uint32_t			hwuart_index;
+}HW_Uart_t;
+
+#define	A_MAX_UART		6
 typedef struct
 {
 	uint8_t 	process;

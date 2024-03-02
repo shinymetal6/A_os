@@ -34,6 +34,10 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
+
+VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
+
 
 #ifdef CUSTOM_RAM
 CUSTOM_RAM		uint32_t		CustomRamStart;
@@ -215,6 +219,36 @@ void A_MPU_Config(void)
 #endif
 }
 
+
+
+void A_hw_uart_init(void)
+{
+#ifdef	A_HAS_UART1
+	HW_Uart[0].hwuart_handle = huart1;
+	HW_Uart[0].hwuart_index  = HW_UART1;
+#endif
+#ifdef	A_HAS_UART2
+	HW_Uart[1].hwuart_handle = huart2;
+	HW_Uart[1].hwuart_index  = HW_UART2;
+#endif
+#ifdef	A_HAS_UART3
+	HW_Uart[2].hwuart_handle = &huart3;
+	HW_Uart[2].hwuart_index  = HW_UART3;
+#endif
+#ifdef	A_HAS_UART4
+	HW_Uart[3].hwuart_handle = huart4;
+	HW_Uart[3].hwuart_index  = HW_UART4;
+#endif
+#ifdef	A_HAS_UART5
+	HW_Uart[4].hwuart_handle = huart5;
+	HW_Uart[4].hwuart_index  = HW_UART5;
+#endif
+#ifdef	A_HAS_UART6
+	HW_Uart[5].hwuart_handle = huart6;
+	HW_Uart[5].hwuart_index  = HW_UART6;
+#endif
+}
+
 void A_start(void)
 {
 #ifdef	ETH_ENABLED
@@ -235,6 +269,7 @@ void A_start(void)
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);
 	A_mem_init();
+	A_hw_uart_init();
 #ifdef DATA_CACHE_ENABLE
 	A_MPU_Config();
 	SCB_EnableDCache();

@@ -62,6 +62,13 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
+  .aos_nver :
+  {
+    . = ALIGN(4);
+    KEEP(*(.aos_nver)) /* aos name and version */
+    . = ALIGN(4);
+  } >FLASH
+  
   /* The program code and other data into "FLASH" Rom type memory */
   .text :
   {
