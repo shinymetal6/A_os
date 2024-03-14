@@ -55,6 +55,7 @@
 - "stm32xxxxx_{eval}{discovery}_io.c"
 EndBSPDependencies */
 #ifdef	STM32U575xx
+#ifdef	USB_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc.h"
@@ -712,4 +713,6 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
 
   return (uint8_t)USBD_OK;
 }
+#endif // #ifdef	USB_ENABLED
+
 #endif

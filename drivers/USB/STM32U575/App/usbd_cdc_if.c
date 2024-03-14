@@ -16,10 +16,13 @@
   *
   ******************************************************************************
   */
-#ifdef	STM32U575xx
 
 #include "main.h"
 #include "../../../../kernel/system_default.h"
+#ifdef	STM32U575xx
+#ifdef USB_ENABLED
+#ifdef USB_CDC
+
 #include "usbd_cdc_if.h"
 
 
@@ -165,4 +168,6 @@ static int8_t CDC_TransmitCplt_HS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   return result;
 }
 
-#endif
+#endif // #ifdef USB_CDC
+#endif // #ifdef USB_ENABLED
+#endif // #ifdef	STM32U575xx

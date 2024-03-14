@@ -27,6 +27,8 @@
 #include "../Core/usbd_core.h"
 #include "../Class/CDC/usbd_cdc.h"
 
+#ifdef	USB_ENABLED
+
 
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
@@ -650,5 +652,8 @@ USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)
   }
   return usb_status;
 }
+
+#endif // #ifdef	USB_ENABLED
+
 #endif
 

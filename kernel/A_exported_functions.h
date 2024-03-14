@@ -285,11 +285,31 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_UART_TO				0x00000400
 #define	WAKEUP_FLAGS_SPI_TX					0x00000800
 #define	WAKEUP_FLAGS_SPI_RX					0x00001000
+#define	WAKEUP_FLAGS_HALF_DMA				0x00002000
+#define	WAKEUP_FLAGS_FULL_DMA				0x00004000
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000
 #define	WAKEUP_FLAGS_EXTI					0x08000000
 #define	WAKEUP_FLAGS_MBX					0x40000000
 #define	WAKEUP_FLAGS_HW_USB_RX_COMPLETE		0x80000000
+
+#define	HW_TIMERS_TIMER1					0
+#define	HW_TIMERS_TIMER2					1
+#define	HW_TIMERS_TIMER3					2
+#define	HW_TIMERS_TIMER4					3
+#define	HW_TIMERS_TIMER5					4
+#define	HW_TIMERS_TIMER6					5
+#define	HW_TIMERS_TIMER7					6
+#define	HW_TIMERS_TIMER8					7
+#define	HW_TIMERS_TIMER9					8
+#define	HW_TIMERS_TIMER10					9
+#define	HW_TIMERS_TIMER11					10
+#define	HW_TIMERS_TIMER12					11
+#define	HW_TIMERS_TIMER13					12
+#define	HW_TIMERS_TIMER14					13
+#define	HW_TIMERS_TIMER15					14
+#define	HW_TIMERS_TIMER16					15
+#define	HW_TIMERS_TIMER17					16
 
 #ifdef WIRELESS_NRF24L01
 #include "../drivers/wireless/nrf24l01/nrf24l01.h"
