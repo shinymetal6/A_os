@@ -251,6 +251,7 @@ void A_start(void)
 #endif
 #endif
 	sprintf(Asys.version,"%s",A_OS_VERSION);
+	A_initialize_onchip_peripherals();
 	A_PreOS_Init();
 	__disable_irq();
 
@@ -263,7 +264,6 @@ void A_start(void)
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);
 	A_mem_init();
-	A_initialize_onchip_peripherals();
 #ifdef DATA_CACHE_ENABLE
 	A_MPU_Config();
 	SCB_EnableDCache();
