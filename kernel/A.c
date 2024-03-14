@@ -219,35 +219,14 @@ void A_MPU_Config(void)
 #endif
 }
 
-
-
-void A_hw_uart_init(void)
+void A_initialize_onchip_peripherals(void)
 {
-#ifdef	A_HAS_UART1
-	HW_Uart[0].hwuart_handle = huart1;
-	HW_Uart[0].hwuart_index  = HW_UART1;
-#endif
-#ifdef	A_HAS_UART2
-	HW_Uart[1].hwuart_handle = huart2;
-	HW_Uart[1].hwuart_index  = HW_UART2;
-#endif
-#ifdef	A_HAS_UART3
-	HW_Uart[2].hwuart_handle = &huart3;
-	HW_Uart[2].hwuart_index  = HW_UART3;
-#endif
-#ifdef	A_HAS_UART4
-	HW_Uart[3].hwuart_handle = huart4;
-	HW_Uart[3].hwuart_index  = HW_UART4;
-#endif
-#ifdef	A_HAS_UART5
-	HW_Uart[4].hwuart_handle = huart5;
-	HW_Uart[4].hwuart_index  = HW_UART5;
-#endif
-#ifdef	A_HAS_UART6
-	HW_Uart[5].hwuart_handle = huart6;
-	HW_Uart[5].hwuart_index  = HW_UART6;
-#endif
+	A_hw_uart_init();
+	//A_hw_spi_init();
+	//A_hw_i2c_init();
+	//A_hw_timers_init();
 }
+
 
 void A_start(void)
 {
@@ -269,7 +248,7 @@ void A_start(void)
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);
 	A_mem_init();
-	A_hw_uart_init();
+	A_initialize_onchip_peripherals();
 #ifdef DATA_CACHE_ENABLE
 	A_MPU_Config();
 	SCB_EnableDCache();

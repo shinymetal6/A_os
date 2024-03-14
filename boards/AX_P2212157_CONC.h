@@ -97,11 +97,62 @@ extern	uint8_t					*_customRam_start,*_customRam_end;
 //#define HSI_CLOCK         		160000000U
 #define HSI_CLOCK         		80000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
-/* Others */
-#define	ASSIGNED				1
 
-extern	UART_HandleTypeDef 		huart2;
-#define	CONSOLE					huart2
+/* Chip peripherals utilization */
+
+#define	USB_ENABLED				1
+#ifdef USB_ENABLED
+	#define	USB_CDC				1
+#endif // #ifdef USB_ENABLED
+
+#define	A_HAS_UART1			1
+#define	A_HAS_UART2			1
+#define	A_HAS_UART3				1
+//#define	A_HAS_UART4			1
+//#define	A_HAS_UART5			1
+//#define	A_HAS_UART6			1
+#define	A_HAS_UART7			1
+#if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7)
+	#define	A_HAS_UARTS			1
+#endif
+
+//#define	A_HAS_SPI1				1
+//#define	A_HAS_SPI2				1
+//#define	A_HAS_SPI3				1
+//#define	A_HAS_SPI4				1
+#if defined(A_HAS_SPI1) || defined(A_HAS_SPI2) || defined(A_HAS_SPI3) || defined(A_HAS_SPI4)
+	#define	A_HAS_SPI_BUS				1
+#endif
+
+//#define	A_HAS_I2C1				1
+//#define	A_HAS_I2C2				1
+#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2)
+	#define	A_HAS_I2C_BUS				1
+#endif
+
+//#define	A_HAS_TIMER1			1
+//#define	A_HAS_TIMER2			1
+//#define	A_HAS_TIMER3			1
+//#define	A_HAS_TIMER4			1
+//#define	A_HAS_TIMER5			1
+//#define	A_HAS_TIMER6			1
+//#define	A_HAS_TIMER7			1
+//#define	A_HAS_TIMER8			1
+//#define	A_HAS_TIMER9			1
+//#define	A_HAS_TIMER10			1
+//#define	A_HAS_TIMER11			1
+//#define	A_HAS_TIMER12			1
+//#define	A_HAS_TIMER13			1
+//#define	A_HAS_TIMER14			1
+//#define	A_HAS_TIMER15			1
+//#define	A_HAS_TIMER16			1
+#if defined	(A_HAS_TIMER1) || (A_HAS_TIMER2) || (A_HAS_TIMER3) || (A_HAS_TIMER4) || (A_HAS_TIMER5) || (A_HAS_TIMER6) \
+				|| (A_HAS_TIMER7) || (A_HAS_TIMER8) || (A_HAS_TIMER9) || (A_HAS_TIMER10) || (A_HAS_TIMER11) || (A_HAS_TIMER12) \
+				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16)
+	#define	A_HAS_TIMERS				1
+#endif
+
+// Board configuration
 
 #define	SENSOR_USART			HW_UART2
 
@@ -110,15 +161,11 @@ extern	UART_HandleTypeDef 		huart2;
 #define	SELECT_SENSORS_2		2
 #define	SELECT_SENSORS_3		3
 
-#define	USB_ENABLED				1
-
-#ifdef USB_ENABLED
-	#define	USB_CDC				1
-#endif // #ifdef USB_ENABLED
-
+#define	ITCM_AREA_CODE
 
 #define	BOARD_NAME			"AX_P2212157"
 #define	MACHINE_NAME		"Conc"
 #define	MACHINE_VERSION		"A"
+#define	ASSIGNED				1
 
 #endif /* BOARDS_AX_P2212157_CONC_H_ */

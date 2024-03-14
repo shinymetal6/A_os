@@ -22,31 +22,37 @@
 
 
 #include "main.h"
+#include "../system_default.h"
 #include "../A.h"
 #include "../scheduler.h"
 #include "../A_exported_functions.h"
 #include "../hwmanager.h"
-#include "../system_default.h"
 #include "hw_uart.h"
-
-#define	NO_SENTINEL	0
 
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
+
+#ifdef A_HAS_UARTS
+
 uint8_t	rx_char;
 extern	HW_Uart_t		HW_Uart[A_MAX_UART];
+#define	NO_SENTINEL	0
 
-uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len)
+ITCM_AREA_CODE uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len)
 {
+	if ( HWMngr[uart].process != Asys.current_process )
+		return HW_UART_ERROR;
 	return  HAL_UART_Transmit_IT(HW_Uart[uart-HW_UART1].hwuart_handle, ptr, len);
 }
 
-uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len)
+ITCM_AREA_CODE uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len)
 {
+	if ( HWMngr[uart].process != Asys.current_process )
+		return HW_UART_ERROR;
 	return HAL_UART_Transmit_DMA(HW_Uart[uart-HW_UART1].hwuart_handle, ptr, len);
 }
 
-uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout)
+ITCM_AREA_CODE uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout)
 {
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
@@ -60,13 +66,12 @@ uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,u
 			HWMngr[uart].flags |= HWMAN_TIMEOUT_ENABLED;
 		}
 		HWMngr[uart].rx_buf_index = 0;
-		HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
-		return 0;
+		return	HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
 	}
-	return 255;
+	return HW_UART_ERROR;
 }
 
-uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout)
+ITCM_AREA_CODE uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout)
 {
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
@@ -83,23 +88,22 @@ uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_
 			HWMngr[uart].flags |= HWMAN_TIMEOUT_ENABLED;
 		}
 		HWMngr[uart].rx_buf_index = 0;
-		HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
-		return 0;
+		return	HAL_UART_Receive_IT(HW_Uart[uart-HW_UART1].hwuart_handle, &rx_char, 1);
 	}
-	return 255;
+	return HW_UART_ERROR;
 }
 
-uint32_t hw_receive_uart_sentinel_clear(uint32_t uart)
+ITCM_AREA_CODE uint32_t hw_receive_uart_sentinel_clear(uint32_t uart)
 {
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
 		HWMngr[uart].sentinel_start = HWMngr[uart].sentinel_end = NO_SENTINEL;
-		return 0;
+		return HW_UART_OK;
 	}
-	return 255;
+	return HW_UART_ERROR;
 }
 
-uint16_t hw_get_uart_receive_len(uint32_t uart)
+ITCM_AREA_CODE uint16_t hw_get_uart_receive_len(uint32_t uart)
 {
 	if (( HWMngr[uart].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
 		if ( HWMngr[uart].process == Asys.current_process )
@@ -125,7 +129,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint32_t	i;
 	__disable_irq();
-	for(i=HW_UART1;i<HW_UART4;i++)
+	for(i=HW_UART1;i<HW_UART1+A_MAX_UART;i++)
 	{
 		if (( HWMngr[i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
 		{
@@ -209,4 +213,33 @@ uint32_t	i;
 			}
 		}
 	}
+}
+#endif
+
+void A_hw_uart_init(void)
+{
+#ifdef	A_HAS_UART1
+	HW_Uart[0].hwuart_handle = &huart1;
+	HW_Uart[0].hwuart_index  = HW_UART1;
+#endif
+#ifdef	A_HAS_UART2
+	HW_Uart[1].hwuart_handle = &huart2;
+	HW_Uart[1].hwuart_index  = HW_UART2;
+#endif
+#ifdef	A_HAS_UART3
+	HW_Uart[2].hwuart_handle = &huart3;
+	HW_Uart[2].hwuart_index  = HW_UART3;
+#endif
+#ifdef	A_HAS_UART4
+	HW_Uart[3].hwuart_handle = &huart4;
+	HW_Uart[3].hwuart_index  = HW_UART4;
+#endif
+#ifdef	A_HAS_UART5
+	HW_Uart[4].hwuart_handle = &huart5;
+	HW_Uart[4].hwuart_index  = HW_UART5;
+#endif
+#ifdef	A_HAS_UART6
+	HW_Uart[5].hwuart_handle = &huart6;
+	HW_Uart[5].hwuart_index  = HW_UART6;
+#endif
 }

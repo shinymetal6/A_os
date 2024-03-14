@@ -32,8 +32,13 @@ extern	Asys_t		Asys;
 
 extern	__IO uint32_t uwTick;
 
+#ifdef	A_HAS_UARTS
 void 		(*before_check_timers_callback)(void) = HAL_UART_RxTimeoutCheckCallback;
 void 		(*after_check_timers_callback)(void)  = NULL;
+#else
+void 		(*before_check_timers_callback)(void) = NULL;
+void 		(*after_check_timers_callback)(void)  = NULL;
+#endif
 
 void set_before_check_timers_callback(void (*callback)(void))
 {
