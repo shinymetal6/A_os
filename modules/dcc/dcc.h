@@ -1,153 +1,83 @@
-/* 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Project : A_os
-*/
 /*
  * dcc.h
  *
- *  Created on: Mar 1, 2024
+ *  Created on: Mar 5, 2024
  *      Author: fil
  */
 
 #ifndef MODULES_DCC_DCC_H_
 #define MODULES_DCC_DCC_H_
 
-extern	ADC_HandleTypeDef hadc3;
-extern	CRC_HandleTypeDef hcrc;
-extern	DCMI_HandleTypeDef hdcmi;
-extern	DMA2D_HandleTypeDef hdma2d;
-extern	I2C_HandleTypeDef hi2c1;
-extern	I2C_HandleTypeDef hi2c3;
-extern	LTDC_HandleTypeDef hltdc;
-extern	QSPI_HandleTypeDef hqspi;
-extern	RTC_HandleTypeDef hrtc;
-extern	SAI_HandleTypeDef hsai_BlockA2;
-extern	SAI_HandleTypeDef hsai_BlockB2;
-extern	SD_HandleTypeDef hsd1;
-extern	SPDIFRX_HandleTypeDef hspdif;
-extern	SPI_HandleTypeDef hspi2;
-extern	TIM_HandleTypeDef htim1;
-extern	TIM_HandleTypeDef htim2;
-#define	DCC_CH2				htim2
-extern	TIM_HandleTypeDef htim3;
-#define	DCC_CH1				htim3
-extern	TIM_HandleTypeDef htim5;
-extern	TIM_HandleTypeDef htim7;
-#define	TICK_TIMER			htim7
-extern	TIM_HandleTypeDef htim8;
-extern	TIM_HandleTypeDef htim12;
-extern	DMA_HandleTypeDef hdma_tim1_ch1;
-#define	DCC_DMA_CH1				hdma_tim1_ch1
-extern	UART_HandleTypeDef huart1;
-#define	DCC_HOST			huart1
-extern	UART_HandleTypeDef huart6;
-#define	HUART6			huart6
-extern	SDRAM_HandleTypeDef hsdram1;
+#include "../../kernel/system_default.h"
 
-#define	DCC_HOST_MAX_LEN		64
-#define	DCC_PREAMBLE_LEN		16
-#define	DCC_ADDRESS_LEN			8
-#define	DCC_DATA_LEN			8
-#define	DCC_ECC_LEN				8
-#define	DCC_FILL_LEN				8
-#define	DCC_PACKET_LEN			(DCC_PREAMBLE_LEN+1+DCC_ADDRESS_LEN+1+DCC_DATA_LEN+1+DCC_ECC_LEN+1+DCC_FILL_LEN+1)
-#define	PULSE100uS				99
-#define	PULSE58uS				57
-#define	PULSE200uS				199
-#define	PULSE400uS				399
-#define	DCC_0					PULSE100uS
-#define	DCC_1					PULSE58uS
-#define	DCC_TERM				PULSE400uS
-// DCC_SEPARATOR should be DCC_0
-#define	DCC_SEPARATOR			DCC_0
+#ifdef DDC_SYSTEM_ENABLE
+
+#define	DCC_PULSE58uS			58
+#define	DCC_0					(DCC_PULSE58uS*2)
+#define	DCC_1					DCC_PULSE58uS
+#define	DCC_START_BIT			DCC_0
+#define	DCC_END_BIT				DCC_1
+#define	DCC_CUTOUT				(DCC_PULSE58uS*8)
+#define	DCC_CTF_0				0
+#define	DCC_CTF_1				160
+
+#define	DCC_PKT_STD				0
+#define	DCC_PKT_EXTENDED		1
 
 typedef struct {
 	uint16_t		preamble[16];
-	uint16_t		separator0;
+	uint16_t		packet_start_bit;
 	uint16_t		address[8];
-	uint16_t		separator1;
-	uint16_t		data[8];
-	uint16_t		separator2;
-	uint16_t		ecc[8];
-	uint16_t		endpacket_short;
-	uint16_t		fill[8];
+	uint16_t		data_byte_start0_bit;
+	uint16_t		instruction[8];
+	uint16_t		data_byte_start1_bit;
+	uint16_t		detection_short[8];
+	uint16_t		packet_end_bit;
+	uint16_t		detection_long[8];
+	uint16_t		long_packet_end_bit;
 	uint16_t		endpacket_long;
-}DCC_Pkt_TypeDef;
-extern	DCC_Pkt_TypeDef	DCC_Idle_Pkt;
-extern	DCC_Pkt_TypeDef	DCC_Work_Pkt;
+}DCC_BasePkt_TypeDef;
 
-#define	NUM_DCC_PACKET		2
+typedef struct {
+	TIM_HandleTypeDef 	*hwtimer_handle;
+	DMA_HandleTypeDef 	*dma_dcc_handle;
+	DMA_HandleTypeDef 	*dma_cutout_handle;
+	uint32_t			hwtimer_id;
+	uint32_t			dcc_channel;
+	uint32_t			cutout_channel;
+	uint8_t				owner;
+	uint8_t				dcc_system;
+	uint8_t				repetition_counter,wrk_repetition_counter;
+	uint32_t			cmd_sent;
+}DCC_Config_TypeDef;
 
-typedef struct _DCC_System_TypeDef
-{
-	uint8_t			system;
-	//uint8_t			tick_flags;
-	uint8_t			tick_counter;
-	uint8_t			dcc_flags;
-	/*
-	uint8_t			uart1_flags;
-	uint8_t			uart1_rxchar;
-	uint8_t			uart1_rxbuf[DCC_HOST_MAX_LEN];
-	uint8_t			uart1_rxindex;
-	uint8_t			uart1_txbuf[DCC_HOST_MAX_LEN*4];
-	uint8_t			uart1_txlen;
-	*/
-	uint16_t		dcc_ch1_packet[DCC_PACKET_LEN*NUM_DCC_PACKET];
-	uint8_t			dcc_ch1_packet_index;
-	uint16_t		dcc_ch2_packet[DCC_PACKET_LEN*NUM_DCC_PACKET];
-	uint8_t			dcc_ch2_packet_index;
-	uint8_t			dcc_ch1_repeat_cnt;
-	uint8_t			dcc_ch1_repeat_number;
-	uint8_t			dcc_ch2_repeat_cnt;
-	uint8_t			dcc_ch2_repeat_number;
-}DCC_System_TypeDef;
-extern	DCC_System_TypeDef	DCC_System;
+/* dcc_system */
+#define	SYSTEM_DCC_HALFDONE		0x80
+#define	SYSTEM_DCC_DONE			0x40
+#define	SYSTEM_DCC_EXT_CUTOUT	0x20
+#define	SYSTEM_DCC_CLEAR		0x10
+#define	SYSTEM_DCC_POWER		0x08
+#define	SYSTEM_DCC_REP_ACTIVE	0x04
+#define	SYSTEM_DCC_WORK_PH		0x02
+#define	SYSTEM_DCC_WORK_PF		0x01
 
-/* system */
-#define	SYSTEM_DCC1_HALFDONE	0x80
-#define	SYSTEM_DCC2_HALFDONE	0x40
-#define	SYSTEM_DCC1_EXPIRED		0x20
-#define	SYSTEM_DCC2_EXPIRED		0x10
-#define	SYSTEM_DCC1_HPACKET		0x08
-#define	SYSTEM_DCC2_HPACKET		0x04
-#define	SYSTEM_DCC1_FPACKET		0x02
-#define	SYSTEM_DCC2_FPACKET		0x01
-/* tick_flags */
-#define	TICK10ms_FLAG			0x80
-/* uart1_flags */
-#define	UART1_OPENFLAG			0x04
-#define	UART1_BUF				0x02
-#define	UART1_CH				0x01
-/* dcc_flags */
-#define	DCC_DCC1_POWER			0x80
-#define	DCC_DCC1_RESET			0x40
-#define	DCC_DCC2_POWER			0x20
-#define	DCC_DCC2_RESET			0x10
-#define	DCC_DCC1_PKTPEND		0x08
-#define	DCC_DCC2_PKTPEND		0x04
-#define	DCC_DCC1_TXDONE			0x02
-#define	DCC_DCC2_TXDONE			0x01
+#define	DCC_TRACK_1				0
+#define	DCC_TRACK_2				1
 
 /* errors definition */
 #define	PARAMETER_ERROR			"#0001"
 #define	TRACK_NOT_POWERED_ERROR	"#0002"
 
-extern	void dcc_init(void);
-extern	void dcc_loop(void);
+extern	uint8_t dcc_init(uint32_t hwtimer_id , uint32_t track, uint32_t dcc_channel, uint32_t tx_number , uint32_t cutout_channel,DMA_HandleTypeDef *dma_dcc_handle,DMA_HandleTypeDef *dma_cutout_handle);
+extern	uint8_t dcc_start(uint8_t track);
+extern	uint8_t one_byte_commands(char cmd,uint8_t *reply_buf);
+extern	uint8_t two_bytes_commands(char cmd,uint16_t track,uint16_t address,uint16_t data,uint8_t *reply_buf);
+extern	uint8_t three_bytes_commands(char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah,uint8_t *reply_buf);
+extern	uint8_t dcc_enable_output(uint32_t track);
+extern	uint8_t dcc_disable_output(uint32_t track);
 
-extern	HAL_StatusTypeDef dcc_HAL_TIM_PWM_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, const uint32_t *pData, uint16_t Length);
 
 
+#endif // #ifdef DDC_SYSTEM_ENABLE
 
 #endif /* MODULES_DCC_DCC_H_ */

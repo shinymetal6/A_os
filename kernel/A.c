@@ -25,6 +25,9 @@
 #include "A.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
+#include "HwDevices/hw_uart.h"
+#include "HwDevices/hw_timers.h"
+#include "HwDevices/hw_i2c.h"
 #include "kernel_opt.h"
 #include <strings.h>
 #include <stdio.h>
@@ -233,9 +236,8 @@ void A_MPU_Config(void)
 void A_initialize_onchip_peripherals(void)
 {
 	A_hw_uart_init();
-	//A_hw_spi_init();
-	//A_hw_i2c_init();
-	//A_hw_timers_init();
+	A_hw_i2c_init();
+	A_hw_timers_init();
 }
 
 

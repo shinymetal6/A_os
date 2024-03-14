@@ -320,6 +320,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/internal_adc/internal_adc.h"
 #endif // #ifdef ADC_ENABLED
 
+#ifdef DDC_SYSTEM_ENABLE
+	#include "../modules/dcc/dcc.h"
+#endif // #ifdef DDC_SYSTEM_ENABLE
+
 #ifdef SYNTH_ENGINE_ENABLE
 	#include "../modules/audio/effects.h"
 #endif // #ifdef ADC_ENABLED

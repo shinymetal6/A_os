@@ -23,6 +23,7 @@
 #include "main.h"
 #include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
+#include "../../kernel/HwDevices/hw_i2c.h"
 
 #ifdef CODEC_NAU88C22
 #include "nau88c22.h"
