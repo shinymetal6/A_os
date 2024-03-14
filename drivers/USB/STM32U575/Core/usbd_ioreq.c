@@ -15,7 +15,9 @@
   *
   ******************************************************************************
   */
-
+#include "main.h"
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef	STM32U575xx
 
 #include "usbd_ioreq.h"

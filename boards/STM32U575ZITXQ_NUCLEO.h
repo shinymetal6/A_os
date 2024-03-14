@@ -48,7 +48,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 /* Others */
 #define	ASSIGNED				1
 
-//#define	USB_ENABLED				1
+#define	USB_ENABLED				1
 
 #ifdef USB_ENABLED
 	#define	USB_CDC				1

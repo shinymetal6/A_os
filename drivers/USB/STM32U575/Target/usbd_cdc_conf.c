@@ -19,6 +19,9 @@
  *  Created on: Feb 14, 2024
  *      Author: fil
  */
+#include "main.h"
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A_exported_functions.h"
 
 #ifdef	STM32U575xx
 #include "stm32u5xx.h"
