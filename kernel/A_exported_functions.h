@@ -283,6 +283,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_UART_RX				0x00000100
 #define	WAKEUP_FLAGS_UART_TX				0x00000200
 #define	WAKEUP_FLAGS_UART_TO				0x00000400
+#define	WAKEUP_FLAGS_SPI_TX					0x00000800
+#define	WAKEUP_FLAGS_SPI_RX					0x00001000
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000
 #define	WAKEUP_FLAGS_EXTI					0x08000000

@@ -21,8 +21,8 @@
  */
 
 #include "main.h"
-#include "A.h"
 #include "system_default.h"
+#include "A.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
 #include "kernel_opt.h"
@@ -34,10 +34,21 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
-SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
 
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
 
+#ifdef A_HAS_UARTS
+SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
+#endif
+#ifdef A_HAS_SPI_BUS
+SYSTEM_RAM		HW_Spi_t		HW_Spi[A_MAX_SPI];
+#endif
+#ifdef A_HAS_I2C_BUS
+SYSTEM_RAM		HW_I2C_t		HW_I2C[A_MAX_I2C];
+#endif
+#ifdef A_HAS_TIMERS
+SYSTEM_RAM		HW_Timers_t		HW_Timers[A_MAX_TIMERS];
+#endif
 
 #ifdef CUSTOM_RAM
 CUSTOM_RAM		uint32_t		CustomRamStart;

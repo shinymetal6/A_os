@@ -23,20 +23,21 @@
 #ifndef KERNEL_HWDEVICES_HW_SPI_H_
 #define KERNEL_HWDEVICES_HW_SPI_H_
 
-#if defined SPI1_ENABLED
-extern	SPI_HandleTypeDef		hspi1;
-#endif
 
-#if defined NFC_ENABLED
-#define	ST25R3915_SPI			hspi1
-#endif
-
-#define HW_SPI_ERROR_NONE                     0
-#define HW_SPI_ERROR_BUS_FAILURE             -1
-#define HW_SPI_ERROR_WRONG_PARAM             -2
-#define HW_SPI_ERROR_FEATURE_NOT_SUPPORTED   -3
-#define HW_SPI_ERROR_HW_NOT_OWNED			 -4
+#define HW_SPI_ERROR_NONE		0
+#define HW_SPI_ERROR			1
 
 #define HW_SPI_TIMEOUT        2000U /* baud rate of SPI1 = 5 Mbps*/
+
+
+extern	int32_t hw_spi_Send(uint32_t spi,uint8_t *pData, uint16_t Length);
+extern	int32_t hw_spi_Send_DMA(uint32_t spi,uint8_t *pData, uint16_t Length);
+extern	int32_t hw_spi_Recv(uint32_t spi,uint8_t *pData,  uint16_t Length);
+extern	int32_t hw_spi_Recv_DMA(uint32_t spi,uint8_t *pData,  uint16_t Length);
+extern	int32_t hw_spi_SendRecv(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length);
+extern	int32_t hw_spi_SendRecv_DMA(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length);
+extern	void	wait_dmadone(uint32_t spi);
+
+extern	void A_hw_spi_init(void);
 
 #endif /* KERNEL_HWDEVICES_HW_SPI_H_ */

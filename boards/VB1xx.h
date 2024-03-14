@@ -159,6 +159,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #ifdef LCD_096_ENABLED
 	extern SPI_HandleTypeDef hspi1;
 	#define ST7735_SPI_PORT 					hspi1
+	#define LCD_HW_SPI_PORT 					0
+
 	#define ST7735_SPI_TIMEOUT					2000
 
 	#define ST7735_CS_GPIO_Port					LCD_SS_GPIO_Port
@@ -207,6 +209,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 		#define NAU88C22_TIMEOUT	(1000)
 		extern	I2C_HandleTypeDef 	hi2c1;
 		#define	NAU88C22_I2C		hi2c1
+		#define	NAU88C22_I2C_BUS	0
+
 		extern	I2S_HandleTypeDef 	hi2s2;
 		#define	NAU88C22_I2S		hi2s2
 		#define	EXT_FREQ_12_288MHZ	1

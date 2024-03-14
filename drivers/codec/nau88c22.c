@@ -22,7 +22,7 @@
 
 #include "main.h"
 #include "../../kernel/system_default.h"
-extern	void task_delay(uint32_t tick_count);
+#include "../../kernel/A_exported_functions.h"
 
 #ifdef CODEC_NAU88C22
 #include "nau88c22.h"
@@ -193,16 +193,26 @@ Nau88c22_t	Nau88c22[] =
 
 uint8_t Nau88c22_CheckPresent(void)
 {
-	return HAL_I2C_IsDeviceReady(&NAU88C22_I2C, NAU88C22_ADDR, 5, NAU88C22_TIMEOUT);
+	return hw_i2c_check_presence(NAU88C22_I2C_BUS,NAU88C22_ADDR);
+	//return HAL_I2C_IsDeviceReady(&NAU88C22_I2C, NAU88C22_ADDR, 5, NAU88C22_TIMEOUT);
 }
 
 void Nau88c22_WriteReg(uint8_t reg_address, uint16_t reg_data)
 {
+#ifdef OLD_NAUI2C
 uint8_t i2c_data[2];
 	nau88c22_shadowregs[reg_address] = reg_data;
 	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
 	i2c_data[1] = reg_data & 0xff;
 	HAL_I2C_Mem_Write(&NAU88C22_I2C, NAU88C22_ADDR, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_TIMEOUT);
+#else
+uint8_t i2c_data[2];
+	nau88c22_shadowregs[reg_address] = reg_data;
+	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
+	i2c_data[1] = reg_data & 0xff;
+	hw_i2c_MemSend8(NAU88C22_I2C_BUS,NAU88C22_ADDR,i2c_data[0],&i2c_data[1], 1);
+#endif
+
 }
 
 uint16_t Nau88c22_ReadReg(uint8_t reg_address)

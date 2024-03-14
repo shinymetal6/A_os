@@ -78,21 +78,148 @@ typedef struct
 
 #define	HWMAN_QUEUE_LEN			16
 
+#ifdef A_HAS_UARTS
+
+#ifdef	A_HAS_UART1
 extern	UART_HandleTypeDef huart1;
+#endif
+#ifdef	A_HAS_UART2
 extern	UART_HandleTypeDef huart2;
+#endif
+#ifdef	A_HAS_UART3
 extern	UART_HandleTypeDef huart3;
+#endif
+#ifdef	A_HAS_UART4
 extern	UART_HandleTypeDef huart4;
+#endif
+#ifdef	A_HAS_UART5
 extern	UART_HandleTypeDef huart5;
+#endif
+#ifdef	A_HAS_UART6
 extern	UART_HandleTypeDef huart6;
-
-
+#endif
+#ifdef	A_HAS_UART7
+extern	UART_HandleTypeDef huart6;
+#endif
 typedef struct _HW_Uart_t
 {
 	UART_HandleTypeDef 	*hwuart_handle;
 	uint32_t			hwuart_index;
 }HW_Uart_t;
 
-#define	A_MAX_UART		6
+#define	A_MAX_UART		7
+#endif
+
+#ifdef A_HAS_SPI_BUS
+
+#ifdef	A_HAS_SPI1
+extern	SPI_HandleTypeDef hspi1;
+#endif
+#ifdef	A_HAS_SPI2
+extern	SPI_HandleTypeDef hspi2;
+#endif
+#ifdef	A_HAS_SPI3
+extern	SPI_HandleTypeDef hspi3;
+#endif
+#ifdef	A_HAS_SPI4
+extern	SPI_HandleTypeDef hspi4;
+#endif
+
+typedef struct _HW_Spi_t
+{
+	SPI_HandleTypeDef 	*hwspi_handle;
+	uint32_t			hwspi_index;
+	uint8_t				hwspi_flags;
+}HW_Spi_t;
+
+#define	A_SPI_CLEARFLAG		0x00
+#define	A_SPI_DMA_RUNNING	0x00
+#define	A_SPI_DMA_DONE		0x01
+#define	A_SPI_USE_DMA		0x80
+#define	A_MAX_SPI			4
+#endif
+
+#ifdef A_HAS_I2C_BUS
+
+#ifdef	A_HAS_I2C1
+extern	I2C_HandleTypeDef 	hi2c1;
+#endif
+#ifdef	A_HAS_I2C2
+extern	I2C_HandleTypeDef 	hi2c2;
+#endif
+
+typedef struct _HW_I2C_t
+{
+	I2C_HandleTypeDef 	*hwi2c_handle;
+	uint32_t			hwi2c_index;
+	uint8_t				hwi2c_flags;
+}HW_I2C_t;
+#define	A_MAX_I2C			2
+#endif
+
+#ifdef A_HAS_TIMERS
+#ifdef	A_HAS_TIMER1
+extern	TIM_HandleTypeDef htim1;
+#endif
+#ifdef	A_HAS_TIMER2
+extern	TIM_HandleTypeDef htim2;
+#endif
+#ifdef	A_HAS_TIMER3
+extern	TIM_HandleTypeDef htim3;
+#endif
+#ifdef	A_HAS_TIMER4
+extern	TIM_HandleTypeDef htim4;
+#endif
+#ifdef	A_HAS_TIMER5
+extern	TIM_HandleTypeDef htim5;
+#endif
+#ifdef	A_HAS_TIMER6
+extern	TIM_HandleTypeDef htim6;
+#endif
+#ifdef	A_HAS_TIMER7
+extern	TIM_HandleTypeDef htim7;
+#endif
+#ifdef	A_HAS_TIMER8
+extern	TIM_HandleTypeDef htim8;
+#endif
+#ifdef	A_HAS_TIMER9
+extern	TIM_HandleTypeDef htim9;
+#endif
+#ifdef	A_HAS_TIMER10
+extern	TIM_HandleTypeDef htim10;
+#endif
+#ifdef	A_HAS_TIMER11
+extern	TIM_HandleTypeDef htim11;
+#endif
+#ifdef	A_HAS_TIMER12
+extern	TIM_HandleTypeDef htim12;
+#endif
+#ifdef	A_HAS_TIMER13
+extern	TIM_HandleTypeDef htim13;
+#endif
+#ifdef	A_HAS_TIMER14
+extern	TIM_HandleTypeDef htim14;
+#endif
+#ifdef	A_HAS_TIMER15
+extern	TIM_HandleTypeDef htim15;
+#endif
+#ifdef	A_HAS_TIMER16
+extern	TIM_HandleTypeDef htim16;
+#endif
+#ifdef	A_HAS_TIMER17
+extern	TIM_HandleTypeDef htim17;
+#endif
+
+typedef struct _HW_Timers_t
+{
+	TIM_HandleTypeDef 	*hwtimer_handle;
+	uint32_t			hwtimer_index;
+	uint8_t				hwtimer_owner;
+	uint8_t				hwtimer_flags;
+}HW_Timers_t;
+#define	A_MAX_TIMERS		17
+#endif
+
 typedef struct
 {
 	uint8_t 	process;
