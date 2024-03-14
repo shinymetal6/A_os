@@ -46,10 +46,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define HSI_CLOCK         		80000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
-#define	ASSIGNED				1
 
 #define	USB_ENABLED				1
-
 #ifdef USB_ENABLED
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
@@ -115,5 +113,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	BOARD_NAME			"STM32U575ZITXQ_NUCLEO"
 #define	MACHINE_NAME		"STM32U575ZITXQ_NUCLEO"
 #define	MACHINE_VERSION		"A"
+#define	ASSIGNED			1
 
 #endif /* BOARDS_STM32U575ZITXQ_NUCLEO_H_ */
