@@ -204,6 +204,7 @@ uint32_t DWT_Delay_Init(void)
 	return 1; /*clock cycle counter not started*/
 }
 
+#ifdef DATA_CACHE_ENABLE
 void A_MPU_Config(void)
 {
 #ifdef	STM32H743xx
@@ -230,8 +231,9 @@ void A_MPU_Config(void)
 	HAL_MPU_ConfigRegion(&MPU_InitStruct);
 	/* Enables the MPU */
 	HAL_MPU_Enable(MPU_PRIVILEGED_DEFAULT);
-#endif
+#endif // #ifdef	STM32H743xx
 }
+#endif // #ifdef DATA_CACHE_ENABLE
 
 void A_initialize_onchip_peripherals(void)
 {

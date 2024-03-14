@@ -30,6 +30,9 @@
 	#ifdef	FY_201023_00
 		#include "../boards/FY_201023_00.h"
 	#endif
+	#ifdef	FY_201023_01
+		#include "../boards/FY_201023_01.h"
+	#endif
 	#ifdef	BB2xx_743
 		#include "../boards/BB2xx_743.h"
 	#endif
