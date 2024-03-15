@@ -47,13 +47,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 
-//#define	USB_ENABLED				1
+#define	USB_ENABLED				1
 #ifdef USB_ENABLED
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
-//#define	DDC_SYSTEM_ENABLE		1
-#define	XMODEM_ENABLE				1
+#define	DDC_SYSTEM_ENABLE		1
 
 #define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
@@ -80,14 +79,14 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_I2C_BUS				1
 #endif
 
-//#define	A_HAS_TIMER1			1
+#define	A_HAS_TIMER1			1
 //#define	A_HAS_TIMER2			1
 //#define	A_HAS_TIMER3			1
 //#define	A_HAS_TIMER4			1
 //#define	A_HAS_TIMER5			1
 //#define	A_HAS_TIMER6			1
 //#define	A_HAS_TIMER7			1
-//#define	A_HAS_TIMER8			1
+#define	A_HAS_TIMER8			1
 //#define	A_HAS_TIMER9			1
 //#define	A_HAS_TIMER10			1
 //#define	A_HAS_TIMER11			1

@@ -21,7 +21,10 @@ https://www.fernhillsoftware.com/help/drivers/modbus/modbus-protocol.html#writeS
  */
 
 #include "main.h"
-#include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/scheduler.h"
 
 #ifdef MODBUS_ENABLE
 #include "modbus.h"
