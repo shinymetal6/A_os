@@ -22,7 +22,6 @@
 
 #ifndef MODBUS_H_
 #define MODBUS_H_
-#ifdef MODBUS_ENABLE
 
 extern	UART_HandleTypeDef 					huart1;
 #define	MODBUS_UART							huart1
@@ -81,6 +80,8 @@ typedef struct {
 	uint8_t		multiple_input_registers[A_MAX_REGS];
 } A_modbus_inout_t;
 
-#endif // #ifdef MODBUS_ENABLE
+extern	void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
+extern	uint8_t modbus_process(void);
+extern	uint8_t modbus_get_coil(uint16_t coil_number);
 
 #endif /* MODBUS_H_ */

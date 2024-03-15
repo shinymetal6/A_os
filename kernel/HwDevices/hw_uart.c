@@ -75,6 +75,8 @@ ITCM_AREA_CODE uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,u
 {
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
+		if ( HW_Uart[uart-HW_UART1].hwuart_handle == NULL )
+			return HW_UART_ERROR;
 		HWMngr[uart].sentinel_start = sentinel_start;
 		HWMngr[uart].sentinel_end = sentinel_end;
 		HWMngr[uart].status &= ~HWMAN_SENTINEL_FOUND;

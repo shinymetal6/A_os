@@ -135,7 +135,7 @@ extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
 extern	void xmodem_process(uint32_t wakeup);
 
 /* modbus */
-extern	void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
+extern	uint8_t modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
 extern	uint8_t modbus_process(void);
 extern	uint8_t modbus_get_coil(uint16_t coil_number);
 

@@ -27,8 +27,6 @@
 #ifndef MODBUS_RTU_H_
 #define MODBUS_RTU_H_
 
-#ifdef MODBUS_ENABLE
-
 #define	MODBUS_RTU_ADDRESS_PHASE			0x00
 #define	MODBUS_RTU_FC_PHASE					0x01
 #define	MODBUS_RTU_DATA_PHASE				0x02
@@ -50,6 +48,5 @@
 #define	MODBUS_RTU_EXCEPTION				0x80
 
 extern	uint32_t rtu_modbus_process(uint8_t *buf, uint16_t len);
-#endif // #ifdef MODBUS_ENABLE
 
 #endif /* MODBUS_H_ */

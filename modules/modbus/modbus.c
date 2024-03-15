@@ -21,14 +21,9 @@
  */
 
 #include "main.h"
-#include "../../kernel/system_default.h"
-#include "../../kernel/A.h"
-#include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
-
-#ifdef MODBUS_ENABLE
 #include "modbus.h"
 #include "modbus_rtu.h"
+#include "../../kernel/A_exported_functions.h"
 
 A_modbus_t			A_modbus;
 A_modbus_inout_t	A_modbus_inout;
@@ -76,4 +71,3 @@ uint8_t tmp_coil;
 	tmp_coil >>= (coil_number & 0x07);
 	return tmp_coil & 0x01;
 }
-#endif // #ifdef MODBUS_ENABLE
