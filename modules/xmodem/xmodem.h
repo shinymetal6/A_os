@@ -23,6 +23,8 @@
 #ifndef MODULES_XMODEM_XMODEM_H_
 #define MODULES_XMODEM_XMODEM_H_
 
+#ifdef XMODEM_ENABLE
+
 #define X_SOH	0x01
 #define X_STX 	0x02
 #define X_EOT	0x04
@@ -69,5 +71,6 @@ typedef struct
 	uint32_t	data_count;
 }xmodem_t;
 
+#endif // #ifdef XMODEM_ENABLE
 
 #endif /* MODULES_XMODEM_XMODEM_H_ */

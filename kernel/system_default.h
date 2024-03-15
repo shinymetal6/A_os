@@ -62,6 +62,12 @@
 	#endif
 #endif
 
+#ifdef STM32L431xx
+	#ifdef AX_P2311171_RS
+		#include "../boards/AX_P2311171_RS.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

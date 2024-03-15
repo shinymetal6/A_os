@@ -239,6 +239,7 @@ void A_initialize_onchip_peripherals(void)
 {
 	A_hw_uart_init();
 	A_hw_i2c_init();
+	//A_hw_spi_init();
 	A_hw_timers_init();
 }
 
@@ -265,9 +266,12 @@ void A_start(void)
 	init_systick_timer(TICK_HZ);
 	A_mem_init();
 #ifdef DATA_CACHE_ENABLE
+#ifdef	STM32H743xx
 	A_MPU_Config();
 	SCB_EnableDCache();
-#endif
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef DATA_CACHE_ENABLE
+
 	A_PreScheduler_Init();
 	switch_sp_to_psp();
 

@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : bb1xx_743_00 
+ * Project : A_os
 */
 /*
  * lcd_7735.c
@@ -55,6 +55,8 @@ void LcdInit(void)
     LcdSetBrightness(ZERO_BRIGHTNESS);
 	HAL_TIM_PWM_Start(&BACKLIGHT_TIMER,TIM_CHANNEL_1);
     ST7735_Unselect();
+    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
+
 	ST7735_Init();
 	ST7735_ClearScreen();
 }

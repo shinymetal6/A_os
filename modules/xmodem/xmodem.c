@@ -21,9 +21,11 @@
  */
 
 #include "main.h"
-#include "xmodem.h"
 #include "../../kernel/A_exported_functions.h"
 
+#ifdef XMODEM_ENABLE
+
+#include "xmodem.h"
 #include <string.h>
 
 uint8_t 	xmodem_sm;
@@ -148,3 +150,4 @@ void xmodem_init(uint32_t uart,uint8_t *data_ptr)
 	xmodem_struct.xtimeout = 0;
 }
 
+#endif
