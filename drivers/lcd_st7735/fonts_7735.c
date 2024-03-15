@@ -23,7 +23,6 @@
 #include "main.h"
 #include "../../kernel/system_default.h"
 
-
 #ifdef	LCD_096_ENABLED
 #include "fonts_7735.h"
 

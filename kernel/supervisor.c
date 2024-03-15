@@ -38,7 +38,7 @@ extern	void supervisor_callback(void);
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 extern	PCB_t 		process[MAX_PROCESS];
 
-void supervisor(void)
+ITCM_AREA_CODE void supervisor(void)
 {
 	while(1)
 	{

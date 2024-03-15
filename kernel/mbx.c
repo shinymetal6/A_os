@@ -28,14 +28,14 @@
 
 extern	PCB_t process[MAX_PROCESS];
 
-void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size)
+ITCM_AREA_CODE void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size)
 {
 	process[process_number].mbx[mailbox_number] = mbx_ptr;
 	process[process_number].mbx_size[mailbox_number] = mbx_size;
 	activate_process(process_number,WAKEUP_FROM_MBX,WAKEUP_FLAGS_MBX);
 }
 
-uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr)
+ITCM_AREA_CODE uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr)
 {
 	memcpy(buf_ptr,process[Asys.current_process].mbx[mailbox_number] ,process[Asys.current_process].mbx_size[mailbox_number]);
 	process[Asys.current_process].wakeup_rsn &= ~WAKEUP_FROM_MBX;

@@ -29,7 +29,7 @@
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
 
-uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
+ITCM_AREA_CODE uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
 {
 	if ( HWMngr[peripheral].process )
 		return 0;
@@ -38,7 +38,7 @@ uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
 	return peripheral;
 }
 
-uint32_t deallocate_hw(uint32_t peripheral)
+ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
@@ -47,14 +47,14 @@ uint32_t deallocate_hw(uint32_t peripheral)
 	return peripheral;
 }
 
-uint16_t get_rx_len(uint32_t peripheral)
+ITCM_AREA_CODE uint16_t get_rx_len(uint32_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
 	return HWMngr[HW_USB_DEVICE].rxlen;
 }
 
-uint32_t get_peripheral_flags(uint32_t peripheral)
+ITCM_AREA_CODE uint32_t get_peripheral_flags(uint32_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;

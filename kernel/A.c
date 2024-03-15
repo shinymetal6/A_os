@@ -28,7 +28,7 @@
 #include "HwDevices/hw_uart.h"
 #include "HwDevices/hw_timers.h"
 #include "HwDevices/hw_i2c.h"
-//#include "kernel_opt.h"
+#include "kernel_opt.h"
 #include <strings.h>
 #include <stdio.h>
 

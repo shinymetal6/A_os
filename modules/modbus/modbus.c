@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : u575_modbus 
+ * Project : A_os
 */
 /*
  * modbus.c
@@ -45,7 +45,7 @@ uint8_t modbus_CRC_Init(void)
 }
 #endif
 
-void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size)
+uint32_t modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size)
 {
 #ifndef A_MODBUS_SW_CRC
 	HAL_CRC_DeInit(&hcrc);
@@ -54,7 +54,7 @@ void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_s
 	A_modbus.modbus_addr = address;
 	A_modbus.modbus_uart = uart;
 	A_modbus.modbus_rx_packet_ptr = data_ptr;
-	hw_receive_uart_sentinel(uart,A_modbus.modbus_rx_packet_ptr,1024,address, address,MODBUS_TIMEOUT);
+	return hw_receive_uart_sentinel(uart,A_modbus.modbus_rx_packet_ptr,1024,address, address,MODBUS_TIMEOUT);
 }
 
 uint8_t modbus_process(void)

@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : u575_modbus 
+ * Project : A_os
 */
 /*
  * modbus.h
@@ -80,7 +80,7 @@ typedef struct {
 	uint8_t		multiple_input_registers[A_MAX_REGS];
 } A_modbus_inout_t;
 
-extern	void modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
+extern	uint32_t modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
 extern	uint8_t modbus_process(void);
 extern	uint8_t modbus_get_coil(uint16_t coil_number);
 

@@ -30,36 +30,6 @@
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
 
-uint32_t get_psp_value(void)
-{
-	return process[Asys.current_process].psp_value;
-}
-
-void save_psp_value(uint32_t current_psp_value)
-{
-	process[Asys.current_process].psp_value = current_psp_value;
-}
-
-void update_next_task(void)
-{
-	int state = 0;
-
-	for(int i= 0 ; i < (MAX_TASKS) ; i++)
-	{
-		Asys.current_process++;
-		Asys.current_process %= MAX_TASKS;
-		if ( Asys.current_process == 0 )	// run supervisor each time Asys.current_process rolls to 0
-			return;
-		state = process[Asys.current_process].current_state;
-		if (( state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
-		{
-			if( ((state & PROCESS_READY_STATE )== PROCESS_READY_STATE) && (Asys.current_process != 0) )
-				break;
-		}
-	}
-	if((state & PROCESS_READY_STATE ) != PROCESS_READY_STATE)
-		Asys.current_process = 0;
-}
 
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
@@ -104,7 +74,7 @@ __attribute__((naked)) void PendSV_Handler(void)
 	__asm volatile("BX LR");
 }
 
-void __attribute__ ((noinline)) wait_event(uint32_t events)
+ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 {
 	__disable_irq();
 	process[Asys.current_process].wait_event = events;
@@ -114,7 +84,7 @@ void __attribute__ ((noinline)) wait_event(uint32_t events)
 	__enable_irq();
 }
 
-void __attribute__ ((noinline)) suspend(void)
+ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 {
 	__disable_irq();
 	process[Asys.current_process].current_state = PROCESS_WAITING_STATE;
@@ -122,7 +92,41 @@ void __attribute__ ((noinline)) suspend(void)
 	__enable_irq();
 }
 
-uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags)
+#include "kernel_opt.h"
+
+ITCM_AREA_CODE uint32_t get_psp_value(void)
+{
+	return process[Asys.current_process].psp_value;
+}
+
+ITCM_AREA_CODE void save_psp_value(uint32_t current_psp_value)
+{
+	process[Asys.current_process].psp_value = current_psp_value;
+}
+
+ITCM_AREA_CODE void update_next_task(void)
+{
+	int state = 0;
+
+	for(int i= 0 ; i < (MAX_TASKS) ; i++)
+	{
+		Asys.current_process++;
+		Asys.current_process %= MAX_TASKS;
+		if ( Asys.current_process == 0 )	// run supervisor each time Asys.current_process rolls to 0
+			return;
+		state = process[Asys.current_process].current_state;
+		if (( state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
+		{
+			if( ((state & PROCESS_READY_STATE )== PROCESS_READY_STATE) && (Asys.current_process != 0) )
+				break;
+		}
+	}
+	if((state & PROCESS_READY_STATE ) != PROCESS_READY_STATE)
+		Asys.current_process = 0;
+}
+
+
+ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags)
 {
 	if (( process[dest_process].current_state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 	{
@@ -136,7 +140,7 @@ uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t fl
 	return 0;
 }
 
-uint32_t get_wakeup_rsn(void)
+ITCM_AREA_CODE uint32_t get_wakeup_rsn(void)
 {
 uint32_t wakeup_rsn;
 	__disable_irq();
@@ -146,7 +150,7 @@ uint32_t wakeup_rsn;
 	return wakeup_rsn;
 }
 
-uint32_t get_activation_flags(void)
+ITCM_AREA_CODE uint32_t get_activation_flags(void)
 {
 uint32_t activation_flag;
 	__disable_irq();
@@ -156,7 +160,7 @@ uint32_t activation_flag;
 	return activation_flag;
 }
 
-uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags )
+ITCM_AREA_CODE uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags )
 {
 	__disable_irq();
 	*reason = process[Asys.current_process].wakeup_rsn;
@@ -166,7 +170,7 @@ uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags )
 	return 0;
 }
 
-uint8_t get_current_process(void)
+ITCM_AREA_CODE uint8_t get_current_process(void)
 {
 	return Asys.current_process;
 }

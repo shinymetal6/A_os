@@ -23,6 +23,9 @@
 #ifndef KERNEL_A_EXPORTED_FUNCTIONS_H_
 #define KERNEL_A_EXPORTED_FUNCTIONS_H_
 
+#include "main.h"
+#include "system_default.h"
+
 /* System */
 extern	void wait_event(uint32_t events);
 
@@ -128,20 +131,49 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	void InitOscillators(void);
 extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-
-
-/* xmodem */
-extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
-extern	void xmodem_process(uint32_t wakeup);
-
-/* modbus */
-extern	uint8_t modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t data_size);
-extern	uint8_t modbus_process(void);
-extern	uint8_t modbus_get_coil(uint16_t coil_number);
-
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
+
+#ifdef XMODEM_ENABLE
+#include "../modules/xmodem/xmodem.h"
+#endif
+
+#ifdef MODBUS_ENABLE
+#include "../modules/modbus/modbus.h"
+#endif
+
+#ifdef WIRELESS_NRF24L01
+#include "../drivers/wireless/nrf24l01/nrf24l01.h"
+#endif
+
+#ifdef CODEC_ENABLED
+	#include "audio.h"
+	#ifdef CODEC_NAU88C22
+		#include "../drivers/codec/nau88c22.h"
+	#endif
+#endif // #ifdef CODEC_ENABLED
+
+#ifdef LCD_096_ENABLED
+	#include "../drivers/lcd_st7735/st7735.h"
+	#include "../drivers/lcd_st7735/lcd_7735.h"
+#endif // #ifdef LCD_096_ENABLED
+
+#ifdef LCD_2I8_ENABLED
+	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
+#endif // #ifdef LCD_2I8_ENABLED
+
+#ifdef ADC_ENABLED
+	#include "../drivers/internal_adc/internal_adc.h"
+#endif // #ifdef ADC_ENABLED
+
+#ifdef DDC_SYSTEM_ENABLE
+	#include "../modules/dcc/dcc.h"
+#endif // #ifdef DDC_SYSTEM_ENABLE
+
+#ifdef SYNTH_ENGINE_ENABLE
+	#include "../modules/audio/effects.h"
+#endif // #ifdef ADC_ENABLED
 
 /* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
 #define	HW_DELAY					0
@@ -165,6 +197,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_ADC1						20
 #define	HW_ADC2						21
 #define	HW_DAC						22
+#define	HW_SPILCD					27
 #define	HW_NRF24L01					28
 #define	HW_USB_DEVICE				29
 #define	HW_USB_HOST					30
@@ -192,6 +225,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_ADC1_IRQ					(1<<HW_ADC1)
 #define	EVENT_ADC2_IRQ					(1<<HW_ADC2)
 #define	EVENT_DAC_IRQ					(1<<HW_DAC)
+#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
 #define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
 #define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
 #define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
@@ -217,6 +251,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_ADC1_IRQ				EVENT_ADC1_IRQ
 #define	SUSPEND_ON_ADC2_IRQ				EVENT_ADC2_IRQ
 #define	SUSPEND_ON_DAC_IRQ				EVENT_DAC_IRQ
+#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
 #define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
 #define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
 #define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
@@ -242,6 +277,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_ADC1_IRQ			SUSPEND_ON_ADC1_IRQ
 #define	WAKEUP_FROM_ADC2_IRQ			SUSPEND_ON_ADC2_IRQ
 #define	WAKEUP_FROM_DAC_IRQ				SUSPEND_ON_DAC_IRQ
+#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
 #define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
 #define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
 #define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
@@ -267,6 +303,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_ADC1						HW_ADC1
 #define	DEVICE_ADC2						HW_ADC2
 #define	DEVICE_DAC						HW_DAC
+#define	DEVICE_SPILCD					HW_SPILCD
 #define	DEVICE_NRF24L01					HW_NRF24L01
 #define	DEVICE_USB_DEVICE				HW_USB_DEVICE
 #define	DEVICE_USB_HOST					HW_USB_HOST
@@ -287,6 +324,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_SPI_RX					0x00001000
 #define	WAKEUP_FLAGS_HALF_DMA				0x00002000
 #define	WAKEUP_FLAGS_FULL_DMA				0x00004000
+#define	WAKEUP_FLAGS_SPILCD					0x01000000
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000
 #define	WAKEUP_FLAGS_EXTI					0x08000000
@@ -310,42 +348,5 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_TIMERS_TIMER15					14
 #define	HW_TIMERS_TIMER16					15
 #define	HW_TIMERS_TIMER17					16
-
-#ifdef WIRELESS_NRF24L01
-#include "../drivers/wireless/nrf24l01/nrf24l01.h"
-#endif
-
-#ifdef CODEC_ENABLED
-	#include "audio.h"
-	#ifdef CODEC_NAU88C22
-		#include "../drivers/codec/nau88c22.h"
-	#endif
-#endif // #ifdef CODEC_ENABLED
-
-#ifdef LCD_096_ENABLED
-	#include "../drivers/lcd_st7735/st7735.h"
-	#include "../drivers/lcd_st7735/lcd_7735.h"
-	extern	void Draw_Logo(uint16_t *logo);
-#endif // #ifdef LCD_096_ENABLED
-
-#ifdef LCD_2I8_ENABLED
-	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
-	extern	void LcdClearScreen(uint16_t color);
-	extern	void LcdInit(void);
-	extern	void LcdDrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
-	extern	void LcdWriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor);
-#endif // #ifdef LCD_096_ENABLED
-
-#ifdef ADC_ENABLED
-	#include "../drivers/internal_adc/internal_adc.h"
-#endif // #ifdef ADC_ENABLED
-
-#ifdef DDC_SYSTEM_ENABLE
-	#include "../modules/dcc/dcc.h"
-#endif // #ifdef DDC_SYSTEM_ENABLE
-
-#ifdef SYNTH_ENGINE_ENABLE
-	#include "../modules/audio/effects.h"
-#endif // #ifdef ADC_ENABLED
 
 #endif /* KERNEL_A_EXPORTED_FUNCTIONS_H_ */

@@ -20,8 +20,9 @@
  *      Author: fil
  */
 #include "main.h"
-#include "A.h"
 #include "system_default.h"
+#include "A.h"
+#include "A_exported_functions.h"
 #include "kernel_opt.h"
 
 #ifdef CODEC_NAU88C22
@@ -95,6 +96,10 @@ __weak void A_PreOS_Init(void)
 	Nau88c22_Init();
 	#endif
 #endif
+#ifdef LCD_ENABLED
+	LcdInit();
+#endif
+
 }
 
 __weak void A_Processor_Quirks(void)

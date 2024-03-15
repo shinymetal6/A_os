@@ -28,6 +28,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#define	LCD_NOT_OWNED	1
+#define	LCD_OK			0
+
 typedef struct
 {
 	uint8_t xpos;
@@ -62,10 +65,9 @@ typedef struct
 extern	TIM_HandleTypeDef 	htim16;
 #define	BACKLIGHT_TIMER		htim16
 
-extern	void	LcdInit(void);
-extern	void 	LcdClearScreen(void);
-extern	void 	LcdSetBrightness(uint16_t brightness);
-extern	void 	Draw_Logo(uint16_t *logo);
-
+extern	void		LcdInit(void);
+extern	uint32_t 	LcdClearScreen(void);
+extern	uint32_t 	LcdSetBrightness(uint16_t brightness);
+extern	uint32_t	Draw_Logo(uint16_t *logo);
 
 #endif /* DRIVERS_LCD_ST7735_LCD_7735_H_ */

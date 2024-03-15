@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : u575_modbus 
+ * Project : A_os
 https://www.fernhillsoftware.com/help/drivers/modbus/modbus-protocol.html#writeSingleCoil*/
 /*
  * modbus_rtu.c

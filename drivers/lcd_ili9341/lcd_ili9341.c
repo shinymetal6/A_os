@@ -25,8 +25,14 @@
 #include "main.h"
 #include "../../kernel/system_default.h"
 #ifdef	LCD_2I8_ENABLED
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/hwmanager.h"
+#include "../../kernel/kernel_opt.h"
 #include "lcd_ili9341.h"
 #include "fonts_ili9341.h"
+
+extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 
 Video_t	Video;
 
@@ -383,23 +389,33 @@ uint32_t	size = w*h*2,csize = 0;
     ILI9341_Unselect();
 }
 
-void ILI9341_InvertColors(bool invert) {
+uint32_t ILI9341_InvertColors(bool invert)
+{
+	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+		return LCD_NOT_OWNED;
     ILI9341_Select();
     ILI9341_WriteCommand(invert ? 0x21 /* INVON */ : 0x20 /* INVOFF */);
     ILI9341_Unselect();
+	return LCD_OK;
 }
 
-void LcdSetBrightness(uint16_t brightness)
+uint32_t LcdSetBrightness(uint16_t brightness)
 {
+	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+		return LCD_NOT_OWNED;
 	if ( brightness <= FULL_BRIGHTNESS)
 	{
 		Video.brightness = BACKLIGHT_TIMER.Instance->CCR1 = brightness;
 	}
+	return LCD_OK;
 }
 
-void LcdClearScreen(uint16_t color)
+uint32_t LcdClearScreen(void)
 {
-	ILI9341_FillRectangle(0, 0, ILI9341_WIDTH, ILI9341_HEIGHT, color);
+	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+		return LCD_NOT_OWNED;
+	ILI9341_FillRectangle(0, 0, ILI9341_WIDTH, ILI9341_HEIGHT, ILI9341_BLACK);
+	return LCD_OK;
 }
 
 void LcdInit(void)
@@ -407,16 +423,20 @@ void LcdInit(void)
 	LcdSetBrightness(FULL_BRIGHTNESS);
 	HAL_TIM_PWM_Start(&BACKLIGHT_TIMER,TIM_CHANNEL_1);
 	ILI9341_Init();
-	LcdClearScreen(ILI9341_RED);
+	LcdClearScreen();
 }
 
 void LcdDrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)
 {
+	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+		return;
 	ILI9341_DrawImage(x, y, w, h, data);
 }
 
 void LcdWriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor)
 {
+	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+		return;
 	ILI9341_WriteString(x, y, str, font, color, bgcolor);
 }
 

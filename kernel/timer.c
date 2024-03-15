@@ -40,17 +40,17 @@ void 		(*before_check_timers_callback)(void) = NULL;
 void 		(*after_check_timers_callback)(void)  = NULL;
 #endif
 
-void set_before_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE void set_before_check_timers_callback(void (*callback)(void))
 {
 	before_check_timers_callback = callback;
 }
 
-void set_after_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE void set_after_check_timers_callback(void (*callback)(void))
 {
 	after_check_timers_callback = callback;
 }
 
-void update_global_tick_count(void)
+ITCM_AREA_CODE void update_global_tick_count(void)
 {
 	__disable_irq();
 	Asys.g_tick_count++;
@@ -60,12 +60,12 @@ void update_global_tick_count(void)
 	__enable_irq();
 }
 
-int32_t A_GetTick(void)
+ITCM_AREA_CODE int32_t A_GetTick(void)
 {
 	return Asys.g_tick_count;
 }
 
-uint32_t HAL_GetTick(void)
+ITCM_AREA_CODE uint32_t HAL_GetTick(void)
 {
 	if ( Asys.g_os_started )
 		return Asys.g_tick_count;
@@ -73,7 +73,7 @@ uint32_t HAL_GetTick(void)
 		return uwTick;
 }
 
-void task_delay(uint32_t tick_count)
+ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 {
 	__disable_irq();
 	if(Asys.current_process)
@@ -86,7 +86,7 @@ void task_delay(uint32_t tick_count)
 	__enable_irq();
 }
 
-void check_timers(void)
+ITCM_AREA_CODE void check_timers(void)
 {
 register uint8_t	i,j;
 
@@ -125,7 +125,7 @@ register uint8_t	i,j;
 	}
 }
 
-void  SysTick_Handler(void)
+ITCM_AREA_CODE void  SysTick_Handler(void)
 {
 	__disable_irq();
 	if ( Asys.g_os_started )
@@ -147,7 +147,7 @@ void  SysTick_Handler(void)
 	__enable_irq();
 }
 
-uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
+ITCM_AREA_CODE uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
 {
 uint8_t timer_index = 0;
 	if (( process[Asys.current_process].timer_flags[timer_id] & TIMERFLAGS_IN_USE ) == TIMERFLAGS_IN_USE)
@@ -172,7 +172,7 @@ uint8_t timer_index = 0;
 	return 0;
 }
 
-uint32_t start_timer(uint8_t timer_id)
+ITCM_AREA_CODE uint32_t start_timer(uint8_t timer_id)
 {
 uint8_t timer_index = 0;
 	if (( process[Asys.current_process].timer_flags[timer_id] & TIMERFLAGS_IN_USE ) == TIMERFLAGS_IN_USE)
@@ -193,7 +193,7 @@ uint8_t timer_index = 0;
 	return 0;
 }
 
-uint32_t restart_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
+ITCM_AREA_CODE uint32_t restart_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
 {
 	if (( process[Asys.current_process].timer_flags[timer_id] & TIMERFLAGS_IN_USE ) != TIMERFLAGS_IN_USE)
 		return 1;
@@ -202,13 +202,13 @@ uint32_t restart_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
 	return 0;
 }
 
-uint32_t stop_timer(uint8_t timer_id)
+ITCM_AREA_CODE uint32_t stop_timer(uint8_t timer_id)
 {
 	process[Asys.current_process].timer_flags[timer_id] &= ~TIMERFLAGS_ENABLED;
 	return 0;
 }
 
-uint32_t destroy_timer(uint8_t timer_id)
+ITCM_AREA_CODE uint32_t destroy_timer(uint8_t timer_id)
 {
 	__disable_irq();
 	process[Asys.current_process].timer_flags[timer_id] = 0;
@@ -216,7 +216,7 @@ uint32_t destroy_timer(uint8_t timer_id)
 	return 0;
 }
 
-uint8_t get_timer_expired(void)
+ITCM_AREA_CODE uint8_t get_timer_expired(void)
 {
 uint8_t tim_exp = process[Asys.current_process].timer_expired;
 	process[Asys.current_process].timer_expired &= ~tim_exp;

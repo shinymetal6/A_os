@@ -171,6 +171,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 	#define ST7735_RES_GPIO_Port				LCD_RESET_GPIO_Port
 	#define ST7735_RES_Pin						LCD_RESET_Pin
+	#define LCD_ENABLED							1
 #endif // #ifdef LCD_096_ENABLED
 
 #ifdef LCD_2I8_ENABLED
@@ -188,6 +189,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define ILI9341_TOUCH_CS_GPIO_Port			TOUCH_CS_GPIO_Port
 	#define ILI9341_TOUCH_IRQ_Pin				TOUCH_IRQ_Pin
 	#define ILI9341_TOUCH_IRQ_GPIO_Port			TOUCH_IRQ_GPIO_Port
+	#define LCD_ENABLED							1
 #endif // #ifdef LCD_2I8_ENABLED
 
 #ifdef ENCODER_ENABLED

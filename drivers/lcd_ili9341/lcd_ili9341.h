@@ -31,6 +31,9 @@
 #include "fonts_ili9341.h"
 #include <stdbool.h>
 
+#define	LCD_NOT_OWNED	1
+#define	LCD_OK			0
+
 #define ILI9341_MADCTL_MY  0x80
 #define ILI9341_MADCTL_MX  0x40
 #define ILI9341_MADCTL_MV  0x20
@@ -101,16 +104,22 @@ typedef struct
 // call before initializing any SPI devices
 void ILI9341_Unselect();
 
-void ILI9341_Init(void);
-void ILI9341_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
-void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor);
-void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-void ILI9341_FillScreen(uint16_t color);
-void ILI9341_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
-void ILI9341_InvertColors(bool invert);
-void ILI9341_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
-void ILI9341_DrawCircle(uint16_t x0,uint16_t y0,uint16_t radius,uint16_t color);
-void SPI_TxEnd_Callback(void);
+extern	void ILI9341_Init(void);
+extern	void ILI9341_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
+extern	void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, ili9341_FontDef font, uint16_t color, uint16_t bgcolor);
+extern	void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+extern	void ILI9341_FillScreen(uint16_t color);
+extern	void ILI9341_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
+extern	uint32_t ILI9341_InvertColors(bool invert);
+extern	void ILI9341_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color);
+extern	void ILI9341_DrawCircle(uint16_t x0,uint16_t y0,uint16_t radius,uint16_t color);
+extern	void SPI_TxEnd_Callback(void);
+
+
+extern	void		LcdInit(void);
+extern	uint32_t 	LcdClearScreen(void);
+extern	uint32_t 	LcdSetBrightness(uint16_t brightness);
+extern	uint32_t	Draw_Logo(uint16_t *logo);
 
 #endif // #ifdef	LCD_2I8_ENABLED
 
