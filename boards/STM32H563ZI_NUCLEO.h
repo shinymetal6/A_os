@@ -66,18 +66,76 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 /* Others */
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12
-#define	ASSIGNED				1
 
-extern	UART_HandleTypeDef 	huart3;
-#define	CONSOLE				huart3
+//#define	USB_ENABLED				1
+#ifdef USB_ENABLED
+	#define	USB_CDC				1
+#endif // #ifdef USB_ENABLED
+
+//#define	DDC_SYSTEM_ENABLE		1
+#define	XMODEM_ENABLE				1
+#define	MODBUS_ENABLE				1
+
 
 //#define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
-#define	A_HAS_UART3			1
+#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1
+//#define	A_HAS_UART7			1
+#if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7)
+	#define	A_HAS_UARTS			1
+#endif
+
+//#define	A_HAS_SPI1				1
+//#define	A_HAS_SPI2				1
+//#define	A_HAS_SPI3				1
+//#define	A_HAS_SPI4				1
+#if defined(A_HAS_SPI1) || defined(A_HAS_SPI2) || defined(A_HAS_SPI3) || defined(A_HAS_SPI4)
+	#define	A_HAS_SPI_BUS				1
+#endif
+
+//#define	A_HAS_I2C1				1
+//#define	A_HAS_I2C2				1
+#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2)
+	#define	A_HAS_I2C_BUS				1
+#endif
+
+//#define	A_HAS_TIMER1			1
+//#define	A_HAS_TIMER2			1
+//#define	A_HAS_TIMER3			1
+//#define	A_HAS_TIMER4			1
+//#define	A_HAS_TIMER5			1
+//#define	A_HAS_TIMER6			1
+//#define	A_HAS_TIMER7			1
+//#define	A_HAS_TIMER8			1
+//#define	A_HAS_TIMER9			1
+//#define	A_HAS_TIMER10			1
+//#define	A_HAS_TIMER11			1
+//#define	A_HAS_TIMER12			1
+//#define	A_HAS_TIMER13			1
+//#define	A_HAS_TIMER14			1
+//#define	A_HAS_TIMER15			1
+//#define	A_HAS_TIMER16			1
+//#define	A_HAS_TIMER17			1
+#if defined	(A_HAS_TIMER1) || (A_HAS_TIMER2) || (A_HAS_TIMER3) || (A_HAS_TIMER4) || (A_HAS_TIMER5) || (A_HAS_TIMER6) \
+				|| (A_HAS_TIMER7) || (A_HAS_TIMER8) || (A_HAS_TIMER9) || (A_HAS_TIMER10) || (A_HAS_TIMER11) || (A_HAS_TIMER12) \
+				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16) || (A_HAS_TIMER17)
+	#define	A_HAS_TIMERS				1
+#endif
+
+
+/*
+#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))   __attribute__ ((aligned (32)))
+*/
+
+//#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) 	__attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE
+
 
 #define	BOARD_NAME			"STM32H563ZI_NUCLEO"
-
+#define	MACHINE_NAME		"STM32H563ZI_NUCLEO"
+#define	MACHINE_VERSION		"A"
+#define	ASSIGNED			1
 #endif /* BOARDS_STM32H563ZI_NUCLEO_H_ */
