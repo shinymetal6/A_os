@@ -81,24 +81,12 @@ __weak void postpone_init(void)
 
 __weak void A_PreOS_Init(void)
 {
-#ifdef USB_ENABLED
-#ifdef	STM32U575xx
-	HAL_Delay(1000);
-#endif
-	MX_USB_Device_Init();
-#endif
+
 
 #ifdef ETH_ENABLED
 	MX_LWIP_Init(&A_IpAddr);
 #endif
-#ifdef CODEC_ENABLED
-	#ifdef CODEC_NAU88C22
-	Nau88c22_Init();
-	#endif
-#endif
-#ifdef LCD_ENABLED
-	LcdInit();
-#endif
+
 
 }
 

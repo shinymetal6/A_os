@@ -88,6 +88,8 @@ __attribute__((naked)) void init_scheduler_stack(uint32_t sched_top_of_stack)
      __asm volatile("BX LR");
 }
 
+static uint32_t	A_os_pstacks[MAX_TASKS];
+
 void init_processes_stacks(void)
 {
 uint32_t *pPSP,i,j;
@@ -97,11 +99,13 @@ uint32_t *pPSP,i,j;
 	process[3].current_state = PROCESS_READY_STATE;
 	process[4].current_state = PROCESS_READY_STATE;
 
-	process[0].psp_value = IDLE_STACK_START;
-	process[1].psp_value = FIRST_PRC_STACK_START;
-	process[2].psp_value = process[1].psp_value - UserProcesses[0].stack_size;
-	process[3].psp_value = process[2].psp_value - UserProcesses[1].stack_size;
-	process[4].psp_value = process[3].psp_value - UserProcesses[2].stack_size;
+	A_os_pstacks[0] = process[0].psp_value = IDLE_STACK_START;
+	A_os_pstacks[1] = process[1].psp_value = FIRST_PRC_STACK_START;
+	A_os_pstacks[2] = process[2].psp_value = process[1].psp_value - UserProcesses[0].stack_size;
+	A_os_pstacks[3] = process[3].psp_value = process[2].psp_value - UserProcesses[1].stack_size;
+	A_os_pstacks[4] = process[4].psp_value = process[3].psp_value - UserProcesses[2].stack_size;
+
+	bzero((uint8_t *)(A_os_pstacks[4]-UserProcesses[3].stack_size),((A_os_pstacks[0]-A_os_pstacks[4])+UserProcesses[3].stack_size));
 
 	process[0].task_handler = supervisor;
 	process[1].task_handler = supervisor_process1;
@@ -239,8 +243,22 @@ void A_initialize_onchip_peripherals(void)
 {
 	A_hw_uart_init();
 	A_hw_i2c_init();
-	//A_hw_spi_init();
 	A_hw_timers_init();
+#ifdef CODEC_ENABLED
+	#ifdef CODEC_NAU88C22
+	Nau88c22_Init();
+	#endif
+#endif
+#ifdef LCD_ENABLED
+	LcdInit();
+#endif
+#ifdef USB_ENABLED
+#ifdef	STM32U575xx
+	HAL_Delay(1000);
+#endif
+	MX_USB_Device_Init();
+#endif
+
 }
 
 
