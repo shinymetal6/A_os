@@ -71,6 +71,9 @@ typedef struct
 	uint32_t	data_count;
 }xmodem_t;
 
+extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
+extern	void xmodem_process(uint32_t wakeup);
+
 #endif // #ifdef XMODEM_ENABLE
 
 #endif /* MODULES_XMODEM_XMODEM_H_ */

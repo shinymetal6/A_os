@@ -21,9 +21,14 @@ https://www.fernhillsoftware.com/help/drivers/modbus/modbus-protocol.html#writeS
  */
 
 #include "main.h"
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/scheduler.h"
+#ifdef MODBUS_ENABLE
+
 #include "modbus.h"
 #include "modbus_rtu.h"
-#include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
 #include <stdio.h>
 #include <string.h>
 
@@ -374,3 +379,4 @@ __weak uint8_t rtu_write_reg_from_modbus(uint16_t register_index)
 {
 	return 0;
 }
+#endif

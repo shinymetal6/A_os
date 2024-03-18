@@ -315,12 +315,15 @@ extern	void reset_orphaned_chunks(uint8_t process);
 
 extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);
+extern	uint8_t MX_USB_Device_Init(void);
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);
 
 /* Audio */
 extern	void IrqProcessSamples(void);
 extern	void RunOscillator32(void);
 /* Audio END */
+
+
 
 extern	void supervisor(void);
 extern	void supervisor_process1(void);

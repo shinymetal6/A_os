@@ -53,7 +53,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef USB_ENABLED
 
 //#define	DDC_SYSTEM_ENABLE		1
-//#define	XMODEM_ENABLE				1
+#define	XMODEM_ENABLE				1
 #define	MODBUS_ENABLE				1
 
 
