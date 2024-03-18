@@ -58,7 +58,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	LORA_ENABLED			1
 #define	ETH_ENABLED				1
 #define	USB_ENABLED				1
-#undef 	LWIP_DHCP
+#define	XMODEM_ENABLE			1
+#define	MODBUS_ENABLE			1
+
+#ifdef ETH_ENABLED
+	#undef 	LWIP_DHCP
+#endif // #ifdef ETH_ENABLED
 
 #ifdef USB_ENABLED
 	#define	USB_CDC				1
@@ -106,6 +111,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+#define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 
 //#define	A_HAS_UART1			1
 #define	A_HAS_UART2			1
