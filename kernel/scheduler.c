@@ -25,11 +25,10 @@
 #include "system_default.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
-//#include "kernel_opt.h"
+#include "kernel_opt.h"
 
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
-
 
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
@@ -43,12 +42,6 @@ __attribute__((naked)) void switch_sp_to_psp(void)
 	__asm volatile ("MOV R0,#0X02");
 	__asm volatile ("MSR CONTROL,R0");
 	__asm volatile ("BX LR");
-}
-
-void schedule(void)
-{
-	//pend the pendsv exception
-	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 }
 
 __attribute__((naked)) void PendSV_Handler(void)
@@ -74,6 +67,15 @@ __attribute__((naked)) void PendSV_Handler(void)
 	__asm volatile("BX LR");
 }
 
+
+void schedule(void)
+{
+	//pend the pendsv exception
+	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
+	__DSB ();
+	__enable_irq();
+}
+
 ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 {
 	__disable_irq();
@@ -81,7 +83,8 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 	process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
 	if ( process[Asys.current_process].wakeup_rsn == 0 )
 		schedule();
-	__enable_irq();
+	else
+		__enable_irq();
 }
 
 ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
@@ -89,7 +92,7 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 	__disable_irq();
 	process[Asys.current_process].current_state = PROCESS_WAITING_STATE;
 	schedule();
-	__enable_irq();
+	//__enable_irq();
 }
 
 #include "kernel_opt.h"
