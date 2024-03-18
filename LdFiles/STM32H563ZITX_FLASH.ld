@@ -51,9 +51,18 @@ MEMORY
 /* Sections */
 SECTIONS
 {
-	.osMemPool 0x20090000 : {KEEP(*(.osMemPool))}
-	.osStacks  0x20098000 : {KEEP(*(.osStacks))}
-	.osSegment 0x20080000 : {KEEP(*(.osSegment))}
+	_osSysRam_start     = LOADADDR(.osSysRamStart);
+	.osSysRamStart 		0x20010000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
+	_osSysRam_end       = LOADADDR(.osSysRamEnd);
+	.osSysRamEnd 		0x20018000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	
+	_mempool_start      = LOADADDR(.osMemPoolStart);
+	.osMemPoolStart		0x20018000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+    _mempool_end        = LOADADDR(.osMemPoolEnd);
+	.osMemPoolEnd  		0x2001C000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
+	
+	_fdata_start = LOADADDR(.isr_vector);
+
   /* The startup code into "FLASH" Rom type memory */
   .isr_vector :
   {
