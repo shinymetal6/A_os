@@ -35,8 +35,8 @@ extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 
 extern	void task_delay(uint32_t tick_count);
 
-uint16_t	rect[ST7735_WIDTH*ST7735_HEIGHT];
-uint8_t		done=0;
+FRAME_BUFFER 	uint16_t	rect[ST7735_WIDTH*ST7735_HEIGHT];
+FRAME_BUFFER	uint8_t		done=0;
 
 // based on Adafruit ST7735 library for Arduino
 __attribute__((section(".table"))) const uint8_t
@@ -274,13 +274,12 @@ int16_t ystep;
 		}
 	}
 }
-//uint16_t	char_buffer[512], char_buffer_len;
+
 static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor)
 {
 uint32_t i, b, j;
 
     ST7735_SetAddressWindow(x, y, x+font.width-1, y+font.height-1);
-    //char_buffer_len = 0;
     for(i = 0; i < font.height; i++) {
         b = font.data[(ch - 32) * font.height + i];
         for(j = 0; j < font.width; j++)
@@ -288,19 +287,15 @@ uint32_t i, b, j;
             if((b << j) & 0x8000)
             {
                 uint8_t data[] = { color >> 8, color & 0xFF };
-                //char_buffer[char_buffer_len] = (data[1]<< 8) + data[0];
                 ST7735_WriteData(data, sizeof(data));
             }
             else
             {
                 uint8_t data[] = { bgcolor >> 8, bgcolor & 0xFF };
-                //char_buffer[char_buffer_len] = (data[1]<< 8) + data[0];
                 ST7735_WriteData(data, sizeof(data));
             }
-            //char_buffer_len++;
         }
     }
-    //ST7735_WriteData((uint8_t *)char_buffer,char_buffer_len*2);
 }
 
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor)
