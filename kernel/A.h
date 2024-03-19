@@ -23,6 +23,9 @@
 #ifndef KERNEL_A_H_
 #define KERNEL_A_H_
 
+#include "main.h"
+#include "system_default.h"
+
 #define MAX_PROCESS				5
 #define USR_PROCESS_NUMBER		(MAX_PROCESS-1)
 #define MAX_TIMERS				8
@@ -79,6 +82,7 @@ typedef struct
 #define	HWMAN_QUEUE_LEN			16
 
 #ifdef A_HAS_UARTS
+#include "HwDevices/hw_uart.h"
 
 #ifdef	A_HAS_UART1
 extern	UART_HandleTypeDef huart1;
@@ -111,6 +115,7 @@ typedef struct _HW_Uart_t
 #endif
 
 #ifdef A_HAS_SPI_BUS
+#include "HwDevices/hw_spi.h"
 
 #ifdef	A_HAS_SPI1
 extern	SPI_HandleTypeDef hspi1;
@@ -140,6 +145,7 @@ typedef struct _HW_Spi_t
 #endif
 
 #ifdef A_HAS_I2C_BUS
+#include "HwDevices/hw_i2c.h"
 
 #ifdef	A_HAS_I2C1
 extern	I2C_HandleTypeDef 	hi2c1;
@@ -158,6 +164,8 @@ typedef struct _HW_I2C_t
 #endif
 
 #ifdef A_HAS_TIMERS
+#include "HwDevices/hw_timers.h"
+
 #ifdef	A_HAS_TIMER1
 extern	TIM_HandleTypeDef htim1;
 #endif

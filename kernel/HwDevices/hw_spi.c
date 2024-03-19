@@ -20,7 +20,7 @@
  *      Author: fil
  */
 
-#define	OLD_SPI
+//#define	OLD_SPI
 #ifdef OLD_SPI
 
 #include "main.h"
