@@ -20,7 +20,7 @@
  *      Author: fil
  */
 
-#define	OLD_SPI
+//#define	OLD_SPI
 #ifdef OLD_SPI
 
 #include "main.h"
@@ -93,7 +93,7 @@ void 	hw_spi_Error_Handler(char * file, int line)
 #include "../scheduler.h"
 #include "../A_exported_functions.h"
 #include "../hwmanager.h"
-#include "../kernel_opt.h"
+//#include "../kernel_opt.h"
 #include "hw_spi.h"
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
@@ -192,10 +192,17 @@ uint32_t	i;
 	{
 		if ( hspi == HW_Spi[i].hwspi_handle)
 		{
-			if (( HWMngr[HW_SPI1+i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
+			if ( HWMngr[HW_SPI1+i].irq_callback != NULL )
 			{
-				HW_Spi[i].hwspi_flags |= A_SPI_DMA_DONE;
-				activate_process(HWMngr[HW_SPI1+i].process,1<<(HW_SPI1+i),flag);
+				HWMngr[HW_SPI1+i].irq_callback();
+			}
+			else
+			{
+				if (( HWMngr[HW_SPI1+i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
+				{
+					HW_Spi[i].hwspi_flags |= A_SPI_DMA_DONE;
+					activate_process(HWMngr[HW_SPI1+i].process,1<<(HW_SPI1+i),flag);
+				}
 			}
 		}
 	}
@@ -241,6 +248,8 @@ void 	hw_spi_Error_Handler(char * file, int line)
 }
 #endif
 
+
+#endif
 void A_hw_spi_init(void)
 {
 #ifdef	A_HAS_SPI1
@@ -264,4 +273,3 @@ void A_hw_spi_init(void)
 	HW_Spi[3].hwspi_flags  = A_SPI_DMA_DONE;
 #endif
 }
-#endif

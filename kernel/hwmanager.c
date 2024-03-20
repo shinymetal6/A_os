@@ -35,7 +35,18 @@ ITCM_AREA_CODE uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
 		return 0;
 	HWMngr[peripheral].process = Asys.current_process;
 	HWMngr[peripheral].status = HWMAN_STATUS_ALLOCATED | config;
+	HWMngr[peripheral].irq_callback = NULL;
 	return peripheral;
+}
+
+ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t config,void (*irq_callback)(void))
+{
+	if (( HWMngr[bus_peripheral].process ) || ( HWMngr[device_peripheral].process ))
+		return 0;
+	HWMngr[bus_peripheral].process = HWMngr[device_peripheral].process = Asys.current_process;
+	HWMngr[bus_peripheral].status  = HWMngr[device_peripheral].status = HWMAN_STATUS_ALLOCATED | config;
+	HWMngr[bus_peripheral].irq_callback = irq_callback;
+	return bus_peripheral;
 }
 
 ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
@@ -44,6 +55,7 @@ ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
 		return 0;
 	HWMngr[peripheral].process = 0;
 	HWMngr[peripheral].status = HWMAN_STATUS_FREE;
+	HWMngr[peripheral].irq_callback = NULL;
 	return peripheral;
 }
 

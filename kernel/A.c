@@ -248,7 +248,7 @@ void A_initialize_onchip_peripherals(void)
 	A_hw_timers_init();
 #endif
 #ifdef A_HAS_SPI_BUS
-	//A_hw_spi_init();
+	A_hw_spi_init();
 #endif
 
 #ifdef CODEC_ENABLED

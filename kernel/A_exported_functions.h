@@ -94,6 +94,7 @@ extern	void 	A_Error_Handler(char * file, int line);
 /* hwmanager */
 extern	uint32_t allocate_hw(uint32_t peripheral,uint8_t config);
 extern	uint32_t deallocate_hw(uint32_t peripheral);
+extern	uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t config,void (*irq_callback)(void));
 
 /* hwmanager : usb */
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
@@ -176,32 +177,32 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #endif // #ifdef ADC_ENABLED
 
 /* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
-#define	HW_DELAY					0
-#define	HW_TIMER					1
-#define	HW_MBX						2
-#define	HW_UART1					5
-#define	HW_UART2					6
-#define	HW_UART3					7
-#define	HW_UART4					8
-#define	HW_UART5					9
-#define	HW_UART6					10
-#define	HW_I2C1						11
-#define	HW_I2C2						12
-#define	HW_SPI1						13
-#define	HW_SPI2						14
-#define	HW_QSPI						15
-#define	HW_I2S1						16
-#define	HW_I2S2						17
-#define	HW_TIM						18
-#define	HW_EXT_INT					19
-#define	HW_ADC1						20
-#define	HW_ADC2						21
-#define	HW_DAC						22
-#define	HW_SPILCD					27
-#define	HW_NRF24L01					28
-#define	HW_USB_DEVICE				29
-#define	HW_USB_HOST					30
-#define	HW_SLEEP_FOREVER			31
+#define	HW_SLEEP_FOREVER			0
+#define	HW_DELAY					1
+#define	HW_TIMER					2
+#define	HW_MBX						3
+#define	HW_UART1					4
+#define	HW_UART2					5
+#define	HW_UART3					6
+#define	HW_UART4					7
+#define	HW_UART5					8
+#define	HW_UART6					9
+#define	HW_I2C1						10
+#define	HW_I2C2						11
+#define	HW_SPI1						12
+#define	HW_SPI2						13
+#define	HW_QSPI						14
+#define	HW_I2S1						15
+#define	HW_I2S2						16
+#define	HW_TIM						17
+#define	HW_EXT_INT					18
+#define	HW_ADC1						19
+#define	HW_ADC2						20
+#define	HW_DAC						21
+#define	HW_USB_DEVICE				23
+#define	HW_USB_HOST					24
+#define	HW_SPILCD					30
+#define	HW_NRF24L01					31
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)
@@ -225,10 +226,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_ADC1_IRQ					(1<<HW_ADC1)
 #define	EVENT_ADC2_IRQ					(1<<HW_ADC2)
 #define	EVENT_DAC_IRQ					(1<<HW_DAC)
-#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
-#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
 #define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
 #define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
+#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
+#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
 /* suspend_mode */
 #define	SUSPEND_ON_DELAY				EVENT_DELAY
 #define	SUSPEND_ON_TIMER				EVENT_TIMER
@@ -251,10 +252,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_ADC1_IRQ				EVENT_ADC1_IRQ
 #define	SUSPEND_ON_ADC2_IRQ				EVENT_ADC2_IRQ
 #define	SUSPEND_ON_DAC_IRQ				EVENT_DAC_IRQ
-#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
-#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
 #define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
 #define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
+#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
+#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
 /* wakeup_flags */
 #define	WAKEUP_FROM_DELAY				SUSPEND_ON_DELAY
 #define	WAKEUP_FROM_TIMER				SUSPEND_ON_TIMER
@@ -277,10 +278,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_ADC1_IRQ			SUSPEND_ON_ADC1_IRQ
 #define	WAKEUP_FROM_ADC2_IRQ			SUSPEND_ON_ADC2_IRQ
 #define	WAKEUP_FROM_DAC_IRQ				SUSPEND_ON_DAC_IRQ
-#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
-#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
 #define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
 #define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
+#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
+#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
 /* device_flags */
 #define	DEVICE_DELAY					HW_DELAY
 #define	DEVICE_TIMER					HW_TIMER
@@ -303,10 +304,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_ADC1						HW_ADC1
 #define	DEVICE_ADC2						HW_ADC2
 #define	DEVICE_DAC						HW_DAC
-#define	DEVICE_SPILCD					HW_SPILCD
-#define	DEVICE_NRF24L01					HW_NRF24L01
 #define	DEVICE_USB_DEVICE				HW_USB_DEVICE
 #define	DEVICE_USB_HOST					HW_USB_HOST
+#define	DEVICE_SPILCD					HW_SPILCD
+#define	DEVICE_NRF24L01					HW_NRF24L01
 
 /* wakeup_flags */
 #define	WAKEUP_FLAGS_TIM_ID0				0x00000001

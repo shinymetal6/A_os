@@ -60,6 +60,7 @@ uint32_t LcdSetBrightness(uint16_t brightness)
 
 void LcdInit(void)
 {
+	HWMngr[LCD_HW_SPI_PORT].irq_callback = A_os_7735_SPI_TxCpltCallback;
     LcdSetBrightness(ZERO_BRIGHTNESS);
 	HAL_TIM_PWM_Start(&BACKLIGHT_TIMER,TIM_CHANNEL_1);
     ST7735_Unselect();

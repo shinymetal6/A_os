@@ -276,5 +276,6 @@ uint8_t ST7735_GetFontWidth(FontDef font);
 void ST7735_DrawLogo(const uint16_t* data);
 void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
 extern	void 	ST7735_ClearScreen(void);
+extern	void A_os_7735_SPI_TxCpltCallback(void);
 
 #endif /* DRIVERS_LCD_ST7735_ST7735_H_ */

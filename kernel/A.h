@@ -67,6 +67,7 @@ typedef struct
 	uint16_t	rx_buf_max_len;
 	uint16_t	timeout;
 	uint16_t	timeout_reload_value;
+	void 		(*irq_callback)(void);
 }HWMngr_t;
 /* flags */
 #define	HWMAN_TIMEOUT_ENABLED	0x80000000

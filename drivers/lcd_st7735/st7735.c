@@ -362,7 +362,7 @@ void ST7735_FillScreen(uint16_t color)
 	ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+void A_os_7735_SPI_TxCpltCallback(void)
 {
 	done=1;
 }
