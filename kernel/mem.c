@@ -25,12 +25,14 @@
 #include "A.h"
 #include "system_default.h"
 #include "scheduler.h"
+#include <strings.h>
 #include "kernel_opt.h"
 
 extern	MEMpool_t	MEMpool[POOL_NUM];
 extern	Asys_t		Asys;
 
 extern	uint8_t					*_mempool_start,*_mempool_end;
+
 void A_mem_init(void)
 {
 uint8_t		*mem_ptr;
@@ -40,18 +42,20 @@ uint32_t	pool_index;
 	mem_ptr = (uint8_t *)&_mempool_start;
 	Asys.first_data_address= (uint32_t )&_mempool_start;
 	Asys.mempool_available_size = POOL_SIZE ;
-	Asys.first_mem = (uint8_t *)&p[0];
+	Asys.first_mem = (uint8_t *)&p;
 	pool_index = 0;
-	while(mem_ptr < (uint8_t *)& _mempool_end)
+	while(pool_index < POOL_NUM)
 	{
-		p[pool_index].nxt_link = (uint8_t *)&p[pool_index+1];
-		p[pool_index].pre_link = (pool_index > 0) ? (uint8_t *)&p[pool_index-1] : 0;
-		p[pool_index].mem_ptr = mem_ptr;
-		p[pool_index].chunk_count = p[pool_index].chunk_index = p[pool_index].process = p[pool_index].flags = 0;
+		p->nxt_link = (uint8_t *)&p + sizeof(MEMpool_t);
+		p->pre_link = (pool_index > 0) ? (uint8_t *)&p - sizeof(MEMpool_t): 0;
+		p->mem_ptr = mem_ptr;
+		p->chunk_count = p->chunk_index = p->process = p->flags = 0;
+		p++;
 		mem_ptr += POOL_CHUNK_SIZE;
 		pool_index++;
 	}
-	p[pool_index-1].nxt_link = 0;
+	p--;
+	p->nxt_link = 0;
 }
 
 void reset_orphaned_chunks(uint8_t process)

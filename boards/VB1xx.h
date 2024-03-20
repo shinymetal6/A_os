@@ -32,7 +32,7 @@ extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_SIZE			    (POOL_END - POOL_START)
 #define	POOL_CHUNK_SIZE		    256
 // POOL_NUM must be a constant value to compile
-#define	POOL_NUM			    32
+#define	POOL_NUM			    (32)
 
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;

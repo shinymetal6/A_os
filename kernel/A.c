@@ -30,10 +30,10 @@
 #include <stdio.h>
 
 SYSTEM_RAM		Asys_t			Asys;
-SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
 
@@ -248,7 +248,7 @@ void A_initialize_onchip_peripherals(void)
 	A_hw_timers_init();
 #endif
 #ifdef A_HAS_SPI_BUS
-	A_hw_spi_init();
+	//A_hw_spi_init();
 #endif
 
 #ifdef CODEC_ENABLED

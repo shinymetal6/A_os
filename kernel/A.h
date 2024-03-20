@@ -51,8 +51,8 @@ typedef struct
 #define		MEM_IN_USE			0x01
 #define		MEM_CHANGED_OWNER	0x02
 #define		MEM_IN_LIST			0x04
-#define		LAST_IN_LIST		0x80
-
+#define		LAST_IN_LIST		0x08
+#define		INVALID				0x80
 
 typedef struct
 {
