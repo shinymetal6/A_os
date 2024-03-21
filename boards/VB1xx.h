@@ -219,6 +219,10 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#endif // #ifdef CODEC_NAU88C22
 #endif // #ifdef CODEC_ENABLED
 
+#ifdef WIRELESS_ENABLED
+
+#endif // #ifdef WIRELESS_ENABLED
+
 #define	SAMPLE_FREQUENCY	48000
 #define	SAMPLE_PERIOD		(1.0F / SAMPLE_FREQUENCY)
 

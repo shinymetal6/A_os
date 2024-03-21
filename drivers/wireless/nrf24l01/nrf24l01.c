@@ -22,9 +22,16 @@
 #include "main.h"
 #include "../../../kernel/system_default.h"
 
-#ifdef	ISM_ENABLED
+#ifdef	WIRELESS_NRF24L01
+
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+#include "../../../kernel/hwmanager.h"
+#include "../../../kernel/kernel_opt.h"
 #include "nrf24l01.h"
+
 extern	void task_delay(uint32_t tick_count);
+extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 
 void nrf24l01_cs_high(void)
 {
@@ -52,6 +59,9 @@ uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
 uint8_t status;
 uint8_t read_val;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	HAL_SPI_Receive(&NRF24L01_SPI, &read_val, 1, NRF24L01_SPI_TIMEOUT);
@@ -65,6 +75,9 @@ uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
 uint8_t status;
 uint8_t write_val = value;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	HAL_SPI_Transmit(&NRF24L01_SPI, &write_val, 1, NRF24L01_SPI_TIMEOUT);
@@ -76,6 +89,10 @@ uint8_t nrf24l01_read_multiple_register(uint8_t reg, uint8_t *values,uint8_t reg
 {
 uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
 uint8_t status;
+
+
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
 
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
@@ -89,37 +106,51 @@ uint8_t nrf24l01_write_multiple_register(uint8_t reg, uint8_t *values,uint8_t re
 uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
 uint8_t status;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	HAL_SPI_Transmit(&NRF24L01_SPI, values, reg_num, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
-	return 0;
+	return NRF24L01_SUCCESS;
 }
 
-void nrf24l01_flush_rx_fifo()
+uint8_t nrf24l01_flush_rx_fifo()
 {
 uint8_t command = NRF24L01_CMD_FLUSH_RX;
 uint8_t status;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
+	return NRF24L01_SUCCESS;
 }
 
-void nrf24l01_flush_tx_fifo()
+uint8_t nrf24l01_flush_tx_fifo()
 {
 uint8_t command = NRF24L01_CMD_FLUSH_TX;
 uint8_t status;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
 	nrf24l01_cs_high();
+	return NRF24L01_SUCCESS;
 }
 
 uint8_t nrf24l01_read_rx_fifo(uint8_t* rx_payload)
 {
 uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 uint8_t status;
+
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
 
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
@@ -133,6 +164,9 @@ uint8_t nrf24l01_write_tx_fifo(uint8_t* tx_payload)
 uint8_t command = NRF24L01_CMD_W_TX_PAYLOAD;
 uint8_t status;
 
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_flush_tx_fifo();
 	nrf24l01_cs_low();
 	HAL_SPI_TransmitReceive(&NRF24L01_SPI, &command, &status, 1, NRF24L01_SPI_TIMEOUT);
@@ -144,6 +178,9 @@ uint8_t status;
 uint8_t nrf24l01_rx(uint8_t* rx_payload )
 {
 uint8_t nrf24l01_status;
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_read_rx_fifo(rx_payload);
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_STATUS, nrf24l01_status |= 0x40);
@@ -153,6 +190,9 @@ uint8_t nrf24l01_status;
 uint8_t nrf24l01_set_rx_address(uint8_t* rx_address )
 {
 uint8_t nrf24l01_status;
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_write_multiple_register(NRF24L01_REG_RX_ADDR_P0,rx_address,5);
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_STATUS, nrf24l01_status |= 0x40);
@@ -162,6 +202,9 @@ uint8_t nrf24l01_status;
 uint8_t nrf24l01_get_tx_irq_goto_rx(void)
 {
 uint8_t nrf24l01_status;
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_status = nrf24l01_read_register(NRF24L01_REG_STATUS);
 	nrf24l01_write_register(NRF24L01_REG_STATUS, 0x70);
 	nrf24l01_ce_low();
@@ -179,6 +222,9 @@ uint8_t nrf24l01_get_status(void)
 uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address)
 {
 uint8_t nrf24l01_status;
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
+
 	nrf24l01_ce_low();
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
@@ -196,6 +242,8 @@ uint8_t nrf24l01_status;
 uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode , uint8_t* nrf_address)
 {
 uint8_t nrf24l01_status;
+	if ( HWMngr[HW_NRF24L01].process != Asys.current_process )
+		return NRF24L01_ERROR;
 	nrf24l01_ce_low();
 	nrf24l01_write_register(NRF24L01_REG_CONFIG, 0x08);
 	nrf24l01_write_register(NRF24L01_REG_EN_AA, 0x3f);
@@ -245,4 +293,4 @@ uint8_t nrf24l01_status;
 	return nrf24l01_status;
 }
 
-#endif	//#ifdef	ISM_ENABLED
+#endif	//#ifdef	WIRELESS_NRF24L01

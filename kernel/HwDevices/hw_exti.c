@@ -34,10 +34,6 @@ extern	Asys_t		Asys;
 extern	void encoder_button_irq_callback(void);
 extern	void encoder_clock_irq_callback(void);
 
-#if defined ST25R391X_INT_Pin
-extern	void st25r3916Isr( void );
-#endif
-
 #ifdef ENCODER_CLOCK_Pin
 extern	void irq0_callback(void);
 #endif
@@ -48,10 +44,7 @@ extern	void irq1_callback(void);
 #ifndef STM32H743xx
 void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
 {
-#if defined ST25R391X_INT_Pin
-	if ( GPIO_Pin == ST25R391X_INT_Pin)
-		st25r3916Isr();
-#endif
+
 }
 #endif
 
@@ -59,21 +52,16 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
 extern	void RadioOnDioIrq( void );
 #endif
 
-uint32_t	flag_a,flag_b;
+uint32_t	flag_a = 0;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-#if defined ST25R391X_INT_Pin
-	if ( GPIO_Pin == ST25R391X_INT_Pin)
-		st25r3916Isr();
+#if defined NRF24L01_IRQ_PIN_PORT
+	if ( HWMngr[HW_NRF24L01].irq_callback != NULL )
+		HWMngr[HW_NRF24L01].irq_callback();
+	flag_a++;
 #endif
 
-#if defined EXTI4_NRFIRQ_Pin
-	if(GPIO_Pin == EXTI4_NRFIRQ_Pin)
-	{
-		activate_process(1,WAKEUP_FROM_NRF24L01_IRQ,0);
-	}
-#endif
 #if defined SX126X_DIO1_PIN_NUMBER
 	if(GPIO_Pin == SX126X_DIO1_PIN_NUMBER)
 	{

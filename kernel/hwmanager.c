@@ -46,6 +46,7 @@ ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,ui
 	HWMngr[bus_peripheral].process = HWMngr[device_peripheral].process = Asys.current_process;
 	HWMngr[bus_peripheral].status  = HWMngr[device_peripheral].status = HWMAN_STATUS_ALLOCATED | config;
 	HWMngr[bus_peripheral].irq_callback = irq_callback;
+	HWMngr[device_peripheral].irq_callback = irq_callback;
 	return bus_peripheral;
 }
 

@@ -68,6 +68,12 @@
 	#endif
 #endif
 
+#ifdef STM32F446xx
+	#ifdef STM32F446RE_NUCLEO
+		#include "../boards/STM32F446RE_NUCLEO.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif
