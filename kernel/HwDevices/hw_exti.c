@@ -57,9 +57,12 @@ uint32_t	flag_a = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 #if defined NRF24L01_IRQ_PIN_PORT
-	if ( HWMngr[HW_NRF24L01].irq_callback != NULL )
-		HWMngr[HW_NRF24L01].irq_callback();
-	flag_a++;
+	if(GPIO_Pin == NRF24L01_IRQ_PIN_NUMBER)
+	{
+		if ( HWMngr[HW_NRF24L01].irq_callback != NULL )
+			HWMngr[HW_NRF24L01].irq_callback();
+		flag_a++;
+	}
 #endif
 
 #if defined SX126X_DIO1_PIN_NUMBER
