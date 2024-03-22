@@ -74,6 +74,12 @@
 	#endif
 #endif
 
+#ifdef STM32L152xE
+	#ifdef STM32L152RE_NUCLEO
+		#include "../boards/STM32L152RE_NUCLEO.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

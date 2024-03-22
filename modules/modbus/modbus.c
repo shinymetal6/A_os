@@ -40,7 +40,9 @@ A_modbus_inout_t	A_modbus_inout;
 uint8_t modbus_CRC_Init(void)
 {
 	hcrc.Instance = CRC;
-#ifndef STM32F446xx
+#if defined(STM32F446xx) || defined(STM32L152xE)
+	return HAL_CRC_Init(&hcrc);
+#else
 	hcrc.Init.DefaultPolynomialUse = DEFAULT_POLYNOMIAL_DISABLE;
 	hcrc.Init.DefaultInitValueUse = DEFAULT_INIT_VALUE_DISABLE;
 	hcrc.Init.GeneratingPolynomial = 32773;
@@ -49,8 +51,8 @@ uint8_t modbus_CRC_Init(void)
 	hcrc.Init.InputDataInversionMode = CRC_INPUTDATA_INVERSION_BYTE;
 	hcrc.Init.OutputDataInversionMode = CRC_OUTPUTDATA_INVERSION_ENABLE;
 	hcrc.InputDataFormat = CRC_INPUTDATA_FORMAT_BYTES;
-#endif
 	return HAL_CRC_Init(&hcrc);
+#endif
 }
 #endif
 
