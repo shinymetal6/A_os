@@ -32,6 +32,7 @@
 #define MAX_SEMAPHORES			8
 #define	MAILBOX_NUM				8
 #define	PERIPHERAL_NUM			32
+#define	HWDEVICES_NUM			32
 
 #define DUMMY_XPSR  				0x01000000U
 
@@ -71,8 +72,7 @@ typedef struct
 }HWMngr_t;
 /* flags */
 #define	HWMAN_TIMEOUT_ENABLED	0x80000000
-
-
+/* status */
 #define	HWMAN_STATUS_FREE		0x00
 #define	HWMAN_STATUS_ALLOCATED	0x01
 #define	HWMAN_SENTINEL_ENABLE	0x02
@@ -81,6 +81,21 @@ typedef struct
 #define	HWMAN_STD_IRQ			0x00
 
 #define	HWMAN_QUEUE_LEN			16
+
+typedef struct
+{
+	uint8_t 	process;
+	uint8_t		status;
+	uint32_t	flags;
+	uint32_t	bus;
+	void 		(*irq_callback)(void);
+}HWDevices_t;
+
+/* status */
+#define	HWDEV_STATUS_ALLOCATED		0x01
+#define	HWDEV_STATUS_PRC_WAKEUP		0x02
+/* flags */
+#define	HWDEV_FLAGS_BUSY			0x80000000
 
 #ifdef A_HAS_UARTS
 #include "HwDevices/hw_uart.h"

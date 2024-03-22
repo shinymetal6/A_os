@@ -32,6 +32,7 @@
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
 SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		HWDevices_t		HWDevices[HWDEVICES_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 

@@ -27,36 +27,49 @@
 #include "kernel_opt.h"
 
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
+extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
+
 extern	Asys_t			Asys;
 
 ITCM_AREA_CODE uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
 {
+	__disable_irq();
 	if ( HWMngr[peripheral].process )
 		return 0;
 	HWMngr[peripheral].process = Asys.current_process;
 	HWMngr[peripheral].status = HWMAN_STATUS_ALLOCATED | config;
 	HWMngr[peripheral].irq_callback = NULL;
+	__enable_irq();
 	return peripheral;
 }
 
-ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t config,void (*irq_callback)(void))
+/* bus_peripheral : the bus where the device is connected to. i.e. HW_SPI2 */
+/* device_peripheral : the device, i.e HW_NRF24L01 */
+ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t dev_config,void (*irq_callback)(void))
 {
+	__disable_irq();
 	if (( HWMngr[bus_peripheral].process ) || ( HWMngr[device_peripheral].process ))
 		return 0;
-	HWMngr[bus_peripheral].process = HWMngr[device_peripheral].process = Asys.current_process;
-	HWMngr[bus_peripheral].status  = HWMngr[device_peripheral].status = HWMAN_STATUS_ALLOCATED | config;
+	HWMngr[bus_peripheral].process = Asys.current_process;
+	HWMngr[bus_peripheral].status  = HWMAN_STATUS_ALLOCATED;
 	HWMngr[bus_peripheral].irq_callback = irq_callback;
-	HWMngr[device_peripheral].irq_callback = irq_callback;
+	HWDevices[device_peripheral].process = Asys.current_process;
+	HWDevices[device_peripheral].status = HWDEV_STATUS_ALLOCATED | dev_config;
+	HWDevices[device_peripheral].irq_callback = irq_callback;
+	HWDevices[device_peripheral].bus = bus_peripheral;
+	__enable_irq();
 	return bus_peripheral;
 }
 
 ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
 {
+	__disable_irq();
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
 	HWMngr[peripheral].process = 0;
 	HWMngr[peripheral].status = HWMAN_STATUS_FREE;
 	HWMngr[peripheral].irq_callback = NULL;
+	__enable_irq();
 	return peripheral;
 }
 

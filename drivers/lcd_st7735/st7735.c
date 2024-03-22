@@ -31,12 +31,12 @@
 #include "../../kernel/kernel_opt.h"
 #include "st7735.h"
 
-extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
+//extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
+extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
 
 extern	void task_delay(uint32_t tick_count);
 
 FRAME_BUFFER 	uint16_t	rect[ST7735_WIDTH*ST7735_HEIGHT];
-FRAME_BUFFER	uint8_t		done=0;
 
 // based on Adafruit ST7735 library for Arduino
 __attribute__((section(".table"))) const uint8_t
@@ -203,7 +203,7 @@ uint32_t i;
 
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT))
         return;
@@ -225,7 +225,7 @@ int16_t dx, dy;
 int16_t err;
 int16_t ystep;
 
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
 	if (steep)
 	{
@@ -300,7 +300,7 @@ uint32_t i, b, j;
 
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
 
     ST7735_Select();
@@ -334,7 +334,7 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
 
 void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) > ST7735_WIDTH) return;
@@ -357,34 +357,34 @@ void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16
 
 void ST7735_FillScreen(uint16_t color)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
 	ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
 void A_os_7735_SPI_TxCpltCallback(void)
 {
-	done=1;
+    HWDevices[HWDEV_SPILCD].flags &= ~HWDEV_FLAGS_BUSY;
 }
 
 void ST7735_ClearScreen(void)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
 	ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
     HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
-    done=0;
+    HWDevices[HWDEV_SPILCD].flags |= HWDEV_FLAGS_BUSY;
     /* rect already filled with black ... */
     HAL_SPI_Transmit_DMA(&ST7735_SPI_PORT, (uint8_t *)rect, ST7735_WIDTH*ST7735_HEIGHT*2);
-    while(done == 0)
+    while((HWDevices[HWDEV_SPILCD].flags & HWDEV_FLAGS_BUSY) == HWDEV_FLAGS_BUSY)
     	task_delay(1);
     ST7735_Unselect();
 }
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) > ST7735_WIDTH) return;
@@ -398,7 +398,7 @@ void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
 
 void ST7735_DrawLogo(const uint16_t* data)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
     ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
@@ -409,7 +409,7 @@ void ST7735_DrawLogo(const uint16_t* data)
 
 void ST7735_InvertColors(bool invert)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
     ST7735_Select();
     ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);

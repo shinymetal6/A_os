@@ -27,11 +27,13 @@
 #include "../scheduler.h"
 #include "../A_exported_functions.h"
 #include "../hwmanager.h"
-#include "../kernel_opt.h"
 #include "hw_spi.h"
+#include "../kernel_opt.h"
 
-extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
-extern	Asys_t		Asys;
+extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
+extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
+
+extern	Asys_t			Asys;
 
 #ifdef A_HAS_SPI_BUS
 extern	HW_Spi_t	HW_Spi[A_MAX_SPI];
@@ -91,7 +93,7 @@ int32_t hw_spi_Recv_DMA(uint32_t spi,uint8_t *pData,  uint16_t Length)
 	return HW_SPI_ERROR;
 }
 
-int32_t hw_spi_SendRecv(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length)
+int32_t hw_spi_SendRecv(uint32_t spi,uint8_t * pTxData, uint8_t * pRxData, uint16_t Length)
 {
 	if ( HWMngr[spi].process != Asys.current_process )
 		return HW_SPI_ERROR;
@@ -100,7 +102,7 @@ int32_t hw_spi_SendRecv(uint32_t spi,const uint8_t * const pTxData, uint8_t * co
 	return HAL_SPI_TransmitReceive(HW_Spi[spi-HW_SPI1].hwspi_handle, (uint8_t *)pTxData, (uint8_t *)pRxData, Length, HW_SPI_TIMEOUT);
 }
 
-int32_t hw_spi_SendRecv_DMA(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length)
+int32_t hw_spi_SendRecv_DMA(uint32_t spi,uint8_t * pTxData, uint8_t * pRxData, uint16_t Length)
 {
 	if ( HWMngr[spi].process != Asys.current_process )
 		return HW_SPI_ERROR;
@@ -121,21 +123,22 @@ int32_t hw_spi_SendRecv_DMA(uint32_t spi,const uint8_t * const pTxData, uint8_t 
 
 void process_spi_irq(SPI_HandleTypeDef *hspi,uint32_t flag)
 {
-uint32_t	i;
-	for(i=0;i<A_MAX_SPI;i++)
+uint32_t	i,dev;
+
+	/* check for devices on bus */
+	for(i=0;i<HWDEVICES_NUM;i++)
 	{
-		if ( hspi == HW_Spi[i].hwspi_handle)
+		if ( HWDevices[i].bus != 0 )
 		{
-			if ( HWMngr[HW_SPI1+i].irq_callback != NULL )
+			dev = HWDevices[i].bus;
+			if ( hspi == HW_Spi[dev-HW_SPI1].hwspi_handle)
 			{
-				HWMngr[HW_SPI1+i].irq_callback();
-			}
-			else
-			{
-				if (( HWMngr[HW_SPI1+i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED)
+				if ( HWDevices[i].irq_callback != NULL )
+					HWDevices[i].irq_callback();
+				else
 				{
-					HW_Spi[i].hwspi_flags |= A_SPI_DMA_DONE;
-					activate_process(HWMngr[HW_SPI1+i].process,1<<(HW_SPI1+i),flag);
+					if ((( HWDevices[i].status & HWMAN_STATUS_ALLOCATED) == HWMAN_STATUS_ALLOCATED) && ( HWDevices[i].process != 0 ))
+						activate_process(HWDevices[i].process,1<<(dev),flag);
 				}
 			}
 		}

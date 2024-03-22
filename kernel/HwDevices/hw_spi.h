@@ -34,8 +34,8 @@ extern	int32_t hw_spi_Send(uint32_t spi,uint8_t *pData, uint16_t Length);
 extern	int32_t hw_spi_Send_DMA(uint32_t spi,uint8_t *pData, uint16_t Length);
 extern	int32_t hw_spi_Recv(uint32_t spi,uint8_t *pData,  uint16_t Length);
 extern	int32_t hw_spi_Recv_DMA(uint32_t spi,uint8_t *pData,  uint16_t Length);
-extern	int32_t hw_spi_SendRecv(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length);
-extern	int32_t hw_spi_SendRecv_DMA(uint32_t spi,const uint8_t * const pTxData, uint8_t * const pRxData, uint16_t Length);
+extern	int32_t hw_spi_SendRecv(uint32_t spi,uint8_t * pTxData, uint8_t * pRxData, uint16_t Length);
+extern	int32_t hw_spi_SendRecv_DMA(uint32_t spi,uint8_t * pTxData, uint8_t * pRxData, uint16_t Length);
 extern	void	wait_dmadone(uint32_t spi);
 
 extern	void A_hw_spi_init(void);

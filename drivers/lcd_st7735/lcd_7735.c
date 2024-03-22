@@ -24,7 +24,6 @@
 #include "../../kernel/system_default.h"
 
 #ifdef	LCD_096_ENABLED
-extern	void task_delay(uint32_t tick_count);
 
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
@@ -35,20 +34,12 @@ extern	void task_delay(uint32_t tick_count);
 
 Video_t	Video;
 
-#define VMARGIN 1
-#define HMARGIN (12*7)-1
-
-uint8_t	horizontal_line_space;
-uint8_t	vertical_line_space;
-uint8_t	current_highlight_line;
-#define	NUMLINES	7
-
-extern	uint16_t logo[];
-extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
+extern	uint16_t 		logo[];
+extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
 
 uint32_t LcdSetBrightness(uint16_t brightness)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return LCD_NOT_OWNED;
 	if ( brightness <= FULL_BRIGHTNESS)
 	{
@@ -60,28 +51,29 @@ uint32_t LcdSetBrightness(uint16_t brightness)
 
 void LcdInit(void)
 {
-	HWMngr[LCD_HW_SPI_PORT].irq_callback = A_os_7735_SPI_TxCpltCallback;
     LcdSetBrightness(ZERO_BRIGHTNESS);
 	HAL_TIM_PWM_Start(&BACKLIGHT_TIMER,TIM_CHANNEL_1);
     ST7735_Unselect();
     HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
 	ST7735_Init();
-	ST7735_ClearScreen();
-}
-
-uint32_t Draw_Logo(uint16_t *logo)
-{
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
-		return LCD_NOT_OWNED;
-	ST7735_DrawImage(0,0,ST7735_WIDTH, ST7735_HEIGHT,logo);
-	return LCD_OK;
+	HWDevices[HWDEV_SPILCD].flags = 0;
+	HWDevices[HWDEV_SPILCD].status = 0;
 }
 
 uint32_t LcdClearScreen(void)
 {
-	if ( HWMngr[HW_SPILCD].process != Asys.current_process )
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return LCD_NOT_OWNED;
 	ST7735_ClearScreen();
+	return LCD_OK;
+}
+
+
+uint32_t Draw_Logo(uint16_t *logo)
+{
+	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
+		return LCD_NOT_OWNED;
+	ST7735_DrawImage(0,0,ST7735_WIDTH, ST7735_HEIGHT,logo);
 	return LCD_OK;
 }
 #endif

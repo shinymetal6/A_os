@@ -29,15 +29,17 @@
 #include "../system_default.h"
 
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
+extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
+
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
-extern	void encoder_button_irq_callback(void);
-extern	void encoder_clock_irq_callback(void);
 
 #ifdef ENCODER_CLOCK_Pin
+extern	void encoder_clock_irq_callback(void);
 extern	void irq0_callback(void);
 #endif
 #if defined ENCODER_BTN_Pin
+extern	void encoder_button_irq_callback(void);
 extern	void irq1_callback(void);
 #endif
 
@@ -59,9 +61,10 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 #if defined NRF24L01_IRQ_PIN_PORT
 	if(GPIO_Pin == NRF24L01_IRQ_PIN_NUMBER)
 	{
-		if ( HWMngr[HW_NRF24L01].irq_callback != NULL )
-			HWMngr[HW_NRF24L01].irq_callback();
-		flag_a++;
+		if ( HWDevices[HWDEV_NRF24L01].irq_callback != NULL )
+			HWDevices[HWDEV_NRF24L01].irq_callback();
+		if (( HWDevices[HWDEV_NRF24L01].status & HWDEV_STATUS_PRC_WAKEUP ) == HWDEV_STATUS_PRC_WAKEUP )
+			activate_process(HWDevices[HWDEV_NRF24L01].process,1<<HWDevices[HWDEV_NRF24L01].bus,HWDEV_NRF24L01);
 	}
 #endif
 

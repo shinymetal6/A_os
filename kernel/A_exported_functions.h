@@ -176,6 +176,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../modules/audio/effects.h"
 #endif // #ifdef ADC_ENABLED
 
+/* devices , maximum index is 31 */
+#define	HWDEV_SPILCD				0
+#define	HWDEV_NRF24L01				1
+
 /* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
 #define	HW_SLEEP_FOREVER			0
 #define	HW_DELAY					1
