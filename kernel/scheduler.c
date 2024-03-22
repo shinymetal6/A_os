@@ -25,10 +25,11 @@
 #include "system_default.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
-//#include "kernel_opt.h"
 
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
+
+//#pragma GCC optimize("Og")
 
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
@@ -76,6 +77,7 @@ void schedule(void)
 	__enable_irq();
 }
 
+
 ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 {
 	__disable_irq();
@@ -92,10 +94,9 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 	__disable_irq();
 	process[Asys.current_process].current_state = PROCESS_WAITING_STATE;
 	schedule();
-	//__enable_irq();
 }
 
-#include "kernel_opt.h"
+//#pragma GCC optimize("Ofast")
 
 ITCM_AREA_CODE uint32_t get_psp_value(void)
 {

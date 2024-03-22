@@ -24,7 +24,6 @@
 #define BOARDS_STM32F446RE_NUCLEO_H_
 
 /* Memories */
-
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
 extern	uint32_t				_mempool_size;
@@ -130,7 +129,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_TIMERS				1
 #endif
 
-#define	ITCM_AREA_CODE
+#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
 
 #define	BOARD_NAME			"STM32F446RE_NUCLEO"
 #define	MACHINE_NAME		"STM32F446RE_NUCLEO"
