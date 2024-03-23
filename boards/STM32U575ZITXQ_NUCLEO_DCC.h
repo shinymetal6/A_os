@@ -1,12 +1,12 @@
 /*
- * STM32U575ZITXQ_NUCLEO.h
+ * STM32U575ZITXQ_NUCLEO_DCC.h
  *
- *  Created on: Feb 13, 2024
+ *  Created on: Mar 23, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32U575ZITXQ_NUCLEO_H_
-#define BOARDS_STM32U575ZITXQ_NUCLEO_H_
+#ifndef BOARDS_STM32U575ZITXQ_NUCLEO_DCC_H_
+#define BOARDS_STM32U575ZITXQ_NUCLEO_DCC_H_
 
 /* Memories */
 
@@ -43,16 +43,19 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		80000000U
+#define HSI_CLOCK         		160000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 
-#define	USB_ENABLED				1
+//#define	USB_ENABLED				1
 #ifdef USB_ENABLED
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
 #define	DDC_SYSTEM_ENABLE		1
+#define	XMODEM_ENABLE				1
+#define	MODBUS_ENABLE				1
+
 
 #define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
@@ -110,9 +113,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) 	__attribute__ ((aligned (32)))
 #define	ITCM_AREA_CODE
 
-#define	BOARD_NAME			"STM32U575ZITXQ_NUCLEO"
-#define	MACHINE_NAME		"STM32U575ZITXQ_NUCLEO"
+#define	BOARD_NAME			"STM32U575ZITXQ_NUCLEO_DCC"
+#define	MACHINE_NAME		"STM32U575ZITXQ_NUCLEO_DCC"
 #define	MACHINE_VERSION		"A"
 #define	ASSIGNED			1
 
-#endif /* BOARDS_STM32U575ZITXQ_NUCLEO_H_ */
+#endif /* BOARDS_STM32U575ZITXQ_NUCLEO_DCC_H_ */
