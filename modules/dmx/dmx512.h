@@ -20,7 +20,6 @@
  *      Author: fil
  */
 
-
 #ifndef MODULES_DMX512_DMX512_H_
 #define MODULES_DMX512_DMX512_H_
 

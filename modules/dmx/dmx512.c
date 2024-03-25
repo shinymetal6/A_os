@@ -27,7 +27,6 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
-
 #ifdef DMX512_ENABLE
 
 #include "dmx512.h"
