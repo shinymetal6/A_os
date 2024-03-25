@@ -115,6 +115,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	SysTick_PRIORITY		12
 #define	ASSIGNED				1
 
+#define	DFU_BOOT_ENTRY			0x1FF00000
+#define	DFU_BOOT_VERSION_PTR	0x1FF0EDBE
+#define	DFU_BOOT_VERSION		0x90
 
 #define	BOARD_NAME			"FY-STM32F746G_DISCO-01"
 #define	MACHINE_NAME		"STM32F746G_DISCO"

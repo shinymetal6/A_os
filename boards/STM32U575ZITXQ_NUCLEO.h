@@ -115,6 +115,10 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) 	__attribute__ ((aligned (32)))
 #define	ITCM_AREA_CODE
 
+#define	DFU_BOOT_ENTRY			0x0BF90000
+#define	DFU_BOOT_VERSION_PTR	0x0BF99EFE
+#define	DFU_BOOT_VERSION		0x92
+
 #define	BOARD_NAME			"STM32U575ZITXQ_NUCLEO"
 #define	MACHINE_NAME		"STM32U575ZITXQ_NUCLEO"
 #define	MACHINE_VERSION		"A"

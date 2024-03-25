@@ -173,6 +173,10 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	ASSIGNED				1
 
 
+#define	DFU_BOOT_ENTRY			0x1FF09800
+#define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
+#define	DFU_BOOT_VERSION		0x91
+
 #define	BOARD_NAME			"FY-201023-01"
 #define	MACHINE_NAME		"Fyberloom"
 #define	MACHINE_VERSION		"A"

@@ -238,6 +238,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 #define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 	__attribute__ ((aligned (32))) const
 
+
+#define	DFU_BOOT_ENTRY			0x1FF09800
+#define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
+#define	DFU_BOOT_VERSION		0x91
+
 #define	BOARD_NAME			"VB1xx"
 #define	MACHINE_NAME		"Vb101_VCO"
 #define	MACHINE_VERSION		"A"
