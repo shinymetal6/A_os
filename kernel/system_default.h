@@ -54,6 +54,9 @@
 	#ifdef STM32U575ZIT_NUCLEO
 		#include "../boards/STM32U575ZITXQ_NUCLEO.h"
 	#endif
+	#ifdef STM32U575ZIT_NUCLEO_DCC
+		#include "../boards/STM32U575ZITXQ_NUCLEO_DCC.h"
+	#endif
 #endif
 
 #ifdef STM32F746xx
