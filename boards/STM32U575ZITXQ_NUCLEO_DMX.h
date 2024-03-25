@@ -14,16 +14,17 @@
  * Project : A_os
 */
 /*
- * STM32F746G_DISCO.h
+ * STM32U575ZITXQ_NUCLEO_DMX.h
  *
- *  Created on: Feb 26, 2024
+ *  Created on: Mar 25, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32F746G_DISCO_H_
-#define BOARDS_STM32F746G_DISCO_H_
+#ifndef BOARDS_STM32U575ZITXQ_NUCLEO_DMX_H_
+#define BOARDS_STM32U575ZITXQ_NUCLEO_DMX_H_
 
 /* Memories */
+
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
 extern	uint32_t				_mempool_size;
@@ -32,7 +33,7 @@ extern	uint32_t				_mempool_size;
 #define	POOL_CHUNK_SIZE		    256
 #define	POOL_SIZE			    (&_mempool_end - &_mempool_start)
 // POOL_NUM must be a constant value to compile,
-#define	POOL_NUM			    32
+#define	POOL_NUM			    (0x4000 / POOL_CHUNK_SIZE)
 
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
@@ -46,17 +47,35 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 
-/* board defines */
-#define	USB_CDC_DEVICE
-#define	USB_HOST
+#define	LED_1_GPIOPORT			LED_RED_GPIO_Port
+#define	LED_1_GPIOBIT			LED_RED_Pin
+#define	LED_2_GPIOPORT			LED_GREEN_GPIO_Port
+#define	LED_2_GPIOBIT			LED_GREEN_Pin
+#define	LED_3_GPIOPORT			LED_BLUE_GPIO_Port
+#define	LED_3_GPIOBIT			LED_BLUE_Pin
+#define	BUTTON_GPIOPORT			USER_BUTTON_GPIO_Port
+#define	BUTTON_GPIOBIT			USER_BUTTON_Pin
+
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		200000000U
+#define HSI_CLOCK         		80000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
+/* Others */
 
-//#define	A_HAS_UART1			1
+//#define	USB_ENABLED				1
+#ifdef USB_ENABLED
+	#define	USB_CDC				1
+#endif // #ifdef USB_ENABLED
+
+//#define	DDC_SYSTEM_ENABLE		1
+#define	XMODEM_ENABLE				1
+#define	MODBUS_ENABLE				1
+#define	DMX512_ENABLE				1
+
+
+#define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
-//#define	A_HAS_UART3				1
+#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1
@@ -95,28 +114,25 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	A_HAS_TIMER14			1
 //#define	A_HAS_TIMER15			1
 //#define	A_HAS_TIMER16			1
+//#define	A_HAS_TIMER17			1
 #if defined	(A_HAS_TIMER1) || (A_HAS_TIMER2) || (A_HAS_TIMER3) || (A_HAS_TIMER4) || (A_HAS_TIMER5) || (A_HAS_TIMER6) \
 				|| (A_HAS_TIMER7) || (A_HAS_TIMER8) || (A_HAS_TIMER9) || (A_HAS_TIMER10) || (A_HAS_TIMER11) || (A_HAS_TIMER12) \
-				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16)
+				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16) || (A_HAS_TIMER17)
 	#define	A_HAS_TIMERS				1
 #endif
 
-#define	DMX512_ENABLE
-#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
 
-/* Clock */
-#define TICK_HZ 				1000U
-#define HSI_CLOCK         		200000000U
-#define SYSTICK_TIM_CLK   		HSI_CLOCK
-/* Others */
-#define	PendSV_PRIORITY			15
-#define	SysTick_PRIORITY		12
-#define	ASSIGNED				1
+/*
+#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))   __attribute__ ((aligned (32)))
+*/
 
+//#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) 	__attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE
 
-#define	BOARD_NAME			"FY-STM32F746G_DISCO-01"
-#define	MACHINE_NAME		"STM32F746G_DISCO"
+#define	BOARD_NAME			"STM32U575ZITXQ_NUCLEO_DMX"
+#define	MACHINE_NAME		"STM32U575ZITXQ_NUCLEO_DMX"
 #define	MACHINE_VERSION		"A"
+#define	ASSIGNED			1
 
 
-#endif /* BOARDS_STM32F746G_DISCO_H_ */
+#endif /* BOARDS_STM32U575ZITXQ_NUCLEO_DMX_H_ */

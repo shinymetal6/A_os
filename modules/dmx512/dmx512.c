@@ -29,7 +29,7 @@
 
 #ifdef DMX512_ENABLE
 
-#include "dmx512.h"
+#include "../dmx512/dmx512.h"
 extern	UART_HandleTypeDef huart3;
 extern	void DWT_Delay_us(uint32_t au32_microseconds);
 
