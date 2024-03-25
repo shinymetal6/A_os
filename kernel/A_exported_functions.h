@@ -197,20 +197,22 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_UART6					9
 #define	HW_I2C1						10
 #define	HW_I2C2						11
-#define	HW_SPI1						12
-#define	HW_SPI2						13
-#define	HW_QSPI						14
-#define	HW_I2S1						15
-#define	HW_I2S2						16
-#define	HW_TIM						17
-#define	HW_EXT_INT					18
-#define	HW_ADC1						19
-#define	HW_ADC2						20
-#define	HW_DAC						21
-#define	HW_USB_DEVICE				23
-#define	HW_USB_HOST					24
-#define	HW_SPILCD					30
-#define	HW_NRF24L01					31
+#define	HW_I2C3						12
+#define	HW_I2C4						13
+#define	HW_SPI1						14
+#define	HW_SPI2						15
+#define	HW_QSPI						16
+#define	HW_I2S1						17
+#define	HW_I2S2						18
+#define	HW_TIM						19
+#define	HW_EXT_INT					20
+#define	HW_ADC1						21
+#define	HW_ADC2						22
+#define	HW_DAC						23
+#define	HW_USB_DEVICE				24
+#define	HW_USB_HOST					25
+//#define	HW_SPILCD					30
+//#define	HW_NRF24L01					31
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)
@@ -224,6 +226,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_UART6_IRQ					(1<<HW_UART6)
 #define	EVENT_I2C1_IRQ					(1<<HW_I2C1)
 #define	EVENT_I2C2_IRQ					(1<<HW_I2C2)
+#define	EVENT_I2C3_IRQ					(1<<HW_I2C3)
+#define	EVENT_I2C4_IRQ					(1<<HW_I2C4)
 #define	EVENT_SPI1_IRQ					(1<<HW_SPI1)
 #define	EVENT_SPI2_IRQ					(1<<HW_SPI2)
 #define	EVENT_QSPI_IRQ					(1<<HW_QSPI)
@@ -236,8 +240,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_DAC_IRQ					(1<<HW_DAC)
 #define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
 #define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
-#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
-#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
+//#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
+//#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
 /* suspend_mode */
 #define	SUSPEND_ON_DELAY				EVENT_DELAY
 #define	SUSPEND_ON_TIMER				EVENT_TIMER
@@ -250,6 +254,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_UART6_IRQ			EVENT_UART6_IRQ
 #define	SUSPEND_ON_I2C1_IRQ				EVENT_I2C1_IRQ
 #define	SUSPEND_ON_I2C2_IRQ				EVENT_I2C2_IRQ
+#define	SUSPEND_ON_I2C3_IRQ				EVENT_I2C3_IRQ
+#define	SUSPEND_ON_I2C4_IRQ				EVENT_I2C4_IRQ
 #define	SUSPEND_ON_SPI1_IRQ				EVENT_SPI1_IRQ
 #define	SUSPEND_ON_SPI2_IRQ				EVENT_SPI2_IRQ
 #define	SUSPEND_ON_QSPI_IRQ				EVENT_QSPI_IRQ
@@ -262,8 +268,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_DAC_IRQ				EVENT_DAC_IRQ
 #define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
 #define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
-#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
-#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
+//#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
+//#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
 /* wakeup_flags */
 #define	WAKEUP_FROM_DELAY				SUSPEND_ON_DELAY
 #define	WAKEUP_FROM_TIMER				SUSPEND_ON_TIMER
@@ -276,6 +282,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_UART6_IRQ			SUSPEND_ON_UART6_IRQ
 #define	WAKEUP_FROM_I2C1_IRQ			SUSPEND_ON_I2C1_IRQ
 #define	WAKEUP_FROM_I2C2_IRQ			SUSPEND_ON_I2C2_IRQ
+#define	WAKEUP_FROM_I2C3_IRQ			SUSPEND_ON_I2C3_IRQ
+#define	WAKEUP_FROM_I2C4_IRQ			SUSPEND_ON_I2C4_IRQ
 #define	WAKEUP_FROM_SPI1_IRQ			SUSPEND_ON_SPI1_IRQ
 #define	WAKEUP_FROM_SPI2_IRQ			SUSPEND_ON_SPI2_IRQ
 #define	WAKEUP_FROM_QSPI_IRQ			SUSPEND_ON_QSPI_IRQ
@@ -288,8 +296,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_DAC_IRQ				SUSPEND_ON_DAC_IRQ
 #define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
 #define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
-#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
-#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
+//#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
+//#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
 /* device_flags */
 #define	DEVICE_DELAY					HW_DELAY
 #define	DEVICE_TIMER					HW_TIMER
@@ -302,6 +310,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_UART6					HW_UART6
 #define	DEVICE_I2C1						HW_I2C1
 #define	DEVICE_I2C2						HW_I2C2
+#define	DEVICE_I2C3						HW_I2C3
+#define	DEVICE_I2C4						HW_I2C4
 #define	DEVICE_SPI1						HW_SPI1
 #define	DEVICE_SPI2						HW_SPI2
 #define	DEVICE_QSPI						HW_QSPI
@@ -314,8 +324,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_DAC						HW_DAC
 #define	DEVICE_USB_DEVICE				HW_USB_DEVICE
 #define	DEVICE_USB_HOST					HW_USB_HOST
-#define	DEVICE_SPILCD					HW_SPILCD
-#define	DEVICE_NRF24L01					HW_NRF24L01
+//#define	DEVICE_SPILCD					HW_SPILCD
+//#define	DEVICE_NRF24L01					HW_NRF24L01
 
 /* wakeup_flags */
 #define	WAKEUP_FLAGS_TIM_ID0				0x00000001

@@ -78,7 +78,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 //#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
-#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2)
+//#define	A_HAS_I2C3				1
+//#define	A_HAS_I2C4				1
+#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2) || defined(A_HAS_I2C3) || defined(A_HAS_I2C4)
 	#define	A_HAS_I2C_BUS				1
 #endif
 

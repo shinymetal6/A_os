@@ -54,28 +54,30 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define HSI_CLOCK         		200000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 
-//#define	A_HAS_UART1			1
+#define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
-//#define	A_HAS_UART6			1
+#define	A_HAS_UART6			1
 //#define	A_HAS_UART7			1
 #if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7)
 	#define	A_HAS_UARTS			1
 #endif
 
 //#define	A_HAS_SPI1				1
-//#define	A_HAS_SPI2				1
+#define	A_HAS_SPI2				1
 //#define	A_HAS_SPI3				1
 //#define	A_HAS_SPI4				1
 #if defined(A_HAS_SPI1) || defined(A_HAS_SPI2) || defined(A_HAS_SPI3) || defined(A_HAS_SPI4)
 	#define	A_HAS_SPI_BUS				1
 #endif
 
-//#define	A_HAS_I2C1				1
+#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
-#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2)
+#define	A_HAS_I2C3				1
+//#define	A_HAS_I2C4				1
+#if defined(A_HAS_I2C1) || defined(A_HAS_I2C2) || defined(A_HAS_I2C3) || defined(A_HAS_I2C4)
 	#define	A_HAS_I2C_BUS				1
 #endif
 
