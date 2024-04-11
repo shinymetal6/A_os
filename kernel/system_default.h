@@ -86,6 +86,9 @@
 	#endif
 #endif
 
+#ifdef STM32WL5Mxx
+		#include "../boards/STM32WL5MOC_CM0.h"
+#endif
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

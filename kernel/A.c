@@ -160,8 +160,9 @@ void A_IrqPriority_Init(void)
 	//The lower the number, the higher the priority,
 	HAL_NVIC_SetPriority(PendSV_IRQn,  PendSV_PRIORITY, 0);		/* Make PendSV_IRQn lower priority */
 	HAL_NVIC_SetPriority(SysTick_IRQn, SysTick_PRIORITY, 0);	/* Make SysTick_IRQn higher priority than PendSV_IRQn */
+#ifdef A_HAS_UART3
 	HAL_NVIC_SetPriority(USART3_IRQn,  SysTick_PRIORITY+1, 0);	/* Make USART3_IRQn  lower priority than SysTick_IRQn */
-
+#endif
 #ifdef ENCODER_ENABLED
 	HAL_NVIC_SetPriority(EXTI0_IRQn, Exti0_PRIORITY, 0);		/* Make EXTI0_IRQn higher priority than SysTick_IRQn and lower than PendSV_IRQn */
 	HAL_NVIC_SetPriority(EXTI1_IRQn, Exti1_PRIORITY, 0);		/* Make EXTI1_IRQn higher priority than SysTick_IRQn and lower than PendSV_IRQn */
