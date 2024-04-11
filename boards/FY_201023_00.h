@@ -60,6 +60,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	USB_ENABLED				1
 #define	XMODEM_ENABLE			1
 #define	MODBUS_ENABLE			1
+#define SENSORS_CCS8118			1
 
 #ifdef ETH_ENABLED
 	#undef 	LWIP_DHCP
@@ -132,7 +133,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_SPI_BUS				1
 #endif
 
-//#define	A_HAS_I2C1				1
+#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
 //#define	A_HAS_I2C3				1
 //#define	A_HAS_I2C4				1
