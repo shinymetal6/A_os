@@ -81,13 +81,15 @@ __weak void postpone_init(void)
 
 __weak void A_PreOS_Init(void)
 {
-
-
 #ifdef ETH_ENABLED
-	MX_LWIP_Init(&A_IpAddr);
+#if defined ETH_NRST_Pin
+	HAL_Delay(250);
+	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_SET);
+	HAL_Delay(250);
 #endif
-
-
+	MX_LWIP_Init(&A_IpAddr);
+	HAL_Delay(250);
+#endif
 }
 
 __weak void A_Processor_Quirks(void)

@@ -275,7 +275,7 @@ void A_start(void)
 {
 #ifdef	ETH_ENABLED
 #if defined ETH_NRST_Pin
-	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_SET);
+	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_RESET);
 #endif
 #endif
 	sprintf(Asys.version,"%s",A_OS_VERSION);
