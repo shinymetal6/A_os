@@ -16,7 +16,7 @@ References:				This library was written based on the DHT22 datasheet
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 
-#define	DHT22_ENABLE
+#define DHT22_ENABLE	1
 #ifdef DHT22_ENABLE
 
 #include "dht22.h"
@@ -30,11 +30,48 @@ extern	void DWT_Delay_us(uint32_t au32_microseconds);
 #define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
 //1. One wire data line
-static GPIO_TypeDef* oneWire_PORT;
-static uint16_t oneWire_PIN;
-static uint8_t oneWirePin_Idx;
+GPIO_TypeDef* oneWire_PORT;
+uint16_t oneWire_PIN;
+uint8_t oneWirePin_Idx;
+
+GPIO_MODER _Mode;
 
 //*** Functions prototypes ***//
+
+
+/*
+void GPIO_SetMODER(GPIO_TypeDef *gpio, int pin_iDX, GPIO_MODER mode)
+{
+    uint32_t reg = gpio -> MODER;
+
+    reg &= ~(0b11 << (pin_iDX * 2));
+    reg |= (mode & 0b11) << (pin_iDX * 2);
+
+    gpio -> MODER = reg;
+}
+
+void GPIO_SetPUPDR(GPIO_TypeDef *gpio, int pin_iDX, GPIO_PUPDR  mode)
+{
+    uint32_t reg = gpio -> PUPDR;
+
+    reg &= ~(0b11 << (pin_iDX * 2));
+    reg |= (mode & 0b11) << (pin_iDX * 2);
+
+    gpio -> PUPDR = reg;
+}
+
+
+void GPIO_SetOSPEEDR(GPIO_TypeDef *gpio, int pin_iDX, GPIO_OSPEEDR  mode)
+{
+    uint32_t reg = gpio -> OSPEEDR;
+
+    reg &= ~(0b11 << (pin_iDX * 2));
+    reg |= (mode & 0b11) << (pin_iDX * 2);
+
+    gpio -> OSPEEDR = reg;
+}
+*/
+
 //OneWire Initialise
 void DHT22_Init(GPIO_TypeDef* DataPort, uint16_t DataPin)
 {
@@ -51,56 +88,47 @@ void DHT22_Init(GPIO_TypeDef* DataPort, uint16_t DataPin)
 }
 
 //Change pin mode
-static void ONE_WIRE_PinMode(OnePinMode_Typedef mode)
+void ONE_WIRE_PinMode(OnePinMode_Typedef mode)
 {
-#ifdef OLD
-	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = oneWire_PIN;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	
+	GPIO_SetOSPEEDR(oneWire_PORT, oneWirePin_Idx,  GPIO_OSPEEDR_Low_speed);
+	GPIO_SetPUPDR(oneWire_PORT, oneWirePin_Idx,  GPIO_PUPDR_NPULLUP);
 	if(mode == ONE_OUTPUT)
 	{
-//		oneWire_PORT->MODER &= ~(3UL << 2*oneWirePin_Idx);  //Reset State
-//		oneWire_PORT->MODER |= (0x01 << 2*oneWirePin_Idx); //Output Mode
-		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	}
-	else if(mode == ONE_INPUT)
-	{
-//		oneWire_PORT->MODER &= ~(3UL << 2*oneWirePin_Idx);  //Input Mode
-		GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+		//oneWire_PORT->MODER &= ~(3UL << 2*oneWirePin_Idx);  //Reset State
+		//oneWire_PORT->MODER |= (0x01 << 2*oneWirePin_Idx);  //Output Mode
+		//oneWire_PORT->MODER &= ~((1<<oneWire_PIN) | (1<<(oneWire_PIN+1)));	//Fil pin Port as input (00 shifted for bit)
+		//oneWire_PORT->MODER |= (1<<oneWire_PIN);  							//Fil pin Port as output (01 shifted for bit)
+
+		GPIO_SetMODER(oneWire_PORT, oneWirePin_Idx,  GPIO_MODER_OUTPUT);
+		GPIO_SetPUPDR(oneWire_PORT, oneWirePin_Idx,  GPIO_PUPDR_PULLUP);
 
 	}
-	
-	HAL_GPIO_Init(oneWire_PORT, &GPIO_InitStruct);
-#else
-	if(mode == ONE_OUTPUT)
-		oneWire_PORT->MODER &= ~((1<<oneWire_PIN) | (1<<(oneWire_PIN+1)));  // pin Port as input (00 shifted for bit)
 	else if(mode == ONE_INPUT)
 	{
-		oneWire_PORT->MODER &= ~((1<<oneWire_PIN) | (1<<(oneWire_PIN+1)));	// pin Port as input (00 shifted for bit)
-		oneWire_PORT->MODER |= (1<<oneWire_PIN);  							// pin Port as output (01 shifted for bit)
+		//oneWire_PORT->MODER &= ~(3UL << 2*oneWirePin_Idx);  //Input Mode
+		//oneWire_PORT->MODER &= ~((1<<oneWire_PIN) | (1<<(oneWire_PIN+1)));  //Fil pin Port as input (00 shifted for bit)
+
+		GPIO_SetMODER(oneWire_PORT, oneWirePin_Idx,  GPIO_MODER_INPUT);
+
 	}
-	else
-		return;
-#endif
 
 }	
 //One Wire pin HIGH/LOW Write
-static void ONE_WIRE_Pin_Write(bool state)
+void ONE_WIRE_Pin_Write(bool state)
 {
 	if(state)
 		HAL_GPIO_WritePin(oneWire_PORT, oneWire_PIN, GPIO_PIN_SET);
 	else
 		HAL_GPIO_WritePin(oneWire_PORT, oneWire_PIN, GPIO_PIN_RESET);
 }
-static bool ONE_WIRE_Pin_Read(void)
+
+bool ONE_WIRE_Pin_Read(void)
 {
 	return HAL_GPIO_ReadPin(oneWire_PORT, oneWire_PIN) & 0x01;
 }
 
 //DHT Begin function
-static void DHT22_StartAcquisition(void)
+void DHT22_StartAcquisition(void)
 {
 	//Change data pin mode to OUTPUT
 	ONE_WIRE_PinMode(ONE_OUTPUT);
@@ -117,65 +145,79 @@ static void DHT22_StartAcquisition(void)
 	//Set pin as input
 	ONE_WIRE_PinMode(ONE_INPUT);
 }
+
+
 //Read 5 bytes
 uint32_t	dht_timeout;
-static void DHT22_ReadRaw(uint8_t *data)
+uint32_t	dht_timeout_1;
+uint32_t	dht_timeout_2;
+uint32_t	dht_timeout_3;
+uint32_t	dht_timeout_4;
+uint32_t	dht_timeout_5;
+
+void DHT22_ReadRaw(uint8_t *data)
 {
 	uint32_t rawBits = 0UL;
 	uint8_t checksumBits=0;
 	
-	//DelayMicroSeconds(40);
+
 	DWT_Delay_us(40);
+
 	dht_timeout = 0;
-	while(!ONE_WIRE_Pin_Read() )
+	while(!ONE_WIRE_Pin_Read() && dht_timeout < 100 )
 	{
 		DWT_Delay_us(10);
 		dht_timeout++;
-		if ( dht_timeout > 100)
-			return ;
 	}
-	while(ONE_WIRE_Pin_Read())
-	{
+
+	dht_timeout_1 = 0;
+	while(ONE_WIRE_Pin_Read() && dht_timeout_1 < 100){
 		DWT_Delay_us(10);
-		dht_timeout++;
-		if ( dht_timeout > 100)
-			return ;
+		dht_timeout_1++;
 	}
+
+
 	for(int8_t i=31; i>=0; i--)
 	{
-		while(!ONE_WIRE_Pin_Read())
-		{
+		dht_timeout_2 = 0;
+		while(!ONE_WIRE_Pin_Read() && dht_timeout_2 < 100){
 			DWT_Delay_us(10);
-			dht_timeout++;
-			if ( dht_timeout > 100)
-				return ;
+			dht_timeout_2++;
 		}
-		//DelayMicroSeconds(40);
+
 		DWT_Delay_us(40);
 
 		if(ONE_WIRE_Pin_Read())
 		{
 			rawBits |= (1UL << i);
 		}
-		while(ONE_WIRE_Pin_Read());
+
+
+		dht_timeout_3 = 0;
+		while(ONE_WIRE_Pin_Read() && dht_timeout_3 < 100){
+			DWT_Delay_us(10);
+			dht_timeout_3++;
+		}
 	}
 	
 	for(int8_t i=7; i>=0; i--)
 	{
-		while(!ONE_WIRE_Pin_Read())
-		{
+		dht_timeout_4 = 0;
+		while(!ONE_WIRE_Pin_Read() && dht_timeout_4 < 100){
 			DWT_Delay_us(10);
-			dht_timeout++;
-			if ( dht_timeout > 100)
-				return ;
+			dht_timeout_4++;
 		}
-		//DelayMicroSeconds(40);
+
 		DWT_Delay_us(40);
 		if(ONE_WIRE_Pin_Read())
 		{
 			checksumBits |= (1UL << i);
 		}
-		while(ONE_WIRE_Pin_Read());
+		dht_timeout_5 = 0;
+		while(ONE_WIRE_Pin_Read() && dht_timeout_5 < 100){
+			DWT_Delay_us(10);
+			dht_timeout_5++;
+		}
 	}
 	
 	
@@ -187,6 +229,8 @@ static void DHT22_ReadRaw(uint8_t *data)
 	data[4] = (checksumBits)&0xFF;
 }
 
+
+
 //Get Temperature and Humidity data
 uint8_t DHT22_GetTemp_Humidity(float *Temp, float *Humidity)
 {
@@ -194,7 +238,7 @@ uint8_t DHT22_GetTemp_Humidity(float *Temp, float *Humidity)
 	uint16_t Temp16, Humid16;
 	//Implement Start data Aqcuisition routine
 	DHT22_StartAcquisition();
-	//Aqcuire raw data
+	//Acquire raw data
 	DHT22_ReadRaw(dataArray);
 	//calculate checksum
 	myChecksum = 0;
