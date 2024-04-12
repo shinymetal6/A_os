@@ -47,7 +47,7 @@
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
 
-#include "altcp.h"
+#include "lwip/altcp.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -38,7 +38,7 @@
 #define LWIP_HDR_PROT_ETHARP_H
 
 #include "../arch.h"
-#include "ethernet.h"
+#include "../prot/ethernet.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +53,7 @@ extern "C" {
  * order to support compilers that don't have structure packing.
  */
 #ifdef PACK_STRUCT_USE_INCLUDES
-#  include "../arch/bpstruct.h"
+#  include "arch/bpstruct.h"
 #endif
 PACK_STRUCT_BEGIN
 struct ip4_addr_wordaligned {

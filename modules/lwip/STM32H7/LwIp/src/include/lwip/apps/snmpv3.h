@@ -35,8 +35,8 @@
 #ifndef LWIP_HDR_APPS_SNMP_V3_H
 #define LWIP_HDR_APPS_SNMP_V3_H
 
-#include "lwip/apps/snmp_opts.h"
-#include "lwip/err.h"
+#include "../apps/snmp_opts.h"
+#include "../err.h"
 
 #ifdef __cplusplus
 extern "C" {

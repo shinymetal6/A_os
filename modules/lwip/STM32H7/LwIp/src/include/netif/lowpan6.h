@@ -46,11 +46,11 @@
 
 #if LWIP_IPV6
 
-#include "netif/lowpan6_common.h"
-#include "lwip/pbuf.h"
-#include "lwip/ip.h"
-#include "lwip/ip_addr.h"
-#include "lwip/netif.h"
+#include "lowpan6_common.h"
+#include "../include/lwip/pbuf.h"
+#include "../include/lwip/ip.h"
+#include "../include/lwip/ip_addr.h"
+#include "../include/lwip/netif.h"
 
 #ifdef __cplusplus
 extern "C" {

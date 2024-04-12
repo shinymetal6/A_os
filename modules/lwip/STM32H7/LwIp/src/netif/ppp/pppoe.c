@@ -68,7 +68,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPPOE_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
 #if 0 /* UNUSED */
@@ -76,16 +76,16 @@
 #include <stdio.h>
 #endif /* UNUSED */
 
-#include "../../include/lwip/timeouts.h"
-#include "../../include/lwip/memp.h"
-#include "../../include/lwip/stats.h"
-#include "../../include/lwip/snmp.h"
+#include "lwip/timeouts.h"
+#include "lwip/memp.h"
+#include "lwip/stats.h"
+#include "lwip/snmp.h"
 
-#include "../../include/netif/ethernet.h"
-#include "../../include/netif/ppp/ppp_impl.h"
-#include "../../include/netif/ppp/lcp.h"
-#include "../../include/netif/ppp/ipcp.h"
-#include "../../include/netif/ppp/pppoe.h"
+#include "../../../src/include/netif/ethernet.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/lcp.h"
+#include "../../../src/include/netif/ppp/ipcp.h"
+#include "../../../src/include/netif/ppp/pppoe.h"
 
 /* Memory pool */
 LWIP_MEMPOOL_DECLARE(PPPOE_IF, MEMP_NUM_PPPOE_INTERFACES, sizeof(struct pppoe_softc), "PPPOE_IF")

@@ -28,17 +28,12 @@
 #include "../LwIp/src/include/netif/etharp.h"
 #include "../LwIp/src/include/lwip/ethip6.h"
 #include "ethernetif.h"
-#include "lan8742.h"
+#include "../../../../drivers/rmii/lan8742.h"
 #include <string.h>
+#include "../../../../A_os/kernel/A.h"
 
-/* Within 'USER CODE' section, code will be kept by default at each generation */
-/* USER CODE BEGIN 0 */
+extern	Asys_t			Asys;
 
-/* USER CODE END 0 */
-
-/* Private define ------------------------------------------------------------*/
-
-/* Network interface name */
 #define IFNAME0 's'
 #define IFNAME1 't'
 
@@ -46,34 +41,6 @@
 #define ETH_DMA_TRANSMIT_TIMEOUT               ( 20U )
 #define ETH_TX_BUFFER_MAX             ((ETH_TX_DESC_CNT) * 2U)
 
-/* USER CODE BEGIN 1 */
-
-/* USER CODE END 1 */
-
-/* Private variables ---------------------------------------------------------*/
-/*
-@Note: This interface is implemented to operate in zero-copy mode only:
-        - Rx buffers will be allocated from LwIP stack memory heap,
-          then passed to ETH HAL driver.
-        - Tx buffers will be allocated from LwIP stack memory heap,
-          then passed to ETH HAL driver.
-
-@Notes:
-  1.a. ETH DMA Rx descriptors must be contiguous, the default count is 4,
-       to customize it please redefine ETH_RX_DESC_CNT in ETH GUI (Rx Descriptor Length)
-       so that updated value will be generated in stm32xxxx_hal_conf.h
-  1.b. ETH DMA Tx descriptors must be contiguous, the default count is 4,
-       to customize it please redefine ETH_TX_DESC_CNT in ETH GUI (Tx Descriptor Length)
-       so that updated value will be generated in stm32xxxx_hal_conf.h
-
-  2.a. Rx Buffers number must be between ETH_RX_DESC_CNT and 2*ETH_RX_DESC_CNT
-  2.b. Rx Buffers must have the same size: ETH_RX_BUF_SIZE, this value must
-       passed to ETH DMA in the init field (heth.Init.RxBuffLen)
-  2.c  The RX Ruffers addresses and sizes must be properly defined to be aligned
-       to L1-CACHE line size (32 bytes).
-*/
-
-/* Data Type Definitions */
 typedef enum
 {
   RX_ALLOC_OK       = 0x00,
@@ -112,11 +79,6 @@ extern ETH_DMADescTypeDef DMATxDscrTab[ETH_TX_DESC_CNT] __attribute__((section("
 
 #endif
 
-/* USER CODE BEGIN 2 */
-
-/* USER CODE END 2 */
-
-/* Global Ethernet handle */
 extern	ETH_HandleTypeDef heth;
 extern	ETH_TxPacketConfig TxConfig;
 
@@ -134,27 +96,7 @@ lan8742_IOCtx_t  LAN8742_IOCtx = {ETH_PHY_IO_Init,
                                   ETH_PHY_IO_ReadReg,
                                   ETH_PHY_IO_GetTick};
 
-/* USER CODE BEGIN 3 */
-
-/* USER CODE END 3 */
-
-/* Private functions ---------------------------------------------------------*/
 void pbuf_free_custom(struct pbuf *p);
-
-/* USER CODE BEGIN 4 */
-
-/* USER CODE END 4 */
-
-/*******************************************************************************
-                       LL Driver Interface ( LwIP stack --> ETH)
-*******************************************************************************/
-/**
- * @brief In this function, the hardware should be initialized.
- * Called from ethernetif_init().
- *
- * @param netif the already initialized lwip network interface structure
- *        for this ethernetif
- */
 static void low_level_init(struct netif *netif)
 {
   HAL_StatusTypeDef hal_eth_init_status = HAL_OK;
@@ -305,14 +247,13 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
    */
 static struct pbuf * low_level_input(struct netif *netif)
 {
-  struct pbuf *p = NULL;
+struct pbuf *p = NULL;
 
-  if(RxAllocStatus == RX_ALLOC_OK)
-  {
-    HAL_ETH_ReadData(&heth, (void **)&p);
-  }
-
-  return p;
+	if(RxAllocStatus == RX_ALLOC_OK)
+	{
+		HAL_ETH_ReadData(&heth, (void **)&p);
+	}
+	return p;
 }
 
 /**
@@ -326,19 +267,21 @@ static struct pbuf * low_level_input(struct netif *netif)
  */
 void ethernetif_input(struct netif *netif)
 {
-  struct pbuf *p = NULL;
+struct pbuf *p = NULL;
 
-  do
-  {
-    p = low_level_input( netif );
-    if (p != NULL)
-    {
-      if (netif->input( p, netif) != ERR_OK )
-      {
-        pbuf_free(p);
-      }
-    }
-  } while(p!=NULL);
+	__disable_irq();
+	do
+	{
+		p = low_level_input( netif );
+		if (p != NULL)
+		{
+			if (netif->input( p, netif) != ERR_OK )
+			{
+				pbuf_free(p);
+			}
+		}
+	} while(p!=NULL);
+	__enable_irq();
 }
 
 #if !LWIP_ARP
@@ -374,6 +317,8 @@ static err_t low_level_output_arp_off(struct netif *netif, struct pbuf *q, const
  *         ERR_MEM if private data couldn't be allocated
  *         any other err_t on error
  */
+extern	err_t etharp_output(struct netif *netif, struct pbuf *q, const ip4_addr_t *ipaddr);
+
 err_t ethernetif_init(struct netif *netif)
 {
   LWIP_ASSERT("netif != NULL", (netif != NULL));
@@ -439,17 +384,10 @@ void pbuf_free_custom(struct pbuf *p)
   }
 }
 
-/* USER CODE BEGIN 6 */
 
-/**
-* @brief  Returns the current time in milliseconds
-*         when LWIP_TIMERS == 1 and NO_SYS == 1
-* @param  None
-* @retval Current Time value
-*/
 u32_t sys_now(void)
 {
-  return HAL_GetTick();
+	return Asys.g_tick_count;
 }
 
 #ifdef NOT_PRESENT_IN_IDE
@@ -617,6 +555,7 @@ int32_t ETH_PHY_IO_WriteReg(uint32_t DevAddr, uint32_t RegAddr, uint32_t RegVal)
 int32_t ETH_PHY_IO_GetTick(void)
 {
   return HAL_GetTick();
+//  return A_GetTick();
 }
 
 /**

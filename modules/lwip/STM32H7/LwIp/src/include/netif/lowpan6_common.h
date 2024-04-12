@@ -46,10 +46,10 @@
 
 #if LWIP_IPV6 /* don't build if IPv6 is disabled in lwipopts.h */
 
-#include "lwip/pbuf.h"
-#include "lwip/ip.h"
-#include "lwip/ip6_addr.h"
-#include "lwip/netif.h"
+#include "../include/lwip/pbuf.h"
+#include "../include/lwip/ip.h"
+#include "../include/lwip/ip6_addr.h"
+#include "../include/lwip/netif.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -37,7 +37,7 @@
 #ifndef LWIP_HDR_APPS_MQTT_CLIENT_H
 #define LWIP_HDR_APPS_MQTT_CLIENT_H
 
-#include "../apps/mqtt_opts.h"
+#include "mqtt_opts.h"
 #include "../err.h"
 #include "../ip_addr.h"
 #include "../prot/iana.h"

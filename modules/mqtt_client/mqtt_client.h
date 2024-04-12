@@ -36,7 +36,7 @@ typedef struct
 	char		client_identity[32];
 }A_MQTT_SubInfo_t;
 
-extern	void mqtt_client_init(uint8_t ip_addrhh,uint8_t ip_addrhl,uint8_t ip_addrlh,uint8_t ip_addrll,char *topic,char *client_identity);
+extern	void mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity);
 extern	void mqtt_client_set_flags(uint8_t qos,uint8_t retain);
 extern	void mqtt_client_send(char *topic, char *message,uint32_t message_len);
 

@@ -37,7 +37,7 @@
 #ifndef LWIP_HDR_STATS_H
 #define LWIP_HDR_STATS_H
 
-#include "../../../../Target/lwipopts.h"
+#include "opt.h"
 
 #include "mem.h"
 #include "memp.h"

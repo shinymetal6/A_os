@@ -23,18 +23,18 @@
  *                    deprecated in 2.6
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && MPPE_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
 #include <string.h>
 
 #include "lwip/err.h"
 
-#include "netif/ppp/ppp_impl.h"
-#include "netif/ppp/ccp.h"
-#include "netif/ppp/mppe.h"
-#include "netif/ppp/pppdebug.h"
-#include "netif/ppp/pppcrypt.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/ccp.h"
+#include "../../../src/include/netif/ppp/mppe.h"
+#include "../../../src/include/netif/ppp/pppdebug.h"
+#include "../../../src/include/netif/ppp/pppcrypt.h"
 
 #define SHA1_SIGNATURE_SIZE 20
 

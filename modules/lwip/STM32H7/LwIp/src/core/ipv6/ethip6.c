@@ -52,7 +52,7 @@
 #include "../../include/lwip/netif.h"
 #include "../../include/lwip/icmp6.h"
 #include "../../include/lwip/prot/ethernet.h"
-#include "../../include/netif/ethernet.h"
+#include "netif/ethernet.h"
 
 #include <string.h>
 

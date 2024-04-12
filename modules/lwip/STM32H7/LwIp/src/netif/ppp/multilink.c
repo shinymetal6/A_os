@@ -28,7 +28,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && defined(HAVE_MULTILINK) /* don't build if not configured for use in lwipopts.h */
 
 /* Multilink support
@@ -49,11 +49,11 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-#include "netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
 
-#include "netif/ppp/fsm.h"
-#include "netif/ppp/lcp.h"
-#include "netif/ppp/tdb.h"
+#include "../../../src/include/netif/ppp/fsm.h"
+#include "../../../src/include/netif/ppp/lcp.h"
+#include "../../../src/include/netif/ppp/tdb.h"
 
 bool endpoint_specified;	/* user gave explicit endpoint discriminator */
 char *bundle_id;		/* identifier for our bundle */

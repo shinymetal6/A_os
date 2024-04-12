@@ -52,11 +52,11 @@
 
 #if LWIP_IPV6
 
-#include "lwip/ip.h"
-#include "lwip/pbuf.h"
-#include "lwip/ip_addr.h"
-#include "lwip/netif.h"
-#include "lwip/udp.h"
+#include "../include/lwip/ip.h"
+#include "../include/lwip/pbuf.h"
+#include "../include/lwip/ip_addr.h"
+#include "../include/lwip/netif.h"
+#include "../include/lwip/udp.h"
 
 #include <string.h>
 

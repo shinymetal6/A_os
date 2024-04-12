@@ -42,7 +42,7 @@
 
 #if LWIP_ARP || LWIP_ETHERNET
 
-#include "../include/netif/ethernet.h"
+#include "../../src/include/netif/ethernet.h"
 #include "../include/lwip/def.h"
 #include "../include/lwip/stats.h"
 #include "../include/lwip/etharp.h"
@@ -51,9 +51,9 @@
 
 #include <string.h>
 
-#include "../include/netif/ppp/ppp_opts.h"
+#include "../../src/include/netif/ppp/ppp_opts.h"
 #if PPPOE_SUPPORT
-#include "../include/netif/ppp/pppoe.h"
+#include "../../src/include/netif/ppp/pppoe.h"
 #endif /* PPPOE_SUPPORT */
 
 #ifdef LWIP_HOOK_FILENAME

@@ -50,21 +50,21 @@
  * - Hidden AVPs
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPPOL2TP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
-#include "../../include/lwip/err.h"
-#include "../../include/lwip/memp.h"
-#include "../../include/lwip/netif.h"
-#include "../../include/lwip/udp.h"
-#include "../../include/lwip/snmp.h"
+#include "lwip/err.h"
+#include "lwip/memp.h"
+#include "lwip/netif.h"
+#include "lwip/udp.h"
+#include "lwip/snmp.h"
 
-#include "../../include/netif/ppp/ppp_impl.h"
-#include "../../include/netif/ppp/lcp.h"
-#include "../../include/netif/ppp/ipcp.h"
-#include "../../include/netif/ppp/pppol2tp.h"
-#include "../../include/netif/ppp/pppcrypt.h"
-#include "../../include/netif/ppp/magic.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/lcp.h"
+#include "../../../src/include/netif/ppp/ipcp.h"
+#include "../../../src/include/netif/ppp/pppol2tp.h"
+#include "../../../src/include/netif/ppp/pppcrypt.h"
+#include "../../../src/include/netif/ppp/magic.h"
 
 /* Memory pool */
 LWIP_MEMPOOL_DECLARE(PPPOL2TP_PCB, MEMP_NUM_PPPOL2TP_INTERFACES, sizeof(pppol2tp_pcb), "PPPOL2TP_PCB")

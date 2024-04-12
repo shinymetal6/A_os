@@ -259,6 +259,7 @@ typedef struct
 	uint8_t		current_process;
 	uint32_t	g_tick_count;
 	uint32_t	g_os_started;
+	uint8_t		g_tick_state;
 	uint8_t		*first_mem;
 	uint32_t	num_buf_in_use;
 	uint32_t	first_data_address;
@@ -281,6 +282,8 @@ typedef struct
 	char		version[40];
 }Asys_t;
 
+/* g_tick_state */
+#define	TICKSTATE_FIRED				0x80
 
 /* system_flags */
 /* this is set by a get_mem to signal the supervisor that

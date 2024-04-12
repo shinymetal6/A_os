@@ -38,7 +38,7 @@
 
 #include "../include/lwip/opt.h"
 
-#if LWIP_NETCONN /* don't build if not configured for use in lwipopts.h */
+#if LWIP_NETCONN /* don't build if not configured for use in ../include/lwipopts.h */
 
 #include "../include/lwip/priv/api_msg.h"
 

@@ -79,7 +79,7 @@
  * - priority handling? (although that largely depends on TX queue limitations and lwIP doesn't provide tx-done handling)
  */
 
-#include "../include/netif/bridgeif.h"
+#include "../../src/include/netif/bridgeif.h"
 #include "../include/lwip/netif.h"
 #include "../include/lwip/sys.h"
 #include "../include/lwip/etharp.h"

@@ -85,7 +85,7 @@
  * @verbinclude "ppp.txt"
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
 #include "lwip/pbuf.h"
@@ -100,39 +100,39 @@
 #endif /* PPP_IPV6_SUPPORT */
 #include "lwip/dns.h"
 
-#include "netif/ppp/ppp_impl.h"
-#include "netif/ppp/pppos.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/pppos.h"
 
-#include "netif/ppp/fsm.h"
-#include "netif/ppp/lcp.h"
-#include "netif/ppp/magic.h"
+#include "../../../src/include/netif/ppp/fsm.h"
+#include "../../../src/include/netif/ppp/lcp.h"
+#include "../../../src/include/netif/ppp/magic.h"
 
 #if PAP_SUPPORT
-#include "netif/ppp/upap.h"
+#include "../../../src/include/netif/ppp/upap.h"
 #endif /* PAP_SUPPORT */
 #if CHAP_SUPPORT
-#include "netif/ppp/chap-new.h"
+#include "../../../src/include/netif/ppp/chap-new.h"
 #endif /* CHAP_SUPPORT */
 #if EAP_SUPPORT
-#include "netif/ppp/eap.h"
+#include "../../../src/include/netif/ppp/eap.h"
 #endif /* EAP_SUPPORT */
 #if CCP_SUPPORT
-#include "netif/ppp/ccp.h"
+#include "../../../src/include/netif/ppp/ccp.h"
 #endif /* CCP_SUPPORT */
 #if MPPE_SUPPORT
-#include "netif/ppp/mppe.h"
+#include "../../../src/include/netif/ppp/mppe.h"
 #endif /* MPPE_SUPPORT */
 #if ECP_SUPPORT
-#include "netif/ppp/ecp.h"
+#include "../../../src/include/netif/ppp/ecp.h"
 #endif /* EAP_SUPPORT */
 #if VJ_SUPPORT
-#include "netif/ppp/vj.h"
+#include "../../../src/include/netif/ppp/vj.h"
 #endif /* VJ_SUPPORT */
 #if PPP_IPV4_SUPPORT
-#include "netif/ppp/ipcp.h"
+#include "../../../src/include/netif/ppp/ipcp.h"
 #endif /* PPP_IPV4_SUPPORT */
 #if PPP_IPV6_SUPPORT
-#include "netif/ppp/ipv6cp.h"
+#include "../../../src/include/netif/ppp/ipv6cp.h"
 #endif /* PPP_IPV6_SUPPORT */
 
 /*************************/

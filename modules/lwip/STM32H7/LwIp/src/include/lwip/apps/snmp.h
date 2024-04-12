@@ -39,7 +39,7 @@
 #ifndef LWIP_HDR_APPS_SNMP_H
 #define LWIP_HDR_APPS_SNMP_H
 
-#include "lwip/apps/snmp_opts.h"
+#include "../apps/snmp_opts.h"
 
 #ifdef __cplusplus
 extern "C" {

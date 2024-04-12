@@ -112,7 +112,7 @@ void*               bridgeif_fdb_init(u16_t max_fdb_entries);
 #define BRIDGEIF_WRITE_UNPROTECT(lev)
 #endif
 #else /* BRIDGEIF_PORT_NETIFS_OUTPUT_DIRECT */
-#include "lwip/tcpip.h"
+#include "../lwip/tcpip.h"
 #define BRIDGEIF_DECL_PROTECT(lev)
 #define BRIDGEIF_READ_PROTECT(lev)
 #define BRIDGEIF_READ_UNPROTECT(lev)

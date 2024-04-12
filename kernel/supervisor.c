@@ -49,12 +49,16 @@ ITCM_AREA_CODE void supervisor(void)
 			reset_orphaned_chunks(Asys.failed_process);
 			Asys.failed_process = Asys.fail_rsn = 0;
 		}
+		if (( Asys.g_tick_state & TICKSTATE_FIRED ) == TICKSTATE_FIRED)
+		{
+			Asys.g_tick_state &= ~TICKSTATE_FIRED;
 #ifdef ETH_ENABLED
-		MX_LWIP_Process();
+			MX_LWIP_Process();
 #endif
 #ifdef USB_ENABLED
-		MX_USB_HOST_Process();
+			MX_USB_HOST_Process();
 #endif
+		}
 		supervisor_callback();
 	}
 }

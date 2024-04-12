@@ -36,7 +36,7 @@
 #ifndef LWIP_HDR_ERR_H
 #define LWIP_HDR_ERR_H
 
-#include "../../../../Target/lwipopts.h"
+#include "opt.h"
 #include "arch.h"
 
 #ifdef __cplusplus

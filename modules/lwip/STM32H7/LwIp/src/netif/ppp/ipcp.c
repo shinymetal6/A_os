@@ -40,7 +40,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPP_IPV4_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
 /*
@@ -59,10 +59,10 @@
 #include <arpa/inet.h>
 #endif /* UNUSED */
 
-#include "netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
 
-#include "netif/ppp/fsm.h"
-#include "netif/ppp/ipcp.h"
+#include "../../../src/include/netif/ppp/fsm.h"
+#include "../../../src/include/netif/ppp/ipcp.h"
 
 #if 0 /* UNUSED */
 /* global vars */

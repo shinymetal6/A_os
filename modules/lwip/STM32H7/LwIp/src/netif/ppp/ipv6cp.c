@@ -147,7 +147,7 @@
  *   interface up / set address.
  */
 
-#include "../../include/netif/ppp/ppp_opts.h"
+#include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPP_IPV6_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
 #if 0 /* UNUSED */
@@ -162,11 +162,11 @@
 #include <arpa/inet.h>
 #endif /* UNUSED */
 
-#include "netif/ppp/ppp_impl.h"
-#include "netif/ppp/fsm.h"
-#include "netif/ppp/ipcp.h"
-#include "netif/ppp/ipv6cp.h"
-#include "netif/ppp/magic.h"
+#include "../../../src/include/netif/ppp/ppp_impl.h"
+#include "../../../src/include/netif/ppp/fsm.h"
+#include "../../../src/include/netif/ppp/ipcp.h"
+#include "../../../src/include/netif/ppp/ipv6cp.h"
+#include "../../../src/include/netif/ppp/magic.h"
 
 /* global vars */
 #if 0 /* UNUSED */

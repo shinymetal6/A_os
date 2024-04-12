@@ -38,7 +38,7 @@
 #ifndef LWIP_HDR_MEMP_PRIV_H
 #define LWIP_HDR_MEMP_PRIV_H
 
-#include "../../../../../Target/lwipopts.h"
+#include "../opt.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -45,7 +45,7 @@
 
 #if LWIP_IPV6 && LWIP_UDP /* don't build if not configured for use in lwipopts.h */
 
-#include "netif.h"
+#include "../lwip/netif.h"
 
 #ifdef __cplusplus
 extern "C" {

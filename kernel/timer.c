@@ -65,12 +65,16 @@ ITCM_AREA_CODE int32_t A_GetTick(void)
 	return Asys.g_tick_count;
 }
 
-ITCM_AREA_CODE uint32_t HAL_GetTick(void)
+/*ITCM_AREA_CODE*/ uint32_t HAL_GetTick(void)
 {
+uint32_t	ret_val;
+	//__disable_irq();
 	if ( Asys.g_os_started )
-		return Asys.g_tick_count;
+		ret_val =  Asys.g_tick_count;
 	else
-		return uwTick;
+		ret_val =  uwTick;
+	//__enable_irq();
+	return ret_val;
 }
 
 ITCM_AREA_CODE void task_delay(uint32_t tick_count)
@@ -139,6 +143,7 @@ ITCM_AREA_CODE void  SysTick_Handler(void)
 		if ( after_check_timers_callback != NULL)
 			after_check_timers_callback();
 
+		Asys.g_tick_state |= TICKSTATE_FIRED;
 		//pend the pendsv exception
 		schedule();
 	}

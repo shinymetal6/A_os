@@ -118,11 +118,11 @@
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
 
-#include "../includelwip/altcp.h"
-#include "../includelwip/priv/altcp_priv.h"
-#include "../includelwip/altcp_tcp.h"
-#include "../includelwip/tcp.h"
-#include "../includelwip/mem.h"
+#include "../include/lwip/altcp.h"
+#include "../include/lwip/priv/altcp_priv.h"
+#include "../include/lwip/altcp_tcp.h"
+#include "../include/lwip/tcp.h"
+#include "../include/lwip/mem.h"
 
 #include <string.h>
 

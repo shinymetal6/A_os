@@ -99,7 +99,7 @@
 
 #include "../include/lwip/opt.h"
 
-#if LWIP_TCP /* don't build if not configured for use in opts.h */
+#if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
 
 #include "../include/lwip/def.h"
 #include "../include/lwip/mem.h"

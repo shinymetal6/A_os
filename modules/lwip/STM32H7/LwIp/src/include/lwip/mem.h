@@ -37,7 +37,7 @@
 #ifndef LWIP_HDR_MEM_H
 #define LWIP_HDR_MEM_H
 
-#include "../../../../Target/lwipopts.h"
+#include "opt.h"
 
 #ifdef __cplusplus
 extern "C" {

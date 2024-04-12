@@ -47,7 +47,7 @@
 
 #include "../include/lwip/opt.h"
 
-#if LWIP_UDP /* don't build if not configured for use in ../include/lwipopts.h */
+#if LWIP_UDP /* don't build if not configured for use in lwipopts.h */
 
 #include "../include/lwip/udp.h"
 #include "../include/lwip/def.h"

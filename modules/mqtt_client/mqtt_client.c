@@ -46,14 +46,15 @@ static void mqtt_client_connection_callback(mqtt_client_t *client, void *arg, mq
 {
 }
 
-void mqtt_client_init(uint8_t ip_addrhh,uint8_t ip_addrhl,uint8_t ip_addrlh,uint8_t ip_addrll,char *topic,char *client_identity)
+//void mqtt_client_init(uint8_t ip_addrhh,uint8_t ip_addrhl,uint8_t ip_addrlh,uint8_t ip_addrll,char *topic,char *client_identity)
+void mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity)
 {
 ip_addr_t Subscriber_ip;
 	mqtt_client = mqtt_client_new();
-	A_MQTT_SubInfo.ip_addrhh = ip_addrhh;
-	A_MQTT_SubInfo.ip_addrhl = ip_addrhl;
-	A_MQTT_SubInfo.ip_addrlh = ip_addrlh;
-	A_MQTT_SubInfo.ip_addrll = ip_addrll;
+	A_MQTT_SubInfo.ip_addrhh = broker_ip_addr[0];
+	A_MQTT_SubInfo.ip_addrhl = broker_ip_addr[1];
+	A_MQTT_SubInfo.ip_addrlh = broker_ip_addr[2];
+	A_MQTT_SubInfo.ip_addrll = broker_ip_addr[3];
 	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
 
 	memset(&mqtt_client_info, 0, sizeof(mqtt_client_info));
@@ -86,6 +87,12 @@ char	arg[32] = "argz";
 		A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
 	}
 	A_MQTT_SubInfo.mqtt_err_c = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_client_pub_request_callback, arg);
+	if ( A_MQTT_SubInfo.mqtt_err_c != 0 )
+	{
+		mqtt_disconnect(mqtt_client);
+		IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
+		A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+	}
 }
 #endif
 
