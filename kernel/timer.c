@@ -144,6 +144,7 @@ ITCM_AREA_CODE void  SysTick_Handler(void)
 			after_check_timers_callback();
 
 		Asys.g_tick_state |= TICKSTATE_FIRED;
+
 		//pend the pendsv exception
 		schedule();
 	}

@@ -56,14 +56,14 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	WIRELESS_ENABLED		1
 #define	WIRELESS_NRF24L01		1
 #define	LORA_ENABLED			1
-#define	ETH_ENABLED				1
+#define	NETWORKING_ENABLED				1
 #define	USB_ENABLED				1
 #define	XMODEM_ENABLE			1
 #define	MODBUS_ENABLE			1
 
-#ifdef ETH_ENABLED
+#ifdef NETWORKING_ENABLED
 	#undef 	LWIP_DHCP
-#endif // #ifdef ETH_ENABLED
+#endif // #ifdef NETWORKING_ENABLED
 
 #ifdef USB_ENABLED
 	#define	USB_CDC				1

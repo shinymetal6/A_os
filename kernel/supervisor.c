@@ -26,7 +26,7 @@
 #include "scheduler.h"
 #include "kernel_opt.h"
 
-#ifdef ETH_ENABLED
+#ifdef NETWORKING_ENABLED
 extern	void MX_LWIP_Process(void);
 #endif
 
@@ -52,7 +52,7 @@ ITCM_AREA_CODE void supervisor(void)
 		if (( Asys.g_tick_state & TICKSTATE_FIRED ) == TICKSTATE_FIRED)
 		{
 			Asys.g_tick_state &= ~TICKSTATE_FIRED;
-#ifdef ETH_ENABLED
+#ifdef NETWORKING_ENABLED
 			MX_LWIP_Process();
 #endif
 #ifdef USB_ENABLED

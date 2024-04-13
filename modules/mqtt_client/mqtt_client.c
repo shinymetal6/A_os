@@ -30,7 +30,7 @@
 #include "mqtt_client.h"
 
 #ifdef	STM32H743xx
-#include "../../modules/lwip/STM32H7/LwIp/src/include/lwip/apps/mqtt.h"
+#include "../../modules/lwip/LwIp/src/include/lwip/apps/mqtt.h"
 #endif
 
 #include <stdio.h>
@@ -55,6 +55,8 @@ ip_addr_t Subscriber_ip;
 	A_MQTT_SubInfo.ip_addrhl = broker_ip_addr[1];
 	A_MQTT_SubInfo.ip_addrlh = broker_ip_addr[2];
 	A_MQTT_SubInfo.ip_addrll = broker_ip_addr[3];
+	A_MQTT_SubInfo.mqtt_err_c = 0;
+
 	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
 
 	memset(&mqtt_client_info, 0, sizeof(mqtt_client_info));
@@ -80,19 +82,31 @@ void mqtt_client_send(char *topic, char *message,uint32_t message_len)
 {
 ip_addr_t Subscriber_ip;
 char	arg[32] = "argz";
+int8_t	err;
 
 	if ( mqtt_client_is_connected(mqtt_client) != 1 )
 	{
+		__disable_irq();
 		IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-		A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+		err = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+		if ( err != 0 )
+			A_MQTT_SubInfo.mqtt_err_c++;
+		__enable_irq();
+		task_delay(250);
 	}
-	A_MQTT_SubInfo.mqtt_err_c = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_client_pub_request_callback, arg);
+	__disable_irq();
+	err = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_client_pub_request_callback, arg);
+	if ( err != 0 )
+		A_MQTT_SubInfo.mqtt_err_c++;
 	if ( A_MQTT_SubInfo.mqtt_err_c != 0 )
 	{
 		mqtt_disconnect(mqtt_client);
 		IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-		A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+		err = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+		if ( err != 0 )
+			A_MQTT_SubInfo.mqtt_err_c++;
 	}
+	__enable_irq();
 }
 #endif
 

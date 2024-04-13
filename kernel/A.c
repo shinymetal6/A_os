@@ -58,7 +58,7 @@ CUSTOM_RAM_END	uint32_t		CustomRamEnd;
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
-#ifdef	ETH_ENABLED
+#ifdef	NETWORKING_ENABLED
 A_IpAddr_t	A_IpAddr =
 {
 		.IP_ADDR0 		= 192,
@@ -273,11 +273,6 @@ void A_initialize_onchip_peripherals(void)
 
 void A_start(void)
 {
-#ifdef	ETH_ENABLED
-#if defined ETH_NRST_Pin
-	HAL_GPIO_WritePin(ETH_NRST_GPIO_Port, ETH_NRST_Pin,GPIO_PIN_RESET);
-#endif
-#endif
 	sprintf(Asys.version,"%s",A_OS_VERSION);
 	A_initialize_onchip_peripherals();
 	A_PreOS_Init();
