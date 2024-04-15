@@ -41,6 +41,10 @@
  *
  */
 
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
+
 #include "../include/lwip/opt.h"
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
@@ -85,3 +89,4 @@ altcp_tls_alloc(void *arg, u8_t ip_type)
 #endif /* LWIP_ALTCP_TLS */
 
 #endif /* LWIP_ALTCP */
+#endif /* NETWORKING_ENABLED */

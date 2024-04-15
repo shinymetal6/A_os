@@ -38,7 +38,9 @@
  * Please coordinate changes and requests with Ivan Delamer
  * <delamer@inicotech.com>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_ICMP6 && LWIP_IPV6 /* don't build if not configured for use in lwipopts.h */
@@ -423,3 +425,4 @@ icmp6_send_response_with_addrs_and_netif(struct pbuf *p, u8_t code, u32_t data, 
 }
 
 #endif /* LWIP_ICMP6 && LWIP_IPV6 */
+#endif // #ifdef	NETWORKING_ENABLED

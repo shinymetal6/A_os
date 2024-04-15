@@ -96,7 +96,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../../../../A_os/kernel/A.h"
@@ -2696,3 +2698,4 @@ tcp_ext_arg_invoke_callbacks_passive_open(struct tcp_pcb_listen *lpcb, struct tc
 
 #endif /* LWIP_TCP */
 #endif /* NETWORKING_ENABLED */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -55,7 +55,9 @@
  *
  * Author: Dominik Spies <kontakt@dspies.de>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4 && LWIP_AUTOIP /* don't build if not configured for use in lwipopts.h */
@@ -525,3 +527,4 @@ autoip_accept_packet(struct netif *netif, const ip4_addr_t *addr)
 }
 
 #endif /* LWIP_IPV4 && LWIP_AUTOIP */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -20,14 +20,14 @@
  *      Author: fil
  */
 
-#include "lwip.h"
-#include "../LwIp/src/include/lwip/init.h"
-#include "../LwIp/src/include/lwip/netif.h"
-#include "../Target/ethernetif.h"
 
 #include "../../../../A_os/kernel/A.h"
 
 #ifdef	NETWORKING_ENABLED
+#include "lwip.h"
+#include "../LwIp/src/include/lwip/init.h"
+#include "../LwIp/src/include/lwip/netif.h"
+#include "../Target/ethernetif.h"
 
 ETH_DATA_AREA	ETH_DMADescTypeDef DMARxDscrTab[32] ; /* Ethernet Rx DMA Descriptors */
 ETH_DATA_AREA	ETH_DMADescTypeDef DMATxDscrTab[32];   /* Ethernet Tx DMA Descriptors */

@@ -115,6 +115,9 @@
  * @defgroup sys_misc Misc
  * @ingroup sys_os
  */
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
 
 #include "../include/lwip/opt.h"
 
@@ -146,3 +149,4 @@ sys_msleep(u32_t ms)
 #endif /* sys_msleep */
 
 #endif /* !NO_SYS */
+#endif // #ifdef	NETWORKING_ENABLED

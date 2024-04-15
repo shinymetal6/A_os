@@ -79,7 +79,9 @@ Steve Reynolds
 /*-----------------------------------------------------------------------------
  * Includes
  *----------------------------------------------------------------------------*/
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4 && LWIP_IGMP /* don't build if not configured for use in lwipopts.h */
@@ -799,3 +801,4 @@ igmp_send(struct netif *netif, struct igmp_group *group, u8_t type)
 }
 
 #endif /* LWIP_IPV4 && LWIP_IGMP */
+#endif // #ifdef	NETWORKING_ENABLED

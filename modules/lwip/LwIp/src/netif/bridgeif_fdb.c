@@ -40,7 +40,9 @@
  * @ingroup bridgeif
  * This file implements an example for an FDB (Forwarding DataBase)
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../src/include/netif/bridgeif.h"
 #include "../include/lwip/sys.h"
 #include "../include/lwip/mem.h"
@@ -210,3 +212,4 @@ bridgeif_fdb_init(u16_t max_fdb_entries)
 
   return fdb;
 }
+#endif // #ifdef	NETWORKING_ENABLED

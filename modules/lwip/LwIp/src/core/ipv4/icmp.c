@@ -38,6 +38,9 @@
 
 /* Some ICMP messages should be passed to the transport protocols. This
    is not implemented. */
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
 
 #include "../../include/lwip/opt.h"
 
@@ -402,3 +405,4 @@ icmp_send_response(struct pbuf *p, u8_t type, u8_t code)
 }
 
 #endif /* LWIP_IPV4 && LWIP_ICMP */
+#endif // #ifdef	NETWORKING_ENABLED

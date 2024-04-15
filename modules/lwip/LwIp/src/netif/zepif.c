@@ -46,7 +46,9 @@
  * Author: Simon Goldschmidt <goldsimon@gmx.de>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/netif/zepif.h"
 
 #if LWIP_IPV6 && LWIP_UDP
@@ -298,3 +300,4 @@ err_ret:
 }
 
 #endif /* LWIP_IPV6 && LWIP_UDP */
+#endif // #ifdef	NETWORKING_ENABLED

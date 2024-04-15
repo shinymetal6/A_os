@@ -44,7 +44,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../include/lwip/inet_chksum.h"
@@ -606,3 +608,4 @@ lwip_chksum_copy(void *dst, const void *src, u16_t len)
   return LWIP_CHKSUM(dst, len);
 }
 #endif /* (LWIP_CHKSUM_COPY_ALGORITHM == 1) */
+#endif /* #ifdef	NETWORKING_ENABLED */

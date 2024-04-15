@@ -47,7 +47,9 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include <string.h> /* memset */
@@ -1793,3 +1795,4 @@ netif_invoke_ext_callback(struct netif *netif, netif_nsc_reason_t reason, const 
   }
 }
 #endif /* LWIP_NETIF_EXT_STATUS_CALLBACK */
+#endif // #ifdef	NETWORKING_ENABLED

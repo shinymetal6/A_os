@@ -38,7 +38,9 @@
  * Please coordinate changes and requests with Ivan Delamer
  * <delamer@inicotech.com>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 #include "../../include/lwip/ip6_frag.h"
 #include "../../include/lwip/ip6.h"
@@ -860,3 +862,4 @@ ip6_frag(struct pbuf *p, struct netif *netif, const ip6_addr_t *dest)
 }
 
 #endif /* LWIP_IPV6 && LWIP_IPV6_FRAG */
+#endif // #ifdef	NETWORKING_ENABLED

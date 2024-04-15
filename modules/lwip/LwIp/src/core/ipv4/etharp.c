@@ -42,7 +42,9 @@
  * This file is part of the lwIP TCP/IP stack.
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4 && LWIP_ARP /* don't build if not configured for use in lwipopts.h */
@@ -1202,3 +1204,4 @@ etharp_request(struct netif *netif, const ip4_addr_t *ipaddr)
 }
 
 #endif /* LWIP_IPV4 && LWIP_ARP */
+#endif	// #ifdef	NETWORKING_ENABLED

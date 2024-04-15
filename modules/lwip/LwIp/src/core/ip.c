@@ -52,7 +52,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_IPV4 || LWIP_IPV6
@@ -165,3 +167,4 @@ ip_input(struct pbuf *p, struct netif *inp)
 #endif /* LWIP_IPV4 && LWIP_IPV6 */
 
 #endif /* LWIP_IPV4 || LWIP_IPV6 */
+#endif /*#ifdef	NETWORKING_ENABLED */

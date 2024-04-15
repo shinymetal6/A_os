@@ -40,7 +40,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
@@ -2176,3 +2178,4 @@ tcp_remove_sacks_gt(struct tcp_pcb *pcb, u32_t seq)
 #endif /* LWIP_TCP_SACK_OUT */
 
 #endif /* LWIP_TCP */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -62,7 +62,9 @@
  * Author: Leon Woestenberg <leon.woestenberg@gmx.net>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4 && LWIP_DHCP /* don't build if not configured for use in lwipopts.h */
@@ -1988,3 +1990,4 @@ dhcp_supplied_address(const struct netif *netif)
 }
 
 #endif /* LWIP_IPV4 && LWIP_DHCP */
+#endif // #ifdef	NETWORKING_ENABLED

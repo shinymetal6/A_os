@@ -44,7 +44,6 @@
 
 /* @todo Check the use of '(struct udp_pcb).chksum_len_rx'!
  */
-
 #include "../include/lwip/opt.h"
 
 #include "../../../../A_os/kernel/A.h"

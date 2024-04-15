@@ -38,7 +38,9 @@
  * Please coordinate changes and requests with Ivan Delamer
  * <delamer@inicotech.com>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV6 && LWIP_ETHERNET
@@ -121,3 +123,4 @@ ethip6_output(struct netif *netif, struct pbuf *q, const ip6_addr_t *ip6addr)
 }
 
 #endif /* LWIP_IPV6 && LWIP_ETHERNET */
+#endif // #ifdef	NETWORKING_ENABLED

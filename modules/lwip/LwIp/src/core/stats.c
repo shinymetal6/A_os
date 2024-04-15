@@ -35,7 +35,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_STATS /* don't build if not configured for use in lwipopts.h */
@@ -166,4 +168,6 @@ stats_display(void)
 #endif /* LWIP_STATS_DISPLAY */
 
 #endif /* LWIP_STATS */
+#endif // #ifdef	NETWORKING_ENABLED
+
 

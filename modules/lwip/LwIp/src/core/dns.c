@@ -83,7 +83,9 @@
 /*-----------------------------------------------------------------------------
  * Includes
  *----------------------------------------------------------------------------*/
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_DNS /* don't build if not configured for use in lwipopts.h */
@@ -1629,3 +1631,4 @@ dns_gethostbyname_addrtype(const char *hostname, ip_addr_t *addr, dns_found_call
 }
 
 #endif /* LWIP_DNS */
+#endif /* NETWORKING_ENABLED */

@@ -113,7 +113,9 @@
  * Author: Simon Goldschmidt <goldsimon@gmx.de>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
@@ -679,3 +681,4 @@ altcp_default_dbg_get_tcp_state(struct altcp_pcb *conn)
 
 
 #endif /* LWIP_ALTCP */
+#endif /* NETWORKING_ENABLED */

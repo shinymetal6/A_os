@@ -38,7 +38,9 @@
  * Please coordinate changes and requests with Ivan Delamer
  * <delamer@inicotech.com>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV6 && LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
@@ -51,3 +53,4 @@
 const struct in6_addr in6addr_any = IN6ADDR_ANY_INIT;
 
 #endif /* LWIP_IPV6 */
+#endif // #ifdef	NETWORKING_ENABLED

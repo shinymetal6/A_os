@@ -59,7 +59,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
@@ -2188,3 +2190,4 @@ tcp_zero_window_probe(struct tcp_pcb *pcb)
   return err;
 }
 #endif /* LWIP_TCP */
+#endif // #ifdef	NETWORKING_ENABLED

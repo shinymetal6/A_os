@@ -58,7 +58,9 @@
  *           pbuf_alloc to work on ISR level!).
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/netif/slipif.h"
 #include "../include/lwip/opt.h"
 
@@ -556,3 +558,4 @@ slipif_received_bytes(struct netif *netif, u8_t *data, u8_t len)
   }
 }
 #endif /* SLIP_RX_FROM_ISR */
+#endif // #ifdef	NETWORKING_ENABLED

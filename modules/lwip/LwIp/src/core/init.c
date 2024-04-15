@@ -34,7 +34,9 @@
  *
  * Author: Adam Dunkels <adam@sics.se>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../include/lwip/init.h"
@@ -378,3 +380,4 @@ lwip_init(void)
   sys_timeouts_init();
 #endif /* LWIP_TIMERS */
 }
+#endif /* NETWORKING_ENABLED */

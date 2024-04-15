@@ -65,7 +65,9 @@
  * - support neighbor discovery
  */
 
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/netif/lowpan6_ble.h"
 
 #if LWIP_IPV6
@@ -445,3 +447,4 @@ tcpip_rfc7668_input(struct pbuf *p, struct netif *inp)
 #endif /* !NO_SYS */
 
 #endif /* LWIP_IPV6 */
+#endif // #ifdef	NETWORKING_ENABLED

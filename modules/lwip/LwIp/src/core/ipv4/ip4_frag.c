@@ -37,7 +37,9 @@
  * original reassembly code by Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4
@@ -892,3 +894,4 @@ memerr:
 #endif /* IP_FRAG */
 
 #endif /* LWIP_IPV4 */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -54,7 +54,9 @@
  *
  * Author: Simon Goldschmidt <goldsimon@gmx.de>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV6 && LWIP_IPV6_DHCP6 /* don't build if not configured for use in lwipopts.h */
@@ -810,3 +812,4 @@ dhcp6_tmr(void)
 }
 
 #endif /* LWIP_IPV6 && LWIP_IPV6_DHCP6 */
+#endif // #ifdef	NETWORKING_ENABLED

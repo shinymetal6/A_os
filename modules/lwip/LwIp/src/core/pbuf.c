@@ -67,7 +67,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../include/lwip/pbuf.h"
@@ -1512,3 +1514,4 @@ pbuf_strstr(const struct pbuf *p, const char *substr)
   }
   return pbuf_memfind(p, substr, (u16_t)substr_len, 0);
 }
+#endif // #ifdef	NETWORKING_ENABLED

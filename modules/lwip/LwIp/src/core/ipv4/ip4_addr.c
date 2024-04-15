@@ -35,7 +35,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV4
@@ -319,3 +321,4 @@ ip4addr_ntoa_r(const ip4_addr_t *addr, char *buf, int buflen)
 }
 
 #endif /* LWIP_IPV4 */
+#endif // #ifdef	NETWORKING_ENABLED

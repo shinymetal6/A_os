@@ -52,6 +52,9 @@
  *         Simon Goldschmidt
  *
  */
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
 
 #include "../include/lwip/opt.h"
 #include "../include/lwip/mem.h"
@@ -1015,3 +1018,4 @@ mem_calloc(mem_size_t count, mem_size_t size)
   return p;
 }
 #endif /* MEM_LIBC_MALLOC && (!LWIP_STATS || !MEM_STATS) */
+#endif // #ifdef	NETWORKING_ENABLED

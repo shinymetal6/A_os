@@ -47,7 +47,9 @@
  * @ingroup netifs
  * 6LowPAN netif implementation
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/netif/lowpan6.h"
 
 #if LWIP_IPV6
@@ -918,3 +920,4 @@ tcpip_6lowpan_input(struct pbuf *p, struct netif *inp)
 #endif /* !NO_SYS */
 
 #endif /* LWIP_IPV6 */
+#endif // #ifdef	NETWORKING_ENABLED

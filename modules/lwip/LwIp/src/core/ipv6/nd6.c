@@ -40,7 +40,9 @@
  * Please coordinate changes and requests with Ivan Delamer
  * <delamer@inicotech.com>
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../include/lwip/opt.h"
 
 #if LWIP_IPV6  /* don't build if not configured for use in lwipopts.h */
@@ -2432,3 +2434,4 @@ nd6_restart_netif(struct netif *netif)
 }
 
 #endif /* LWIP_IPV6 */
+#endif // #ifdef	NETWORKING_ENABLED

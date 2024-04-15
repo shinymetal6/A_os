@@ -16,14 +16,14 @@
 /*
  * aos_lwip_include.h
  *
- *  Created on: Apr 13, 2024
+ *  Created on: Apr 15, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_LWIP_STM32H7_AOS_LWIP_INCLUDE_H_
-#define MODULES_LWIP_STM32H7_AOS_LWIP_INCLUDE_H_
+#ifndef MODULES_LWIP_AOS_LWIP_INCLUDE_H_
+#define MODULES_LWIP_AOS_LWIP_INCLUDE_H_
 
 #include "../../kernel/A.h"
 
 
-#endif /* MODULES_LWIP_STM32H7_AOS_LWIP_INCLUDE_H_ */
+#endif /* MODULES_LWIP_AOS_LWIP_INCLUDE_H_ */

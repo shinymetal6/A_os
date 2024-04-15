@@ -57,7 +57,9 @@
  * Author: Simon Goldschmidt
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 #include "../include/lwip/def.h"
 
@@ -238,3 +240,5 @@ lwip_itoa(char *result, size_t bufsize, int number)
   memmove(res, tmp, (size_t)((result + bufsize) - tmp));
 }
 #endif
+#endif // #ifdef	NETWORKING_ENABLED
+

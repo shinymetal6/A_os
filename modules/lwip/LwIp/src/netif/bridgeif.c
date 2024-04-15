@@ -78,7 +78,9 @@
  * - VLAN handling / trunk ports
  * - priority handling? (although that largely depends on TX queue limitations and lwIP doesn't provide tx-done handling)
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../src/include/netif/bridgeif.h"
 #include "../include/lwip/netif.h"
 #include "../include/lwip/sys.h"
@@ -561,3 +563,4 @@ bridgeif_add_port(struct netif *bridgeif, struct netif *portif)
 }
 
 #endif /* LWIP_NUM_NETIF_CLIENT_DATA */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -38,7 +38,9 @@
  *         Simon Goldschmidt
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../include/lwip/timeouts.h"
@@ -449,3 +451,4 @@ tcp_timer_needed(void)
 {
 }
 #endif /* LWIP_TIMERS && !LWIP_TIMERS_CUSTOM */
+#endif // #ifdef	NETWORKING_ENABLED

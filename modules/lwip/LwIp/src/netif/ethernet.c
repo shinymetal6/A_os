@@ -37,7 +37,9 @@
  * This file is part of the lwIP TCP/IP stack.
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_ARP || LWIP_ETHERNET
@@ -319,3 +321,4 @@ pbuf_header_failed:
 }
 
 #endif /* LWIP_ARP || LWIP_ETHERNET */
+#endif // #ifdef	NETWORKING_ENABLED

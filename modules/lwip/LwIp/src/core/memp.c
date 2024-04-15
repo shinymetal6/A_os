@@ -42,7 +42,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #include "../include/lwip/memp.h"
@@ -445,3 +447,5 @@ memp_free(memp_t type, void *mem)
   }
 #endif
 }
+#endif // #ifdef	NETWORKING_ENABLED
+

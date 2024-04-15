@@ -17,7 +17,9 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "../LwIp/src/include/lwip/opt.h"
@@ -694,3 +696,4 @@ void HAL_ETH_TxFreeCallback(uint32_t * buff)
 
 /* USER CODE END 8 */
 
+#endif // #ifdef	NETWORKING_ENABLED
