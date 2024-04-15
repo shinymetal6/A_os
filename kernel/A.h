@@ -254,12 +254,12 @@ typedef struct
 #define	IRQMAN_FREE		0
 #define	IRQMAN_ALLOCATED	1
 
+#pragma pack(4)
+
 typedef struct
 {
-	uint8_t		current_process;
 	uint32_t	g_tick_count;
 	uint32_t	g_os_started;
-	uint8_t		g_tick_state;
 	uint8_t		*first_mem;
 	uint32_t	num_buf_in_use;
 	uint32_t	first_data_address;
@@ -268,6 +268,9 @@ typedef struct
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
 	uint32_t	system_flags;
+	uint32_t 	qspi_size;
+	uint8_t		general_flags;
+	uint8_t		current_process;
 	uint8_t		failed_process;
 	uint8_t		fail_rsn;
 	uint8_t		lwip_state;
@@ -278,12 +281,12 @@ typedef struct
 	uint8_t		process_usage_fault[MAX_PROCESS];
 	uint8_t		qspi_status;
 	uint8_t		qspi_id;
-	uint32_t 	qspi_size;
 	char		version[40];
-}Asys_t;
+} Asys_t;
 
-/* g_tick_state */
+/* general_flags */
 #define	TICKSTATE_FIRED				0x80
+#define	LWIP_LOCK					0x40
 
 /* system_flags */
 /* this is set by a get_mem to signal the supervisor that

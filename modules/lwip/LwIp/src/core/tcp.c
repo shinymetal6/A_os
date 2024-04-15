@@ -99,6 +99,14 @@
 
 #include "../include/lwip/opt.h"
 
+#include "../../../../A_os/kernel/A.h"
+
+/**/
+#undef ETH_DATA_AREA
+#define	ETH_DATA_AREA
+/**/
+#ifdef	NETWORKING_ENABLED
+
 #if LWIP_TCP /* don't build if not configured for use in lwipopts.h */
 
 #include "../include/lwip/def.h"
@@ -141,7 +149,8 @@
 #define INITIAL_MSS TCP_MSS
 #endif
 
-static const char *const tcp_state_str[] = {
+// static const char *const tcp_state_str[] = {
+ETH_DATA_AREA static  char * tcp_state_str[] = {
   "CLOSED",
   "LISTEN",
   "SYN_SENT",
@@ -156,42 +165,44 @@ static const char *const tcp_state_str[] = {
 };
 
 /* last local TCP port */
-static u16_t tcp_port = TCP_LOCAL_PORT_RANGE_START;
+ETH_DATA_AREA	static u16_t tcp_port = TCP_LOCAL_PORT_RANGE_START;
 
 /* Incremented every coarse grained timer shot (typically every 500 ms). */
-u32_t tcp_ticks;
-static const u8_t tcp_backoff[13] =
+ETH_DATA_AREA	u32_t tcp_ticks;
+//ETH_DATA_AREA static const u8_t tcp_backoff[13] =
+ETH_DATA_AREA static u8_t tcp_backoff[13] =
 { 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7};
 /* Times per slowtmr hits */
-static const u8_t tcp_persist_backoff[7] = { 3, 6, 12, 24, 48, 96, 120 };
+//static const u8_t tcp_persist_backoff[7] = { 3, 6, 12, 24, 48, 96, 120 };
+ETH_DATA_AREA static u8_t tcp_persist_backoff[7] = { 3, 6, 12, 24, 48, 96, 120 };
 
 /* The TCP PCB lists. */
 
 /** List of all TCP PCBs bound but not yet (connected || listening) */
-struct tcp_pcb *tcp_bound_pcbs;
+ETH_DATA_AREA	struct tcp_pcb *tcp_bound_pcbs;
 /** List of all TCP PCBs in LISTEN state */
-union tcp_listen_pcbs_t tcp_listen_pcbs;
+ETH_DATA_AREA	union tcp_listen_pcbs_t tcp_listen_pcbs;
 /** List of all TCP PCBs that are in a state in which
  * they accept or send data. */
-struct tcp_pcb *tcp_active_pcbs;
+ETH_DATA_AREA	struct tcp_pcb *tcp_active_pcbs;
 /** List of all TCP PCBs in TIME-WAIT state */
-struct tcp_pcb *tcp_tw_pcbs;
+ETH_DATA_AREA	struct tcp_pcb *tcp_tw_pcbs;
 
 /** An array with all (non-temporary) PCB lists, mainly used for smaller code size */
 struct tcp_pcb **const tcp_pcb_lists[] = {&tcp_listen_pcbs.pcbs, &tcp_bound_pcbs,
          &tcp_active_pcbs, &tcp_tw_pcbs
 };
 
-u8_t tcp_active_pcbs_changed;
+ETH_DATA_AREA	u8_t tcp_active_pcbs_changed;
 
 /** Timer counter to handle calling slow-timer from tcp_tmr() */
-static u8_t tcp_timer;
-static u8_t tcp_timer_ctr;
+ETH_DATA_AREA	static u8_t tcp_timer;
+ETH_DATA_AREA	static u8_t tcp_timer_ctr;
 static u16_t tcp_new_port(void);
 
 static err_t tcp_close_shutdown_fin(struct tcp_pcb *pcb);
 #if LWIP_TCP_PCB_NUM_EXT_ARGS
-static void tcp_ext_arg_invoke_callbacks_destroyed(struct tcp_pcb_ext_args *ext_args);
+ETH_DATA_AREA	static void tcp_ext_arg_invoke_callbacks_destroyed(struct tcp_pcb_ext_args *ext_args);
 #endif
 
 /**
@@ -2684,3 +2695,4 @@ tcp_ext_arg_invoke_callbacks_passive_open(struct tcp_pcb_listen *lpcb, struct tc
 #endif /* LWIP_TCP_PCB_NUM_EXT_ARGS */
 
 #endif /* LWIP_TCP */
+#endif /* NETWORKING_ENABLED */

@@ -49,9 +49,9 @@ ITCM_AREA_CODE void supervisor(void)
 			reset_orphaned_chunks(Asys.failed_process);
 			Asys.failed_process = Asys.fail_rsn = 0;
 		}
-		if (( Asys.g_tick_state & TICKSTATE_FIRED ) == TICKSTATE_FIRED)
+		//if (( Asys.general_flags & TICKSTATE_FIRED ) == TICKSTATE_FIRED)
 		{
-			Asys.g_tick_state &= ~TICKSTATE_FIRED;
+			Asys.general_flags &= ~TICKSTATE_FIRED;
 #ifdef NETWORKING_ENABLED
 			MX_LWIP_Process();
 #endif
@@ -60,6 +60,7 @@ ITCM_AREA_CODE void supervisor(void)
 #endif
 		}
 		supervisor_callback();
+		schedule();
 	}
 }
 

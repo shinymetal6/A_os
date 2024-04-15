@@ -117,28 +117,35 @@ static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 
 void MX_LWIP_Process(void)
 {
-	__disable_irq();
-	if (Asys.g_os_started )
+	if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
 	{
-		if ( gnetif.next == NULL )
+		__disable_irq();
+		Asys.general_flags |= LWIP_LOCK;
+		if (Asys.g_os_started )
 		{
-			ethernetif_input(&gnetif);
-			/* Handle timeouts */
-			sys_check_timeouts();
-			Ethernet_Link_Periodic_Handle(&gnetif);
+			if ( gnetif.next == NULL )
+			{
+				ethernetif_input(&gnetif);
+				/* Handle timeouts */
+				sys_check_timeouts();
+				Ethernet_Link_Periodic_Handle(&gnetif);
+			}
 		}
+		Asys.general_flags &= ~LWIP_LOCK;
+		__enable_irq();
 	}
-	__enable_irq();
 }
 
 static void ethernet_link_status_updated(struct netif *netif)
 {
+	__disable_irq();
 	if (netif_is_up(netif))
 	{
 	}
 	else /* netif is down */
 	{
 	}
+	__enable_irq();
 }
 
 #endif	//#ifdef	NETWORKING_ENABLED

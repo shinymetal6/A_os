@@ -78,35 +78,50 @@ static void mqtt_client_pub_request_callback(void *arg, err_t result)
 		A_MQTT_SubInfo.mqtt_err_c++;
 }
 
-void mqtt_client_send(char *topic, char *message,uint32_t message_len)
+extern	void task_delay(uint32_t tick_count);
+
+uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len)
 {
 ip_addr_t Subscriber_ip;
 char	arg[32] = "argz";
 int8_t	err;
+uint32_t	collisions=0;
 
+	while (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
+	{
+		task_delay(10);
+		collisions++;
+		if ( collisions > 500 )
+			return 0;
+	}
 	if ( mqtt_client_is_connected(mqtt_client) != 1 )
 	{
 		__disable_irq();
+		Asys.general_flags |= LWIP_LOCK;
 		IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
 		err = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
 		if ( err != 0 )
 			A_MQTT_SubInfo.mqtt_err_c++;
+		Asys.general_flags &= ~LWIP_LOCK;
 		__enable_irq();
-		task_delay(250);
+		task_delay(50);
 	}
 	__disable_irq();
+	Asys.general_flags |= LWIP_LOCK;
 	err = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_client_pub_request_callback, arg);
 	if ( err != 0 )
-		A_MQTT_SubInfo.mqtt_err_c++;
-	if ( A_MQTT_SubInfo.mqtt_err_c != 0 )
 	{
+		A_MQTT_SubInfo.mqtt_err_c++;
 		mqtt_disconnect(mqtt_client);
+		task_delay(50);
 		IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
 		err = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
 		if ( err != 0 )
 			A_MQTT_SubInfo.mqtt_err_c++;
 	}
+	Asys.general_flags &= ~LWIP_LOCK;
 	__enable_irq();
+	return message_len;
 }
 #endif
 

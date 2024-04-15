@@ -47,6 +47,11 @@
 
 #include "../include/lwip/opt.h"
 
+#include "../../../../A_os/kernel/A.h"
+#undef ETH_DATA_AREA
+#define	ETH_DATA_AREA
+#ifdef	NETWORKING_ENABLED
+
 #if LWIP_UDP /* don't build if not configured for use in lwipopts.h */
 
 #include "../include/lwip/udp.h"
@@ -74,11 +79,11 @@
 #endif
 
 /* last local UDP port */
-static u16_t udp_port = UDP_LOCAL_PORT_RANGE_START;
+ETH_DATA_AREA	static u16_t udp_port = UDP_LOCAL_PORT_RANGE_START;
 
 /* The list of UDP PCBs */
 /* exported in udp.h (was static) */
-struct udp_pcb *udp_pcbs;
+ETH_DATA_AREA	struct udp_pcb *udp_pcbs;
 
 /**
  * Initialize this module.
@@ -1312,3 +1317,4 @@ udp_debug_print(struct udp_hdr *udphdr)
 #endif /* UDP_DEBUG */
 
 #endif /* LWIP_UDP */
+#endif /* NETWORKING_ENABLED */
