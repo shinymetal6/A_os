@@ -57,6 +57,7 @@ typedef u16_t mem_size_t;
 
 #else
 
+//#define	LWIP_RAM_HEAP_POINTER	(void *)(0x38000000)
 /* MEM_SIZE would have to be aligned, but using 64000 here instead of
  * 65535 leaves some room for alignment...
  */

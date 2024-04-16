@@ -49,7 +49,9 @@
  * - Multiple tunnels per UDP socket, as well as multiple sessions per tunnel
  * - Hidden AVPs
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPPOL2TP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
@@ -1157,3 +1159,4 @@ static err_t pppol2tp_udp_send(pppol2tp_pcb *l2tp, struct pbuf *pb) {
 }
 
 #endif /* PPP_SUPPORT && PPPOL2TP_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

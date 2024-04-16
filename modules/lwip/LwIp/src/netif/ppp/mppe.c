@@ -22,7 +22,9 @@
  *                    MOD_DEC_USAGE_COUNT/MOD_INC_USAGE_COUNT which are
  *                    deprecated in 2.6
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && MPPE_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
@@ -410,3 +412,4 @@ sanity_error:
 }
 
 #endif /* PPP_SUPPORT && MPPE_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

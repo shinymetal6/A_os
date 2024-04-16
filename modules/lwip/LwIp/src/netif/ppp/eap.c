@@ -42,7 +42,9 @@
  *
  * Based on draft-ietf-pppext-eap-srp-03.txt.
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && EAP_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
@@ -2421,3 +2423,4 @@ static int eap_printpkt(const u_char *inp, int inlen, void (*printer) (void *, c
 #endif /* PRINTPKT_SUPPORT */
 
 #endif /* PPP_SUPPORT && EAP_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

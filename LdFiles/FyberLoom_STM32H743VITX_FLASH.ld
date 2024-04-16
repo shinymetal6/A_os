@@ -79,6 +79,11 @@ SECTIONS
     _d2ram_end       	= LOADADDR(.d2ramEnd);
 	.d2ramEnd  			0x30048000 : {. = ALIGN(4); KEEP(*(.d2ramEnd))}
 	
+	_d3ram_start      	= LOADADDR(.d3ram);
+	.d3ram		  		0x38000000 : {. = ALIGN(4); KEEP(*(.d3ram))}
+    _d3ram_end       	= LOADADDR(.d3ramEnd);
+	.d3ramEnd  			0x38010000 : {. = ALIGN(4); KEEP(*(.d3ramEnd))}
+	
 	_framebuffer_start 	= LOADADDR(.framebuffer);
 	.framebuffer		0x38000000 : {. = ALIGN(4); KEEP(*(.framebuffer))}
     _framebuffer_end    = LOADADDR(.framebufferEnd);
@@ -187,6 +192,19 @@ SECTIONS
     . = ALIGN(4);
     _ed3_data = .;        /* define a global symbol at data end */
   } >RAM_D3 AT> FLASH
+  
+  _sid2_data = LOADADDR(.d2_data);
+  .d2_data :
+  {
+    . = ALIGN(4);
+    _sd2_data = .;        /* create a global symbol at data start */
+    *(.data)           /* .data sections */
+    *(.data*)          /* .data* sections */
+    *(.RamD2Func)        /* .RamFunc sections */
+    *(.RamD2Func*)       /* .RamFunc* sections */
+    . = ALIGN(4);
+    _ed2_data = .;        /* define a global symbol at data end */
+  } >RAM_D2 AT> FLASH
 
   _siitcm_data = LOADADDR(.itcm_data);
   .itcm_data :

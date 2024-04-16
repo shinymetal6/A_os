@@ -84,7 +84,9 @@
  * @ingroup netifs
  * @verbinclude "ppp.txt"
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
@@ -1626,3 +1628,4 @@ void print_link_stats() {
 #endif /* PPP_STATS_SUPPORT */
 
 #endif /* PPP_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

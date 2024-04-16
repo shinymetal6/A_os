@@ -34,7 +34,9 @@
  *
  * $Id: eui64.c,v 1.6 2002/12/04 23:03:32 paulus Exp $
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPP_IPV6_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
@@ -54,3 +56,4 @@ char *eui64_ntoa(eui64_t e) {
 }
 
 #endif /* PPP_SUPPORT && PPP_IPV6_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

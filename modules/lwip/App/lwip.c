@@ -21,13 +21,19 @@
  */
 
 
+
+
 #include "../../../../A_os/kernel/A.h"
 
 #ifdef	NETWORKING_ENABLED
+#include <string.h>
 #include "lwip.h"
 #include "../LwIp/src/include/lwip/init.h"
 #include "../LwIp/src/include/lwip/netif.h"
 #include "../Target/ethernetif.h"
+#ifndef A_USES_DHCP
+	//#undef 	LWIP_DHCP
+#endif // #ifdef NETWORKING_ENABLED
 
 ETH_DATA_AREA	ETH_DMADescTypeDef DMARxDscrTab[32] ; /* Ethernet Rx DMA Descriptors */
 ETH_DATA_AREA	ETH_DMADescTypeDef DMATxDscrTab[32];   /* Ethernet Tx DMA Descriptors */
@@ -49,6 +55,9 @@ extern	err_t ethernet_input(struct pbuf *p, struct netif *netif);
 
 void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 {
+	memset(&DMARxDscrTab, 0, sizeof(DMARxDscrTab));
+	memset(&DMATxDscrTab, 0, sizeof(DMARxDscrTab));
+
 	lwip_init();
 
 	ipaddr.addr = 0;
@@ -82,16 +91,15 @@ void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 	}
 
 	netif_set_link_callback(&gnetif, ethernet_link_status_updated);
-
-	/* Start DHCP negotiation for a network interface (IPv4) */
-	#if LWIP_DHCP
-	dhcp_start(&gnetif);
-	#endif
 }
 
 extern	A_IpAddr_t	A_DhcpIpAddr;
 extern	Asys_t			Asys;
 
+#define	LWIP_DHCP_INITIAL		10
+#define	LWIP_DHCP_MAX_INTERVAL	160
+uint8_t	lwip_dhcp_tim=0;
+uint8_t	lwip_dhcp_interval=LWIP_DHCP_MAX_INTERVAL/8;
 static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 {
 	/* Ethernet Link every 100ms */
@@ -102,28 +110,51 @@ static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 			EthernetLinkTimer = Asys.g_tick_count;
 			ethernet_link_check_state(netif);
 #if LWIP_DHCP
-			A_DhcpIpAddr.GW_ADDR0 = netif->gw.addr >> 24;
-			A_DhcpIpAddr.GW_ADDR1 = netif->gw.addr >> 16;
-			A_DhcpIpAddr.GW_ADDR2 = netif->gw.addr >> 8;
-			A_DhcpIpAddr.GW_ADDR3 = netif->gw.addr >> 0;
-			A_DhcpIpAddr.IP_ADDR0 = netif->ip_addr.addr >> 24;
-			A_DhcpIpAddr.IP_ADDR1 = netif->ip_addr.addr >> 16;
-			A_DhcpIpAddr.IP_ADDR2 = netif->ip_addr.addr >> 8;
-			A_DhcpIpAddr.IP_ADDR3 = netif->ip_addr.addr >> 0;
+			if (netif_is_link_up(netif))
+			{
+				if ( dhcp_supplied_address(netif) != 1 )
+				{
+					if ( lwip_dhcp_tim > lwip_dhcp_interval )
+					{
+						lwip_dhcp_tim = 0;
+						lwip_dhcp_interval *=2;
+						if ( lwip_dhcp_interval > LWIP_DHCP_MAX_INTERVAL )
+							lwip_dhcp_interval = LWIP_DHCP_INITIAL;
+						dhcp_start(&gnetif);
+					}
+					else
+						lwip_dhcp_tim ++;
+				}
+				else
+				{
+					A_DhcpIpAddr.GW_ADDR0 = netif->gw.addr >> 24;
+					A_DhcpIpAddr.GW_ADDR1 = netif->gw.addr >> 16;
+					A_DhcpIpAddr.GW_ADDR2 = netif->gw.addr >> 8;
+					A_DhcpIpAddr.GW_ADDR3 = netif->gw.addr >> 0;
+					A_DhcpIpAddr.IP_ADDR0 = netif->ip_addr.addr >> 24;
+					A_DhcpIpAddr.IP_ADDR1 = netif->ip_addr.addr >> 16;
+					A_DhcpIpAddr.IP_ADDR2 = netif->ip_addr.addr >> 8;
+					A_DhcpIpAddr.IP_ADDR3 = netif->ip_addr.addr >> 0;
+				}
+			}
 #endif
 		}
 	}
 }
 
+uint8_t MX_is_network_up(void)
+{
+	return dhcp_supplied_address(&gnetif);
+}
+
 void MX_LWIP_Process(void)
 {
-	if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
+	if (Asys.g_os_started )
 	{
 		__disable_irq();
-		Asys.general_flags |= LWIP_LOCK;
 		if (Asys.g_os_started )
 		{
-			if ( gnetif.next == NULL )
+			if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
 			{
 				ethernetif_input(&gnetif);
 				/* Handle timeouts */
@@ -131,7 +162,6 @@ void MX_LWIP_Process(void)
 				Ethernet_Link_Periodic_Handle(&gnetif);
 			}
 		}
-		Asys.general_flags &= ~LWIP_LOCK;
 		__enable_irq();
 	}
 }

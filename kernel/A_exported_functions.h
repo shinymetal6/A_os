@@ -180,9 +180,12 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../modules/dmx512/dmx512.h"
 #endif // #ifdef DMX512_ENABLE
 
+#ifdef NETWORKING_ENABLED
+#include "../modules/lwip/App/lwip.h"
 #ifdef MQTT_ENABLE
 	#include "../modules/mqtt_client/mqtt_client.h"
 #endif // #ifdef MQTT_ENABLE
+#endif // #ifdef NETWORKING_ENABLED
 
 #include "dfu_manager.h"
 

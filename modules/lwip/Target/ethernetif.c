@@ -1,4 +1,3 @@
-/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * File Name          : ethernetif.c
@@ -271,7 +270,6 @@ void ethernetif_input(struct netif *netif)
 {
 struct pbuf *p = NULL;
 
-	__disable_irq();
 	do
 	{
 		p = low_level_input( netif );
@@ -283,7 +281,6 @@ struct pbuf *p = NULL;
 			}
 		}
 	} while(p!=NULL);
-	__enable_irq();
 }
 
 #if !LWIP_ARP

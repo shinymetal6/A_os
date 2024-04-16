@@ -30,7 +30,9 @@
  * This file is part of the lwIP TCP/IP stack.
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 
 #if LWIP_PPP_API /* don't build if not configured for use in lwipopts.h */
@@ -425,3 +427,4 @@ pppapi_ioctl(ppp_pcb *pcb, u8_t cmd, void *arg)
 }
 
 #endif /* LWIP_PPP_API */
+#endif // #ifdef	NETWORKING_ENABLED

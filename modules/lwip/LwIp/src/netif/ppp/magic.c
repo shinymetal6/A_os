@@ -71,7 +71,9 @@
 * 98-06-03 Guy Lancaster <lancasterg@acm.org>, Global Election Systems Inc.
 *   Extracted from avos.
 *****************************************************************************/
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
@@ -292,3 +294,4 @@ u32_t magic_pow(u8_t pow) {
 }
 
 #endif /* PPP_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

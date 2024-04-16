@@ -29,7 +29,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 /* lwIP includes. */
 #include "../../src/include/lwip/debug.h"
 #include "../../src/include/lwip/def.h"
@@ -510,3 +512,4 @@ void sys_arch_unprotect(sys_prot_t pval)
 }
 
 #endif /* !NO_SYS */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -146,7 +146,9 @@
  * Better defines for selecting the ordering of
  *   interface up / set address.
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPP_IPV6_SUPPORT  /* don't build if not configured for use in lwipopts.h */
 
@@ -1531,3 +1533,5 @@ static int ipv6_active_pkt(u_char *pkt, int len) {
 #endif /* DEMAND_SUPPORT */
 
 #endif /* PPP_SUPPORT && PPP_IPV6_SUPPORT */
+
+#endif //	NETWORKING_ENABLED

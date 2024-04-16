@@ -67,7 +67,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && PPPOE_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
@@ -1199,3 +1201,4 @@ pppoe_clear_softc(struct pppoe_softc *sc, const char *message)
 }
 #endif /* UNUSED */
 #endif /* PPP_SUPPORT && PPPOE_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

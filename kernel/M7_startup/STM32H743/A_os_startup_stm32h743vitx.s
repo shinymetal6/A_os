@@ -47,6 +47,8 @@ defined in linker script */
 /* stack used for SystemInit_ExtMemCtl; always internal RAM used */
 
 /* addresses for d3 and itcm code */
+.word  _sd2_data
+.word  _ed2_data
 .word  _sd3_data
 .word  _ed3_data
 .word  _sitcm_code
@@ -87,6 +89,23 @@ LoopCopyDataInit:
   adds r4, r0, r3
   cmp r4, r1
   bcc CopyDataInit
+
+D2Area:
+  ldr r0, =_sd2_data
+  ldr r1, =_ed2_data
+  ldr r2, =_sid2_data
+  movs r3, #0
+  b LoopCopyD2DataInit
+
+CopyD2DataInit:
+  ldr r4, [r2, r3]
+  str r4, [r0, r3]
+  adds r3, r3, #4
+
+LoopCopyD2DataInit:
+  adds r4, r0, r3
+  cmp r4, r1
+  bcc CopyD2DataInit
 
 D3Area:
   ldr r0, =_sd3_data

@@ -27,7 +27,9 @@
  * Modified March 1998 by Guy Lancaster, glanca@gesn.com,
  * for a 16 bit processor.
  */
+#include "../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../../../src/include/netif/ppp/ppp_opts.h"
 #if PPP_SUPPORT && VJ_SUPPORT /* don't build if not configured for use in lwipopts.h */
 
@@ -683,3 +685,4 @@ bad:
 }
 
 #endif /* PPP_SUPPORT && VJ_SUPPORT */
+#endif // #ifdef	NETWORKING_ENABLED

@@ -64,7 +64,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define MQTT_ENABLE				1
 
 #ifdef NETWORKING_ENABLED
-	#undef 	LWIP_DHCP
+	//#undef 	LWIP_DHCP
 #endif // #ifdef NETWORKING_ENABLED
 
 #ifdef USB_ENABLED
