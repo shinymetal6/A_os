@@ -42,6 +42,7 @@ ITCM_AREA_CODE void supervisor(void)
 {
 	while(1)
 	{
+#ifdef	POOL_ENABLE
 		if ((( Asys.system_flags & SYS_MEM_DEFRAG_REQUEST ) == SYS_MEM_DEFRAG_REQUEST) & (Asys.num_buf_in_use == 0))
 			defrag_mem();
 		if ( Asys.failed_process )
@@ -49,16 +50,14 @@ ITCM_AREA_CODE void supervisor(void)
 			reset_orphaned_chunks(Asys.failed_process);
 			Asys.failed_process = Asys.fail_rsn = 0;
 		}
-		//if (( Asys.general_flags & TICKSTATE_FIRED ) == TICKSTATE_FIRED)
-		{
-			Asys.general_flags &= ~TICKSTATE_FIRED;
+#endif
 #ifdef NETWORKING_ENABLED
-			MX_LWIP_Process();
+	    __ASM volatile ("dsb" : : : "memory");
+		MX_LWIP_Process();
 #endif
 #ifdef USB_ENABLED
-			MX_USB_HOST_Process();
+		MX_USB_HOST_Process();
 #endif
-		}
 		supervisor_callback();
 		schedule();
 	}

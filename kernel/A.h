@@ -285,7 +285,6 @@ typedef struct
 } Asys_t;
 
 /* general_flags */
-#define	TICKSTATE_FIRED				0x80
 #define	LWIP_LOCK					0x40
 
 /* system_flags */

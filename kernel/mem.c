@@ -28,6 +28,8 @@
 #include <strings.h>
 #include "kernel_opt.h"
 
+#ifdef	POOL_ENABLE
+
 extern	MEMpool_t	MEMpool[POOL_NUM];
 extern	Asys_t		Asys;
 
@@ -231,3 +233,4 @@ uint8_t		chunk_count,i;
 	return 0;
 }
 
+#endif // #ifdef	POOL_ENABLE

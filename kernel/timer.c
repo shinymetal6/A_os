@@ -65,7 +65,7 @@ ITCM_AREA_CODE int32_t A_GetTick(void)
 	return Asys.g_tick_count;
 }
 
-/*ITCM_AREA_CODE*/ uint32_t HAL_GetTick(void)
+ITCM_AREA_CODE uint32_t HAL_GetTick(void)
 {
 uint32_t	ret_val;
 	//__disable_irq();
@@ -142,8 +142,6 @@ ITCM_AREA_CODE void  SysTick_Handler(void)
 
 		if ( after_check_timers_callback != NULL)
 			after_check_timers_callback();
-
-		Asys.general_flags |= TICKSTATE_FIRED;
 
 		//pend the pendsv exception
 		schedule();

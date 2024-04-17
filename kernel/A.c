@@ -138,11 +138,17 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
 
 void A_init_mem(void)
 {
+    __ASM volatile ("dsb" : : : "memory");
 	bzero((uint8_t *)&Asys,sizeof(Asys));
+    __ASM volatile ("dsb" : : : "memory");
 	bzero((uint8_t *)HWMngr,sizeof(HWMngr));
+    __ASM volatile ("dsb" : : : "memory");
 	bzero((uint8_t *)process,sizeof(process));
-	bzero((uint8_t *)POOL_START,POOL_SIZE);
+    __ASM volatile ("dsb" : : : "memory");
 	bzero((uint8_t *)SRAM_START,SRAM_SIZE);
+#ifdef	POOL_ENABLE
+	bzero((uint8_t *)POOL_START,POOL_SIZE);
+#endif
 #ifdef CUSTOM_RAM
 	bzero((uint8_t *)CUSTOM_RAM__START,CUSTOM_RAM__SIZE);
 #endif

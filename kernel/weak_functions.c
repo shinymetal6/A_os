@@ -89,7 +89,6 @@ __weak void A_PreOS_Init(void)
 	HAL_Delay(1);
 #endif
 	MX_LWIP_Init(&A_IpAddr);
-
 #endif
 }
 
