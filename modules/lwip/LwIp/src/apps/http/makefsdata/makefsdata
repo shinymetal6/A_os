@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-open(OUTPUT, "> fsdata.c");
+open(OUTPUT, "> ../fsdata.c");
 
-chdir("fs");
+chdir("../fs");
 open(FILES, "find . -type f |");
 
 while($file = <FILES>) {

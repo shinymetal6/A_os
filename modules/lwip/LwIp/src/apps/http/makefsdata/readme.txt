@@ -1,13 +1,8 @@
+A_os fixed
 This directory contains a script ('makefsdata') to create C code suitable for
-httpd for given html pages (or other files) in a directory.
+httpd for given html pages (or other files) in the ../fs directory.
 
-There is also a plain C console application doing the same and extended a bit.
+The generated file will overwrite the ../fsdata.c file.
 
-Usage: htmlgen [targetdir] [-s] [-i]s
-   targetdir: relative or absolute path to files to convert
-   switch -s: toggle processing of subdirectories (default is on)
-   switch -e: exclude HTTP header from file (header is created at runtime, default is on)
-   switch -11: include HTTP 1.1 header (1.0 is default)
+Images and others should be supported as well
 
-  if targetdir not specified, makefsdata will attempt to
-  process files in subdirectory 'fs'.

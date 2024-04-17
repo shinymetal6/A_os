@@ -294,7 +294,8 @@
  * a lot of data that needs to be copied, this should be set high.
  */
 #if !defined MEM_SIZE || defined __DOXYGEN__
-#define MEM_SIZE                        1600
+//#define MEM_SIZE                        1600
+#define MEM_SIZE                        16384
 #endif
 
 /**

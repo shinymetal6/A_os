@@ -103,42 +103,39 @@ uint8_t	lwip_dhcp_interval=LWIP_DHCP_MAX_INTERVAL/8;
 static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 {
 	/* Ethernet Link every 100ms */
-	if (Asys.g_os_started )
+	if ((Asys.g_tick_count - EthernetLinkTimer) >= 100)
 	{
-		if ((Asys.g_tick_count - EthernetLinkTimer) >= 100)
-		{
-			EthernetLinkTimer = Asys.g_tick_count;
-			ethernet_link_check_state(netif);
+		EthernetLinkTimer = Asys.g_tick_count;
+		ethernet_link_check_state(netif);
 #if LWIP_DHCP
-			if (netif_is_link_up(netif))
+		if (netif_is_link_up(netif))
+		{
+			if ( dhcp_supplied_address(netif) != 1 )
 			{
-				if ( dhcp_supplied_address(netif) != 1 )
+				if ( lwip_dhcp_tim > lwip_dhcp_interval )
 				{
-					if ( lwip_dhcp_tim > lwip_dhcp_interval )
-					{
-						lwip_dhcp_tim = 0;
-						lwip_dhcp_interval *=2;
-						if ( lwip_dhcp_interval > LWIP_DHCP_MAX_INTERVAL )
-							lwip_dhcp_interval = LWIP_DHCP_INITIAL;
-						dhcp_start(&gnetif);
-					}
-					else
-						lwip_dhcp_tim ++;
+					lwip_dhcp_tim = 0;
+					lwip_dhcp_interval *=2;
+					if ( lwip_dhcp_interval > LWIP_DHCP_MAX_INTERVAL )
+						lwip_dhcp_interval = LWIP_DHCP_INITIAL;
+					dhcp_start(&gnetif);
 				}
 				else
-				{
-					A_DhcpIpAddr.GW_ADDR0 = netif->gw.addr >> 24;
-					A_DhcpIpAddr.GW_ADDR1 = netif->gw.addr >> 16;
-					A_DhcpIpAddr.GW_ADDR2 = netif->gw.addr >> 8;
-					A_DhcpIpAddr.GW_ADDR3 = netif->gw.addr >> 0;
-					A_DhcpIpAddr.IP_ADDR0 = netif->ip_addr.addr >> 24;
-					A_DhcpIpAddr.IP_ADDR1 = netif->ip_addr.addr >> 16;
-					A_DhcpIpAddr.IP_ADDR2 = netif->ip_addr.addr >> 8;
-					A_DhcpIpAddr.IP_ADDR3 = netif->ip_addr.addr >> 0;
-				}
+					lwip_dhcp_tim ++;
 			}
-#endif
+			else
+			{
+				A_DhcpIpAddr.GW_ADDR0 = netif->gw.addr >> 24;
+				A_DhcpIpAddr.GW_ADDR1 = netif->gw.addr >> 16;
+				A_DhcpIpAddr.GW_ADDR2 = netif->gw.addr >> 8;
+				A_DhcpIpAddr.GW_ADDR3 = netif->gw.addr >> 0;
+				A_DhcpIpAddr.IP_ADDR0 = netif->ip_addr.addr >> 24;
+				A_DhcpIpAddr.IP_ADDR1 = netif->ip_addr.addr >> 16;
+				A_DhcpIpAddr.IP_ADDR2 = netif->ip_addr.addr >> 8;
+				A_DhcpIpAddr.IP_ADDR3 = netif->ip_addr.addr >> 0;
+			}
 		}
+#endif
 	}
 }
 
