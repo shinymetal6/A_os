@@ -47,5 +47,8 @@ typedef struct
 extern	void mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass);
 extern	void mqtt_client_set_flags(uint8_t qos,uint8_t retain,uint8_t max_collisions,uint8_t retry_time_after_collision);
 extern	uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len);
+extern	uint32_t mqtt_client_change_identity(char *client_identity);
+extern	uint32_t mqtt_client_change_credentials(char *client_user, char *client_pass);
+extern	uint32_t mqtt_client_change_broker(char *broker_ip_addr);
 
 #endif /* MODULES_MQTT_CLIENT_MQTT_CLIENT_H_ */
