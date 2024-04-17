@@ -57,6 +57,7 @@ void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 {
 	memset(&DMARxDscrTab, 0, sizeof(DMARxDscrTab));
 	memset(&DMATxDscrTab, 0, sizeof(DMARxDscrTab));
+	memset(&gnetif, 0, sizeof(gnetif));
 
 	lwip_init();
 
@@ -93,6 +94,14 @@ void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 	netif_set_link_callback(&gnetif, ethernet_link_status_updated);
 }
 
+extern	void httpd_init(void);
+
+void MX_LWIP_HttpdStart(void)
+{
+	httpd_init();
+	HAL_Delay(1);
+}
+
 extern	A_IpAddr_t	A_DhcpIpAddr;
 extern	Asys_t			Asys;
 
@@ -100,6 +109,7 @@ extern	Asys_t			Asys;
 #define	LWIP_DHCP_MAX_INTERVAL	160
 uint8_t	lwip_dhcp_tim=0;
 uint8_t	lwip_dhcp_interval=LWIP_DHCP_MAX_INTERVAL/8;
+uint8_t	lwip_dhcp_err=0;
 static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 {
 	/* Ethernet Link every 100ms */
@@ -118,7 +128,11 @@ static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 					lwip_dhcp_interval *=2;
 					if ( lwip_dhcp_interval > LWIP_DHCP_MAX_INTERVAL )
 						lwip_dhcp_interval = LWIP_DHCP_INITIAL;
-					dhcp_start(&gnetif);
+					if ( dhcp_start(&gnetif) != 0 )
+					{
+						lwip_dhcp_err++;
+						return;
+					}
 				}
 				else
 					lwip_dhcp_tim ++;

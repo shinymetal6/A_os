@@ -33,17 +33,18 @@ extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_SIZE			    (POOL_END - POOL_START)
 // POOL_NUM must be a constant value to compile
 #define	POOL_NUM			    32
+//#define POOL_ENABLE				1
 
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SRAM_START				(uint32_t )(&_osSysRam_start)
 #define SRAM_END				(uint32_t )(&_osSysRam_end)
 #define SRAM_SIZE				(&_osSysRam_end - &_osSysRam_start)
-#define SIZE_SCHED_STACK		2048U
+#define SIZE_SCHED_STACK		4096U
 #define SCHED_STACK_START		SRAM_END
 
 #define IDLE_STACK_START		(uint32_t )(&_osSysRam_end - SIZE_SCHED_STACK)
-#define SIZE_IDLE_STACK          2048U
+#define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 
 /* I/O */
@@ -55,14 +56,16 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	QSPI_ENABLED			1
 #define	WIRELESS_ENABLED		1
 #define	WIRELESS_NRF24L01		1
-#define	LORA_ENABLED			1
-#define	NETWORKING_ENABLED				1
+//#define	LORA_ENABLED			1
+#define	NETWORKING_ENABLED			1
 #define	USB_ENABLED				1
 #define	XMODEM_ENABLE			1
 #define	MODBUS_ENABLE			1
+#define SENSORS_CCS8118			1
+#define MQTT_ENABLE				1
 
 #ifdef NETWORKING_ENABLED
-	#undef 	LWIP_DHCP
+	//#undef 	LWIP_DHCP
 #endif // #ifdef NETWORKING_ENABLED
 
 #ifdef USB_ENABLED
@@ -112,6 +115,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 
 //#define	A_HAS_UART1			1
 #define	A_HAS_UART2			1
@@ -132,7 +136,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_SPI_BUS				1
 #endif
 
-//#define	A_HAS_I2C1				1
+#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
 //#define	A_HAS_I2C3				1
 //#define	A_HAS_I2C4				1

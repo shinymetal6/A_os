@@ -41,7 +41,7 @@ extern ETH_HandleTypeDef heth;
 
 extern	void MX_LWIP_Process(void);
 extern	uint8_t MX_is_network_up(void);
-
+extern	void MX_LWIP_HttpdStart(void);
 
 #ifdef __cplusplus
 }

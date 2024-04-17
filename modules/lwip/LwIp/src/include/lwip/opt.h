@@ -295,7 +295,7 @@
  */
 #if !defined MEM_SIZE || defined __DOXYGEN__
 //#define MEM_SIZE                        1600
-#define MEM_SIZE                        16384
+#define MEM_SIZE                        1600
 #endif
 
 /**

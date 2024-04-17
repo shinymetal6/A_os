@@ -286,7 +286,9 @@ void A_start(void)
 	init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);
-	A_mem_init();
+#ifdef POOL_ENABLE
+	//A_mem_init();
+#endif // #ifdef	POOL_ENABLE
 #ifdef DATA_CACHE_ENABLE
 #ifdef	STM32H743xx
 	A_MPU_Config();
