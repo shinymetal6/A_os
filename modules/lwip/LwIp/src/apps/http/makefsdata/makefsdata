@@ -1,8 +1,20 @@
 #!/usr/bin/perl
 
-open(OUTPUT, "> ../fsdata.c");
+use Getopt::Long;
+my $htmldir   = "../fs";
+$result = GetOptions ("folder=s"   => \$htmldir);
+my $folderdir = "../$htmldir";
 
-chdir("../fs");
+if (! -e $folderdir) {
+	print("$folderdir does not exists\r\n");
+	exit;
+}
+open(OUTPUT, "> ../fsdata.c");
+print("Processing data in ");
+print($folderdir);
+print("\r\n");
+#chdir("../fs");
+chdir("$folderdir");
 open(FILES, "find . -type f |");
 
 while($file = <FILES>) {
@@ -95,3 +107,4 @@ for($i = 0; $i < @fvars; $i++) {
 
 print(OUTPUT "#define FS_ROOT file$fvars[$i - 1]\n\n");
 print(OUTPUT "#define FS_NUMFILES $i\n");
+print("Done\r\n");

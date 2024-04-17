@@ -6,3 +6,5 @@ The generated file will overwrite the ../fsdata.c file.
 
 Images and others should be supported as well
 
+Please note : the generated fsdata.c must not be included in compilation
+
