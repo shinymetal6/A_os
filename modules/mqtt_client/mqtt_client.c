@@ -97,8 +97,10 @@ ip_addr_t Subscriber_ip;
 char	arg[32] = "mqtt_arg";
 int8_t	err;
 
+	__disable_irq();
 	while (( Asys.general_flags & LWIP_LOCK) == LWIP_LOCK)
 	{
+		__enable_irq();
 		task_delay(5);
 		A_MQTT_SubInfo.collisions++;
 		if ( A_MQTT_SubInfo.collisions > A_MQTT_SubInfo.max_collisions )

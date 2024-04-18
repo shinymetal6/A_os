@@ -106,7 +106,7 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"Aos v2024.03.00-rc4"
+#define	A_OS_VERSION			"Aos v2024.05.00-rc1"
 #define	DEFAULT_APP_NAME		"Sample apps"
 #define	DEFAULT_APP_VERSION		" "
 

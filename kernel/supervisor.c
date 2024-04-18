@@ -53,7 +53,14 @@ ITCM_AREA_CODE void supervisor(void)
 #endif
 #ifdef NETWORKING_ENABLED
 	    __ASM volatile ("dsb" : : : "memory");
-		MX_LWIP_Process();
+		__disable_irq();
+		if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
+		{
+			Asys.general_flags |= LWIP_LOCK;
+			__enable_irq();
+			MX_LWIP_Process();
+			Asys.general_flags &= ~LWIP_LOCK;
+		}
 #endif
 #ifdef USB_ENABLED
 		MX_USB_HOST_Process();

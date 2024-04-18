@@ -20,9 +20,6 @@
  *      Author: fil
  */
 
-
-
-
 #include "../../../../A_os/kernel/A.h"
 
 #ifdef	NETWORKING_ENABLED
@@ -160,33 +157,22 @@ uint8_t MX_is_network_up(void)
 
 void MX_LWIP_Process(void)
 {
-	if (Asys.g_os_started )
-	{
-		__disable_irq();
-		if (Asys.g_os_started )
-		{
-			if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
-			{
-				ethernetif_input(&gnetif);
-				/* Handle timeouts */
-				sys_check_timeouts();
-				Ethernet_Link_Periodic_Handle(&gnetif);
-			}
-		}
-		__enable_irq();
-	}
+	ethernetif_input(&gnetif);
+	/* Handle timeouts */
+	sys_check_timeouts();
+	Ethernet_Link_Periodic_Handle(&gnetif);
 }
 
 static void ethernet_link_status_updated(struct netif *netif)
 {
-	__disable_irq();
+	//__disable_irq();
 	if (netif_is_up(netif))
 	{
 	}
 	else /* netif is down */
 	{
 	}
-	__enable_irq();
+	//__enable_irq();
 }
 
 #endif	//#ifdef	NETWORKING_ENABLED

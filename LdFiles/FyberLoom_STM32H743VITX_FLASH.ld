@@ -37,8 +37,8 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x200;      /* required amount of heap  */
-_Min_Stack_Size = 0x400; /* required amount of stack */
+_Min_Heap_Size = 0x800;      /* required amount of heap  */
+_Min_Stack_Size = 0x800; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
@@ -57,15 +57,15 @@ SECTIONS
 	_osSysRam_start     = LOADADDR(.osSysRamStart);
 	.osSysRamStart 		0x20000000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
-	.osSysRamEnd 		0x20008000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	.osSysRamEnd 		0x20010000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 
 	_dtcm_user_data_start  = LOADADDR(.dtcm_user_data);
-	.dtcm_user_data	 	0x20008000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
+	.dtcm_user_data	 	0x20010000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
 	_dtcm_user_data_end  	= LOADADDR(.dtcm_user_data_end);
-	.dtcm_user_data_end	0x2001E000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
+	.dtcm_user_data_end	0x2001C000 : {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
-	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+	.osMemPoolStart		0x2001C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
 	.osMemPoolEnd  		0x20020000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
 		
