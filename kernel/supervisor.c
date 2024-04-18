@@ -57,8 +57,8 @@ ITCM_AREA_CODE void supervisor(void)
 		if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
 		{
 			Asys.general_flags |= LWIP_LOCK;
-			__enable_irq();
 			MX_LWIP_Process();
+			__enable_irq();
 			Asys.general_flags &= ~LWIP_LOCK;
 		}
 #endif

@@ -98,10 +98,11 @@ char	arg[32] = "mqtt_arg";
 int8_t	err;
 
 	__disable_irq();
+	A_MQTT_SubInfo.collisions = 0;
 	while (( Asys.general_flags & LWIP_LOCK) == LWIP_LOCK)
 	{
 		__enable_irq();
-		task_delay(5);
+		task_delay(1);
 		A_MQTT_SubInfo.collisions++;
 		if ( A_MQTT_SubInfo.collisions > A_MQTT_SubInfo.max_collisions )
 			return 0;
@@ -181,7 +182,6 @@ ip_addr_t Subscriber_ip;
 	A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
 	return (uint32_t )A_MQTT_SubInfo.mqtt_err_c;
 }
-
 
 #endif
 

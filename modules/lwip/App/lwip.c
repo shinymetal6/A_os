@@ -158,9 +158,12 @@ uint8_t MX_is_network_up(void)
 void MX_LWIP_Process(void)
 {
 	ethernetif_input(&gnetif);
+
 	/* Handle timeouts */
 	sys_check_timeouts();
+	__disable_irq();
 	Ethernet_Link_Periodic_Handle(&gnetif);
+	__enable_irq();
 }
 
 static void ethernet_link_status_updated(struct netif *netif)
