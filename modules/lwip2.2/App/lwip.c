@@ -66,9 +66,9 @@ void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 	ip_addr_set_zero_ip4(&gw);
 	#else
 	/* IP address default setting */
-	IP4_ADDR(&ipaddr, A_IpAddr->IP_ADDR0, A_IpAddr->IP_ADDR1, A_IpAddr->IP_ADDR2, A_IpAddr->IP_ADDR3);
-	IP4_ADDR(&netmask, A_IpAddr->NETMASK_ADDR0, A_IpAddr->NETMASK_ADDR1 , A_IpAddr->NETMASK_ADDR2, A_IpAddr->NETMASK_ADDR3);
-	IP4_ADDR(&gw, A_IpAddr->GW_ADDR0, A_IpAddr->GW_ADDR1, A_IpAddr->GW_ADDR2, A_IpAddr->GW_ADDR3);
+	IP4_ADDR(&ipaddr, A_IpAddr->IP_ADDRHH, A_IpAddr->IP_ADDRHL, A_IpAddr->IP_ADDRLH, A_IpAddr->IP_ADDRLL);
+	IP4_ADDR(&netmask, A_IpAddr->NETMASK_ADDRHH, A_IpAddr->NETMASK_ADDRHL , A_IpAddr->NETMASK_ADDRLH, A_IpAddr->NETMASK_ADDRLL);
+	IP4_ADDR(&gw, A_IpAddr->GW_ADDRHH, A_IpAddr->GW_ADDRHL, A_IpAddr->GW_ADDRLH, A_IpAddr->GW_ADDRLL);
 	#endif
 
 	netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);

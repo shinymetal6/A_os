@@ -941,7 +941,7 @@
 /**
  * LWIP_DHCP==1: Enable DHCP module.
  */
-#define	ORIG_LWIP_DEFS
+//#define	ORIG_LWIP_DEFS
 #ifdef ORIG_LWIP_DEFS
 #if !defined LWIP_DHCP || defined __DOXYGEN__
 #define LWIP_DHCP                       1
