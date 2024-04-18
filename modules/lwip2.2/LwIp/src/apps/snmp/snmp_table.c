@@ -35,12 +35,12 @@
  *
  */
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/apps/snmp_core.h"
-#include "lwip/apps/snmp_table.h"
+#include "/apps/snmp_core.h"
+#include "/apps/snmp_table.h"
 #include <string.h>
 
 snmp_err_t snmp_table_get_instance(const u32_t *root_oid, u8_t root_oid_len, struct snmp_node_instance *instance)

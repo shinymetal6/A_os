@@ -32,17 +32,17 @@
  * Author: Dirk Ziegelmeier <dziegel@gmx.de>
  */
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP && SNMP_USE_NETCONN
 
 #include <string.h>
-#include "lwip/api.h"
-#include "lwip/ip.h"
-#include "lwip/udp.h"
+#include "../../include/lwip/api.h"
+#include "../../include/lwip/ip.h"
+#include "../../include/lwip/udp.h"
 #include "snmp_msg.h"
-#include "lwip/sys.h"
-#include "lwip/prot/iana.h"
+#include "../../include/lwip/sys.h"
+#include "../../include/lwip/prot/iana.h"
 
 /** SNMP netconn API worker thread */
 static void

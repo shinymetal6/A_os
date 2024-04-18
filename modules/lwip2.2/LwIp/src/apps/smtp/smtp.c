@@ -54,16 +54,16 @@
  *
  */
 
-#include "lwip/apps/smtp.h"
+#include "../../include/lwip/apps/smtp.h"
 
 #if LWIP_TCP && LWIP_CALLBACK_API
-#include "lwip/sys.h"
-#include "lwip/sockets.h"
-#include "lwip/altcp.h"
-#include "lwip/dns.h"
-#include "lwip/mem.h"
-#include "lwip/altcp_tcp.h"
-#include "lwip/altcp_tls.h"
+#include "../../include/lwip/sys.h"
+#include "../../include/lwip/sockets.h"
+#include "../../include/lwip/altcp.h"
+#include "../../include/lwip/dns.h"
+#include "../../include/lwip/mem.h"
+#include "../../include/lwip/altcp_tcp.h"
+#include "../../include/lwip/altcp_tls.h"
 
 #include <string.h> /* strlen, memcpy */
 #include <stdlib.h>

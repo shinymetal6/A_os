@@ -55,19 +55,19 @@
  *
  */
 
-#include "lwip/apps/mdns.h"
-#include "lwip/apps/mdns_priv.h"
-#include "lwip/apps/mdns_domain.h"
-#include "lwip/apps/mdns_out.h"
-#include "lwip/netif.h"
-#include "lwip/udp.h"
-#include "lwip/ip_addr.h"
-#include "lwip/mem.h"
-#include "lwip/memp.h"
-#include "lwip/prot/dns.h"
-#include "lwip/prot/iana.h"
-#include "lwip/timeouts.h"
-#include "lwip/sys.h"
+#include "../../include/lwip/apps/mdns.h"
+#include "../../include/lwip/apps/mdns_priv.h"
+#include "../../include/lwip/apps/mdns_domain.h"
+#include "../../include/lwip/apps/mdns_out.h"
+#include "../../include/lwip/netif.h"
+#include "../../include/lwip/udp.h"
+#include "../../include/lwip/ip_addr.h"
+#include "../../include/lwip/mem.h"
+#include "../../include/lwip/memp.h"
+#include "../../include/lwip/prot/dns.h"
+#include "../../include/lwip/prot/iana.h"
+#include "../../include/lwip/timeouts.h"
+#include "../../include/lwip/sys.h"
 
 #include <string.h> /* memset */
 #include <stdio.h>  /* snprintf */

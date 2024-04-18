@@ -33,16 +33,16 @@
  *         Christiaan Simons <christiaan.simons@axon.tv>
  */
 
-#include "lwip/snmp.h"
-#include "lwip/apps/snmp.h"
-#include "lwip/apps/snmp_core.h"
-#include "lwip/apps/snmp_mib2.h"
-#include "lwip/apps/snmp_table.h"
-#include "lwip/apps/snmp_scalar.h"
-#include "lwip/stats.h"
-#include "lwip/netif.h"
-#include "lwip/ip.h"
-#include "lwip/etharp.h"
+#include "../../include/lwip/snmp.h"
+#include "../../include/lwip/apps/snmp.h"
+#include "../../include/lwip/apps/snmp_core.h"
+#include "../../include/lwip/apps/snmp_mib2.h"
+#include "../../include/lwip/apps/snmp_table.h"
+#include "../../include/lwip/apps/snmp_scalar.h"
+#include "../../include/lwip/stats.h"
+#include "../../include/lwip/netif.h"
+#include "../../include/lwip/ip.h"
+#include "../../include/lwip/etharp.h"
 
 #if LWIP_SNMP && SNMP_LWIP_MIB2
 

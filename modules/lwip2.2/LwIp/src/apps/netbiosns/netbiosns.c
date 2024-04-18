@@ -46,15 +46,15 @@
  *   http://www.xpablo.cz/?p=751#more-751
  */
 
-#include "lwip/apps/netbiosns.h"
+#include "../../include/lwip/apps/netbiosns.h"
 
 #if LWIP_IPV4 && LWIP_UDP  /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/def.h"
-#include "lwip/udp.h"
-#include "lwip/ip.h"
-#include "lwip/netif.h"
-#include "lwip/prot/iana.h"
+#include "../../include/lwip/def.h"
+#include "../../include/lwip/udp.h"
+#include "../../include/lwip/ip.h"
+#include "../../include/lwip/netif.h"
+#include "../../include/lwip/prot/iana.h"
 
 #include <string.h>
 

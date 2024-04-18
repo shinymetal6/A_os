@@ -48,17 +48,17 @@
  *   after enqueueing for transmission, not when actually ACKed be the remote host.
  */
 
-#include "lwip/opt.h"
+#include "../../include/lwip/opt.h"
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/apps/altcp_tls_mbedtls_opts.h"
+#include "../../include/lwip/apps/altcp_tls_mbedtls_opts.h"
 
 #if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
 #include "altcp_tls_mbedtls_mem.h"
 #include "altcp_tls_mbedtls_structs.h"
-#include "lwip/mem.h"
+#include "../../include/lwip/mem.h"
 
 #include "mbedtls/platform.h"
 

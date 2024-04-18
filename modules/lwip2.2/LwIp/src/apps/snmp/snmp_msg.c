@@ -35,18 +35,18 @@
  *         Elias Oenal <lwip@eliasoenal.com>
  */
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
 #include "snmp_msg.h"
 #include "snmp_asn1.h"
 #include "snmp_core_priv.h"
-#include "lwip/ip_addr.h"
-#include "lwip/stats.h"
+#include "../../include/lwip/ip_addr.h"
+#include "../../include/lwip/stats.h"
 
 #if LWIP_SNMP_V3
-#include "lwip/apps/snmpv3.h"
+#include "../../include/lwip/apps/snmpv3.h"
 #include "snmpv3_priv.h"
 #ifdef LWIP_HOOK_FILENAME
 #include LWIP_HOOK_FILENAME

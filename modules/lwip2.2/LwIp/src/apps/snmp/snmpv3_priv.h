@@ -35,11 +35,11 @@
 #ifndef LWIP_HDR_APPS_SNMP_V3_PRIV_H
 #define LWIP_HDR_APPS_SNMP_V3_PRIV_H
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP && LWIP_SNMP_V3
 
-#include "lwip/apps/snmpv3.h"
+#include "../../include/lwip/apps/snmpv3.h"
 #include "snmp_pbuf_stream.h"
 
 /* According to RFC 3411 */

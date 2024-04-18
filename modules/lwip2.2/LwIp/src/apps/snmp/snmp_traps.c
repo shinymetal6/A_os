@@ -36,17 +36,17 @@
  *
  */
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
 #include <string.h>
 
-#include "lwip/snmp.h"
-#include "lwip/sys.h"
-#include "lwip/apps/snmp.h"
-#include "lwip/apps/snmp_core.h"
-#include "lwip/prot/iana.h"
+#include "../../include/lwip/snmp.h"
+#include "../../include/lwip/sys.h"
+#include "../../include/lwip/apps/snmp.h"
+#include "../../include/lwip/apps/snmp_core.h"
+#include "../../include/lwip/prot/iana.h"
 #include "snmp_msg.h"
 #include "snmp_asn1.h"
 #include "snmp_core_priv.h"

@@ -179,14 +179,14 @@
  * @ingroup snmp
  */
 
-#include "lwip/apps/snmp_opts.h"
+#include "../../include/lwip/apps/snmp_opts.h"
 
 #if LWIP_SNMP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/apps/snmp.h"
-#include "lwip/apps/snmp_core.h"
+#include "../../include/lwip/apps/snmp.h"
+#include "../../include/lwip/apps/snmp_core.h"
 #include "snmp_core_priv.h"
-#include "lwip/netif.h"
+#include "../../include/lwip/netif.h"
 #include <string.h>
 
 

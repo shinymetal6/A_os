@@ -49,11 +49,11 @@
  * Author: Simon Goldschmidt
  */
 
-#include "lwip/apps/lwiperf.h"
+#include "../../include/lwip/apps/lwiperf.h"
 
-#include "lwip/tcp.h"
-#include "lwip/sys.h"
-#include "lwip/inet.h"
+#include "../../include/lwip/tcp.h"
+#include "../../include/lwip/sys.h"
+#include "../../include/lwip/inet.h"
 
 #include <string.h>
 

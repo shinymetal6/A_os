@@ -51,15 +51,15 @@
  * - complete SNTP_CHECK_RESPONSE checks 3 and 4
  */
 
-#include "lwip/apps/sntp.h"
+#include "../../include/lwip/apps/sntp.h"
 
-#include "lwip/opt.h"
-#include "lwip/timeouts.h"
-#include "lwip/udp.h"
-#include "lwip/dns.h"
-#include "lwip/ip_addr.h"
-#include "lwip/pbuf.h"
-#include "lwip/dhcp.h"
+#include "../../include/lwip/opt.h"
+#include "../../include/lwip/timeouts.h"
+#include "../../include/lwip/udp.h"
+#include "../../include/lwip/dns.h"
+#include "../../include/lwip/ip_addr.h"
+#include "../../include/lwip/pbuf.h"
+#include "../../include/lwip/dhcp.h"
 
 #include <string.h>
 #include <time.h>

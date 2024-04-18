@@ -33,8 +33,8 @@
  */
 
 #include "snmpv3_priv.h"
-#include "lwip/apps/snmpv3.h"
-#include "lwip/sys.h"
+#include "../../include/lwip/apps/snmpv3.h"
+#include "../../include/lwip/sys.h"
 #include <string.h>
 
 #if LWIP_SNMP && LWIP_SNMP_V3

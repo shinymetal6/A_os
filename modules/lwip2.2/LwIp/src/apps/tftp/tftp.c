@@ -48,14 +48,14 @@
  * You need to increase MEMP_NUM_SYS_TIMEOUT by one if you use TFTP!
  */
 
-#include "lwip/apps/tftp_client.h"
-#include "lwip/apps/tftp_server.h"
+#include "../../include/lwip/apps/tftp_client.h"
+#include "../../include/lwip/apps/tftp_server.h"
 
 #if LWIP_UDP
 
-#include "lwip/udp.h"
-#include "lwip/timeouts.h"
-#include "lwip/debug.h"
+#include "../../include/lwip/udp.h"
+#include "../../include/lwip/timeouts.h"
+#include "../../include/lwip/debug.h"
 
 #define TFTP_MAX_PAYLOAD_SIZE 512
 #define TFTP_HEADER_LENGTH    4

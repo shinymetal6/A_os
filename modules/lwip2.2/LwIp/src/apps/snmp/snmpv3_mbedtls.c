@@ -33,11 +33,11 @@
  *         Dirk Ziegelmeier <dirk@ziegelmeier.net>
  */
 
-#include "lwip/apps/snmpv3.h"
+#include "../../include/lwip/apps/snmpv3.h"
 #include "snmpv3_priv.h"
-#include "lwip/arch.h"
+#include "../../include/lwip/arch.h"
 #include "snmp_msg.h"
-#include "lwip/sys.h"
+#include "../../include/lwip/sys.h"
 #include <string.h>
 
 #if LWIP_SNMP && LWIP_SNMP_V3 && LWIP_SNMP_V3_MBEDTLS

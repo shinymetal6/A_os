@@ -51,18 +51,18 @@
  * - some unhandled/untested things might be caught by LWIP_ASSERTs...
  */
 
-#include "lwip/opt.h"
-#include "lwip/sys.h"
+#include "../../include/lwip/opt.h"
+#include "../../include/lwip/sys.h"
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
 
-#include "lwip/apps/altcp_tls_mbedtls_opts.h"
+#include "../../include/lwip/apps/altcp_tls_mbedtls_opts.h"
 
 #if LWIP_ALTCP_TLS && LWIP_ALTCP_TLS_MBEDTLS
 
-#include "lwip/altcp.h"
-#include "lwip/altcp_tls.h"
-#include "lwip/priv/altcp_priv.h"
+#include "../../include/lwip/altcp.h"
+#include "../../include/lwip/altcp_tls.h"
+#include "../../include/lwip/priv/altcp_priv.h"
 
 #include "altcp_tls_mbedtls_structs.h"
 #include "altcp_tls_mbedtls_mem.h"
