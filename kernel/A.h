@@ -316,18 +316,18 @@ typedef struct
 
 typedef struct
 {
-	uint8_t		IP_ADDR0;
-	uint8_t		IP_ADDR1;
-	uint8_t		IP_ADDR2;
-	uint8_t		IP_ADDR3;
-	uint8_t		NETMASK_ADDR0;
-	uint8_t		NETMASK_ADDR1;
-	uint8_t		NETMASK_ADDR2;
-	uint8_t		NETMASK_ADDR3;
-	uint8_t		GW_ADDR0;
-	uint8_t		GW_ADDR1;
-	uint8_t		GW_ADDR2;
-	uint8_t		GW_ADDR3;
+	uint8_t		IP_ADDRHH;
+	uint8_t		IP_ADDRHL;
+	uint8_t		IP_ADDRLH;
+	uint8_t		IP_ADDRLL;
+	uint8_t		NETMASK_ADDRHH;
+	uint8_t		NETMASK_ADDRHL;
+	uint8_t		NETMASK_ADDRLH;
+	uint8_t		NETMASK_ADDRLL;
+	uint8_t		GW_ADDRHH;
+	uint8_t		GW_ADDRHL;
+	uint8_t		GW_ADDRLH;
+	uint8_t		GW_ADDRLL;
 }A_IpAddr_t;
 
 extern	void A_PreOS_Init(void);

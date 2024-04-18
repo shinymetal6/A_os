@@ -61,20 +61,21 @@ extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 #ifdef	NETWORKING_ENABLED
 A_IpAddr_t	A_IpAddr =
 {
-		.IP_ADDR0 		= 192,
-		.IP_ADDR1 		= 168,
-		.IP_ADDR2		= 10,
-		.IP_ADDR3 		= 220,
-		.NETMASK_ADDR0	= 255,
-		.NETMASK_ADDR1 	= 255,
-		.NETMASK_ADDR2 	= 255,
-		.NETMASK_ADDR3 	= 0,
-		.GW_ADDR0 		= 192,
-		.GW_ADDR1 		= 168,
-		.GW_ADDR2 		= 10,
-		.GW_ADDR3 		= 1
+		.IP_ADDRHH 		= 192,
+		.IP_ADDRHL 		= 168,
+		.IP_ADDRLH		= 10,
+		.IP_ADDRLL 		= 210,
+		.NETMASK_ADDRHH	= 255,
+		.NETMASK_ADDRHL	= 255,
+		.NETMASK_ADDRLH	= 255,
+		.NETMASK_ADDRLL	= 0,
+		.GW_ADDRHH 		= 192,
+		.GW_ADDRHL 		= 168,
+		.GW_ADDRLH 		= 10,
+		.GW_ADDRLL 		= 1
 };
-SYSTEM_RAM	A_IpAddr_t	A_DhcpIpAddr;
+A_IpAddr_t	A_DhcpIpAddr;
+
 #endif
 
 uint32_t	UsbDeviceId0 = 0xdeadbeef;

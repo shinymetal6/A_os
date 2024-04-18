@@ -30,7 +30,7 @@
 #include "mqtt_client.h"
 
 #ifdef	STM32H743xx
-#include "../../modules/lwip/LwIp/src/include/lwip/apps/mqtt.h"
+#include "../../modules/lwip2.2/LwIp/src/include/lwip/apps/mqtt.h"
 #endif
 
 #include <stdio.h>

@@ -116,5 +116,8 @@ __weak void encoder_clock_irq_callback(void)
 
 }
 
+__weak void httpd_init(void)
+{
 
+}
 
