@@ -109,7 +109,7 @@ uint8_t	lwip_dhcp_acquired = 0;
 static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 {
 	/* Ethernet Link every 100ms */
-	if ((Asys.g_tick_count - EthernetLinkTimer) >= 100)
+	if (((Asys.g_tick_count - EthernetLinkTimer) >= 100) && (Asys.g_tick_count > 2000))
 	{
 		EthernetLinkTimer = Asys.g_tick_count;
 		__DSB();

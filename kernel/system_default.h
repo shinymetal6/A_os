@@ -41,6 +41,13 @@
 	#endif
 #endif	//#ifdef	STM32H743xx
 
+
+#ifdef	STM32H753xx
+	#ifdef STM32H753ZI_NUCLEO
+		#include "../boards/STM32H753ZI_NUCLEO.h"
+	#endif
+#endif
+
 #ifdef	STM32H563xx
 	#ifdef STM32H563ZI2_NUCLEO
 		#include "../boards/STM32H563ZI_NUCLEO.h"

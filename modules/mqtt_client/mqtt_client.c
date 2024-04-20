@@ -29,9 +29,7 @@
 #ifdef MQTT_ENABLE
 #include "mqtt_client.h"
 
-#ifdef	STM32H743xx
 #include "../../modules/lwip2.2/LwIp/src/include/lwip/apps/mqtt.h"
-#endif
 
 #include <stdio.h>
 #include <unistd.h>
