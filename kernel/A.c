@@ -26,6 +26,7 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 #include "kernel_opt.h"
+#include "../modules/lwip2.2/version.h"
 #include <strings.h>
 #include <stdio.h>
 
@@ -36,7 +37,10 @@ SYSTEM_RAM		HWDevices_t		HWDevices[HWDEVICES_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
+VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
+VERSIONING	uint8_t	lwip_name[8]	 		= "lwip";
+VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
 
 #ifdef A_HAS_UARTS
 SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
