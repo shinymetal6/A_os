@@ -44,7 +44,7 @@ typedef struct
 }A_MQTT_SubInfo_t;
 
 #define	MAX_COLLISIONS	20
-extern	uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *data_ptr);
+extern	uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *mqtt_incoming_data_ptr);
 extern	uint32_t mqtt_client_check_connect(void);
 extern	uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len);
 
