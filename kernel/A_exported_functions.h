@@ -107,9 +107,12 @@ extern	uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len);
 extern	uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
 extern	uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
 extern	uint32_t hw_receive_uart_sentinel_clear(uint32_t uart);
-
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
 extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
+
+/* module_manager */
+extern	uint32_t allocate_module(uint32_t module,uint8_t config);
+extern	uint32_t deallocate_module(uint32_t module);
 
 /* mailbox */
 extern void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size);
@@ -193,7 +196,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HWDEV_SPILCD				0
 #define	HWDEV_NRF24L01				1
 
-/* peripherals , maximum index is 27 , bit 28 to 31 are for anomalies on the semaphores ( actually used 3 ) */
+/* peripherals , index 31 is for modules sw irq */
 #define	HW_SLEEP_FOREVER			0
 #define	HW_DELAY					1
 #define	HW_TIMER					2
@@ -220,8 +223,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_DAC						23
 #define	HW_USB_DEVICE				24
 #define	HW_USB_HOST					25
-//#define	HW_SPILCD					30
-//#define	HW_NRF24L01					31
+#define	SW_MODULES					31
 
 /* event to wait */
 #define	EVENT_DELAY						(1<<HW_DELAY)
@@ -249,8 +251,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_DAC_IRQ					(1<<HW_DAC)
 #define	EVENT_USB_DEVICE_IRQ			(1<<HW_USB_DEVICE)
 #define	EVENT_USB_IRQ					(1<<HW_USB_HOST)
-//#define	EVENT_SPILCD_IRQ				(1<<HW_SPILCD)
-//#define	EVENT_NRF24L01_IRQ				(1<<HW_NRF24L01)
+#define	EVENT_SW_MODULES				(1<<SW_MODULES)
 /* suspend_mode */
 #define	SUSPEND_ON_DELAY				EVENT_DELAY
 #define	SUSPEND_ON_TIMER				EVENT_TIMER
@@ -277,8 +278,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_DAC_IRQ				EVENT_DAC_IRQ
 #define	SUSPEND_ON_USB_DEVICE_IRQ		EVENT_USB_DEVICE_IRQ
 #define	SUSPEND_ON_USB_HOST_IRQ			EVENT_USB_HOST_IRQ
-//#define	SUSPEND_ON_SPILCD_IRQ			EVENT_SPILCD_IRQ
-//#define	SUSPEND_ON_NRF24L01_IRQ			EVENT_NRF24L01_IRQ
+#define	SUSPEND_ON_SW_MODULES_IRQ		EVENT_SW_MODULES
 /* wakeup_flags */
 #define	WAKEUP_FROM_DELAY				SUSPEND_ON_DELAY
 #define	WAKEUP_FROM_TIMER				SUSPEND_ON_TIMER
@@ -305,8 +305,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_DAC_IRQ				SUSPEND_ON_DAC_IRQ
 #define	WAKEUP_FROM_USB_DEVICE_IRQ		SUSPEND_ON_USB_DEVICE_IRQ
 #define	WAKEUP_FROM_USB_HOST_IRQ		SUSPEND_ON_USB_HOST_IRQ
-//#define	WAKEUP_FROM_SPILCD_IRQ			SUSPEND_ON_SPILCD_IRQ
-//#define	WAKEUP_FROM_NRF24L01_IRQ		SUSPEND_ON_NRF24L01_IRQ
+#define	WAKEUP_FROM_SW_MODULES_IRQ		SUSPEND_ON_SW_MODULES_IRQ
 /* device_flags */
 #define	DEVICE_DELAY					HW_DELAY
 #define	DEVICE_TIMER					HW_TIMER
@@ -333,8 +332,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_DAC						HW_DAC
 #define	DEVICE_USB_DEVICE				HW_USB_DEVICE
 #define	DEVICE_USB_HOST					HW_USB_HOST
-//#define	DEVICE_SPILCD					HW_SPILCD
-//#define	DEVICE_NRF24L01					HW_NRF24L01
+#define	DEVICE_SW_MODULES_IRQ			WAKEUP_FROM_SW_MODULES_IRQ
 
 /* wakeup_flags */
 #define	WAKEUP_FLAGS_TIM_ID0				0x00000001
@@ -376,5 +374,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_TIMERS_TIMER15					14
 #define	HW_TIMERS_TIMER16					15
 #define	HW_TIMERS_TIMER17					16
+
+
+#define	MODULE_IDX_MQTT						0
+
+#define	MODULE_MQTT							(1 << MODULE_IDX_MQTT )
 
 #endif /* KERNEL_A_EXPORTED_FUNCTIONS_H_ */

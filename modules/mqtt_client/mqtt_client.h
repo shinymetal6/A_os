@@ -16,7 +16,7 @@
 /*
  * mqtt_client.h
  *
- *  Created on: Apr 11, 2024
+ *  Created on: Apr 24, 2024
  *      Author: fil
  */
 
@@ -40,15 +40,14 @@ typedef struct
 	uint8_t		max_collisions;
 	uint32_t	collisions;
 	uint8_t		retry_time_after_collision;
+	char		*mqtt_incoming_data_ptr;
 }A_MQTT_SubInfo_t;
 
 #define	MAX_COLLISIONS	20
-
-extern	void mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass);
-extern	void mqtt_client_set_flags(uint8_t qos,uint8_t retain,uint8_t max_collisions,uint8_t retry_time_after_collision);
+extern	uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *data_ptr);
+extern	uint32_t mqtt_client_check_connect(void);
 extern	uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len);
-extern	uint32_t mqtt_client_change_identity(char *client_identity);
-extern	uint32_t mqtt_client_change_credentials(char *client_user, char *client_pass);
-extern	uint32_t mqtt_client_change_broker(char *broker_ip_addr);
+
+
 
 #endif /* MODULES_MQTT_CLIENT_MQTT_CLIENT_H_ */

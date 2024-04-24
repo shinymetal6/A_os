@@ -33,6 +33,7 @@
 #define	MAILBOX_NUM				8
 #define	PERIPHERAL_NUM			32
 #define	HWDEVICES_NUM			32
+#define	MODULES_NUM				32
 
 #define DUMMY_XPSR  				0x01000000U
 
@@ -329,6 +330,22 @@ typedef struct
 	uint8_t		GW_ADDRLH;
 	uint8_t		GW_ADDRLL;
 }A_IpAddr_t;
+
+typedef struct
+{
+	uint8_t 	process;
+	uint8_t		status;
+	uint32_t	flags;
+}Modules_t;
+/* status */
+#define	MODULE_STATUS_FREE		0x00
+#define	MODULE_STATUS_ALLOCATED	0x01
+
+/* status */
+#define	HWDEV_STATUS_ALLOCATED		0x01
+#define	HWDEV_STATUS_PRC_WAKEUP		0x02
+/* flags */
+#define	HWDEV_FLAGS_BUSY			0x80000000
 
 extern	void A_PreOS_Init(void);
 extern	void A_Processor_Quirks(void);

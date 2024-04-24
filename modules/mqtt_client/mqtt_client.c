@@ -16,7 +16,7 @@
 /*
  * mqtt_client.c
  *
- *  Created on: Apr 11, 2024
+ *  Created on: Apr 24, 2024
  *      Author: fil
  */
 
@@ -27,7 +27,6 @@
 #include "../../kernel/scheduler.h"
 
 #ifdef MQTT_ENABLE
-#include "mqtt_client.h"
 
 #include "../../modules/lwip2.2/LwIp/src/include/lwip/apps/mqtt.h"
 
@@ -36,150 +35,125 @@
 #include <stdlib.h>
 #include <string.h>
 
-A_MQTT_SubInfo_t		A_MQTT_SubInfo;
-static	mqtt_client_t	*mqtt_client;
-struct mqtt_connect_client_info_t mqtt_client_info;
+extern	Modules_t		Modules[MODULES_NUM];
+extern	Asys_t			Asys;
 
-static void mqtt_client_connection_callback(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
+static	A_MQTT_SubInfo_t	A_MQTT_SubInfo;
+static 	ip_addr_t			mqtt_ip;
+static 	mqtt_client_t		*mqtt_client;
+
+static struct mqtt_connect_client_info_t mqtt_client_info =
 {
+  "test",
+  NULL, /* user */
+  NULL, /* pass */
+  100,  /* keep alive */
+  NULL, /* will_topic */
+  NULL, /* will_msg */
+  0,    /* will_qos */
+  0     /* will_retain */
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+  , NULL
+#endif
+};
+
+static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
+{
+const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+
+	LWIP_PLATFORM_DIAG(("MQTT client \"%s\" data cb: len %d, flags %d\n", client_info->client_id,
+	(int)len, (int)flags));
+	memcpy(A_MQTT_SubInfo.mqtt_incoming_data_ptr,data,len);
+	if (( Modules[MODULE_IDX_MQTT].status & MODULE_STATUS_ALLOCATED ) == MODULE_STATUS_ALLOCATED )
+		activate_process(Modules[MODULE_IDX_MQTT].process,WAKEUP_FROM_SW_MODULES_IRQ,MODULE_MQTT);
 }
-void mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass)
+
+static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
 {
-ip_addr_t Subscriber_ip;
+  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+
+  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" publish cb: topic %s, len %d\n", client_info->client_id,
+          topic, (int)tot_len));
+}
+
+static void mqtt_request_cb(void *arg, err_t err)
+{
+  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+
+  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" request cb: err %d\n", client_info->client_id, (int)err));
+}
+
+static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
+{
+  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+  LWIP_UNUSED_ARG(client);
+
+  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" connection cb: status %d\n", client_info->client_id, (int)status));
+
+  if (status == MQTT_CONNECT_ACCEPTED) {
+
+    mqtt_sub_unsub(client,
+    		A_MQTT_SubInfo.topic, A_MQTT_SubInfo.qos,
+            mqtt_request_cb, LWIP_CONST_CAST(void*, client_info),
+            1);
+  }
+}
+
+uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *data_ptr)
+{
 	mqtt_client = mqtt_client_new();
 	A_MQTT_SubInfo.ip_addrhh = broker_ip_addr[0];
 	A_MQTT_SubInfo.ip_addrhl = broker_ip_addr[1];
 	A_MQTT_SubInfo.ip_addrlh = broker_ip_addr[2];
 	A_MQTT_SubInfo.ip_addrll = broker_ip_addr[3];
-	A_MQTT_SubInfo.mqtt_err_c = 0;
-	A_MQTT_SubInfo.max_collisions = MAX_COLLISIONS;
-	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-
-	memset(&mqtt_client_info, 0, sizeof(mqtt_client_info));
-
 	strcpy(A_MQTT_SubInfo.topic,topic);
-	strcpy(A_MQTT_SubInfo.client_identity,client_identity);
-	mqtt_client_info.client_id = A_MQTT_SubInfo.client_identity;
-	if ( client_user != NULL )
-	{
-		strcpy(A_MQTT_SubInfo.client_user,client_user);
-		mqtt_client_info.client_user = A_MQTT_SubInfo.client_user;
-	}
-	if ( client_pass != NULL )
-	{
-		strcpy(A_MQTT_SubInfo.client_pass,client_pass);
-		mqtt_client_info.client_pass = A_MQTT_SubInfo.client_pass;
-	}
-	A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
+	A_MQTT_SubInfo.mqtt_err_c = 0;
+	A_MQTT_SubInfo.qos = 0;
+	A_MQTT_SubInfo.mqtt_incoming_data_ptr = data_ptr;
+	A_MQTT_SubInfo.max_collisions = MAX_COLLISIONS;
+	IP4_ADDR(&mqtt_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
+	mqtt_set_inpub_callback(mqtt_client,
+		mqtt_incoming_publish_cb,
+		mqtt_incoming_data_cb,
+		LWIP_CONST_CAST(void*, &mqtt_client_info));
+	mqtt_client_connect(mqtt_client,
+		&mqtt_ip, MQTT_PORT,
+		mqtt_connection_cb, LWIP_CONST_CAST(void*, &mqtt_client_info),
+		&mqtt_client_info);
+	return 0;
 }
 
-void mqtt_client_set_flags(uint8_t qos,uint8_t retain,uint8_t max_collisions,uint8_t retry_time_after_collision)
+void mqtt_client_set_qos(uint8_t qos)
 {
-	A_MQTT_SubInfo.qos = qos;
-	A_MQTT_SubInfo.retain = retain;
-	A_MQTT_SubInfo.max_collisions = max_collisions;
-	A_MQTT_SubInfo.retry_time_after_collision = retry_time_after_collision;
+	if ( qos )
+		A_MQTT_SubInfo.qos = 1;
+	else
+		A_MQTT_SubInfo.qos = 0;
 }
 
-static void mqtt_client_pub_request_callback(void *arg, err_t result)
+uint32_t mqtt_client_check_connect(void)
 {
-	if(result != ERR_OK)
-		A_MQTT_SubInfo.mqtt_err_c++;
+	if ( mqtt_client_is_connected(mqtt_client) != 1 )
+		mqtt_client_connect(mqtt_client,
+			&mqtt_ip, MQTT_PORT,
+			mqtt_connection_cb, LWIP_CONST_CAST(void*, &mqtt_client_info),
+			&mqtt_client_info);
+	return 0;
 }
-
-extern	void task_delay(uint32_t tick_count);
 
 uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len)
 {
-ip_addr_t Subscriber_ip;
 char	arg[32] = "mqtt_arg";
 int8_t	err;
 
-	__disable_irq();
-	A_MQTT_SubInfo.collisions = 0;
-	while (( Asys.general_flags & LWIP_LOCK) == LWIP_LOCK)
+	if ( mqtt_client_is_connected(mqtt_client) != 1 )
 	{
-		__enable_irq();
-		task_delay(1);
-		A_MQTT_SubInfo.collisions++;
-		if ( A_MQTT_SubInfo.collisions > A_MQTT_SubInfo.max_collisions )
-			return 0;
+		mqtt_client_check_connect();
 	}
-	__disable_irq();
-	if (( Asys.general_flags & LWIP_LOCK) != LWIP_LOCK)
-	{
-		Asys.general_flags |= LWIP_LOCK;
-		__enable_irq();
-		if ( mqtt_client_is_connected(mqtt_client) != 1 )
-		{
-			IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-			err = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
-			if ( err != 0 )
-				A_MQTT_SubInfo.mqtt_err_c++;
-		}
-		err = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_client_pub_request_callback, arg);
-		if ( err != 0 )
-			message_len = 0;
-		Asys.general_flags &= ~LWIP_LOCK;
-	}
-	else
-	{
+	err = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, mqtt_incoming_publish_cb, arg);
+	if ( err != 0 )
 		message_len = 0;
-		__enable_irq();
-	}
 	return message_len;
 }
-
-uint32_t mqtt_client_change_identity(char *client_identity)
-{
-ip_addr_t Subscriber_ip;
-	if ( client_identity == NULL )
-		return 1;
-	mqtt_disconnect(mqtt_client);
-	A_MQTT_SubInfo.mqtt_err_c = 0;
-	A_MQTT_SubInfo.max_collisions = MAX_COLLISIONS;
-	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-	strcpy(A_MQTT_SubInfo.client_identity,client_identity);
-	mqtt_client_info.client_id = A_MQTT_SubInfo.client_identity;
-	A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
-	return (uint32_t )A_MQTT_SubInfo.mqtt_err_c;
-}
-
-uint32_t mqtt_client_change_credentials(char *client_user, char *client_pass)
-{
-ip_addr_t Subscriber_ip;
-	if (( client_user == NULL ) || ( client_pass != NULL ))
-		return 1;
-	mqtt_disconnect(mqtt_client);
-	A_MQTT_SubInfo.mqtt_err_c = 0;
-	A_MQTT_SubInfo.max_collisions = MAX_COLLISIONS;
-	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-	strcpy(A_MQTT_SubInfo.client_user,client_user);
-	mqtt_client_info.client_user = A_MQTT_SubInfo.client_user;
-	strcpy(A_MQTT_SubInfo.client_pass,client_pass);
-	mqtt_client_info.client_pass = A_MQTT_SubInfo.client_pass;
-	A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
-	return (uint32_t )A_MQTT_SubInfo.mqtt_err_c;
-}
-
-uint32_t mqtt_client_change_broker(char *broker_ip_addr)
-{
-ip_addr_t Subscriber_ip;
-
-	if ( broker_ip_addr == NULL )
-		return 1;
-	mqtt_disconnect(mqtt_client);
-	A_MQTT_SubInfo.ip_addrhh = broker_ip_addr[0];
-	A_MQTT_SubInfo.ip_addrhl = broker_ip_addr[1];
-	A_MQTT_SubInfo.ip_addrlh = broker_ip_addr[2];
-	A_MQTT_SubInfo.ip_addrll = broker_ip_addr[3];
-	A_MQTT_SubInfo.mqtt_err_c = 0;
-	A_MQTT_SubInfo.max_collisions = MAX_COLLISIONS;
-	IP4_ADDR(&Subscriber_ip, A_MQTT_SubInfo.ip_addrhh, A_MQTT_SubInfo.ip_addrhl, A_MQTT_SubInfo.ip_addrlh, A_MQTT_SubInfo.ip_addrll);
-	mqtt_client_info.client_id = A_MQTT_SubInfo.client_identity;
-	A_MQTT_SubInfo.mqtt_err_c = mqtt_client_connect(mqtt_client, &Subscriber_ip, MQTT_PORT, mqtt_client_connection_callback, 0, &mqtt_client_info);
-	return (uint32_t )A_MQTT_SubInfo.mqtt_err_c;
-}
-
-#endif
+#endif // #ifdef MQTT_ENABLE
 
