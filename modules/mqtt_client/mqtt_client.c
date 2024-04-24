@@ -44,16 +44,16 @@ static 	mqtt_client_t		*mqtt_client;
 
 static struct mqtt_connect_client_info_t mqtt_client_info =
 {
-  "test",
-  NULL, /* user */
-  NULL, /* pass */
-  100,  /* keep alive */
-  NULL, /* will_topic */
-  NULL, /* will_msg */
-  0,    /* will_qos */
-  0     /* will_retain */
+	"test",
+	NULL, /* user */
+	NULL, /* pass */
+	100,  /* keep alive */
+	NULL, /* will_topic */
+	NULL, /* will_msg */
+	0,    /* will_qos */
+	0     /* will_retain */
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
-  , NULL
+	, NULL
 #endif
 };
 
@@ -61,8 +61,6 @@ static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t f
 {
 const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
 
-	LWIP_PLATFORM_DIAG(("MQTT client \"%s\" data cb: len %d, flags %d\n", client_info->client_id,
-	(int)len, (int)flags));
 	memcpy(A_MQTT_SubInfo.mqtt_incoming_data_ptr,data,len);
 	if (( Modules[MODULE_IDX_MQTT].status & MODULE_STATUS_ALLOCATED ) == MODULE_STATUS_ALLOCATED )
 		activate_process(Modules[MODULE_IDX_MQTT].process,WAKEUP_FROM_SW_MODULES_IRQ,MODULE_MQTT);
@@ -70,33 +68,21 @@ const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connec
 
 static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
 {
-  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
-
-  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" publish cb: topic %s, len %d\n", client_info->client_id,
-          topic, (int)tot_len));
+	//const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
 }
 
 static void mqtt_request_cb(void *arg, err_t err)
 {
-  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
-
-  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" request cb: err %d\n", client_info->client_id, (int)err));
+	//const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
 }
 
 static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
 {
-  const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
-  LWIP_UNUSED_ARG(client);
-
-  LWIP_PLATFORM_DIAG(("MQTT client \"%s\" connection cb: status %d\n", client_info->client_id, (int)status));
-
-  if (status == MQTT_CONNECT_ACCEPTED) {
-
-    mqtt_sub_unsub(client,
-    		A_MQTT_SubInfo.topic, A_MQTT_SubInfo.qos,
-            mqtt_request_cb, LWIP_CONST_CAST(void*, client_info),
-            1);
-  }
+const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+	if (status == MQTT_CONNECT_ACCEPTED)
+	{
+		mqtt_sub_unsub(client,A_MQTT_SubInfo.topic, A_MQTT_SubInfo.qos,mqtt_request_cb, LWIP_CONST_CAST(void*, client_info),1);
+	}
 }
 
 uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *data_ptr)
@@ -134,10 +120,7 @@ void mqtt_client_set_qos(uint8_t qos)
 uint32_t mqtt_client_check_connect(void)
 {
 	if ( mqtt_client_is_connected(mqtt_client) != 1 )
-		mqtt_client_connect(mqtt_client,
-			&mqtt_ip, MQTT_PORT,
-			mqtt_connection_cb, LWIP_CONST_CAST(void*, &mqtt_client_info),
-			&mqtt_client_info);
+		mqtt_client_connect(mqtt_client,&mqtt_ip, MQTT_PORT,mqtt_connection_cb, LWIP_CONST_CAST(void*, &mqtt_client_info),&mqtt_client_info);
 	return 0;
 }
 
@@ -155,5 +138,6 @@ int8_t	err;
 		message_len = 0;
 	return message_len;
 }
+
 #endif // #ifdef MQTT_ENABLE
 
