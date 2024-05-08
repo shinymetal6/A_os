@@ -58,34 +58,47 @@ static struct mqtt_connect_client_info_t mqtt_client_info=
 #endif
 };
 
-ITCM_AREA_CODE static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
+static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags)
 {
 //const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
 	memcpy(A_MQTT_SubInfo.mqtt_incoming_data_ptr,data,len);
 	if (( Modules[MODULE_IDX_MQTT].status & MODULE_STATUS_ALLOCATED ) == MODULE_STATUS_ALLOCATED )
-		activate_process(Modules[MODULE_IDX_MQTT].process,WAKEUP_FROM_SW_MODULES_IRQ,MODULE_MQTT);
+	{
+		A_MQTT_SubInfo.mqtt_rx_stat++;
+		activate_process(Modules[MODULE_IDX_MQTT].process,WAKEUP_FROM_SW_MODULES_IRQ,MODULE_MQTT_RXFLAG);
+	}
 }
 
-ITCM_AREA_CODE static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
+static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len)
 {
 //const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+	A_MQTT_SubInfo.mqtt_flags |= MQTT_PUBLISHED;
+	A_MQTT_SubInfo.mqtt_tx_stat++;
 }
 
-ITCM_AREA_CODE static void mqtt_request_cb(void *arg, err_t err)
+static void mqtt_request_cb(void *arg, err_t err)
 {
 //const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
+	if (( A_MQTT_SubInfo.mqtt_flags & MQTT_SUBSCRIBED) == MQTT_SUBSCRIBED )
+		A_MQTT_SubInfo.mqtt_flags |= MQTT_SUBSCRIBED;
+	else
+		A_MQTT_SubInfo.mqtt_flags &= ~MQTT_SUBSCRIBED;
 }
 
-ITCM_AREA_CODE static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
+static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status)
 {
 const struct mqtt_connect_client_info_t* client_info = (const struct mqtt_connect_client_info_t*)arg;
 	if (status == MQTT_CONNECT_ACCEPTED)
 	{
+		A_MQTT_SubInfo.mqtt_flags |= MQTT_SET_SUBSCRIBED;
 		mqtt_sub_unsub(client,A_MQTT_SubInfo.topic, A_MQTT_SubInfo.qos,mqtt_request_cb, LWIP_CONST_CAST(void*, client_info),1);
 	}
+	else
+		A_MQTT_SubInfo.mqtt_flags &= ~MQTT_SET_SUBSCRIBED;
+
 }
 
-ITCM_AREA_CODE uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *mqtt_incoming_data_ptr)
+uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *mqtt_incoming_data_ptr)
 {
 	mqtt_client = mqtt_client_new();
 	memset(&A_MQTT_SubInfo, 0, sizeof(A_MQTT_SubInfo));
@@ -120,7 +133,7 @@ ITCM_AREA_CODE uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char
 	return 0;
 }
 
-ITCM_AREA_CODE void mqtt_client_set_qos(uint8_t qos)
+void mqtt_client_set_qos(uint8_t qos)
 {
 	if ( qos )
 		A_MQTT_SubInfo.qos = 1;
@@ -128,14 +141,14 @@ ITCM_AREA_CODE void mqtt_client_set_qos(uint8_t qos)
 		A_MQTT_SubInfo.qos = 0;
 }
 
-ITCM_AREA_CODE uint32_t mqtt_client_check_connect(void)
+uint32_t mqtt_client_check_connect(void)
 {
 	if ( mqtt_client_is_connected(mqtt_client) != 1 )
 		mqtt_client_connect(mqtt_client,&mqtt_ip, MQTT_PORT,mqtt_connection_cb, LWIP_CONST_CAST(void*, &mqtt_client_info),&mqtt_client_info);
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len)
+uint32_t mqtt_client_send(char *topic, char *message,uint32_t message_len)
 {
 char	arg[32] = "mqtt_arg";
 int8_t	err;
@@ -143,9 +156,10 @@ int8_t	err;
 	if ( mqtt_client_is_connected(mqtt_client) != 1 )
 		mqtt_client_check_connect();
 
+	A_MQTT_SubInfo.mqtt_flags &= ~MQTT_PUBLISHED;
 	err = mqtt_publish(mqtt_client, topic, message, strlen(message), 0, 0, (mqtt_request_cb_t )mqtt_incoming_publish_cb, &arg);
 	if ( err != 0 )
-		message_len = 0;
+		return 0;
 	return message_len;
 }
 

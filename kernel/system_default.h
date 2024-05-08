@@ -105,7 +105,8 @@
 
 #define SYSTEM_RAM				__attribute__((section(".osSysRamStart"))) __attribute__ ((aligned (32)))
 #define POOL_RAM				__attribute__((section(".osMemPoolStart"))) __attribute__ ((aligned (32)))
-#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
+//#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
+#define	VERSIONING
 // interrupts priorities
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12

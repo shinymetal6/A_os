@@ -112,11 +112,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#endif // #ifdef LORA_ENABLED
 #endif // #ifdef WIRELESS_ENABLED
 
-#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+//#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-
+#define	ITCM_AREA_CODE
 //#define	A_HAS_UART1			1
 #define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1

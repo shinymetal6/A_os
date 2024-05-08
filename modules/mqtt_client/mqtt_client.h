@@ -41,7 +41,17 @@ typedef struct
 	uint32_t	collisions;
 	uint8_t		retry_time_after_collision;
 	char		*mqtt_incoming_data_ptr;
+	uint8_t		mqtt_flags;
+	uint32_t	mqtt_tx_stat;
+	uint32_t	mqtt_rx_stat;
 }A_MQTT_SubInfo_t;
+
+/* mqtt_flags */
+#define	MQTT_CONNECTED		0x01
+#define	MQTT_SET_SUBSCRIBED	0x02
+#define	MQTT_SUBSCRIBED		0x04
+#define	MQTT_PUBLISHED		0x08
+#define	MQTT_DATA_RECEIVED	0x10
 
 #define	MAX_COLLISIONS	20
 extern	uint8_t mqtt_client_init(uint8_t *broker_ip_addr,char *topic,char *client_identity, char *client_user, char *client_pass, char *mqtt_incoming_data_ptr);

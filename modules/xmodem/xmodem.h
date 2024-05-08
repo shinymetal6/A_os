@@ -68,10 +68,11 @@ typedef struct
 	uint8_t		rxbuf[XMODEM_LEN+4];
 	uint8_t		*data_ptr;
 	uint8_t		*requested_data_ptr;
+	uint32_t	requested_data_count;
 	uint32_t	data_count;
 }xmodem_t;
 
-extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr);
+extern	void xmodem_init(uint32_t uart,uint8_t *data_ptr,uint32_t max_data_count);
 extern	void xmodem_process(uint32_t wakeup);
 
 #endif // #ifdef XMODEM_ENABLE

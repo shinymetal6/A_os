@@ -63,7 +63,7 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 	if ( xmodem_struct.data_len == XMODEM_LEN )
 		xmodem_struct.cs = buf[XMODEM_CS];
 	xmodem_struct.data_count += xmodem_struct.data_len;
-	if ( xmodem_struct.data_count > 0xffff )	// at 128K stop transfers
+	if ( xmodem_struct.data_count > xmodem_struct.requested_data_count )	// at 256K stop transfers
 		return 1;
 	memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
 	xmodem_struct.data_ptr += xmodem_struct.data_len;
@@ -78,6 +78,8 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 extern	UART_HandleTypeDef huart3;
 uint8_t ret;
 uint16_t	pkt_len;
+uint32_t	xmodem_wakeup_mask = 0;
+
 void xmodem_process(uint32_t wakeup)
 {
 uint8_t		ak_char=0x06, nak_char=0x15;
@@ -101,7 +103,7 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 			}
 		}
 	}
-	if (( wakeup & (WAKEUP_FROM_UART1_IRQ | WAKEUP_FROM_UART2_IRQ | WAKEUP_FROM_UART3_IRQ)) != 0)
+	if (( wakeup & (xmodem_wakeup_mask)) != 0)
 	{
 		xmodem_struct.state = XMODEM_DATA_PHASE;
 		pkt_len = hw_get_uart_receive_len(xmodem_struct.uart);
@@ -143,14 +145,36 @@ uint8_t xmodem_allocate_area(uint8_t *data_ptr)
 	return 0;
 }
 
-void xmodem_init(uint32_t uart,uint8_t *data_ptr)
+void xmodem_init(uint32_t uart,uint8_t *data_ptr,uint32_t max_data_count)
 {
+#ifdef	A_HAS_UART1
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART1_IRQ;
+#endif
+#ifdef	A_HAS_UART2
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART2_IRQ;
+#endif
+#ifdef	A_HAS_UART3
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART3_IRQ;
+#endif
+#ifdef	A_HAS_UART4
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART4_IRQ;
+#endif
+#ifdef	A_HAS_UART5
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART5_IRQ;
+#endif
+#ifdef	A_HAS_UART6
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART6_IRQ;
+#endif
+#ifdef	A_HAS_UART7
+		xmodem_wakeup_mask |= WAKEUP_FROM_UART7_IRQ;
+#endif
 	hw_receive_uart_sentinel(uart,xmodem_struct.rxbuf,XMODEM_LEN+4,X_SOH, X_EOT,XMODEM_TIMEOUT);
 
 	xmodem_allocate_area(data_ptr);
 	xmodem_struct.uart = uart;
 	xmodem_struct.state = XMODEM_SEND_NAK;
 	xmodem_struct.xtimeout = 0;
+	xmodem_struct.requested_data_count = max_data_count;
 }
 
 #endif

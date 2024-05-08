@@ -378,6 +378,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 #define	MODULE_IDX_MQTT						0
 
-#define	MODULE_MQTT							(1 << MODULE_IDX_MQTT )
+//#define	MODULE_MQTT							(1 << MODULE_IDX_MQTT )
+#define	MODULE_MQTT_RXFLAG					0x00000001
+#define	MODULE_MQTT_TXFLAG					0x00000002
 
 #endif /* KERNEL_A_EXPORTED_FUNCTIONS_H_ */

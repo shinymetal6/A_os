@@ -52,7 +52,7 @@ ITCM_AREA_CODE void supervisor(void)
 		}
 #endif
 #ifdef NETWORKING_ENABLED
-	    __ASM volatile ("dsb" : : : "memory");
+		__ASM volatile ("dsb" : : : "memory");
 		__disable_irq();
 		MX_LWIP_Process();
 		__enable_irq();
