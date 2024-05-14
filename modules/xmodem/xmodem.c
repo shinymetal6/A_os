@@ -80,9 +80,9 @@ uint8_t ret;
 uint16_t	pkt_len;
 uint32_t	xmodem_wakeup_mask = 0;
 
-void xmodem_process(uint32_t wakeup)
+uint8_t xmodem_process(uint32_t wakeup)
 {
-uint8_t		ak_char=0x06, nak_char=0x15;
+uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0;
 
 	if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 	{
@@ -109,13 +109,14 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 		pkt_len = hw_get_uart_receive_len(xmodem_struct.uart);
 		if ( pkt_len == 1 )
 		{
-			if ( xmodem_struct.rxbuf[0] == 0x04 )
+			if ( xmodem_struct.rxbuf[0] == X_EOT )
 			{
 				hw_send_uart(xmodem_struct.uart,&ak_char,1);
 				xmodem_struct.state = XMODEM_SEND_NAK;
 				xmodem_struct.xtimeout = 0;
 				xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr;
 				xmodem_struct.data_count = 0;
+				ret_val = X_EOT;
 			}
 		}
 		else if ( pkt_len == 132 )
@@ -136,6 +137,7 @@ uint8_t		ak_char=0x06, nak_char=0x15;
 			hw_send_uart(xmodem_struct.uart,&nak_char,1);
 		}
 	}
+	return ret_val;
 }
 
 uint8_t xmodem_allocate_area(uint8_t *data_ptr)

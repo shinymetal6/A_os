@@ -207,22 +207,23 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_UART4					7
 #define	HW_UART5					8
 #define	HW_UART6					9
-#define	HW_I2C1						10
-#define	HW_I2C2						11
-#define	HW_I2C3						12
-#define	HW_I2C4						13
-#define	HW_SPI1						14
-#define	HW_SPI2						15
-#define	HW_QSPI						16
-#define	HW_I2S1						17
-#define	HW_I2S2						18
-#define	HW_TIM						19
-#define	HW_EXT_INT					20
-#define	HW_ADC1						21
-#define	HW_ADC2						22
-#define	HW_DAC						23
-#define	HW_USB_DEVICE				24
-#define	HW_USB_HOST					25
+#define	HW_UART7					10
+#define	HW_I2C1						11
+#define	HW_I2C2						12
+#define	HW_I2C3						13
+#define	HW_I2C4						14
+#define	HW_SPI1						15
+#define	HW_SPI2						16
+#define	HW_QSPI						17
+#define	HW_I2S1						18
+#define	HW_I2S2						19
+#define	HW_TIM						20
+#define	HW_EXT_INT					21
+#define	HW_ADC1						22
+#define	HW_ADC2						23
+#define	HW_DAC						24
+#define	HW_USB_DEVICE				25
+#define	HW_USB_HOST					26
 #define	SW_MODULES					31
 
 /* event to wait */
@@ -235,6 +236,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_UART4_IRQ					(1<<HW_UART4)
 #define	EVENT_UART5_IRQ					(1<<HW_UART5)
 #define	EVENT_UART6_IRQ					(1<<HW_UART6)
+#define	EVENT_UART7_IRQ					(1<<HW_UART7)
 #define	EVENT_I2C1_IRQ					(1<<HW_I2C1)
 #define	EVENT_I2C2_IRQ					(1<<HW_I2C2)
 #define	EVENT_I2C3_IRQ					(1<<HW_I2C3)
@@ -262,6 +264,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_UART4_IRQ			EVENT_UART4_IRQ
 #define	SUSPEND_ON_UART5_IRQ			EVENT_UART5_IRQ
 #define	SUSPEND_ON_UART6_IRQ			EVENT_UART6_IRQ
+#define	SUSPEND_ON_UART7_IRQ			EVENT_UART7_IRQ
 #define	SUSPEND_ON_I2C1_IRQ				EVENT_I2C1_IRQ
 #define	SUSPEND_ON_I2C2_IRQ				EVENT_I2C2_IRQ
 #define	SUSPEND_ON_I2C3_IRQ				EVENT_I2C3_IRQ
@@ -289,6 +292,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_UART4_IRQ			SUSPEND_ON_UART4_IRQ
 #define	WAKEUP_FROM_UART5_IRQ			SUSPEND_ON_UART5_IRQ
 #define	WAKEUP_FROM_UART6_IRQ			SUSPEND_ON_UART6_IRQ
+#define	WAKEUP_FROM_UART7_IRQ			SUSPEND_ON_UART7_IRQ
 #define	WAKEUP_FROM_I2C1_IRQ			SUSPEND_ON_I2C1_IRQ
 #define	WAKEUP_FROM_I2C2_IRQ			SUSPEND_ON_I2C2_IRQ
 #define	WAKEUP_FROM_I2C3_IRQ			SUSPEND_ON_I2C3_IRQ
@@ -316,6 +320,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_UART4					HW_UART4
 #define	DEVICE_UART5					HW_UART5
 #define	DEVICE_UART6					HW_UART6
+#define	DEVICE_UART7					HW_UART7
 #define	DEVICE_I2C1						HW_I2C1
 #define	DEVICE_I2C2						HW_I2C2
 #define	DEVICE_I2C3						HW_I2C3

@@ -61,7 +61,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	USB_ENABLED				1
 #define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
-//#define MQTT_ENABLE				1
+#define MQTT_ENABLE				1
 
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
