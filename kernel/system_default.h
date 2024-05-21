@@ -96,6 +96,10 @@
 #ifdef STM32WL5Mxx
 		#include "../boards/STM32WL5MOC_CM0.h"
 #endif
+
+#ifdef STM32G491xx
+		#include "../boards/AX_P2416176_NEVOL.h"
+#endif
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif
@@ -105,8 +109,9 @@
 
 #define SYSTEM_RAM				__attribute__((section(".osSysRamStart"))) __attribute__ ((aligned (32)))
 #define POOL_RAM				__attribute__((section(".osMemPoolStart"))) __attribute__ ((aligned (32)))
-//#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
-#define	VERSIONING
+#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
+#define AOS_FLASH_END			__attribute__((section(".aos_flash_end"))) __attribute__ ((aligned (32))) const
+//#define	VERSIONING
 // interrupts priorities
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12

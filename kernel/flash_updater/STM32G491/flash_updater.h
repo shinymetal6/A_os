@@ -20,18 +20,21 @@
  *      Author: fil
  */
 
-#ifndef KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_
-#define KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_
+#ifndef KERNEL_FLASH_UPDATER_STM32G491_FLASH_UPDATER_H_
+#define KERNEL_FLASH_UPDATER_STM32G491_FLASH_UPDATER_H_
 
-#ifdef	STM32H743xx
+#ifdef	STM32G491xx
 
-#define FLASH_TIMEOUT_VALUE              50000U /* 50 s */
+#define FLASH_G491_TIMEOUT_VALUE              50000U /* 50 s */
+#define FLASH_NB_DOUBLE_WORDS_IN_ROW  32
 
 #define	DTCM_VECT_TAB_BASE_ADDRESS	0x20000000
 #define	DTCM_VECT_TAB_OFFSET		0
 
 #define FLASH_BASE_ADDR     (uint32_t)(FLASH_BASE)
 #define FLASH_END_ADDR      (uint32_t)(0x081FFFFF)
+#define FLASH_ROW_SIZE		32
+
 #define	VECTOR_TABLE_SIZE	256
 #define	SYSTICK_VECTOR		15
 /* Base address of the Flash sectors Bank 1 */
@@ -57,6 +60,6 @@
 extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 
-#endif /* #ifdef	STM32H743xx */
+#endif /* #ifdef	STM32G491xx */
 
-#endif /* KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_ */
+#endif /* KERNEL_FLASH_UPDATER_STM32G491_FLASH_UPDATER_H_ */

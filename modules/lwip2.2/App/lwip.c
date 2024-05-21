@@ -178,9 +178,7 @@ void MX_LWIP_Process(void)
 
 	/* Handle timeouts */
 	sys_check_timeouts();
-	__disable_irq();
 	Ethernet_Link_Periodic_Handle(&gnetif);
-	__enable_irq();
 }
 
 uint8_t MX_LWIP_GetIpAddress(uint8_t *hh,uint8_t *hl,uint8_t *lh,uint8_t *ll)

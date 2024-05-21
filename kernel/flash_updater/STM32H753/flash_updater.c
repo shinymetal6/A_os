@@ -22,7 +22,7 @@
 
 #include "main.h"
 
-#ifdef	STM32H743xx
+#ifdef	STM32H753xx
 #include "../../system_default.h"
 #include "flash_updater.h"
 
@@ -205,8 +205,8 @@ uint32_t	i;
 
 ITCM_AREA_CODE void  FlashIrq_Error_Handler(void)
 {
-    __disable_irq();
-    while(1);	// hangs badly
+	__disable_irq();
+	while(1);	// hangs badly
 }
 
 void  ITCM_AREA_CODE FlashSysTick_Handler(void)
@@ -222,6 +222,8 @@ uint32_t i;
     __disable_irq();
 	for(i=0;i<8;i++)
 		NVIC->ICER[i] = 0xffffffff;
+	for(i=0;i<240;i++)
+		NVIC->IP[i] = 0;
     __enable_irq();
 	HAL_Delay(10);
     __disable_irq();
@@ -284,4 +286,5 @@ uint32_t size = &_fdata_end - &_fdata_start;
 }
 #endif // #ifdef TEST_FLASH
 
-#endif	// #ifdef	STM32H743xx
+#endif	//	#ifdef	STM32H753xx
+

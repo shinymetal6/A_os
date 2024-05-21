@@ -43,6 +43,9 @@ VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
 VERSIONING	uint8_t	lwip_name[8]	 		= "lwip";
 VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
 
+AOS_FLASH_END	uint8_t	aos_end[32]	 			= "A_os End Code";
+
+
 #ifdef A_HAS_UARTS
 SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
 #endif

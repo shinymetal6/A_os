@@ -140,7 +140,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 
 #ifdef XMODEM_ENABLE
-#include "../modules/xmodem/xmodem.h"
+#include "../modules/serial_transfers/xmodem.h"
 #endif
 
 #ifdef MODBUS_ENABLE
@@ -191,6 +191,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #endif // #ifdef NETWORKING_ENABLED
 
 #include "dfu_manager.h"
+#include "flash_updater/flash_updater_common.h"
 
 /* devices , maximum index is 31 */
 #define	HWDEV_SPILCD				0
