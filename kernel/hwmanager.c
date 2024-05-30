@@ -24,16 +24,20 @@
 #include "A.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
-#include "kernel_opt.h"
+//#include "kernel_opt.h"
 
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
 
 extern	Asys_t			Asys;
+uint8_t	stored_peripheral;
 
-ITCM_AREA_CODE uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
+ITCM_AREA_CODE uint32_t allocate_hw(uint8_t peripheral,uint8_t config)
 {
 	__disable_irq();
+	stored_peripheral = peripheral;
+	if ( peripheral >= PERIPHERAL_NUM)
+		return 0;
 	if ( HWMngr[peripheral].process )
 		return 0;
 	HWMngr[peripheral].process = Asys.current_process;
@@ -45,7 +49,7 @@ ITCM_AREA_CODE uint32_t allocate_hw(uint32_t peripheral,uint8_t config)
 
 /* bus_peripheral : the bus where the device is connected to. i.e. HW_SPI2 */
 /* device_peripheral : the device, i.e HW_NRF24L01 */
-ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t dev_config,void (*irq_callback)(void))
+ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t dev_config,void (*irq_callback)(void))
 {
 	__disable_irq();
 	if (( HWMngr[bus_peripheral].process ) || ( HWMngr[device_peripheral].process ))
@@ -55,13 +59,26 @@ ITCM_AREA_CODE uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,ui
 	HWMngr[bus_peripheral].irq_callback = irq_callback;
 	HWDevices[device_peripheral].process = Asys.current_process;
 	HWDevices[device_peripheral].status = HWDEV_STATUS_ALLOCATED | dev_config;
+	HWDevices[device_peripheral].device_peripheral = device_peripheral;
 	HWDevices[device_peripheral].irq_callback = irq_callback;
-	HWDevices[device_peripheral].bus = bus_peripheral;
+	HWDevices[device_peripheral].bus_peripheral = bus_peripheral;
 	__enable_irq();
 	return bus_peripheral;
 }
 
-ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
+ITCM_AREA_CODE uint8_t get_busdevice_from_device(uint8_t device_peripheral)
+{
+uint32_t	i;
+	if ( HWDevices[device_peripheral].process == Asys.current_process)
+	{
+		for(i=0;i<HWDEVICES_NUM;i++)
+			if ( HWDevices[i].device_peripheral == device_peripheral)
+				return HWDevices[i].bus_peripheral;
+	}
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t deallocate_hw(uint8_t peripheral)
 {
 	__disable_irq();
 	if ( HWMngr[peripheral].process != Asys.current_process )
@@ -73,14 +90,14 @@ ITCM_AREA_CODE uint32_t deallocate_hw(uint32_t peripheral)
 	return peripheral;
 }
 
-ITCM_AREA_CODE uint16_t get_rx_len(uint32_t peripheral)
+ITCM_AREA_CODE uint16_t get_rx_len(uint8_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;
 	return HWMngr[HW_USB_DEVICE].rxlen;
 }
 
-ITCM_AREA_CODE uint32_t get_peripheral_flags(uint32_t peripheral)
+ITCM_AREA_CODE uint32_t get_peripheral_flags(uint8_t peripheral)
 {
 	if ( HWMngr[peripheral].process != Asys.current_process )
 		return 0;

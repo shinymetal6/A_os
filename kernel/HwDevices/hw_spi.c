@@ -128,9 +128,9 @@ uint32_t	i,dev;
 	/* check for devices on bus */
 	for(i=0;i<HWDEVICES_NUM;i++)
 	{
-		if ( HWDevices[i].bus != 0 )
+		if ( HWDevices[i].bus_peripheral != 0 )
 		{
-			dev = HWDevices[i].bus;
+			dev = HWDevices[i].bus_peripheral;
 			if ( hspi == HW_Spi[dev-HW_SPI1].hwspi_handle)
 			{
 				if ( HWDevices[i].irq_callback != NULL )

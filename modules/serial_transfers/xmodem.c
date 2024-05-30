@@ -25,6 +25,7 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
+#include "../../kernel/kernel_opt.h"
 
 #ifdef XMODEM_ENABLE
 
@@ -46,28 +47,27 @@ uint16_t	calc_csum=0,i;
 uint8_t xmodem_line_parser(uint8_t *buf)
 {
 	if ( buf[0] == X_SOH)
+	{
 		xmodem_struct.data_len = XMODEM_LEN;
-	else
-		return 1;
-	if ( (buf[XMODEM_ADDR] + buf[XMODEM_ADDRI]) != 0xff)
-		return 1;
-	xmodem_struct.addr = buf[XMODEM_ADDR];
-	xmodem_struct.addri = buf[XMODEM_ADDRI];
-	if ( xmodem_struct.data_len == XMODEM_LEN )
-		xmodem_struct.cs = buf[XMODEM_CS];
-	xmodem_struct.data_count += xmodem_struct.data_len;
-	if ( xmodem_struct.data_count > xmodem_struct.requested_data_count )	// at 256K stop transfers
-		return 1;
-	memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
-	xmodem_struct.data_ptr += xmodem_struct.data_len;
-	if ( buf[0] == X_SOH)
-		return xmodem_calc_csum(buf);
+		if ( (buf[XMODEM_ADDR] + buf[XMODEM_ADDRI]) == 0xff)
+		{
+			xmodem_struct.addr = buf[XMODEM_ADDR];
+			xmodem_struct.addri = buf[XMODEM_ADDRI];
+			if ( xmodem_struct.data_len == XMODEM_LEN )
+				xmodem_struct.cs = buf[XMODEM_CS];
+			xmodem_struct.data_count += xmodem_struct.data_len;
+			if ( xmodem_struct.data_count > xmodem_struct.requested_data_count )	// at 256K stop transfers
+				return 1;
+			memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
+			xmodem_struct.data_ptr += xmodem_struct.data_len;
+			if ( buf[0] == X_SOH)
+				return xmodem_calc_csum(buf);
+		}
+	}
 	return 1;
 }
 
-extern	UART_HandleTypeDef huart3;
-uint8_t ret;
-uint16_t	pkt_len;
+uint16_t	xmodem_pkt_len;
 uint32_t	xmodem_wakeup_mask = 0;
 
 uint8_t xmodem_process(uint32_t wakeup, uint8_t auto_send_ack)
@@ -106,8 +106,8 @@ uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0 , i;
 	if (( wakeup & (xmodem_wakeup_mask)) != 0)
 	{
 		xmodem_struct.state = XMODEM_DATA_PHASE;
-		pkt_len = hw_get_uart_receive_len(xmodem_struct.uart);
-		if ( pkt_len <= XMODEM_MAX_EOT_PKTLEN )
+		xmodem_pkt_len = hw_get_uart_receive_len(xmodem_struct.uart);
+		if ( xmodem_pkt_len <= XMODEM_MAX_EOT_PKTLEN )
 		{
 			for(i=0;i<XMODEM_MAX_EOT_PKTLEN;i++)
 			{
@@ -125,7 +125,7 @@ uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0 , i;
 				}
 			}
 		}
-		else if ( pkt_len == 132 )
+		else if ( xmodem_pkt_len == 132 )
 		{
 			if ( xmodem_line_parser(xmodem_struct.rxbuf))
 			{

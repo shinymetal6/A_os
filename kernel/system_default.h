@@ -39,6 +39,9 @@
 	#ifdef	VB1xx
 		#include "../boards/VB1xx.h"
 	#endif
+	#ifdef	MEMBRANE_2412172_00
+		#include "../boards/MEMBRANE_2412172_00.h"
+	#endif
 #endif	//#ifdef	STM32H743xx
 
 

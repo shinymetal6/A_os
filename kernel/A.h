@@ -87,8 +87,9 @@ typedef struct
 {
 	uint8_t 	process;
 	uint8_t		status;
+	uint8_t		device_peripheral;
+	uint8_t		bus_peripheral;
 	uint32_t	flags;
-	uint32_t	bus;
 	void 		(*irq_callback)(void);
 }HWDevices_t;
 
@@ -120,7 +121,10 @@ extern	UART_HandleTypeDef huart5;
 extern	UART_HandleTypeDef huart6;
 #endif
 #ifdef	A_HAS_UART7
-extern	UART_HandleTypeDef huart6;
+extern	UART_HandleTypeDef huart7;
+#endif
+#ifdef	A_HAS_UART8
+extern	UART_HandleTypeDef huart8;
 #endif
 typedef struct _HW_Uart_t
 {
@@ -128,7 +132,7 @@ typedef struct _HW_Uart_t
 	uint32_t			hwuart_index;
 }HW_Uart_t;
 
-#define	A_MAX_UART		7
+#define	A_MAX_UART		8
 #endif
 
 #ifdef A_HAS_SPI_BUS

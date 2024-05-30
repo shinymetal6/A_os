@@ -132,6 +132,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
+#define	DTCM_VECTORS_DATA	__attribute__((section(".osMemPoolEnd"))) __attribute__ ((aligned (32)))
 
 
 #define	DFU_BOOT_ENTRY			0x1FFF0000

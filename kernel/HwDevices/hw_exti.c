@@ -64,7 +64,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		if ( HWDevices[HWDEV_NRF24L01].irq_callback != NULL )
 			HWDevices[HWDEV_NRF24L01].irq_callback();
 		if (( HWDevices[HWDEV_NRF24L01].status & HWDEV_STATUS_PRC_WAKEUP ) == HWDEV_STATUS_PRC_WAKEUP )
-			activate_process(HWDevices[HWDEV_NRF24L01].process,1<<HWDevices[HWDEV_NRF24L01].bus,HWDEV_NRF24L01);
+			activate_process(HWDevices[HWDEV_NRF24L01].process,1<<HWDevices[HWDEV_NRF24L01].bus_peripheral,HWDEV_NRF24L01);
 	}
 #endif
 

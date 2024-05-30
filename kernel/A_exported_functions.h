@@ -92,9 +92,10 @@ extern	void 	A_Error_Handler(char * file, int line);
 #define	TIMERFLAGS_USERMASK			0x0f
 
 /* hwmanager */
-extern	uint32_t allocate_hw(uint32_t peripheral,uint8_t config);
-extern	uint32_t deallocate_hw(uint32_t peripheral);
-extern	uint32_t allocate_hw_with_irq_callback(uint32_t bus_peripheral,uint32_t device_peripheral,uint8_t config,void (*irq_callback)(void));
+extern	uint32_t allocate_hw(uint8_t peripheral,uint8_t config);
+extern	uint32_t deallocate_hw(uint8_t peripheral);
+extern	uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t config,void (*irq_callback)(void));
+extern	uint8_t get_busdevice_from_device(uint8_t device_peripheral);
 
 /* hwmanager : usb */
 extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
@@ -102,13 +103,13 @@ extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 extern	uint16_t hw_UsbGetRXLen(void);
 
 /* hwmanager : uart */
-extern	uint32_t hw_send_uart(uint32_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_send_uart_dma(uint32_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_receive_uart(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel(uint32_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel_clear(uint32_t uart);
+extern	uint32_t hw_send_uart(uint8_t uart,uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_send_uart_dma(uint8_t uart,uint8_t *ptr,uint16_t len);
+extern	uint32_t hw_receive_uart(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
+extern	uint32_t hw_receive_uart_sentinel(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
+extern	uint32_t hw_receive_uart_sentinel_clear(uint8_t uart);
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
-extern	uint16_t hw_get_uart_receive_len(uint32_t uart);
+extern	uint16_t hw_get_uart_receive_len(uint8_t uart);
 
 /* module_manager */
 extern	uint32_t allocate_module(uint32_t module,uint8_t config);
@@ -188,6 +189,9 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #ifdef MQTT_ENABLE
 	#include "../modules/mqtt_client/mqtt_client.h"
 #endif // #ifdef MQTT_ENABLE
+#ifdef WIFI_ESP01S
+	#include "../modules/WiFi/esp01s.h"
+#endif // 	#ifdef WIFI_ESP01S
 #endif // #ifdef NETWORKING_ENABLED
 
 #include "dfu_manager.h"
@@ -196,6 +200,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 /* devices , maximum index is 31 */
 #define	HWDEV_SPILCD				0
 #define	HWDEV_NRF24L01				1
+#define	HWDEV_WIFI_ESP01S			2
 
 /* peripherals , index 31 is for modules sw irq */
 #define	HW_SLEEP_FOREVER			0
@@ -209,22 +214,23 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_UART5					8
 #define	HW_UART6					9
 #define	HW_UART7					10
-#define	HW_I2C1						11
-#define	HW_I2C2						12
-#define	HW_I2C3						13
-#define	HW_I2C4						14
-#define	HW_SPI1						15
-#define	HW_SPI2						16
-#define	HW_QSPI						17
-#define	HW_I2S1						18
-#define	HW_I2S2						19
-#define	HW_TIM						20
-#define	HW_EXT_INT					21
-#define	HW_ADC1						22
-#define	HW_ADC2						23
-#define	HW_DAC						24
-#define	HW_USB_DEVICE				25
-#define	HW_USB_HOST					26
+#define	HW_UART8					11
+#define	HW_I2C1						12
+#define	HW_I2C2						13
+#define	HW_I2C3						14
+#define	HW_I2C4						15
+#define	HW_SPI1						16
+#define	HW_SPI2						17
+#define	HW_QSPI						18
+#define	HW_I2S1						19
+#define	HW_I2S2						20
+#define	HW_TIM						21
+#define	HW_EXT_INT					22
+#define	HW_ADC1						23
+#define	HW_ADC2						24
+#define	HW_DAC						25
+#define	HW_USB_DEVICE				26
+#define	HW_USB_HOST					27
 #define	SW_MODULES					31
 
 /* event to wait */
@@ -238,6 +244,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_UART5_IRQ					(1<<HW_UART5)
 #define	EVENT_UART6_IRQ					(1<<HW_UART6)
 #define	EVENT_UART7_IRQ					(1<<HW_UART7)
+#define	EVENT_UART8_IRQ					(1<<HW_UART8)
 #define	EVENT_I2C1_IRQ					(1<<HW_I2C1)
 #define	EVENT_I2C2_IRQ					(1<<HW_I2C2)
 #define	EVENT_I2C3_IRQ					(1<<HW_I2C3)
@@ -266,6 +273,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_UART5_IRQ			EVENT_UART5_IRQ
 #define	SUSPEND_ON_UART6_IRQ			EVENT_UART6_IRQ
 #define	SUSPEND_ON_UART7_IRQ			EVENT_UART7_IRQ
+#define	SUSPEND_ON_UART8_IRQ			EVENT_UART8_IRQ
 #define	SUSPEND_ON_I2C1_IRQ				EVENT_I2C1_IRQ
 #define	SUSPEND_ON_I2C2_IRQ				EVENT_I2C2_IRQ
 #define	SUSPEND_ON_I2C3_IRQ				EVENT_I2C3_IRQ
@@ -294,6 +302,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_UART5_IRQ			SUSPEND_ON_UART5_IRQ
 #define	WAKEUP_FROM_UART6_IRQ			SUSPEND_ON_UART6_IRQ
 #define	WAKEUP_FROM_UART7_IRQ			SUSPEND_ON_UART7_IRQ
+#define	WAKEUP_FROM_UART8_IRQ			SUSPEND_ON_UART8_IRQ
 #define	WAKEUP_FROM_I2C1_IRQ			SUSPEND_ON_I2C1_IRQ
 #define	WAKEUP_FROM_I2C2_IRQ			SUSPEND_ON_I2C2_IRQ
 #define	WAKEUP_FROM_I2C3_IRQ			SUSPEND_ON_I2C3_IRQ
@@ -322,6 +331,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_UART5					HW_UART5
 #define	DEVICE_UART6					HW_UART6
 #define	DEVICE_UART7					HW_UART7
+#define	DEVICE_UART8					HW_UART8
 #define	DEVICE_I2C1						HW_I2C1
 #define	DEVICE_I2C2						HW_I2C2
 #define	DEVICE_I2C3						HW_I2C3
