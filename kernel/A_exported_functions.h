@@ -190,7 +190,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../modules/mqtt_client/mqtt_client.h"
 #endif // #ifdef MQTT_ENABLE
 #ifdef WIFI_ESP01S
-	#include "../modules/WiFi/esp01s.h"
+	#include "../modules/WiFi/esp01_s.h"
 #endif // 	#ifdef WIFI_ESP01S
 #endif // #ifdef NETWORKING_ENABLED
 
