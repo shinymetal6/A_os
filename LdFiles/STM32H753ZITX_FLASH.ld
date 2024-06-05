@@ -59,6 +59,11 @@ SECTIONS
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
 	.osSysRamEnd 		0x20010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 
+	_dtcm_data_start    = LOADADDR(.dtcm_data);
+	.dtcm_data			0x20010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_data))}
+	_dtcm_data_end       = LOADADDR(.dtcm_dataEnd);
+	.dtcm_dataEnd 		0x20020000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_dataEnd))}
+
 	_dtcm_user_data_start  = LOADADDR(.dtcm_user_data);
 	.dtcm_user_data	 	0x20010000 (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
 	_dtcm_user_data_end  	= LOADADDR(.dtcm_user_data_end);
@@ -251,6 +256,14 @@ SECTIONS
     . = ALIGN(4);
     _eflash_end_start = .;        /* define a global symbol at data end */
   } > FLASH
+  
+    .aos_flash_end  :
+  {
+    . = ALIGN(4);
+    KEEP(*(.aos_flash_end)) 
+    . = ALIGN(4);
+  } >FLASH
+  
   /* Remove information from the standard libraries */
   /DISCARD/ :
   {

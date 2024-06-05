@@ -22,7 +22,14 @@
 
 #include "main.h"
 
+#ifdef	STM32H753xx
+#define FLASH_UPDATER_ENABLED
+#endif
 #ifdef	STM32H743xx
+#define FLASH_UPDATER_ENABLED
+#endif
+
+#ifdef	FLASH_UPDATER_ENABLED
 #include "../../system_default.h"
 #include "flash_updater.h"
 
@@ -203,15 +210,83 @@ uint32_t	i;
 	return 0;
 }
 
-ITCM_AREA_CODE void  FlashIrq_Error_Handler(void)
+#define	FLASH_RAM_FUNC		__attribute__((section(".RamFunc")))
+
+FLASH_RAM_FUNC void  FlashIrq_Error_Handler(void)
 {
-    __disable_irq();
-    while(1);	// hangs badly
+	__disable_irq();
+	while(1);	// hangs badly
 }
 
-void  ITCM_AREA_CODE FlashSysTick_Handler(void)
+FLASH_RAM_FUNC void FlashSysTick_Handler(void)
 {
 	flash_uwTick += (uint32_t)HAL_TICK_FREQ_DEFAULT;
+}
+
+FLASH_RAM_FUNC void FlashWait_N_Irqs(uint8_t numirqs)
+{
+    __disable_irq();
+	VectorTable_DTCM[SYSTICK_VECTOR] = (uint32_t )&(*FlashSysTick_Handler);
+	__DSB();
+	__ISB();
+    flash_uwTick=0;
+	__DSB();
+	__ISB();
+    __enable_irq();
+	while ( flash_uwTick < numirqs);
+    __disable_irq();
+}
+
+FLASH_RAM_FUNC void FlashSoftWait(void)
+{
+uint32_t	www = 480000;
+	while(www != 0 )
+		www--;
+}
+
+FLASH_RAM_FUNC	void sys_jump(void)
+{
+uint32_t	*ram_ptr,i;
+#ifdef LED_3_GPIOPORT
+	HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
+#endif
+	__DSB();
+	__ISB();
+	FlashWait_N_Irqs(4);
+	__DSB();
+	__ISB();
+	CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
+
+	FlashSoftWait();
+
+    ram_ptr = (uint32_t	*)0x00000000;
+	for(i=0;i<0x10000;i+=4)
+		ram_ptr[i] = 0;
+    __DSB();
+    __ISB();
+
+	FlashSoftWait();
+
+	ram_ptr = (uint32_t	*)0x20000000;
+	for(i=0;i<0x20000;i+=4)
+		ram_ptr[i] = 0;
+    __DSB();
+    __ISB();
+
+	FlashSoftWait();
+
+#ifdef LED_3_GPIOPORT
+	//HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_RESET);
+#endif
+	FlashSoftWait();
+    __DSB();
+    __ISB();
+    __DSB();
+    __ISB();
+    __DSB();
+    __ISB();
+
+	NVIC_SystemReset();
 }
 
 static void relocate_vtable_systick(void)
@@ -222,6 +297,8 @@ uint32_t i;
     __disable_irq();
 	for(i=0;i<8;i++)
 		NVIC->ICER[i] = 0xffffffff;
+	for(i=0;i<240;i++)
+		NVIC->IP[i] = 0;
     __enable_irq();
 	HAL_Delay(10);
     __disable_irq();
@@ -250,14 +327,23 @@ uint32_t i;
 
 ITCM_AREA_CODE void flash_update(uint8_t *flash_data,uint32_t size)
 {
-uint8_t	status;
+uint8_t		status;
+
+#ifdef LED_3_GPIOPORT
+	HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_RESET);
+#endif
 	relocate_vtable_systick();
+
+#ifdef LED_2_GPIOPORT
+	HAL_GPIO_WritePin(LED_2_GPIOPORT, LED_2_GPIOBIT,GPIO_PIN_SET);
+#endif
 	status = flash_write(flash_data,(uint8_t *)&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
     if ( status  )
     	{ while(1);	}	// error so loop forever
-	CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
+
+
     // All done, restart
-	NVIC_SystemReset();
+	sys_jump();
 }
 
 
@@ -284,4 +370,5 @@ uint32_t size = &_fdata_end - &_fdata_start;
 }
 #endif // #ifdef TEST_FLASH
 
-#endif	// #ifdef	STM32H743xx
+#endif	//	#ifdef	FLASH_UPDATER_ENABLED
+

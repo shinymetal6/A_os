@@ -31,7 +31,7 @@ extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
 
 #include "internal_adc.h"
-DMA_NOCACHE_RAM		ControlAdcDef	ControlAdc;
+ControlAdcDef	ControlAdc;
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {

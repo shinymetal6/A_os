@@ -23,7 +23,7 @@
 #ifndef KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_
 #define KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_
 
-#ifdef	STM32H743xx
+#ifdef	FLASH_UPDATER_ENABLED
 
 #define FLASH_TIMEOUT_VALUE              50000U /* 50 s */
 
@@ -57,6 +57,6 @@
 extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 
-#endif /* #ifdef	STM32H743xx */
+#endif /* #ifdef	FLASH_UPDATER_ENABLED */
 
 #endif /* KERNEL_FLASH_UPDATER_STM32H743_FLASH_UPDATER_H_ */

@@ -63,7 +63,21 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	MODBUS_ENABLE			1
 #define SENSORS_CCS8118			1
 #define MQTT_ENABLE				1
+#define	ADC_ENABLED				1
+//#define	DAC_ENABLED				1
 
+#ifdef ADC_ENABLED
+		extern	ADC_HandleTypeDef 	hadc1;
+		extern	ADC_HandleTypeDef 	hadc2;
+		extern	TIM_HandleTypeDef 	htim6;
+		#define	CONTROL_ADC1		hadc1
+		#define	ANALOG_IN_ADC2		hadc2
+		#define	CONTROL_TIMER		htim6
+#endif // #ifdef ADC_DAC_ENABLED
+
+#ifdef DAC_ENABLED
+	extern	DAC_HandleTypeDef hdac1;
+#endif // #ifdef DAC_ENABLED
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
 #endif // #ifdef NETWORKING_ENABLED
@@ -112,11 +126,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#endif // #ifdef LORA_ENABLED
 #endif // #ifdef WIRELESS_ENABLED
 
-//#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-#define	ITCM_AREA_CODE
+
 //#define	A_HAS_UART1			1
 #define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1

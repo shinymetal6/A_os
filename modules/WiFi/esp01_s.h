@@ -16,62 +16,61 @@
 /*
  * esp01_s.h
  *
- *  Created on: May 30, 2024
+ *  Created on: Jun 3, 2024
  *      Author: fil
  */
 
 #ifndef MODULES_WIFI_ESP01_S_H_
 #define MODULES_WIFI_ESP01_S_H_
 
-#define	ESP01S_SSID_LEN	32
-#define	ESP01S_PWD_LEN		32
-#define	ESP01S_REPLY_LEN	80
-#define	ESP01S_IP_LEN		16
-#define	ESP01S_MAC_LEN		18
-#define	ESP01S_CMD_LEN		64
+#define	ESP01S_SSID_LEN			32
+#define	ESP01S_PWD_LEN			32
+#define	ESP01S_REPLY_LEN		80
+#define	ESP01S_IP_LEN			16
+#define	ESP01S_MAC_LEN			18
+#define	ESP01S_CMD_LEN			64
+#define	ESP01S_WEB_LEN			1024
+#define	ESP01S_WEB_PARAMS_LEN	128
+
+#define	ESP01S_MAX_CONNECT_STATE	10
+#define	ESP01S_MAX_WEBREPLY_STATE	10
+
 typedef struct
 {
 	uint8_t 	status;
 	uint8_t 	*rx_buf;
 	uint16_t 	rx_buf_max_len;
 	uint8_t 	serial_port;
+	uint8_t 	esp01s_worker_state;
+	uint8_t 	esp01s_web_state;
 	uint16_t	delay;
 	uint8_t		cmd_retry;
 	char		SSID[ESP01S_SSID_LEN];
 	char		PASSWD[ESP01S_PWD_LEN];
 	char 		data[ESP01S_REPLY_LEN];
 	char 		ip[ESP01S_IP_LEN];
+	char 		apmac[ESP01S_MAC_LEN];
 	char 		mac[ESP01S_MAC_LEN];
+	char 		*webpage;
+	char		wparams[ESP01S_WEB_PARAMS_LEN];
+	char		cmd_webpage[ESP01S_WEB_LEN];
 }esp_wifi_t;
 
 /*  status */
-#define	ESP01S_WIFI_DISCONNECTED	0x00
-#define	ESP01S_WIFI_CMD_SENT		0x01
-#define	ESP01S_WIFI_CONNECTED		0x40
-#define	ESP01S_WIFI_WEB_REQUEST		0x80
+#define	ESP01S_WIFI_DISCONNECTED		0x00
+#define	ESP01S_WIFI_CMD_SENT			0x01
+#define	ESP01S_WEB_ERROR				0x08
+#define	ESP01S_WEB_PAGE_SENT			0x10
+#define	ESP01S_WEB_CLOSE_PAGE_SENT		0x20
+#define	ESP01S_WIFI_CMDLIST_FINISHED	0x40
+#define	ESP01S_WIFI_WEB_REQUEST			0x80
 
-typedef struct
-{
-	char		cmd[ESP01S_CMD_LEN];
-	char 		reply[ESP01S_REPLY_LEN];
-	uint16_t	delay;
-}esp_cmds_t;
+#define	ESP01S_WIFI_CMD_OK				0
+#define	ESP01S_WIFI_CMD_ERROR			1
 
-#define	ESP01S_SM_INIT				0
-#define	ESP01S_SM_SWRESET			1
-#define	ESP01S_SM_SENT_SWRESET		2
-#define	ESP01S_SM_SENT_CWLAP		3
-#define	ESP01S_SM_SENT_CWMODE		4
-#define	ESP01S_SM_SENT_USR_PASSWD	5
-#define	ESP01S_SM_WAIT_GOTIP		6
-#define	ESP01S_SM_SENT_CIFSR		7
-#define	ESP01S_SM_WAIT_CIPMUX		8
-#define	ESP01S_SM_WAIT_CIPSERVER	9
-#define	ESP01S_SM_CONNECTED			10
-#define	ESP01S_SM_IDLE_CONNECTED	11
-
-#define	ESP01S_UART_TIMEOUT			50
-
+#define	ESP01S_WAIT_LASTCMD	0
+#define	ESP01S_WAIT_01		1
+#define	ESP01S_WAIT_02		2
 #define	ESP01S_WAIT_05		5
 #define	ESP01S_WAIT_10		10
 #define	ESP01S_WAIT_20		20
@@ -82,15 +81,27 @@ typedef struct
 #define	ESP01S_WAIT_100		100
 #define	ESP01S_WAIT_200		200
 #define	ESP01S_WAIT_500		500
-#define	ESP01S_WAIT_2000	2000
-#define	ESP01S_WAIT_5000	5000
+#define	ESP01S_EXT_PARAM	2000
+#define	ESP01S_EXT_DATA		2001
 
-extern	uint8_t ESP01S_Init (uint8_t serial_port,uint8_t *rx_buf, uint16_t rx_buf_max_len,char *ssid,char *pwd);
+typedef struct
+{
+	char		cmd[ESP01S_CMD_LEN];
+	char 		reply[ESP01S_REPLY_LEN];
+	uint16_t	delay;
+}esp_cmds_t;
+
+#define	ESP01S_UART_TIMEOUT			20
+#define	ESP01S_NUM_RETRY			20
+
+extern	uint8_t ESP01S_Init (uint8_t serial_port,uint8_t *rx_buf, uint16_t rx_buf_max_len,char *ssid,char *pwd,char *webpage);
 extern	uint8_t ESP01S_SendCmd(char *cmd);
-extern	uint8_t ESP01S_Process(uint8_t	force_state);
+extern	uint8_t ESP01S_Worker(esp_cmds_t *esp_work);
+extern	uint8_t ESP01S_Reset_Worker (void);
+extern	uint8_t ESP01S_set_webpage (char *webpage);
+extern	uint8_t ESP01S_WebProcess(void);
 extern	uint8_t ESP01S_get_state (void);
 extern	uint8_t ESP01S_get_IP (uint8_t *ip);
 extern	uint8_t ESP01S_get_MAC (uint8_t *mac);
-
 
 #endif /* MODULES_WIFI_ESP01_S_H_ */
