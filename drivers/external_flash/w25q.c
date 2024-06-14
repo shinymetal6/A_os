@@ -50,9 +50,9 @@ static void set_com(QSPI_CommandTypeDef *com , uint8_t instruction,uint32_t inst
 	com->SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
 }
 
-static uint32_t page_to_addr(uint32_t pageNum, uint8_t pageShift)
+static uint32_t page_to_addr(uint32_t pageNum)
 {
-	return pageNum * MEM_PAGE_SIZE + pageShift;
+	return pageNum * MEM_PAGE_SIZE;
 }
 
 static uint8_t w25q_ReadStatusReg(uint8_t *reg_data, uint8_t reg_num)
@@ -181,17 +181,22 @@ QSPI_CommandTypeDef com;
 	return W25Q_OK;
 }
 
-uint8_t w25q_ReadRaw(uint8_t *buf, uint16_t data_len, uint32_t rawAddr)
+uint8_t w25q_ReadRaw(uint8_t *buf, uint32_t rawAddr, uint16_t data_len)
 {
 QSPI_CommandTypeDef com;
 uint32_t	Instruction,AddressSize;
-uint8_t		ret_val;
+uint8_t		ret_val,tout=0;
 
 	if (data_len > 256 || data_len == 0)
 		return W25Q_PARAM_ERR;
 
 	while (w25q_IsBusy() == W25Q_BUSY)
+	{
 		task_delay(1);
+		tout++;
+		if ( tout > 20 )
+			return W25Q_SPI_ERR;
+	}
 
 #if MEM_FLASH_SIZE > 128U
 	Instruction = W25Q_FAST_READ_QUAD_IO_4B;
@@ -203,22 +208,24 @@ uint8_t		ret_val;
 	set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, rawAddr, QSPI_ADDRESS_4_LINES, AddressSize, data_len, QSPI_DATA_4_LINES);
 	com.DummyCycles = 6;
 
-	ret_val = 0;
+	ret_val = W25Q_SPI_ERR;
 	if (HAL_QSPI_Command(&hqspi, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) == HAL_OK)
 		if (HAL_QSPI_Receive(&hqspi, buf, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) == HAL_OK)
 			ret_val = W25Q_OK;
-	ret_val = W25Q_SPI_ERR;
 	com.DummyCycles = 0;
 	return ret_val;
 }
 
-uint8_t w25q_ProgramRaw(uint8_t *buf, uint16_t data_len, uint32_t rawAddr)
+uint8_t w25q_ProgramRaw(uint8_t *data, uint32_t Address,  uint16_t len)
 {
 QSPI_CommandTypeDef com;
 uint32_t			Instruction,AddressSize;
 uint8_t				state;
 
-	if (data_len > 256 || data_len == 0)
+	if (Address > (MEM_FLASH_SIZE_FULL-(1024U*8)) )
+		return W25Q_PARAM_ERR;
+
+	if (len > 256 || len == 0)
 		return W25Q_PARAM_ERR;
 
 	while (w25q_IsBusy() == W25Q_BUSY)
@@ -236,12 +243,12 @@ uint8_t				state;
 	AddressSize = QSPI_ADDRESS_24_BITS;
 #endif
 
-	set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, rawAddr, QSPI_ADDRESS_1_LINE, AddressSize, data_len, QSPI_DATA_4_LINES);
+	set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, Address, QSPI_ADDRESS_1_LINE, AddressSize, len, QSPI_DATA_4_LINES);
 	if (HAL_QSPI_Command(&hqspi, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE)
 			!= HAL_OK)
 		return W25Q_SPI_ERR;
 
-	if (HAL_QSPI_Transmit(&hqspi, buf, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+	if (HAL_QSPI_Transmit(&hqspi, data, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 		return W25Q_SPI_ERR;
 
 	while (w25q_IsBusy() == W25Q_BUSY)
@@ -250,12 +257,21 @@ uint8_t				state;
 	return W25Q_OK;
 }
 
-uint8_t w25q_ReadData(uint8_t *buf, uint16_t len, uint8_t pageShift, uint32_t pageNum)
+uint8_t w25q_ReadDataByPageNum(uint8_t *buf, uint32_t pageNum, uint16_t len)
 {
 uint32_t rawAddr;
-	if (pageNum >= PAGE_COUNT || len == 0 || len > 256 || pageShift > 256 - len)
+	if (pageNum >= PAGE_COUNT || len == 0 || len > 256)
 		return W25Q_PARAM_ERR;
-	rawAddr = page_to_addr(pageNum, pageShift);
+	rawAddr = page_to_addr(pageNum);
+	return w25q_ReadRaw(buf, len, rawAddr);
+}
+
+uint8_t w25q_ReadDataByAddress(uint8_t *buf, uint32_t Address, uint16_t len)
+{
+uint32_t rawAddr;
+	if (Address >= PAGE_COUNT || len == 0 || len > 256)
+		return W25Q_PARAM_ERR;
+	rawAddr = Address / MEM_PAGE_SIZE;
 	return w25q_ReadRaw(buf, len, rawAddr);
 }
 
@@ -294,23 +310,55 @@ uint8_t				state;
 	return W25Q_OK;
 }
 
-uint8_t w25q_EraseBlock(uint32_t BlockAddr, uint8_t size)
+
+uint8_t w25q_EraseBlockByAddress(uint32_t Address)
 {
 QSPI_CommandTypeDef com;
 uint32_t			Instruction,AddressSize;
-uint32_t			rawAddr;
 uint8_t				state;
-	if (size != 32 && size != 64)
-		return W25Q_PARAM_ERR;
-	if ((size == 64 && BlockAddr >= BLOCK_COUNT) || (size == 32 && BlockAddr >= BLOCK_COUNT * 2))
+
+	if ( Address >= (MEM_FLASH_SIZE_FULL)-(MEM_BLOCK_SIZE*1024U) )
 		return W25Q_PARAM_ERR;
 
 	while (w25q_IsBusy() == W25Q_BUSY)
 		task_delay(1);
 
-	rawAddr = BlockAddr * MEM_SECTOR_SIZE * 1024U * 16;
-	if (size == 32)
-		rawAddr /= 2;
+	state = w25q_WriteEnable(1);
+	if (state != W25Q_OK)
+		return state;
+
+#if MEM_FLASH_SIZE > 128U
+	Instruction = W25Q_64KB_BLOCK_ERASE_4B;	 // Command
+	AddressSize = QSPI_ADDRESS_32_BITS;
+#else
+	Instruction = W25Q_32KB_BLOCK_ERASE;	 // Command
+	AddressSize = QSPI_ADDRESS_24_BITS;
+#endif
+
+	set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, Address, QSPI_ADDRESS_1_LINE, AddressSize, 0, QSPI_DATA_NONE);
+	if (HAL_QSPI_Command(&hqspi, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+		return W25Q_SPI_ERR;
+
+	while (w25q_IsBusy() == W25Q_BUSY)
+		task_delay(1);
+
+	return W25Q_OK;
+}
+
+uint8_t w25q_EraseBlockByNumber(uint32_t BlockNumber)
+{
+QSPI_CommandTypeDef com;
+uint32_t			Instruction,AddressSize;
+uint32_t			rawAddr;
+uint8_t				state;
+
+	if ( BlockNumber >= BLOCK_COUNT)
+		return W25Q_PARAM_ERR;
+
+	while (w25q_IsBusy() == W25Q_BUSY)
+		task_delay(1);
+
+	rawAddr = BlockNumber * MEM_BLOCK_SIZE * 1024U;
 
 	state = w25q_WriteEnable(1);
 	if (state != W25Q_OK)
@@ -380,6 +428,16 @@ QSPI_CommandTypeDef com;
 	task_delay(1);
 	Asys.qspi_status &= ~ASYS_QSPI_SLEEP;
 	return W25Q_OK;
+}
+
+uint32_t w25q_GetBlockSize(void)
+{
+	return MEM_BLOCK_SIZE*1024U;
+}
+
+uint32_t w25q_GetSectorSize(void)
+{
+	return MEM_SECTOR_SIZE*1024U;
 }
 
 uint8_t w25q_Init(void)

@@ -26,6 +26,7 @@
 // Memory settings
 // Mem size in M-bit
 #define MEM_FLASH_SIZE 		128U 				// 128 MB-bit
+#define MEM_FLASH_SIZE_FULL	((128U*1024U*1024U)/8)	// 16 MBytes
 #define MEM_BLOCK_SIZE 		64U					// 64 KB: 256 pages
 #define MEM_SBLOCK_SIZE 	32U					// 32 KB: 128 pages
 #define MEM_SECTOR_SIZE 	4U					// 4 KB : 16 pages
@@ -101,12 +102,15 @@
 #define W25Q_RESET 0x99U					///< make software reset
 
 extern	uint8_t w25q_Init(void);
-extern	uint8_t w25q_ReadRaw(uint8_t *buf, uint16_t data_len, uint32_t rawAddr);
+extern	uint8_t w25q_ReadRaw(uint8_t *buf, uint32_t rawAddr, uint16_t data_len);
 extern	uint8_t w25q_WriteEnable(uint8_t enable);
-extern	uint8_t w25q_ProgramRaw(uint8_t *buf, uint16_t data_len, uint32_t rawAddr);
+extern	uint8_t w25q_ProgramRaw(uint8_t *data, uint32_t Address,  uint16_t len);
 extern	uint8_t w25q_EraseSector(uint32_t SectAddr);
-extern	uint8_t w25q_EraseBlock(uint32_t BlockAddr, uint8_t size);
+extern	uint8_t w25q_EraseBlockByNumber(uint32_t BlockNumber);
+extern	uint8_t w25q_EraseBlockByAddress(uint32_t Address);
 extern	uint8_t w25q_EraseChip(void);
+extern	uint32_t w25q_GetBlockSize(void);
+extern	uint32_t w25q_GetSectorSize(void);
 
 
 #endif /* DRIVERS_FLASH_W25Q_H_ */

@@ -56,7 +56,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	LORA_ENABLED			1
 #define	NETWORKING_ENABLED		1
 #define	USB_ENABLED				1
-#define	XMODEM_ENABLE			1
+//#define	XMODEM_ENABLE			1
+#define	USB_XMODEM_ENABLE		1
 //#define	MODBUS_ENABLE			1
 //#define SENSORS_CCS8118			1
 #define MQTT_ENABLE				1

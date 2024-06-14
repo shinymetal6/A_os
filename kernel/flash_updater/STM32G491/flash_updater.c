@@ -26,19 +26,26 @@
 #include "../../system_default.h"
 #include "flash_updater.h"
 
-extern	uint8_t	*_fdata_start,*_fdata_end,*_d2ram_start;
+extern	uint8_t	*_fdata_start,*_fdata_end,*_flash_storage_ram_start;
+extern	void DWT_Delay_us(uint32_t au32_microseconds);
 
-uint32_t	flash_uwTick=0;
-DTCM_VECTORS_DATA	uint32_t	VectorTable_DTCM[VECTOR_TABLE_SIZE];
+uint32_t	flash_swTick=0;
+
+ITCM_AREA_CODE void FlashDelay_1MS(void)
+{
+	DWT_Delay_us(1000);
+	flash_swTick++;
+}
 
 ITCM_AREA_CODE uint8_t WaitForLastFlashOperation(uint32_t Timeout)
 {
 uint32_t error;
 
+	flash_swTick = 0;
 	while (__HAL_FLASH_GET_FLAG(FLASH_FLAG_BSY))
 	{
-		flash_uwTick = 0;
-		if(flash_uwTick > Timeout)
+		FlashDelay_1MS();
+		if(flash_swTick > Timeout)
 			return 1;
 	}
 
@@ -192,61 +199,22 @@ uint32_t FlashAddress = (uint32_t)dst;
 	return 0;
 }
 
-ITCM_AREA_CODE void  FlashIrq_Error_Handler(void)
-{
-	__disable_irq();
-	while(1);	// hangs badly
-}
-
-void  ITCM_AREA_CODE FlashSysTick_Handler(void)
-{
-	flash_uwTick += (uint32_t)HAL_TICK_FREQ_DEFAULT;
-}
-
-static void relocate_vtable_systick(void)
-{
-uint32_t i;
-	// 1 -  sync with irqs and disable all
-	HAL_Delay(1);
-    __disable_irq();
-	for(i=0;i<8;i++)
-		NVIC->ICER[i] = 0xffffffff;
-	for(i=0;i<240;i++)
-		NVIC->IP[i] = 0;
-    __enable_irq();
-	HAL_Delay(10);
-    __disable_irq();
-    // 2 - disable caches if enabled
-    __DSB();
-    __ISB();
-	// 3 - compile a new vector table with only systick enabled
-	for( i = 0; i < VECTOR_TABLE_SIZE; i++)
-		VectorTable_DTCM[i] = (uint32_t )&(*FlashIrq_Error_Handler);
-	VectorTable_DTCM[SYSTICK_VECTOR] = (uint32_t )&(*FlashSysTick_Handler);
-	// 4 - set new vector table
-    SCB->VTOR = ((uint32_t) &VectorTable_DTCM);
-    // 5 - now only systick should be enabled, wait for some ticks after enabling irqs
-    flash_uwTick=0;
-    __enable_irq();
-	while ( flash_uwTick < 4);
-	// 7 - vectors relocated
-}
-
 ITCM_AREA_CODE void flash_update(uint8_t *flash_data,uint32_t size)
 {
 uint8_t	status;
-	relocate_vtable_systick();
+	__disable_irq();
 	status = flash_write(flash_data,(uint8_t *)&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
     if ( status  )
-    	{ while(1);	}	// error so loop forever
+    {
+    	while(1);	// error so loop forever
+    }
     // All done, restart
 	NVIC_SystemReset();
 }
 
-
 ITCM_AREA_CODE uint32_t get_flash_storage_ptr(void)
 {
-	return (uint32_t )&_d2ram_start;
+	return (uint32_t )&_flash_storage_ram_start;
 }
 
 ITCM_AREA_CODE uint32_t get_flash_size(void)

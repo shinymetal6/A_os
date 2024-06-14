@@ -56,14 +56,7 @@ extern	void set_after_check_timers_callback(void (*callback)(void));
 
 /* qspi */
 #if defined QSPI_ENABLED
-extern	QSPI_HandleTypeDef *A_qspi_init(void);
-extern	uint8_t A_qspi_erase_block(uint32_t BlockAddress);
-extern	uint8_t A_qspi_erase_chip(void);
-extern	uint8_t A_qspi_write(uint8_t* data,uint32_t addr, uint32_t size);
-extern	uint8_t A_qspi_read( uint8_t* data,uint32_t addr, uint32_t size);
-extern	uint8_t A_qspi_enable_write(void);
-extern	uint8_t A_qspi_disable_write(void);
-
+#include "HwDevices/hw_qspi.h"
 #endif
 
 /* flash */
@@ -142,6 +135,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 #ifdef XMODEM_ENABLE
 #include "../modules/serial_transfers/xmodem.h"
+#endif
+
+#ifdef USB_XMODEM_ENABLE
+#include "../modules/usb_transfer/usb_xmodem.h"
 #endif
 
 #ifdef MODBUS_ENABLE

@@ -29,9 +29,9 @@
 QSPI_Info	QSPI_memory;
 
 extern	Asys_t			Asys;
-
+#ifdef QSPI_WINBOND
 #include "w25q.h"
-
+#endif
 QSPI_HandleTypeDef *qspi_init(void)
 {
 #ifdef QSPI_WINBOND
@@ -43,13 +43,6 @@ QSPI_HandleTypeDef *qspi_init(void)
 	QSPI_memory.ProgPagesNumber = PAGE_COUNT;
 #endif
 	return &HQSPI1;
-}
-
-uint8_t qspi_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
-{
-#ifdef QSPI_WINBOND
-	return w25q_ReadRaw(pData, Size, ReadAddr);
-#endif
 }
 
 uint8_t qspi_WriteEnable(void)
@@ -66,17 +59,31 @@ uint8_t qspi_WriteDisable(void)
 #endif
 }
 
-uint8_t qspi_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
+uint8_t qspi_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
 {
 #ifdef QSPI_WINBOND
-	return w25q_ProgramRaw(pData, Size, WriteAddr);
+	return w25q_ReadRaw(pData, ReadAddr, Size);
 #endif
 }
 
-uint8_t qspi_Erase_Block(uint32_t BlockAddress)
+uint8_t qspi_Write(uint8_t* pData, uint32_t WriteAddr, uint32_t Size)
 {
 #ifdef QSPI_WINBOND
-	return w25q_EraseBlock(BlockAddress, MEM_BLOCK_SIZE);
+	return w25q_ProgramRaw(pData, WriteAddr, Size);
+#endif
+}
+
+uint8_t qspi_EraseBlockByNumber(uint32_t BlockNumber)
+{
+#ifdef QSPI_WINBOND
+	return w25q_EraseBlockByNumber(BlockNumber);
+#endif
+}
+
+uint8_t qspi_EraseBlockByAddress(uint32_t BlockAddress)
+{
+#ifdef QSPI_WINBOND
+	return w25q_EraseBlockByAddress(BlockAddress);
 #endif
 }
 

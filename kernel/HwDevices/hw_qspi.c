@@ -47,11 +47,18 @@ uint8_t A_qspi_disable_write(void)
 	 return qspi_WriteDisable();
 }
 
-uint8_t A_qspi_erase_block(uint32_t BlockAddress)
+uint8_t A_qspi_EraseBlockByNumber(uint32_t BlockNumber)
 {
 	if ( HWMngr[HW_QSPI].process != Asys.current_process )
 		return HW_QSPI_ERROR_HW_NOT_OWNED;
-	 return qspi_Erase_Block(BlockAddress);
+	 return qspi_EraseBlockByNumber(BlockNumber);
+}
+
+uint8_t A_qspi_EraseBlockByAddress(uint32_t BlockAddress)
+{
+	if ( HWMngr[HW_QSPI].process != Asys.current_process )
+		return HW_QSPI_ERROR_HW_NOT_OWNED;
+	 return qspi_EraseBlockByAddress(BlockAddress);
 }
 
 uint8_t A_qspi_erase_chip(void)

@@ -16,7 +16,7 @@
 /*
  * flash_updater.c
  *
- *  Created on: Jan 31, 2024
+ *  Created on: Jun 6, 2024
  *      Author: fil
  */
 
@@ -35,10 +35,25 @@
 
 extern	uint8_t	*_fdata_start,*_fdata_end,*_d2ram_start;
 
-uint32_t	flash_uwTick=0;
-DTCM_VECTORS_DATA	uint32_t	VectorTable_DTCM[VECTOR_TABLE_SIZE];
+uint32_t	flash_swTick=0;
+#define	FLASH_RAM_FUNC		__attribute__((section(".RamFunc")))
 
-ITCM_AREA_CODE uint8_t WaitForLastFlashOperation(uint32_t Timeout, uint32_t Bank)
+
+FLASH_RAM_FUNC void FlashDWT_Delay_us(uint32_t au32_microseconds)
+{
+uint32_t au32_initial_ticks = DWT->CYCCNT;
+uint32_t au32_ticks = (HSI_VALUE / 1000000);
+	au32_microseconds *= au32_ticks;
+	while ((DWT->CYCCNT - au32_initial_ticks) < au32_microseconds-au32_ticks);
+}
+
+FLASH_RAM_FUNC void FlashDelay_1MS(void)
+{
+	FlashDWT_Delay_us(1000);
+	flash_swTick++;
+}
+
+FLASH_RAM_FUNC uint8_t WaitForLastFlashOperation(uint32_t Timeout, uint32_t Bank)
 {
 uint32_t bsyflag = FLASH_FLAG_QW_BANK1;
 uint32_t errorflag = 0;
@@ -46,11 +61,12 @@ uint32_t errorflag = 0;
 	if (Bank == FLASH_BANK_2)
 		bsyflag = FLASH_FLAG_QW_BANK2;
 
+	flash_swTick = 0;
 	while(__HAL_FLASH_GET_FLAG(bsyflag))
 	{
-		flash_uwTick = 0;
-		if(flash_uwTick > Timeout)
-				return 1;
+		FlashDelay_1MS();
+		if(flash_swTick > Timeout)
+			return 1;
 	}
 
 	if (Bank == FLASH_BANK_1)
@@ -74,23 +90,7 @@ uint32_t errorflag = 0;
 	return 0;
 }
 
-ITCM_AREA_CODE uint8_t Flash_Erase_Sector(uint32_t Sector, uint32_t Banks)
-{
-  if((Banks & FLASH_BANK_1) == FLASH_BANK_1)
-  {
-    /* Reset Program/erase VoltageRange and Sector Number for Bank1 */
-    FLASH->CR1 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
-    FLASH->CR1 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
-  }
-  if((Banks & FLASH_BANK_2) == FLASH_BANK_2)
-  {
-    FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
-    FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3  | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
-  }
-  return WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, Banks);
-}
-
-ITCM_AREA_CODE uint8_t flash_unlock(void)
+FLASH_RAM_FUNC uint8_t flash_unlock(void)
 {
 	if(READ_BIT(FLASH->CR1, FLASH_CR_LOCK) != 0U)
 	{
@@ -116,7 +116,7 @@ ITCM_AREA_CODE uint8_t flash_unlock(void)
 	return 0;
 }
 
-ITCM_AREA_CODE uint8_t flash_Lock(void)
+FLASH_RAM_FUNC uint8_t flash_Lock(void)
 {
 	SET_BIT(FLASH->CR1, FLASH_CR_LOCK);
 
@@ -133,9 +133,25 @@ ITCM_AREA_CODE uint8_t flash_Lock(void)
 	return 0;
 }
 
-ITCM_AREA_CODE uint8_t FLASH_32B_data(uint32_t TypeProgram, uint32_t FlashAddress, uint32_t DataAddress)
+FLASH_RAM_FUNC uint8_t Flash_Erase_Sector(uint32_t Sector, uint32_t Banks)
 {
-HAL_StatusTypeDef status;
+  if((Banks & FLASH_BANK_1) == FLASH_BANK_1)
+  {
+    /* Reset Program/erase VoltageRange and Sector Number for Bank1 */
+    FLASH->CR1 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+    FLASH->CR1 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+  }
+  if((Banks & FLASH_BANK_2) == FLASH_BANK_2)
+  {
+    FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+    FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3  | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+  }
+  return WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, Banks);
+}
+
+FLASH_RAM_FUNC uint8_t FLASH_32B_data(uint32_t TypeProgram, uint32_t FlashAddress, uint32_t DataAddress)
+{
+uint8_t status;
 __IO uint32_t *dest_addr = (__IO uint32_t *)FlashAddress;
 __IO uint32_t *src_addr = (__IO uint32_t*)DataAddress;
 uint32_t bank;
@@ -143,19 +159,24 @@ uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
 
 	if(IS_FLASH_PROGRAM_ADDRESS_BANK1(FlashAddress))
 		bank = FLASH_BANK_1;
-	else
+	else if(IS_FLASH_PROGRAM_ADDRESS_BANK2(FlashAddress))
 		bank = FLASH_BANK_2;
+	else
+		return 1;
+
 	/* Wait for last operation to be completed */
 	status = WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, bank);
 
-	if(bank == FLASH_BANK_1)
-		SET_BIT(FLASH->CR1, FLASH_CR_PG);
+	if(status == HAL_OK)
+	{
+		if(bank == FLASH_BANK_1)
+			SET_BIT(FLASH->CR1, FLASH_CR_PG);
+	}
 	else
 		SET_BIT(FLASH->CR2, FLASH_CR_PG);
 	__ISB();
 	__DSB();
 
-	/* Program the flash word */
 	do
 	{
 		*dest_addr = *src_addr;
@@ -163,22 +184,22 @@ uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
 		src_addr++;
 		row_index--;
 	} while (row_index != 0U);
+
 	__ISB();
 	__DSB();
 
 	/* Wait for last operation to be completed */
 	status = WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, bank);
-	if( status )
-		return 1;
 
 	if(bank == FLASH_BANK_1)
 		CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
 	else
 		CLEAR_BIT(FLASH->CR2, FLASH_CR_PG);
-	return 0;
+
+	return status;
 }
 
-ITCM_AREA_CODE uint32_t flash_write(uint8_t const *src, uint8_t *dst,uint32_t size)
+FLASH_RAM_FUNC uint32_t flash_write(uint8_t const *src, uint8_t *dst,uint32_t size)
 {
 uint32_t FlashAddress = (uint32_t)dst , Sector, Banks;
 uint32_t	i;
@@ -210,54 +231,30 @@ uint32_t	i;
 	return 0;
 }
 
-#define	FLASH_RAM_FUNC		__attribute__((section(".RamFunc")))
 
-FLASH_RAM_FUNC void  FlashIrq_Error_Handler(void)
+FLASH_RAM_FUNC void FLASH_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
 {
-	__disable_irq();
-	while(1);	// hangs badly
-}
-
-FLASH_RAM_FUNC void FlashSysTick_Handler(void)
-{
-	flash_uwTick += (uint32_t)HAL_TICK_FREQ_DEFAULT;
-}
-
-FLASH_RAM_FUNC void FlashWait_N_Irqs(uint8_t numirqs)
-{
-    __disable_irq();
-	VectorTable_DTCM[SYSTICK_VECTOR] = (uint32_t )&(*FlashSysTick_Handler);
-	__DSB();
-	__ISB();
-    flash_uwTick=0;
-	__DSB();
-	__ISB();
-    __enable_irq();
-	while ( flash_uwTick < numirqs);
-    __disable_irq();
-}
-
-FLASH_RAM_FUNC void FlashSoftWait(void)
-{
-uint32_t	www = 480000;
-	while(www != 0 )
-		www--;
+  if (PinState != GPIO_PIN_RESET)
+  {
+    GPIOx->BSRR = GPIO_Pin;
+  }
+  else
+  {
+    GPIOx->BSRR = (uint32_t)GPIO_Pin << 16;
+  }
 }
 
 FLASH_RAM_FUNC	void sys_jump(void)
 {
 uint32_t	*ram_ptr,i;
-#ifdef LED_3_GPIOPORT
-	HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
-#endif
-	__DSB();
-	__ISB();
-	FlashWait_N_Irqs(4);
-	__DSB();
-	__ISB();
-	CLEAR_BIT(FLASH->CR1, FLASH_CR_PG);
 
-	FlashSoftWait();
+	__DSB();
+	__ISB();
+	FlashDelay_1MS();
+	__DSB();
+	__ISB();
+
+	FlashDelay_1MS();
 
     ram_ptr = (uint32_t	*)0x00000000;
 	for(i=0;i<0x10000;i+=4)
@@ -265,7 +262,7 @@ uint32_t	*ram_ptr,i;
     __DSB();
     __ISB();
 
-	FlashSoftWait();
+	FlashDelay_1MS();
 
 	ram_ptr = (uint32_t	*)0x20000000;
 	for(i=0;i<0x20000;i+=4)
@@ -273,102 +270,63 @@ uint32_t	*ram_ptr,i;
     __DSB();
     __ISB();
 
-	FlashSoftWait();
+	FlashDelay_1MS();
+    __DSB();
+    __ISB();
+	FlashDelay_1MS();
 
 #ifdef LED_3_GPIOPORT
-	//HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_RESET);
+	FLASH_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
 #endif
-	FlashSoftWait();
+	IWDG1->KR = 0x0000cccc;
+	IWDG1->KR = 0x00005555;
+	IWDG1->PR = 0;
+	IWDG1->RLR = 4095;
+	IWDG1->WINR = 4095;
+	IWDG1->KR = 0x0000aaaa;
     __DSB();
     __ISB();
-    __DSB();
-    __ISB();
-    __DSB();
-    __ISB();
-
-	NVIC_SystemReset();
+    while(1);
+	//NVIC_SystemReset();
 }
 
-static void relocate_vtable_systick(void)
-{
-uint32_t i;
-	// 1 -  sync with irqs and disable all
-	HAL_Delay(1);
-    __disable_irq();
-	for(i=0;i<8;i++)
-		NVIC->ICER[i] = 0xffffffff;
-	for(i=0;i<240;i++)
-		NVIC->IP[i] = 0;
-    __enable_irq();
-	HAL_Delay(10);
-    __disable_irq();
-    // 2 - disable caches if enabled
-    __DSB();
-    __ISB();
-    SCB->CCR &= ~(uint32_t)SCB_CCR_IC_Msk;  /* disable I-Cache */
-    SCB->ICIALLU = 0UL;                     /* invalidate I-Cache */
-    __DSB();
-    __ISB();
-    SCB->CCR &= ~(uint32_t)SCB_CCR_DC_Msk;  /* disable D-Cache */
-    __DSB();
-    __ISB();
-	// 3 - compile a new vector table with only systick enabled
-	for( i = 0; i < VECTOR_TABLE_SIZE; i++)
-		VectorTable_DTCM[i] = (uint32_t )&(*FlashIrq_Error_Handler);
-	VectorTable_DTCM[SYSTICK_VECTOR] = (uint32_t )&(*FlashSysTick_Handler);
-	// 4 - set new vector table
-    SCB->VTOR = ((uint32_t) &VectorTable_DTCM);
-    // 5 - now only systick should be enabled, wait for some ticks after enabling irqs
-    flash_uwTick=0;
-    __enable_irq();
-	while ( flash_uwTick < 4);
-	// 7 - vectors relocated
-}
-
-ITCM_AREA_CODE void flash_update(uint8_t *flash_data,uint32_t size)
+FLASH_RAM_FUNC void flash_update(uint8_t *flash_data,uint32_t size)
 {
 uint8_t		status;
+
+	HAL_RCC_DeInit();
+	__disable_irq();
 
 #ifdef LED_3_GPIOPORT
 	HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_RESET);
 #endif
-	relocate_vtable_systick();
-
 #ifdef LED_2_GPIOPORT
 	HAL_GPIO_WritePin(LED_2_GPIOPORT, LED_2_GPIOBIT,GPIO_PIN_SET);
 #endif
+
 	status = flash_write(flash_data,(uint8_t *)&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
     if ( status  )
-    	{ while(1);	}	// error so loop forever
-
+    {
+    	while(1);	// error so loop forever
+    }
 
     // All done, restart
+#ifdef LED_3_GPIOPORT
+	FLASH_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
+#endif
 	sys_jump();
 }
 
-
-ITCM_AREA_CODE uint32_t get_flash_storage_ptr(void)
+FLASH_RAM_FUNC uint32_t get_flash_storage_ptr(void)
 {
 	return (uint32_t )&_d2ram_start;
 }
 
-ITCM_AREA_CODE uint32_t get_flash_size(void)
+FLASH_RAM_FUNC uint32_t get_flash_size(void)
 {
 uint32_t size = (&_fdata_end - &_fdata_start) + 32;
 	return size * 4;
 }
 
-#define TEST_FLASH
-#ifdef TEST_FLASH
-#include <string.h>
-
-void copy_code(uint8_t *storage_ptr)
-{
-uint32_t size = &_fdata_end - &_fdata_start;
-
-	memcpy(storage_ptr,(uint8_t *)&_fdata_start,size*4);
-}
-#endif // #ifdef TEST_FLASH
-
-#endif	//	#ifdef	FLASH_UPDATER_ENABLED
+#endif // #ifdef	FLASH_UPDATER_ENABLED
 
