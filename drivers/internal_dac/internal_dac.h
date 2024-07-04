@@ -27,4 +27,12 @@
 #define HW_DAC_ERROR_NONE			0
 #define HW_DAC_ERROR_HW_NOT_OWNED	1
 
+extern	uint8_t IntDac_Start(void);
+extern	void buzzer_change_freq(uint16_t newfreq);
+extern	void buzzer_on(void);
+extern	void buzzer_off(void);
+
+
+
+
 #endif /* DRIVERS_INTERNAL_DAC_INTERNAL_DAC_H_ */

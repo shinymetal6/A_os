@@ -55,9 +55,6 @@ extern	void set_after_check_timers_callback(void (*callback)(void));
 
 
 /* qspi */
-#if defined QSPI_ENABLED
-#include "HwDevices/hw_qspi.h"
-#endif
 
 /* flash */
 extern	uint32_t get_flash_storage_ptr(void);
@@ -168,6 +165,24 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #ifdef ADC_ENABLED
 	#include "../drivers/internal_adc/internal_adc.h"
 #endif // #ifdef ADC_ENABLED
+
+#ifdef QSPI_ENABLED
+	#include "HwDevices/hw_qspi.h"
+	#include "../drivers/external_flash/qspi.h"
+	#include "../drivers/external_flash/w25q.h"
+#endif
+
+#ifdef I2CFLASH_ENABLED
+	#include "../drivers/external_flash/i2c_24aaxxx.h"
+#endif // #ifdef I2CFLASH_ENABLED
+
+#ifdef INTERNAL_ADC_ENABLED
+	#include "../drivers/internal_adc/internal_adc.h"
+#endif // #ifdef INTERNAL_ADC_ENABLED
+
+#ifdef INTERNAL_DAC_ENABLED
+	#include "../drivers/internal_dac/internal_dac.h"
+#endif // #ifdef INTERNAL_DAC_ENABLED
 
 #ifdef DDC_SYSTEM_ENABLE
 	#include "../modules/dcc/dcc.h"

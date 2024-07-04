@@ -78,6 +78,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
+#define	I2CFLASH_ENABLED		1
+
 #define	A_HAS_UART1			1
 #define	A_HAS_UART2				1
 //#define	A_HAS_UART3				1
