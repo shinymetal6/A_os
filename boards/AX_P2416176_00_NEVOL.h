@@ -14,17 +14,16 @@
  * Project : A_os
 */
 /*
- * AX_P2416176_NEVOL.h
+ * AX_P2416176_00_NEVOL.h
  *
- *  Created on: May 20, 2024
+ *  Created on: Jul 3, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_AX_P2416176_NEVOL_H_
-#define BOARDS_AX_P2416176_NEVOL_H_
+#ifndef BOARDS_AX_P2416176_00_NEVOL_H_
+#define BOARDS_AX_P2416176_00_NEVOL_H_
 
 /* Memories */
-
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
 extern	uint32_t				_mempool_size;
@@ -47,33 +46,40 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 
-#define	LED_1_GPIOPORT			LED_RED_GPIO_Port
-#define	LED_1_GPIOBIT			LED_RED_Pin
-#define	LED_2_GPIOPORT			LED_GREEN_GPIO_Port
-#define	LED_2_GPIOBIT			LED_GREEN_Pin
-#define	LED_3_GPIOPORT			LED_BLUE_GPIO_Port
-#define	LED_3_GPIOBIT			LED_BLUE_Pin
-#define	BUTTON_GPIOPORT			USER_BUTTON_GPIO_Port
-#define	BUTTON_GPIOBIT			USER_BUTTON_Pin
-
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		32000000U
+#define HSI_CLOCK         		170000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
+
+#define	INTERNAL_ADC_ENABLED				1
+#ifdef INTERNAL_ADC_ENABLED
+	extern	ADC_HandleTypeDef 	hadc2;
+	#define	ADC_HANDLE			hadc2
+	#define	ADC_CHANNEL			3
+	extern	TIM_HandleTypeDef 	htim6;
+	#define	ADC_TIMER			htim6
+	#define	ADC_SINGLE_CHANNEL	1
+	#ifdef ADC_SINGLE_CHANNEL
+		#define	ADC_SINGLE_CHANNEL_NUMBER	0
+	#endif // #ifdef ADC_SINGLE_CHANNEL
+#endif // #ifdef INTERNAL_ADC_ENABLED
+
+#define	INTERNAL_DAC_ENABLED				1
+#ifdef INTERNAL_DAC_ENABLED
+	extern	DAC_HandleTypeDef 	hdac1;
+	#define	DAC_HANDLE			hdac1
+	extern	TIM_HandleTypeDef 	htim7;
+	#define	DAC_TIMER			htim7
+#endif // #ifdef INTERNAL_DAC_ENABLED
 
 #define	USB_ENABLED				1
 #ifdef USB_ENABLED
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
-//#define	DDC_SYSTEM_ENABLE		1
-//#define	XMODEM_ENABLE				1
-//#define	MODBUS_ENABLE				1
-
-
-//#define	A_HAS_UART1			1
-//#define	A_HAS_UART2			1
+#define	A_HAS_UART1			1
+#define	A_HAS_UART2				1
 //#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
@@ -91,7 +97,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_SPI_BUS				1
 #endif
 
-//#define	A_HAS_I2C1				1
+#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
 //#define	A_HAS_I2C3				1
 //#define	A_HAS_I2C4				1
@@ -122,14 +128,13 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_TIMERS				1
 #endif
 
-#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
+//#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE
 #define	DTCM_VECTORS_DATA
 
-#define	BOARD_NAME			"AX_P2416176_NEVOL"
-#define	MACHINE_NAME		"AX_P2416176_NEVOL"
+#define	BOARD_NAME			"AX_P2416176_00_NEVOL"
+#define	MACHINE_NAME		"AX_P2416176_00_NEVOL"
 #define	MACHINE_VERSION		"A"
 #define	ASSIGNED			1
 
-
-
-#endif /* BOARDS_AX_P2416176_NEVOL_H_ */
+#endif /* BOARDS_AX_P2416176_00_NEVOL_H_ */

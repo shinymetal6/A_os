@@ -23,15 +23,45 @@
 #include "../../kernel/A.h"
 #include "../../kernel/system_default.h"
 
-#ifdef ADC_ENABLED
+#ifdef INTERNAL_ADC_ENABLED
 
+#include "../../kernel/scheduler.h"
+#include "../../kernel/hwmanager.h"
 #include "../../kernel/A_exported_functions.h"
+#include "internal_adc.h"
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
+ControlAdcDef		ControlAdc;
 
-#include "internal_adc.h"
-ControlAdcDef	ControlAdc;
+#ifdef ADC_SINGLE_CHANNEL
+
+uint8_t InternalAdc_Start(void)
+{
+	if ( HWMngr[HW_ADC2].process != Asys.current_process )
+		return HW_ADC_ERROR_HW_NOT_OWNED;
+	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],1) )
+		return 1;
+	return HAL_TIM_Base_Start(&ADC_TIMER);
+}
+
+uint16_t InternalAdc_get_value(void)
+{
+	if ( HWMngr[HW_ADC2].process != Asys.current_process )
+		return HW_ADC_ERROR_HW_NOT_OWNED;
+	return ControlAdc.analog_in[0];
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+	if ( hadc == &ADC_HANDLE)
+	{
+		ControlAdc.adc_flag |= INT_ADC_ANALOG_IN_DONE;
+		activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,ControlAdc.analog_in[0]);
+	}
+}
+
+#else
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
@@ -53,7 +83,7 @@ uint8_t IntAdc_Start(void)
 	HAL_TIM_Base_Start_IT(&CONTROL_TIMER);
 	return HW_ADC_ERROR_NONE;
 }
-
+#endif
 
 #endif	//#ifdef ADC_DAC_ENABLED
 

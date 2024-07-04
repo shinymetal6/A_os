@@ -24,7 +24,6 @@
 #define BOARDS_STM32G491RE_NUCLEO_H_
 
 /* Memories */
-
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
 extern	uint32_t				_mempool_size;

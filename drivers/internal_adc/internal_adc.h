@@ -23,7 +23,7 @@
 #ifndef DRIVERS_INTERNAL_ADC_INTERNAL_ADC_H_
 #define DRIVERS_INTERNAL_ADC_INTERNAL_ADC_H_
 
-#ifdef ADC_ENABLED
+#ifdef INTERNAL_ADC_ENABLED
 
 typedef struct _ControlAdcDef
 {
@@ -38,8 +38,9 @@ typedef struct _ControlAdcDef
 #define HW_ADC_ERROR_NONE			0
 #define HW_ADC_ERROR_HW_NOT_OWNED	1
 
-extern	uint8_t IntAdc_Start(void);
+extern	uint8_t InternalAdc_Start(void);
+extern	uint16_t InternalAdc_get_value(void);
 
-#endif // #ifdef ADC_DAC_ENABLED
+#endif // #ifdef INTERNAL_ADC_ENABLED
 
 #endif /* DRIVERS_INTERNAL_ADC_INTERNAL_ADC_H_ */

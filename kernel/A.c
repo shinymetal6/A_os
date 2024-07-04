@@ -281,7 +281,8 @@ void A_initialize_onchip_peripherals(void)
 	HAL_Delay(1000);
 #endif
 	MX_USB_Device_Init();
-#endif
+#endif // #ifdef USB_ENABLED
+
 
 }
 

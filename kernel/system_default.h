@@ -104,8 +104,8 @@
 	#ifdef STM32G491RE_NUCLEO
 		#include "../boards/STM32G491RE_NUCLEO.h"
 	#endif
-	#ifdef NEVOL_2416176
-		#include "../boards/AX_P2416176_NEVOL.h"
+	#ifdef NEVOL_2416176_00
+		#include "../boards/AX_P2416176_00_NEVOL.h"
 	#endif
 	#ifdef MEMBRANE_2412171_00
 		#include "../boards/MEMBRANE_2412171_00.h"
