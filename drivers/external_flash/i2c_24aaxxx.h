@@ -32,6 +32,8 @@
 
 #define	I2C_24AAXXX_PAGE_SIZE	64
 
+extern	void task_delay(uint32_t tick_count);
+
 extern	uint8_t  i2c_24aaxxx_init(uint32_t i2c,uint16_t dev_addr);
 extern	uint32_t i2c_24aaxxx_read (uint32_t i2c,uint16_t addr,uint8_t* data, uint16_t size);
 extern	uint32_t i2c_24aaxxx_write(uint32_t i2c,uint16_t addr,uint8_t* data, uint16_t size);

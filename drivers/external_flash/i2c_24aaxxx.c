@@ -26,9 +26,13 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/hwmanager.h"
 #include "../../kernel/system_default.h"
+#include "../../kernel/kernel_opt.h"
+
 #include "i2c_24aaxxx.h"
 
 #ifdef I2CFLASH_ENABLED
+
+#define	I2C_LATENCY_DEFAULT	10
 
 uint16_t	i2cflash_device_address	= 0;
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
@@ -49,10 +53,25 @@ uint32_t i2c_24aaxxx_read(uint32_t i2c,uint16_t addr,uint8_t* data, uint16_t siz
 		return HW_I2C_ERROR_HW_NOT_INITIALIZED;
 	if ( HWMngr[i2c].process != Asys.current_process )
 		return HW_I2C_ERROR_HW_NOT_OWNED;
-	if ( size > I2C_24AAXXX_PAGE_SIZE )
-		return HW_I2C_ERROR_SIZE_TOO_BIG;
-	return hw_i2c_MemGet16(i2c, i2cflash_device_address,addr,data, size);
+	hw_i2c_MemGet16_DMA(i2c, i2cflash_device_address,addr,data, size);
+	while(hw_i2c_Get_RxDMA_State(i2c) )
+		task_delay(I2C_LATENCY_DEFAULT);
+	/*
+	while(size >= I2C_24AAXXX_PAGE_SIZE)
+	{
+		if ( hw_i2c_MemGet16(i2c, i2cflash_device_address,addr,data, I2C_24AAXXX_PAGE_SIZE) )
+			return 1;
+		addr += I2C_24AAXXX_PAGE_SIZE;
+		data += I2C_24AAXXX_PAGE_SIZE;
+		size -= I2C_24AAXXX_PAGE_SIZE;
+	}
+	if ( size )
+		if ( hw_i2c_MemGet16(i2c, i2cflash_device_address,addr,data, size) )
+			return 1;
+			*/
+	return 0;
 }
+
 
 uint32_t i2c_24aaxxx_write(uint32_t i2c,uint16_t addr,uint8_t* data, uint16_t size)
 {
@@ -60,10 +79,25 @@ uint32_t i2c_24aaxxx_write(uint32_t i2c,uint16_t addr,uint8_t* data, uint16_t si
 		return HW_I2C_ERROR_HW_NOT_INITIALIZED;
 	if ( HWMngr[i2c].process != Asys.current_process )
 		return HW_I2C_ERROR_HW_NOT_OWNED;
-	if ( size > I2C_24AAXXX_PAGE_SIZE )
-		return HW_I2C_ERROR_SIZE_TOO_BIG;
-	return hw_i2c_MemSend16(i2c,i2cflash_device_address,addr,data, size);
 
+	while(size >= I2C_24AAXXX_PAGE_SIZE)
+	{
+		if ( hw_i2c_MemSend16_DMA(i2c, i2cflash_device_address,addr,data, I2C_24AAXXX_PAGE_SIZE) )
+			return 1;
+		addr += I2C_24AAXXX_PAGE_SIZE;
+		data += I2C_24AAXXX_PAGE_SIZE;
+		size -= I2C_24AAXXX_PAGE_SIZE;
+		while(hw_i2c_Get_TxDMA_State(i2c) )
+			task_delay(I2C_LATENCY_DEFAULT);
+	}
+	if ( size )
+	{
+		if ( hw_i2c_MemSend16_DMA(i2c, i2cflash_device_address,addr,data, size) )
+			return 1;
+		while(hw_i2c_Get_TxDMA_State(i2c) )
+			task_delay(I2C_LATENCY_DEFAULT);
+	}
+	return 0;
 }
 
 #endif

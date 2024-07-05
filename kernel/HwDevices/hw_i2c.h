@@ -36,6 +36,12 @@ extern	int32_t hw_i2c_MemSend8(uint32_t i2c,uint16_t device_address,uint16_t int
 extern	int32_t hw_i2c_MemSend16(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
 extern	int32_t hw_i2c_MemGet8(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
 extern	int32_t hw_i2c_MemGet16(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
+extern	uint32_t hw_i2c_Get_IT_State(uint32_t i2c);
+extern	uint32_t hw_i2c_Get_TxDMA_State(uint32_t i2c);
+extern	uint32_t hw_i2c_Get_RxDMA_State(uint32_t i2c);
+extern	int32_t hw_i2c_MemSend16_IT(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
+extern	int32_t hw_i2c_MemSend16_DMA(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
+extern	int32_t hw_i2c_MemGet16_DMA(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length);
 
 extern	void A_hw_i2c_init(void);
 

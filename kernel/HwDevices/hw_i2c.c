@@ -25,6 +25,9 @@
 #include "../A.h"
 #include "../scheduler.h"
 #include "../A_exported_functions.h"
+
+#ifdef	A_HAS_I2C_BUS
+
 #include "../hwmanager.h"
 #include "../kernel_opt.h"
 #include "hw_i2c.h"
@@ -76,22 +79,106 @@ int32_t hw_i2c_MemSend16(uint32_t i2c,uint16_t device_address,uint16_t internal_
 	return 	HAL_I2C_Mem_Write(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 2, pData, Length, HW_I2C_TIMEOUT);
 }
 
+uint32_t	it_state=0;
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+uint8_t	i;
+	for(i=0;i<A_MAX_I2C;i++)
+	{
+		if (HW_I2C[i].hwi2c_handle == hi2c)
+			HW_I2C[i].hwi2c_flags |= I2C_IRQ_SET;
+	}
+}
+
+uint32_t hw_i2c_Get_IT_State(uint32_t i2c)
+{
+	if (( HW_I2C[i2c-HW_I2C1].hwi2c_flags & I2C_IRQ_SET) == I2C_IRQ_SET)
+	{
+		HW_I2C[i2c-HW_I2C1].hwi2c_flags &= ~I2C_IRQ_SET;
+		return 1;
+	}
+	return 0;
+}
+
+void HAL_I2C_DMAMemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+uint8_t	i;
+	__disable_irq();
+	for(i=0;i<A_MAX_I2C;i++)
+	{
+		if (HW_I2C[i].hwi2c_handle == hi2c)
+			HW_I2C[i].hwi2c_flags |= I2C_TXDMA_SET;
+	}
+	__enable_irq();
+}
+
+uint32_t hw_i2c_Get_TxDMA_State(uint32_t i2c)
+{
+	__disable_irq();
+	if (( HW_I2C[i2c-HW_I2C1].hwi2c_flags & I2C_TXDMA_SET) == I2C_TXDMA_SET)
+	{
+		__enable_irq();
+		return 0;
+	}
+	__enable_irq();
+	return 1;
+}
+
+int32_t hw_i2c_MemSend16_IT(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length)
+{
+	if ( HWMngr[i2c].process != Asys.current_process )
+		return HW_I2C_ERROR;
+	return 	HAL_I2C_Mem_Write_IT(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 2, pData, Length);
+}
+
+int32_t hw_i2c_MemSend16_DMA(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length)
+{
+	if ( HWMngr[i2c].process != Asys.current_process )
+		return HW_I2C_ERROR;
+	HW_I2C[i2c-HW_I2C1].hwi2c_flags &= ~I2C_TXDMA_SET;
+	return HAL_I2C_Mem_Write_DMA(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 2, pData, Length);
+}
+
 int32_t hw_i2c_MemGet8(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length)
 {
 	if ( HWMngr[i2c].process != Asys.current_process )
 		return HW_I2C_ERROR;
-	if (pData == NULL)
-		return HW_I2C_ERROR;
 	return 	HAL_I2C_Mem_Read(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 1, pData, Length, HW_I2C_TIMEOUT);
 }
 
+void HAL_I2C_DMAMemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+uint8_t	i;
+	for(i=0;i<A_MAX_I2C;i++)
+	{
+		if (HW_I2C[i].hwi2c_handle == hi2c)
+			HW_I2C[i].hwi2c_flags |= I2C_RXDMA_SET;
+	}
+}
+
+uint32_t hw_i2c_Get_RxDMA_State(uint32_t i2c)
+{
+	if (( HW_I2C[i2c-HW_I2C1].hwi2c_flags & I2C_RXDMA_SET) == I2C_RXDMA_SET)
+		return 0;
+	return 1;
+}
+
+uint32_t	i2cdmaerr;
 int32_t hw_i2c_MemGet16(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length)
 {
 	if ( HWMngr[i2c].process != Asys.current_process )
 		return HW_I2C_ERROR;
-	if (pData == NULL)
-		return HW_I2C_ERROR;
 	return 	HAL_I2C_Mem_Read(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 2, pData, Length, HW_I2C_TIMEOUT);
+}
+
+int32_t hw_i2c_MemGet16_DMA(uint32_t i2c,uint16_t device_address,uint16_t internal_address,uint8_t *pData, uint16_t Length)
+{
+	if ( HWMngr[i2c].process != Asys.current_process )
+		return HW_I2C_ERROR;
+	HW_I2C[i2c-HW_I2C1].hwi2c_flags &= ~I2C_RXDMA_SET;
+	if ( (i2cdmaerr =	HAL_I2C_Mem_Read_DMA(HW_I2C[i2c-HW_I2C1].hwi2c_handle, device_address, internal_address, 2, pData, Length) ))
+		return i2cdmaerr;
+	return 0;
 }
 
 #endif
@@ -109,3 +196,5 @@ void A_hw_i2c_init(void)
 	HW_I2C[1].hwi2c_flags  = 0;
 #endif
 }
+
+#endif

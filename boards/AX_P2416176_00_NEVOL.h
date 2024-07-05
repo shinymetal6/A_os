@@ -78,8 +78,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
-#define	I2CFLASH_ENABLED		1
-
 #define	A_HAS_UART1			1
 #define	A_HAS_UART2				1
 //#define	A_HAS_UART3				1
@@ -129,6 +127,22 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16) || (A_HAS_TIMER17)
 	#define	A_HAS_TIMERS				1
 #endif
+
+#ifdef	A_HAS_I2C_BUS
+	#define	I2CFLASH_ENABLED		1
+	#ifdef I2CFLASH_ENABLED
+		#define	I2CFLASH_ADDRESS	0xa0
+		#define	I2CFLASH_DEVICE0	I2CFLASH_ADDRESS
+		#define	I2CFLASH_DEVICE1	I2CFLASH_ADDRESS+0x02
+		#define	I2CFLASH_DEVICE2	I2CFLASH_ADDRESS+0x04
+		#define	I2CFLASH_DEVICE3	I2CFLASH_ADDRESS+0x06
+		#define	I2CFLASH_DEVICE4	I2CFLASH_ADDRESS+0x08
+		#define	I2CFLASH_DEVICE5	I2CFLASH_ADDRESS+0x0a
+		#define	I2CFLASH_DEVICE6	I2CFLASH_ADDRESS+0x0c
+		#define	I2CFLASH_DEVICE7	I2CFLASH_ADDRESS+0x0e
+	#endif // #ifdef I2CFLASH_ENABLED
+#endif // #ifdef A_HAS_I2C_BUS
+
 
 //#define	ITCM_AREA_CODE		__attribute__((section(".RamFunc"))) __attribute__ ((aligned (32)))
 #define	ITCM_AREA_CODE
