@@ -146,12 +146,13 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef SDCARD_ENABLED
 
 #ifdef ADC_ENABLED
-		extern	ADC_HandleTypeDef 	hadc1;
-		extern	ADC_HandleTypeDef 	hadc2;
-		extern	TIM_HandleTypeDef 	htim6;
-		#define	CONTROL_ADC1		hadc1
-		#define	ANALOG_IN_ADC2		hadc2
-		#define	CONTROL_TIMER		htim6
+	#define	INTERNAL_ADC_ENABLED		1
+	extern	ADC_HandleTypeDef 	hadc1;
+	extern	ADC_HandleTypeDef 	hadc2;
+	extern	TIM_HandleTypeDef 	htim6;
+	#define	CONTROL_ADC1		hadc1
+	#define	ANALOG_IN_ADC2		hadc2
+	#define	CONTROL_TIMER		htim6
 #endif // #ifdef ADC_DAC_ENABLED
 
 #ifdef DAC_ENABLED
@@ -174,6 +175,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define ST7735_RES_GPIO_Port				LCD_RESET_GPIO_Port
 	#define ST7735_RES_Pin						LCD_RESET_Pin
 	#define LCD_ENABLED							1
+	#define	SPILCD_USES_DMA						1
 #endif // #ifdef LCD_096_ENABLED
 
 #ifdef LCD_2I8_ENABLED
@@ -192,6 +194,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define ILI9341_TOUCH_IRQ_Pin				TOUCH_IRQ_Pin
 	#define ILI9341_TOUCH_IRQ_GPIO_Port			TOUCH_IRQ_GPIO_Port
 	#define LCD_ENABLED							1
+	#define	SPILCD_USES_DMA						1
 #endif // #ifdef LCD_2I8_ENABLED
 
 #ifdef ENCODER_ENABLED

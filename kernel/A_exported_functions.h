@@ -184,6 +184,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/internal_dac/internal_dac.h"
 #endif // #ifdef INTERNAL_DAC_ENABLED
 
+#ifdef INTERNAL_RTC_ENABLED
+	#include "../drivers/internal_rtc/internal_rtc.h"
+#endif // #ifdef INTERNAL_RTC_ENABLED
+
 #ifdef DDC_SYSTEM_ENABLE
 	#include "../modules/dcc/dcc.h"
 #endif // #ifdef DDC_SYSTEM_ENABLE

@@ -282,8 +282,9 @@ void A_initialize_onchip_peripherals(void)
 #endif
 	MX_USB_Device_Init();
 #endif // #ifdef USB_ENABLED
-
-
+#ifdef INTERNAL_RTC_ENABLED
+	A_RTC_init();
+#endif
 }
 
 
@@ -299,6 +300,7 @@ void A_start(void)
 
 	A_enable_processor_faults();
 	A_IrqPriority_Init();
+
 	init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
 	init_systick_timer(TICK_HZ);

@@ -362,15 +362,18 @@ void ST7735_FillScreen(uint16_t color)
 	ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
-void A_os_7735_SPI_TxCpltCallback(void)
+#ifdef SPILCD_USES_DMA
+void A_os_7735_SPI_DMA_TxCpltCallback(void)
 {
-    HWDevices[HWDEV_SPILCD].flags &= ~HWDEV_FLAGS_BUSY;
+		HWDevices[HWDEV_SPILCD].flags &= ~HWDEV_FLAGS_BUSY;
 }
+#endif
 
 void ST7735_ClearScreen(void)
 {
 	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
 		return;
+#ifdef SPILCD_USES_DMA
 	ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
     HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
@@ -380,6 +383,9 @@ void ST7735_ClearScreen(void)
     while((HWDevices[HWDEV_SPILCD].flags & HWDEV_FLAGS_BUSY) == HWDEV_FLAGS_BUSY)
     	task_delay(1);
     ST7735_Unselect();
+#else
+	ST7735_FillScreen(ST7735_BLACK);
+#endif
 }
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)

@@ -78,6 +78,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	USB_CDC				1
 #endif // #ifdef USB_ENABLED
 
+//#define	INTERNAL_RTC_ENABLED				1
+#ifdef INTERNAL_RTC_ENABLED
+	extern	RTC_HandleTypeDef hrtc;
+#endif // #ifdef INTERNAL_RTC_ENABLED
+
 #define	A_HAS_UART1			1
 #define	A_HAS_UART2				1
 //#define	A_HAS_UART3				1
