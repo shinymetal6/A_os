@@ -276,7 +276,7 @@ void A_initialize_onchip_peripherals(void)
 #ifdef LCD_ENABLED
 	LcdInit();
 #endif
-#ifdef USB_ENABLED
+#ifdef USB_DEVICE_ENABLED
 #ifdef	STM32U575xx
 	HAL_Delay(1000);
 #endif

@@ -30,7 +30,7 @@
 extern	void MX_LWIP_Process(void);
 #endif
 
-#ifdef USB_ENABLED
+#ifdef USB_DEVICE_ENABLED
 extern	void MX_USB_HOST_Process(void);
 #endif
 
@@ -55,7 +55,7 @@ ITCM_AREA_CODE void supervisor(void)
 		__ASM volatile ("dsb" : : : "memory");
 		MX_LWIP_Process();
 #endif
-#ifdef USB_ENABLED
+#ifdef USB_HOST_ENABLED
 		MX_USB_HOST_Process();
 #endif
 		supervisor_callback();

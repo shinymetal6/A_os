@@ -59,12 +59,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 /* Chip peripherals utilization */
 //#define	A_HAS_UART1			1
-//#define	A_HAS_UART2			1
+#define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1
-//#define	A_HAS_UART4			1
+#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1
-//#define	A_HAS_UART7			1
+#define	A_HAS_UART7			1
 #if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7)
 	#define	A_HAS_UARTS			1
 #endif
@@ -115,6 +115,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	POWERSAVE_ENABLED		1
 #define	QSPI_ENABLED			1
 #define	SDCARD_ENABLED			1
+#define	NETWORKING_ENABLED		1
 //#define	WIRELESS_ENABLED		1
 #define	LCD_096_ENABLED			1
 //#define	LCD_2I8_ENABLED			1
@@ -124,12 +125,20 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	HWRANDOM_GEN			1
 #define	ADC_ENABLED				1
 #define	DAC_ENABLED				1
-#define	USB_ENABLED				1
+#define	USB_DEVICE_ENABLED		1
+#define	USB_HOST_ENABLED		1
 #define	USE_ITCM				1
 #define	I2STX_PRIORITY			7
 #define	I2SRX_PRIORITY			7
 
-#ifdef USB_ENABLED
+#ifdef NETWORKING_ENABLED
+	#ifdef WIRELESS_ENABLED
+		#define	WIFI_ESP01S				1
+		//#undef 	LWIP_DHCP
+	#endif // #ifdef NETWORKING_ENABLED
+#endif // #ifdef NETWORKING_ENABLED
+
+#ifdef USB_DEVICE_ENABLED
 	//#define	USB_CDC				1
 	#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
@@ -238,6 +247,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   	__attribute__ ((aligned (32)))
 #define FRAME_BUFFER		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
 #define D2_BUFFER			__attribute__((section(".d2ram"))) 		 	__attribute__ ((aligned (32)))
+#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 	__attribute__ ((aligned (32)))
 
 #define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 	__attribute__ ((aligned (32))) const
 

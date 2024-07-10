@@ -24,7 +24,7 @@
 
 #ifdef	STM32H743xx
 #include "../../../../kernel/system_default.h"
-#ifdef	USB_ENABLED
+#ifdef	USB_DEVICE_ENABLED
 
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
@@ -47,7 +47,7 @@ USBD_HandleTypeDef hUsbDeviceFS;
 uint8_t MX_USB_Device_Init(void)
 {
 	  /* Init Device Library, add supported class and start the library. */
-#ifdef	USB_ENABLED
+#ifdef	USB_DEVICE_ENABLED
 	  if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
 		  return 1;
 #ifdef	USB_CDC
