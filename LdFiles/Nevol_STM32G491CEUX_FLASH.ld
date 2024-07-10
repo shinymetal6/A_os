@@ -54,10 +54,10 @@ SECTIONS
 	_osSysRam_start     = LOADADDR(.osSysRamStart);
 	.osSysRamStart 		0x20008000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamStart))}
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
-	.osSysRamEnd 		0x2000C000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	.osSysRamEnd 		0x2000F000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
-	.osMemPoolStart		0x2000C000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+	.osMemPoolStart		0x2000F000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
 	.osMemPoolEnd  		0x20010000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
 
@@ -106,13 +106,13 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab   : {
+  .ARM.extab (READONLY)  : {
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
   } >FLASH
 
-  .ARM : {
+  .ARM (READONLY) : {
     . = ALIGN(4);
     __exidx_start = .;
     *(.ARM.exidx*)
@@ -120,7 +120,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .preinit_array     :
+  .preinit_array  (READONLY)   :
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__preinit_array_start = .);
@@ -129,7 +129,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .init_array :
+  .init_array (READONLY) :
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__init_array_start = .);
@@ -139,7 +139,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .fini_array :
+  .fini_array (READONLY) :
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__fini_array_start = .);
