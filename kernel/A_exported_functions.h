@@ -237,16 +237,18 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	HW_I2C4						15
 #define	HW_SPI1						16
 #define	HW_SPI2						17
-#define	HW_QSPI						18
-#define	HW_I2S1						19
-#define	HW_I2S2						20
-#define	HW_TIM						21
-#define	HW_EXT_INT					22
-#define	HW_ADC1						23
-#define	HW_ADC2						24
-#define	HW_DAC						25
-#define	HW_USB_DEVICE				26
-#define	HW_USB_HOST					27
+#define	HW_SPI3						18
+#define	HW_SPI4						19
+#define	HW_QSPI						20
+#define	HW_I2S1						21
+#define	HW_I2S2						22
+#define	HW_TIM						23
+#define	HW_EXT_INT					24
+#define	HW_ADC1						25
+#define	HW_ADC2						26
+#define	HW_DAC						27
+#define	HW_USB_DEVICE				28
+#define	HW_USB_HOST					29
 #define	SW_MODULES					31
 
 /* event to wait */
@@ -267,6 +269,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	EVENT_I2C4_IRQ					(1<<HW_I2C4)
 #define	EVENT_SPI1_IRQ					(1<<HW_SPI1)
 #define	EVENT_SPI2_IRQ					(1<<HW_SPI2)
+#define	EVENT_SPI3_IRQ					(1<<HW_SPI3)
+#define	EVENT_SPI4_IRQ					(1<<HW_SPI4)
 #define	EVENT_QSPI_IRQ					(1<<HW_QSPI)
 #define	EVENT_I2S1_IRQ					(1<<HW_I2S1)
 #define	EVENT_I2S2_IRQ					(1<<HW_I2S2)
@@ -296,6 +300,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	SUSPEND_ON_I2C4_IRQ				EVENT_I2C4_IRQ
 #define	SUSPEND_ON_SPI1_IRQ				EVENT_SPI1_IRQ
 #define	SUSPEND_ON_SPI2_IRQ				EVENT_SPI2_IRQ
+#define	SUSPEND_ON_SPI3_IRQ				EVENT_SPI3_IRQ
+#define	SUSPEND_ON_SPI4_IRQ				EVENT_SPI4_IRQ
 #define	SUSPEND_ON_QSPI_IRQ				EVENT_QSPI_IRQ
 #define	SUSPEND_ON_I2S1_IRQ				EVENT_I2S1_IRQ
 #define	SUSPEND_ON_I2S2_IRQ				EVENT_I2S2_IRQ
@@ -325,6 +331,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FROM_I2C4_IRQ			SUSPEND_ON_I2C4_IRQ
 #define	WAKEUP_FROM_SPI1_IRQ			SUSPEND_ON_SPI1_IRQ
 #define	WAKEUP_FROM_SPI2_IRQ			SUSPEND_ON_SPI2_IRQ
+#define	WAKEUP_FROM_SPI3_IRQ			SUSPEND_ON_SPI3_IRQ
+#define	WAKEUP_FROM_SPI4_IRQ			SUSPEND_ON_SPI4_IRQ
 #define	WAKEUP_FROM_QSPI_IRQ			SUSPEND_ON_QSPI_IRQ
 #define	WAKEUP_FROM_I2S1_IRQ			SUSPEND_ON_I2S1_IRQ
 #define	WAKEUP_FROM_I2S2_IRQ			SUSPEND_ON_I2S2_IRQ
@@ -354,6 +362,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	DEVICE_I2C4						HW_I2C4
 #define	DEVICE_SPI1						HW_SPI1
 #define	DEVICE_SPI2						HW_SPI2
+#define	DEVICE_SPI3						HW_SPI3
+#define	DEVICE_SPI4						HW_SPI4
 #define	DEVICE_QSPI						HW_QSPI
 #define	DEVICE_I2S1						HW_I2S1
 #define	DEVICE_I2S2						HW_I2S2

@@ -42,6 +42,9 @@
 	#ifdef	MEMBRANE_2412172_00
 		#include "../boards/MEMBRANE_2412172_00.h"
 	#endif
+	#ifdef	FL_090724_00
+		#include "../boards/FL_090724_00.h"
+	#endif
 #endif	//#ifdef	STM32H743xx
 
 
