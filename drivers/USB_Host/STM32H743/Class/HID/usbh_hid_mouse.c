@@ -15,13 +15,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
-/* BSPDependencies
-- "stm32xxxxx_{eval}{discovery}{nucleo_144}.c"
-- "stm32xxxxx_{eval}{discovery}_io.c"
-- "stm32xxxxx_{eval}{discovery}{adafruit}_lcd.c"
-- "stm32xxxxx_{eval}{discovery}_sdram.c"
-EndBSPDependencies */
+#ifdef	STM32H743xx
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_hid_mouse.h"
@@ -260,23 +258,5 @@ static USBH_StatusTypeDef USBH_HID_MouseDecode(USBH_HandleTypeDef *phost)
   return   USBH_FAIL;
 }
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

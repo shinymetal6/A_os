@@ -42,7 +42,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SIZE_SCHED_STACK		4096U
 #define SCHED_STACK_START		SRAM_END
 
-#define IDLE_STACK_START		(uint32_t )(&_osSysRam_end - SIZE_SCHED_STACK)
+#define IDLE_STACK_START		(uint32_t )((uint32_t )&_osSysRam_end - (uint32_t )SIZE_SCHED_STACK)
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 

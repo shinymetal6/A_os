@@ -15,7 +15,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_ctlreq.h"
 
@@ -1184,22 +1188,5 @@ static USBH_StatusTypeDef USBH_HandleControl(USBH_HandleTypeDef *phost)
   return status;
 }
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

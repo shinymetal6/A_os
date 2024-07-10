@@ -29,15 +29,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
-/* BSPDependencies
-- "stm32xxxxx_{eval}{discovery}.c"
-- "stm32xxxxx_{eval}{discovery}_io.c"
-- "stm32xxxxx_{eval}{discovery}_audio.c"
-- "stm32xxxxx_{eval}{discovery}_sd.c"
-- "stm32xxxxx_{eval}{discovery}_lcd.c"
-- "stm32xxxxx_{eval}{discovery}_sdram.c"
-EndBSPDependencies */
+#ifdef	STM32H743xx
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_mtp.h"
@@ -1094,24 +1090,6 @@ __weak void USBH_MTP_EventsCallback(USBH_HandleTypeDef *phost, uint32_t event, u
   UNUSED(event);
   UNUSED(param);
 }
-/**
-  * @}
-  */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

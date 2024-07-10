@@ -15,7 +15,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_pipes.h"
 
@@ -166,20 +170,5 @@ static uint16_t USBH_GetFreePipe(USBH_HandleTypeDef *phost)
 
   return 0xFFFFU;
 }
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

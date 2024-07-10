@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * FL_090724_00.h
+ * Vb1xx_00.h
  *
  *  Created on: Jul 10, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_FL_090724_00_H_
-#define BOARDS_FL_090724_00_H_
+#ifndef BOARDS_VB1XX_00_H_
+#define BOARDS_VB1XX_00_H_
 
 /* Memories */
 
@@ -59,20 +59,20 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 /* Chip peripherals utilization */
 //#define	A_HAS_UART1			1
-#define	A_HAS_UART2			1
+//#define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1
-#define	A_HAS_UART4			1
+//#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1
-#define	A_HAS_UART7			1
+//#define	A_HAS_UART7			1
 #if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7)
 	#define	A_HAS_UARTS			1
 #endif
 
-//#define	A_HAS_SPI1				1
+#define	A_HAS_SPI1				1
 //#define	A_HAS_SPI2				1
 //#define	A_HAS_SPI3				1
-#define	A_HAS_SPI4				1
+//#define	A_HAS_SPI4				1
 #if defined(A_HAS_SPI1) || defined(A_HAS_SPI2) || defined(A_HAS_SPI3) || defined(A_HAS_SPI4)
 	#define	A_HAS_SPI_BUS				1
 #endif
@@ -115,7 +115,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	POWERSAVE_ENABLED		1
 #define	QSPI_ENABLED			1
 #define	SDCARD_ENABLED			1
-#define	NETWORKING_ENABLED		1
 //#define	WIRELESS_ENABLED		1
 #define	LCD_096_ENABLED			1
 //#define	LCD_2I8_ENABLED			1
@@ -126,18 +125,10 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	ADC_ENABLED				1
 #define	DAC_ENABLED				1
 #define	USB_DEVICE_ENABLED		1
-#define	USB_HOST_ENABLED		1
-#define	I2CFLASH_ENABLED		1
+//#define	USB_HOST_ENABLED		1
 #define	USE_ITCM				1
 #define	I2STX_PRIORITY			7
 #define	I2SRX_PRIORITY			7
-
-#ifdef NETWORKING_ENABLED
-	#ifdef WIRELESS_ENABLED
-		#define	WIFI_ESP01S				1
-		//#undef 	LWIP_DHCP
-	#endif // #ifdef NETWORKING_ENABLED
-#endif // #ifdef NETWORKING_ENABLED
 
 #ifdef USB_DEVICE_ENABLED
 	//#define	USB_CDC				1
@@ -170,9 +161,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef DAC_ENABLED
 
 #ifdef LCD_096_ENABLED
-	extern SPI_HandleTypeDef 					hspi4;
-	#define ST7735_SPI_PORT 					hspi4
-	#define LCD_HW_SPI_PORT 					HW_SPI4
+	extern SPI_HandleTypeDef hspi1;
+	#define ST7735_SPI_PORT 					hspi1
+	#define LCD_HW_SPI_PORT 					HW_SPI1
 
 	#define ST7735_SPI_TIMEOUT					2000
 
@@ -208,10 +199,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef LCD_2I8_ENABLED
 
 #ifdef ENCODER_ENABLED
-	#define ENCODER_BTN_Port					ENCODER1_BTN_GPIO_Port
+	#define ENCODER_BTN_Port					ENCODER1_BUTTON_GPIO_Port
 	#define ENCODER_BTN_Pin						ENCODER1_BTN_Pin
+
 	#define ENCODER_CLOCK_Port					ENCODER1_PHASE_GPIO_Port
 	#define ENCODER_CLOCK_Pin					ENCODER1_PHASE_Pin
+
 	#define ENCODER_DATA_Port					ENCODER1_DATA_GPIO_Port
 	#define ENCODER_DATA_Pin					ENCODER1_DATA_Pin
 #endif // #ifdef ENCODER_ENABLED
@@ -225,6 +218,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 		extern	I2C_HandleTypeDef 	hi2c1;
 		#define	NAU88C22_I2C		hi2c1
 		#define	NAU88C22_I2C_BUS	HW_I2C1
+
 		extern	I2S_HandleTypeDef 	hi2s2;
 		#define	NAU88C22_I2S		hi2s2
 		#define	EXT_FREQ_12_288MHZ	1
@@ -234,21 +228,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #ifdef WIRELESS_ENABLED
 
 #endif // #ifdef WIRELESS_ENABLED
-
-#ifdef	A_HAS_I2C_BUS
-	#define	I2CFLASH_ENABLED		1
-	#ifdef I2CFLASH_ENABLED
-		#define	I2CFLASH_ADDRESS	0xa0
-		#define	I2CFLASH_DEVICE0	I2CFLASH_ADDRESS
-		#define	I2CFLASH_DEVICE1	I2CFLASH_ADDRESS+0x02
-		#define	I2CFLASH_DEVICE2	I2CFLASH_ADDRESS+0x04
-		#define	I2CFLASH_DEVICE3	I2CFLASH_ADDRESS+0x06
-		#define	I2CFLASH_DEVICE4	I2CFLASH_ADDRESS+0x08
-		#define	I2CFLASH_DEVICE5	I2CFLASH_ADDRESS+0x0a
-		#define	I2CFLASH_DEVICE6	I2CFLASH_ADDRESS+0x0c
-		#define	I2CFLASH_DEVICE7	I2CFLASH_ADDRESS+0x0e
-	#endif // #ifdef I2CFLASH_ENABLED
-#endif // #ifdef A_HAS_I2C_BUS
 
 #define	SAMPLE_FREQUENCY	48000
 #define	SAMPLE_PERIOD		(1.0F / SAMPLE_FREQUENCY)
@@ -260,7 +239,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   	__attribute__ ((aligned (32)))
 #define FRAME_BUFFER		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
 #define D2_BUFFER			__attribute__((section(".d2ram"))) 		 	__attribute__ ((aligned (32)))
-#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 	__attribute__ ((aligned (32)))
 
 #define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 	__attribute__ ((aligned (32))) const
 
@@ -269,10 +247,10 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"FL_090724_00"
-#define	MACHINE_NAME		"FL_090724_00"
+#define	BOARD_NAME			"VB1xx"
+#define	MACHINE_NAME		"Vb101_VCO"
 #define	MACHINE_VERSION		"A"
 #define	ASSIGNED			1
 
 
-#endif /* BOARDS_FL_090724_00_H_ */
+#endif /* BOARDS_VB1XX_00_H_ */

@@ -124,12 +124,13 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	HWRANDOM_GEN			1
 #define	ADC_ENABLED				1
 #define	DAC_ENABLED				1
-#define	USB_ENABLED				1
+#define	USB_DEVICE_ENABLED		1
+//#define	USB_HOST_ENABLED		1
 #define	USE_ITCM				1
 #define	I2STX_PRIORITY			7
 #define	I2SRX_PRIORITY			7
 
-#ifdef USB_ENABLED
+#ifdef USB_DEVICE_ENABLED
 	//#define	USB_CDC				1
 	#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED

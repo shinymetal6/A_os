@@ -16,7 +16,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_core.h"
 
@@ -1383,19 +1387,6 @@ USBH_StatusTypeDef USBH_LL_NotifyURBChange(USBH_HandleTypeDef *phost)
   return USBH_OK;
 }
 #endif
-/**
-  * @}
-  */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

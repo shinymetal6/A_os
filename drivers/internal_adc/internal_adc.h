@@ -38,8 +38,14 @@ typedef struct _ControlAdcDef
 #define HW_ADC_ERROR_NONE			0
 #define HW_ADC_ERROR_HW_NOT_OWNED	1
 
+#ifdef ADC_SINGLE_CHANNEL
 extern	uint8_t InternalAdc_Start(void);
 extern	uint16_t InternalAdc_get_value(void);
+#else
+extern	uint8_t IntAdc_Start(void);
+
+#endif  // #ifdef ADC_SINGLE_CHANNEL
+
 
 #endif // #ifdef INTERNAL_ADC_ENABLED
 

@@ -106,11 +106,11 @@ uint32_t *pPSP,i,j;
 	process[3].current_state = PROCESS_READY_STATE;
 	process[4].current_state = PROCESS_READY_STATE;
 
-	A_os_pstacks[0] = process[0].psp_value = IDLE_STACK_START;
-	A_os_pstacks[1] = process[1].psp_value = FIRST_PRC_STACK_START;
-	A_os_pstacks[2] = process[2].psp_value = process[1].psp_value - UserProcesses[0].stack_size;
-	A_os_pstacks[3] = process[3].psp_value = process[2].psp_value - UserProcesses[1].stack_size;
-	A_os_pstacks[4] = process[4].psp_value = process[3].psp_value - UserProcesses[2].stack_size;
+	A_os_pstacks[0] = process[0].psp_value = (uint32_t )IDLE_STACK_START;
+	A_os_pstacks[1] = process[1].psp_value = (uint32_t )FIRST_PRC_STACK_START;
+	A_os_pstacks[2] = process[2].psp_value = (uint32_t )(process[1].psp_value - UserProcesses[0].stack_size);
+	A_os_pstacks[3] = process[3].psp_value = (uint32_t )(process[2].psp_value - UserProcesses[1].stack_size);
+	A_os_pstacks[4] = process[4].psp_value = (uint32_t )(process[3].psp_value - UserProcesses[2].stack_size);
 
 	bzero((uint8_t *)(A_os_pstacks[4]-UserProcesses[3].stack_size),((A_os_pstacks[0]-A_os_pstacks[4])+UserProcesses[3].stack_size));
 

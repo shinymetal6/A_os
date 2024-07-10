@@ -20,6 +20,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 
+#include "main.h"
+
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
+
 #include "usb_host.h"
 #include "../Core/usbh_core.h"
 #include "../Class/AUDIO/usbh_audio.h"
@@ -146,11 +152,6 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id)
   /* USER CODE END CALL_BACK_1 */
 }
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED
 

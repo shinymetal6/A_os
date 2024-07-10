@@ -15,7 +15,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_ioreq.h"
 
@@ -327,21 +331,5 @@ USBH_StatusTypeDef USBH_IsocSendData(USBH_HandleTypeDef *phost,
 
   return USBH_OK;
 }
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

@@ -80,8 +80,9 @@ uint16_t	pipe_used;
 ITCM_AREA_CODE void IrqProcessSamples(void)
 {
 uint16_t	start,end,i,pipe_nr;
-
+#if defined DEBUG_FLAG_GPIO_Port
 	HAL_GPIO_WritePin(DEBUG_FLAG_GPIO_Port, DEBUG_FLAG_Pin, GPIO_PIN_SET);
+#endif
 	get_limits(&start,&end);
 	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
 	{
@@ -110,7 +111,9 @@ uint16_t	start,end,i,pipe_nr;
 			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe[pipe_nr][i];
 		}
 	}
+#if defined DEBUG_FLAG_GPIO_Port
     HAL_GPIO_WritePin(DEBUG_FLAG_GPIO_Port, DEBUG_FLAG_Pin, GPIO_PIN_RESET);
+#endif
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)

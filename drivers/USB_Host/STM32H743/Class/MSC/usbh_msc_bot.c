@@ -15,13 +15,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 
-/* BSPDependencies
-- "stm32xxxxx_{eval}{discovery}{nucleo_144}.c"
-- "stm32xxxxx_{eval}{discovery}_io.c"
-- "stm32xxxxx_{eval}{discovery}{adafruit}_lcd.c"
-- "stm32xxxxx_{eval}{discovery}_sdram.c"
-EndBSPDependencies */
+#ifdef	STM32H743xx
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_msc_bot.h"
@@ -668,25 +666,5 @@ static BOT_CSWStatusTypeDef USBH_MSC_DecodeCSW(USBH_HandleTypeDef *phost)
 }
 
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

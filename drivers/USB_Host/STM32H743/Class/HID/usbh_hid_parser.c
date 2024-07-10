@@ -16,12 +16,11 @@
   ******************************************************************************
   */
 
-/* BSPDependencies
-- "stm32xxxxx_{eval}{discovery}{nucleo_144}.c"
-- "stm32xxxxx_{eval}{discovery}_io.c"
-- "stm32xxxxx_{eval}{discovery}{adafruit}_lcd.c"
-- "stm32xxxxx_{eval}{discovery}_sdram.c"
-EndBSPDependencies */
+#include "main.h"
+
+#ifdef	STM32H743xx
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_hid_parser.h"
@@ -213,24 +212,5 @@ uint32_t HID_WriteItem(HID_Report_ItemTypedef *ri, uint32_t value, uint8_t ndx)
   return 0U;
 }
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
-
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED

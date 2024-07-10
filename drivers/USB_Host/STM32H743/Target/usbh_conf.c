@@ -17,6 +17,11 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+#include "main.h"
+
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Core/usbh_core.h"
@@ -553,3 +558,5 @@ USBH_StatusTypeDef USBH_Get_USB_Status(HAL_StatusTypeDef hal_status)
   return usb_status;
 }
 
+#endif // #ifdef	USB_HOST_ENABLED
+#endif // #ifdef	STM32H743xx

@@ -22,7 +22,7 @@
 
 #ifdef	STM32G491xx
 #include "../../../../kernel/system_default.h"
-#ifdef	USB_ENABLED
+#ifdef	USB_DEVICE_ENABLED
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
 #include "usbd_desc.h"

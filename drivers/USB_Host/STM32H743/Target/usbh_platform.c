@@ -16,8 +16,11 @@
   *
   ******************************************************************************
   */
-/* USER CODE END Header */
+#include "main.h"
 
+#ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_HOST_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbh_platform.h"
 
@@ -51,3 +54,5 @@ void MX_DriverVbusHS(uint8_t state)
   HAL_GPIO_WritePin(GPIOD,GPIO_PIN_8,(GPIO_PinState)data);
 }
 
+#endif // #ifdef	STM32H743xx
+#endif // #ifdef	USB_HOST_ENABLED
