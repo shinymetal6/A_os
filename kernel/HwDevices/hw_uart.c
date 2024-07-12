@@ -152,7 +152,8 @@ uint32_t	i;
 			{
 				if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) != HWMAN_SENTINEL_FOUND)
 				{
-					if (( rx_char >= HWMngr[i].sentinel_start) && (rx_char <= HWMngr[i].sentinel_end ))
+//					if (( rx_char >= HWMngr[i].sentinel_start) && (rx_char <= HWMngr[i].sentinel_end ))
+					if ( rx_char == HWMngr[i].sentinel_start)
 					{
 						HWMngr[i].status |= HWMAN_SENTINEL_FOUND;
 						HWMngr[i].rx_buf_index=0;
@@ -165,6 +166,15 @@ uint32_t	i;
 					HWMngr[i].timeout = HWMngr[i].timeout_reload_value;
 					HWMngr[i].rx_buf_index++;
 					if ( HWMngr[i].rx_buf_index == HWMngr[i].rx_buf_max_len)
+					{
+						HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
+						HWMngr[i].rx_buf_index = 0;
+						HWMngr[i].status &= ~HWMAN_SENTINEL_FOUND;
+						if ( HWMngr[i].irq_callback != NULL )
+							HWMngr[i].irq_callback();
+						activate_process(HWMngr[i].process,1<<i,WAKEUP_FLAGS_UART_RX);
+					}
+					if (rx_char == HWMngr[i].sentinel_end )
 					{
 						HWMngr[i].rxlen = HWMngr[i].rx_buf_index;
 						HWMngr[i].rx_buf_index = 0;
