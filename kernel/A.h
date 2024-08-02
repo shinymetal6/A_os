@@ -62,13 +62,9 @@ typedef struct
 	uint8_t		status;
 	uint16_t	rxlen;
 	uint32_t	flags;
-	uint8_t		sentinel_start;
-	uint8_t		sentinel_end;
 	uint8_t		*rx_buf;
 	uint16_t	rx_buf_index;
 	uint16_t	rx_buf_max_len;
-	uint16_t	timeout;
-	uint16_t	timeout_reload_value;
 	void 		(*irq_callback)(void);
 }HWMngr_t;
 /* flags */
@@ -130,6 +126,11 @@ typedef struct _HW_Uart_t
 {
 	UART_HandleTypeDef 	*hwuart_handle;
 	uint32_t			hwuart_index;
+	uint8_t				sentinel_start;
+	uint8_t				sentinel_end;
+	uint16_t			timeout;
+	uint16_t			timeout_reload_value;
+	uint8_t				rx_char;
 }HW_Uart_t;
 
 #define	A_MAX_UART		8
