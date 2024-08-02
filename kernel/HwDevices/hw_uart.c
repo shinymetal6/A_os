@@ -152,7 +152,6 @@ uint32_t	i;
 			{
 				if (( HWMngr[i].status & HWMAN_SENTINEL_FOUND) != HWMAN_SENTINEL_FOUND)
 				{
-//					if (( rx_char >= HWMngr[i].sentinel_start) && (rx_char <= HWMngr[i].sentinel_end ))
 					if ( rx_char == HWMngr[i].sentinel_start)
 					{
 						HWMngr[i].status |= HWMAN_SENTINEL_FOUND;
