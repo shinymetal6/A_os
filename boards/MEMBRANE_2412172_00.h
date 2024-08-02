@@ -51,16 +51,17 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	LED_1_GPIOBIT			LED_Pin
 
 #define	QSPI_ENABLED			1
-#define	WIRELESS_ENABLED		1
-#define	WIRELESS_NRF24L01		1
+//#define	WIRELESS_ENABLED		1
+//#define	WIRELESS_NRF24L01		1
 //#define	LORA_ENABLED			1
-#define	NETWORKING_ENABLED		1
+//#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED				1
 //#define	XMODEM_ENABLE			1
 #define	USB_XMODEM_ENABLE		1
 //#define	MODBUS_ENABLE			1
 //#define SENSORS_CCS8118			1
-#define MQTT_ENABLE				1
+//#define MQTT_ENABLE				1
+#define	POWERSAVING_ENABLED		1
 
 #ifdef NETWORKING_ENABLED
 	#define	WIFI_ESP01S				1
@@ -123,7 +124,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 
 //#define	A_HAS_UART1			1
-#define	A_HAS_UART2			1
+//#define	A_HAS_UART2			1
 //#define	A_HAS_UART3				1
 #define	A_HAS_UART4			1
 #define	A_HAS_UART5			1
@@ -134,7 +135,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_UARTS			1
 #endif
 
-#define	A_HAS_SPI1				1
+//#define	A_HAS_SPI1				1
 //#define	A_HAS_SPI2				1
 //#define	A_HAS_SPI3				1
 //#define	A_HAS_SPI4				1
@@ -142,7 +143,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_SPI_BUS				1
 #endif
 
-#define	A_HAS_I2C1				1
+//#define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
 //#define	A_HAS_I2C3				1
 //#define	A_HAS_I2C4				1

@@ -60,7 +60,7 @@ ITCM_AREA_CODE void supervisor(void)
 #endif
 		supervisor_callback();
 #ifdef POWERSAVING_ENABLED
-		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFI);
+		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
 #endif
 		schedule();
 	}
