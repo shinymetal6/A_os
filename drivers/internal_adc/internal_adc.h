@@ -27,20 +27,24 @@
 
 typedef struct _ControlAdcDef
 {
+	uint8_t 	hw_adc_index;
 	uint16_t 	pot[6];
 	uint16_t 	analog_in[4];
 	uint8_t 	adc_flag;
 }ControlAdcDef;
 
 #define	INT_ADC_POT_DONE		0x80
-#define	INT_ADC_ANALOG_IN_DONE	0x40
+#define	INT_ADC_ANALOG_IN1_DONE	0x40
+#define	INT_ADC_ANALOG_IN2_DONE	0x20
 
 #define HW_ADC_ERROR_NONE			0
 #define HW_ADC_ERROR_HW_NOT_OWNED	1
 
 #ifdef ADC_SINGLE_CHANNEL
-extern	uint8_t InternalAdc_Start(void);
-extern	uint16_t InternalAdc_get_value(void);
+extern	uint8_t IntAdc_Init(uint8_t hw_adc_index);
+extern	uint8_t IntAdc_Start(void);
+extern	uint8_t IntAdc_Stop(void);
+
 #else
 extern	uint8_t IntAdc_Start(void);
 

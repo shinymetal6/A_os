@@ -60,6 +60,44 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	MODBUS_ENABLE			1
 //#define SENSORS_CCS8118			1
 //#define MQTT_ENABLE				1
+#define INTERNAL_ADC_ENABLED		1
+#define INTERNAL_DAC_ENABLED		1
+//#define ADC_HAS_OPAMP				1
+
+#ifdef INTERNAL_ADC_ENABLED
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define ADC_HANDLE					hadc1
+	extern	TIM_HandleTypeDef htim6;
+	//#define ADC_TIM_FOR_DAC				1
+	#define ADC_TIMER					htim6
+	#define ADC_SINGLE_CHANNEL			1
+	#ifdef ADC_SINGLE_CHANNEL
+		#define ADC_SINGLE_CHANNEL_NUMBER	0
+	#endif
+	#ifdef ADC_HAS_OPAMP
+		extern	OPAMP_HandleTypeDef 	hopamp1;
+		#define OPAMP_HANDLE			hopamp1
+	#endif
+#endif
+
+#ifdef INTERNAL_DAC_ENABLED
+	extern	DAC_HandleTypeDef 			hdac1;
+	#define DAC_HANDLE					hdac1
+	//#define STEADY_DAC_VALUE			1
+	#define DAC_USER_WAVETABLE				1
+	#ifdef DAC_USER_WAVETABLE
+		#define DAC_WAVETABLE_SIZE				256
+	#endif
+	#ifndef STEADY_DAC_VALUE
+		#ifdef ADC_TIM_FOR_DAC
+			#define DAC_TIMER				ADC_TIMER
+		#else
+			extern	TIM_HandleTypeDef 		htim7;
+			#define DAC_TIMER				htim7
+		#endif
+	#endif
+#endif
+
 
 #ifdef NETWORKING_ENABLED
 	#define	WIFI_ESP01S				1
@@ -121,8 +159,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 	*/
-#define	ITCM_AREA_CODE		__attribute__ ((aligned (32)))
-#define DTCM_VECTORS_DATA	__attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE		//__attribute__ ((aligned (32)))
+#define DTCM_VECTORS_DATA	//__attribute__ ((aligned (32)))
 
 #define	A_HAS_UART1				1
 //#define	A_HAS_UART2			1

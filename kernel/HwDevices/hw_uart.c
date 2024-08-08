@@ -28,7 +28,7 @@
 #include "../A_exported_functions.h"
 #include "../hwmanager.h"
 #include "hw_uart.h"
-//#include "../kernel_opt.h"
+#include "../kernel_opt.h"
 
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
@@ -36,7 +36,6 @@ extern	Asys_t			Asys;
 #ifdef A_HAS_UARTS
 
 extern	HW_Uart_t		HW_Uart[A_MAX_UART];
-#define	NO_SENTINEL	0
 
 ITCM_AREA_CODE uint32_t hw_send_uart(uint8_t uart,uint8_t *ptr,uint16_t len)
 {
@@ -77,8 +76,6 @@ ITCM_AREA_CODE uint32_t hw_receive_uart(uint8_t uart,uint8_t *rx_buf,uint16_t rx
 
 ITCM_AREA_CODE uint32_t hw_receive_uart_sentinel(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout)
 {
-	if ( HW_Uart[uart-HW_UART1].hwuart_handle == NULL )
-		return HW_UART_ERROR;
 	if ( HWMngr[uart].process == Asys.current_process )
 	{
 		if ( HW_Uart[uart-HW_UART1].hwuart_handle == NULL )

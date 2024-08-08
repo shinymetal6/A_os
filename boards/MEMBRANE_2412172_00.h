@@ -57,11 +57,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED				1
 //#define	XMODEM_ENABLE			1
-#define	USB_XMODEM_ENABLE		1
+//#define	USB_XMODEM_ENABLE		1
 //#define	MODBUS_ENABLE			1
 //#define SENSORS_CCS8118			1
 //#define MQTT_ENABLE				1
-#define	POWERSAVING_ENABLED		1
+#define	POWERSAVING_ENABLED			1
+#define	INTEL_HEX_DECODER_ENABLE	1
 
 #ifdef NETWORKING_ENABLED
 	#define	WIFI_ESP01S				1
@@ -120,7 +121,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
-#define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+//#define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+#define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 
 //#define	A_HAS_UART1			1

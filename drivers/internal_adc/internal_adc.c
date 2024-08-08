@@ -36,28 +36,43 @@ ControlAdcDef		ControlAdc;
 
 #ifdef ADC_SINGLE_CHANNEL
 
-uint8_t InternalAdc_Start(void)
+uint8_t IntAdc_Init(uint8_t hw_adc_index)
 {
-	if ( HWMngr[HW_ADC2].process != Asys.current_process )
+#ifdef ADC_HAS_OPAMP
+	HAL_OPAMP_Start(&OPAMP_HANDLE);
+#endif
+	if ( HWMngr[hw_adc_index].process != Asys.current_process )
 		return HW_ADC_ERROR_HW_NOT_OWNED;
-	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],1) )
+	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],2) )
 		return 1;
+	ControlAdc.hw_adc_index = hw_adc_index;
+	return HW_ADC_ERROR_NONE;
+}
+
+uint8_t IntAdc_Start(void)
+{
 	return HAL_TIM_Base_Start(&ADC_TIMER);
 }
 
-uint16_t InternalAdc_get_value(void)
+uint8_t IntAdc_Stop(void)
 {
-	if ( HWMngr[HW_ADC2].process != Asys.current_process )
-		return HW_ADC_ERROR_HW_NOT_OWNED;
-	return ControlAdc.analog_in[0];
+	return HAL_TIM_Base_Stop(&ADC_TIMER);
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	if ( hadc == &ADC_HANDLE)
 	{
-		ControlAdc.adc_flag |= INT_ADC_ANALOG_IN_DONE;
-		activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,ControlAdc.analog_in[0]);
+		if ( ControlAdc.hw_adc_index == HW_ADC1)
+		{
+			ControlAdc.adc_flag |= INT_ADC_ANALOG_IN1_DONE;
+			activate_process(HWMngr[HW_ADC1].process,EVENT_ADC1_IRQ,ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER]);
+		}
+		if ( ControlAdc.hw_adc_index == HW_ADC2)
+		{
+			ControlAdc.adc_flag |= INT_ADC_ANALOG_IN2_DONE;
+			activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER]);
+		}
 	}
 }
 

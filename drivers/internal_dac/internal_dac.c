@@ -30,8 +30,23 @@
 #include "internal_dac.h"
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
+uint16_t	dac_value=0;
+ControlDacDef	ControlDac;
 
-__attribute__ ((aligned (32))) const int16_t buzzer_sine_tab[BUZZER_WAVETABLE_SIZE] =
+#ifdef STEADY_DAC_VALUE
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+{
+	dac_value+=10;
+	dac_value &=0xfff;
+	HAL_DAC_SetValue(&DAC_HANDLE, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);
+}
+uint8_t IntDac_Start(void)
+{
+	return HAL_DAC_SetValue(&DAC_HANDLE, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);
+}
+#else
+
+__attribute__ ((aligned (32))) const uint16_t dac_sine_tab[DAC_WAVETABLE_SIZE] =
 {
 		0x800, 0x832, 0x864, 0x896, 0x8c8, 0x8fa, 0x92c, 0x95e,
 		0x98f, 0x9c0, 0x9f1, 0xa22, 0xa52, 0xa82, 0xab1, 0xae0,
@@ -67,29 +82,79 @@ __attribute__ ((aligned (32))) const int16_t buzzer_sine_tab[BUZZER_WAVETABLE_SI
 		0x670, 0x6a1, 0x6d3, 0x705, 0x737, 0x769, 0x79b, 0x7cd,
 };
 
-uint8_t IntDac_Start(void)
+__attribute__ ((aligned (32))) int16_t dac_table[DAC_WAVETABLE_SIZE];
+
+
+uint8_t IntDac_Init(uint16_t *user_table)
+{
+uint32_t	i;
+
+	if ( HWMngr[HW_DAC].process != Asys.current_process )
+		return HW_DAC_ERROR_HW_NOT_OWNED;
+
+	if (user_table != NULL )
+	{
+		ControlDac.user_table = user_table;
+		for(i=0;i<DAC_WAVETABLE_SIZE;i++)
+			dac_table[i] = ControlDac.user_table[i];
+		if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)user_table, DAC_WAVETABLE_SIZE,DAC_ALIGN_12B_R) == 0 )
+			return HW_DAC_ERROR_NONE;
+	}
+	else
+	{
+		if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)dac_table, DAC_WAVETABLE_SIZE,DAC_ALIGN_12B_R) == 0 )
+			return HW_DAC_ERROR_NONE;
+	}
+	return HW_DAC_ERROR_INIT;
+}
+
+uint8_t IntDac_Start(uint8_t dac_level0,uint8_t dac_level1 , uint8_t dac_level_done, uint16_t dac_measure_value)
 {
 	if ( HWMngr[HW_DAC].process != Asys.current_process )
 		return HW_DAC_ERROR_HW_NOT_OWNED;
-	if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)buzzer_sine_tab, BUZZER_WAVETABLE_SIZE,DAC_ALIGN_12B_R) == 0 )
-		HAL_TIM_Base_Start(&DAC_TIMER);
+	ControlDac.dac_level0 = dac_level0;
+	ControlDac.dac_level1 = dac_level1;
+	ControlDac.dac_level_done = dac_level_done;
+	ControlDac.dac_measure_value = dac_measure_value;
+	ControlDac.dac_out_cntr = 0;
+	HAL_TIM_Base_Start(&DAC_TIMER);
 	return HW_DAC_ERROR_NONE;
 }
 
-void buzzer_change_freq(uint16_t newfreq)
+uint8_t IntDac_Stop(void)
 {
-	DAC_TIMER.Instance->ARR = newfreq;
+	if ( HWMngr[HW_DAC].process != Asys.current_process )
+		return HW_DAC_ERROR_HW_NOT_OWNED;
+	HAL_TIM_Base_Stop(&DAC_TIMER);
+	ControlDac.dac_level0 = ControlDac.dac_level1 = ControlDac.dac_level_done = 0;
+	return HW_DAC_ERROR_NONE;
 }
 
-void buzzer_on(void)
+uint16_t *IntDac_Get_SineTab(void)
 {
-	HAL_TIM_Base_Start_IT(&DAC_TIMER);
+	return (uint16_t *)dac_sine_tab;
 }
 
-void buzzer_off(void)
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
-	HAL_TIM_Base_Stop_IT(&DAC_TIMER);
+uint16_t	i;
+	ControlDac.dac_out_cntr++;
+	if ( ControlDac.dac_out_cntr == ControlDac.dac_level0)
+	{
+		for(i=0;i<DAC_WAVETABLE_SIZE;i++)
+			ControlDac.user_table[i] = ControlDac.dac_measure_value;
+		activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.dac_level0);
+	}
+	if ( ControlDac.dac_out_cntr == ControlDac.dac_level1)
+		activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.dac_level1);
+	if ( ControlDac.dac_out_cntr == ControlDac.dac_level_done )
+	{
+		HAL_TIM_Base_Stop(&DAC_TIMER);
+		activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.dac_out_cntr);
+	}
 }
+
+#endif // #ifdef STEADY_DAC_VALUE
 
 #endif // #ifdef DAC_ENABLED
 

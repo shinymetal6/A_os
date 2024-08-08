@@ -23,16 +23,24 @@
 #ifndef DRIVERS_INTERNAL_DAC_INTERNAL_DAC_H_
 #define DRIVERS_INTERNAL_DAC_INTERNAL_DAC_H_
 
-#define	BUZZER_WAVETABLE_SIZE	256
 #define HW_DAC_ERROR_NONE			0
 #define HW_DAC_ERROR_HW_NOT_OWNED	1
+#define HW_DAC_ERROR_INIT			2
 
-extern	uint8_t IntDac_Start(void);
-extern	void buzzer_change_freq(uint16_t newfreq);
-extern	void buzzer_on(void);
-extern	void buzzer_off(void);
+typedef struct _ControlDacDef
+{
+	uint8_t 	dac_out_cntr;
+	uint8_t 	dac_level0;
+	uint8_t 	dac_level1;
+	uint8_t 	dac_level_done;
+	uint16_t	dac_measure_value;
+	uint8_t 	dac_flag;
+	uint16_t 	*user_table;
+}ControlDacDef;
 
-
-
+extern	uint8_t IntDac_Init(uint16_t *user_table);
+extern	uint8_t IntDac_Start(uint8_t dac_level0,uint8_t dac_level1 , uint8_t dac_level_done, uint16_t dac_measure_value);
+extern	uint8_t IntDac_Stop(void);
+extern	uint16_t *IntDac_Get_SineTab(void);
 
 #endif /* DRIVERS_INTERNAL_DAC_INTERNAL_DAC_H_ */

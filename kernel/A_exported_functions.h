@@ -130,12 +130,24 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
 
+#ifdef INTERNAL_ADC_ENABLED
+#include "../drivers/internal_adc/internal_adc.h"
+#endif
+
+#ifdef INTERNAL_DAC_ENABLED
+#include "../drivers/internal_dac/internal_dac.h"
+#endif
+
 #ifdef XMODEM_ENABLE
 #include "../modules/serial_transfers/xmodem.h"
 #endif
 
 #ifdef USB_XMODEM_ENABLE
 #include "../modules/usb_transfer/usb_xmodem.h"
+#endif
+
+#ifdef INTEL_HEX_DECODER_ENABLE
+#include "../modules/hex_decoders/ihex.h"
 #endif
 
 #ifdef MODBUS_ENABLE

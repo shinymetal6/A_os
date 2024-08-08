@@ -14,22 +14,25 @@
  * Project : A_os
 */
 /*
- * hw_uart.h
+ * ihex.h
  *
- *  Created on: Mar 1, 2024
+ *  Created on: Aug 8, 2024
  *      Author: fil
  */
 
-#ifndef KERNEL_HWDEVICES_HW_UART_H_
-#define KERNEL_HWDEVICES_HW_UART_H_
+#ifndef MODULES_HEX_DECODERS_IHEX_H_
+#define MODULES_HEX_DECODERS_IHEX_H_
 
-#define	HW_UART_OK		0
-#define	HW_UART_ERROR	255
+#define	IHEX_DATA						0x00
+#define	IHEX_END_OF_FILE				0x01
+#define	IHEX_EXTENDED_SEGMENT_ADDRESS	0x02
+#define	IHEX_START_SEGMENT_ADDRESS		0x03
+#define	IHEX_EXTENDED_LINEAR_ADDRESS	0x04
+#define	IHEX_START_LINEAR_ADDRESS		0x05
 
-#define	NO_SENTINEL	0
+extern	uint8_t	ihex_decode(uint8_t *data_ptr, uint8_t data_len);
+extern	uint8_t	*get_ihex_data(void);
 
-extern	void HAL_UART_RxTimeoutCheckCallback(void);
 
-extern	void A_hw_uart_init(void);
 
-#endif /* KERNEL_HWDEVICES_HW_UART_H_ */
+#endif /* MODULES_HEX_DECODERS_IHEX_H_ */
