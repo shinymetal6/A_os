@@ -41,6 +41,7 @@ QSPI_HandleTypeDef *qspi_init(void)
 	QSPI_memory.EraseSectorsNumber = SECTOR_COUNT;
 	QSPI_memory.ProgPageSize = MEM_PAGE_SIZE;
 	QSPI_memory.ProgPagesNumber = PAGE_COUNT;
+	QSPI_memory.BlockSize = w25q_GetBlockSize();
 #endif
 	return &HQSPI1;
 }
@@ -62,6 +63,7 @@ uint8_t qspi_WriteDisable(void)
 uint8_t qspi_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size)
 {
 #ifdef QSPI_WINBOND
+	//return w25q_ReadDataByAddress(pData, ReadAddr, Size);
 	return w25q_ReadRaw(pData, ReadAddr, Size);
 #endif
 }
@@ -98,6 +100,13 @@ uint8_t qspi_Erase_Chip(void)
 {
 #ifdef QSPI_WINBOND
 	return w25q_EraseChip();
+#endif
+}
+
+uint32_t qspi_GetBlockSize(void)
+{
+#ifdef QSPI_WINBOND
+	return w25q_GetBlockSize();
 #endif
 }
 

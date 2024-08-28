@@ -48,6 +48,7 @@ typedef struct {
   uint32_t EraseSectorsNumber; /*!< Number of sectors for the erase operation */
   uint32_t ProgPageSize;       /*!< Size of pages for the program operation */
   uint32_t ProgPagesNumber;    /*!< Number of pages for the program operation */
+  uint32_t BlockSize;    	   /*!< Size of the block */
 } QSPI_Info;
 
 extern	QSPI_HandleTypeDef *qspi_init(void);
@@ -59,6 +60,7 @@ extern	uint8_t qspi_EraseBlockByNumber(uint32_t BlockNumber);
 extern	uint8_t qspi_EraseBlockByAddress(uint32_t BlockAddress);
 extern	uint8_t qspi_Erase_Sector(uint32_t SectorAddress);
 extern	uint8_t qspi_Erase_Chip(void);
+extern	uint32_t qspi_GetBlockSize(void);
 
 #ifdef __cplusplus
 }

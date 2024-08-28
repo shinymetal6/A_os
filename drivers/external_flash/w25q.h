@@ -101,15 +101,19 @@
 #define W25Q_ENABLE_RST 0x66U				///< enable software-reset ability
 #define W25Q_RESET 0x99U					///< make software reset
 
+#define	W25Q_NO_PROTECTION_MASK				0x1c
+
 extern	uint8_t w25q_Init(void);
-extern	uint8_t w25q_ReadRaw(uint8_t *buf, uint32_t rawAddr, uint16_t data_len);
+extern	uint8_t w25q_ReadRaw(uint8_t *buf, uint32_t rawAddr, uint32_t data_len);
+extern	uint8_t w25q_ReadDataByAddress(uint8_t *buf, uint32_t Address, uint32_t len);
 extern	uint8_t w25q_WriteEnable(uint8_t enable);
-extern	uint8_t w25q_ProgramRaw(uint8_t *data, uint32_t Address,  uint16_t len);
+extern	uint8_t w25q_ProgramRaw(uint8_t *data, uint32_t Address,  uint32_t len);
 extern	uint8_t w25q_EraseSector(uint32_t SectAddr);
 extern	uint8_t w25q_EraseBlockByNumber(uint32_t BlockNumber);
 extern	uint8_t w25q_EraseBlockByAddress(uint32_t Address);
 extern	uint8_t w25q_EraseChip(void);
 extern	uint32_t w25q_GetBlockSize(void);
+extern	uint32_t w25q_GetSBlockSize(void);
 extern	uint32_t w25q_GetSectorSize(void);
 
 

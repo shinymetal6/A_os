@@ -83,7 +83,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 	if ( hadc == &CONTROL_ADC1)
 		ControlAdc.adc_flag |= INT_ADC_POT_DONE;
 	if ( hadc == &ANALOG_IN_ADC2)
-		ControlAdc.adc_flag |= INT_ADC_ANALOG_IN_DONE;
+		ControlAdc.adc_flag |= INT_ADC_ANALOG_IN2_DONE;
 
 }
 
