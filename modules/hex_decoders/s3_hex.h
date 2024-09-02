@@ -14,24 +14,18 @@
  * Project : A_os
 */
 /*
- * ihex.h
+ * s3_hex.h
  *
- *  Created on: Aug 8, 2024
+ *  Created on: Sep 2, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_HEX_DECODERS_IHEX_H_
-#define MODULES_HEX_DECODERS_IHEX_H_
 
-#define	IHEX_DATA						0x00
-#define	IHEX_END_OF_FILE				0x01
-#define	IHEX_EXTENDED_SEGMENT_ADDRESS	0x02
-#define	IHEX_START_SEGMENT_ADDRESS		0x03
-#define	IHEX_EXTENDED_LINEAR_ADDRESS	0x04
-#define	IHEX_START_LINEAR_ADDRESS		0x05
+#ifndef MODULES_HEX_DECODERS_S3_HEX_H_
+#define MODULES_HEX_DECODERS_S3_HEX_H_
 
 typedef struct {
-	uint8_t		ihex_line[32];
+	uint8_t		s3hex_line[32];
 	uint8_t		record_type;
 	uint8_t		data_len;
 	uint32_t	address;
@@ -41,12 +35,10 @@ typedef struct {
 	uint32_t	start_linear_address;
 	uint32_t	absolute_address;
 	uint32_t	stored_bytes;
-} IHex_struct_t;
+} S3Hex_struct_t;
 
-extern	uint8_t	 ihex_decode(uint8_t *data_ptr, uint8_t data_len);
-extern	uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len);
-extern	uint32_t ihex_get_data_len(uint8_t *data_ptr);
-extern	uint8_t	*get_ihex_data_ptr(void);
-extern	uint32_t get_ihex_address(void);
 
-#endif /* MODULES_HEX_DECODERS_IHEX_H_ */
+extern	uint8_t	*get_s3hex_data_ptr(void);
+extern	uint32_t get_s3hex_address(void);
+
+#endif /* MODULES_HEX_DECODERS_S3_HEX_H_ */

@@ -147,7 +147,13 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #endif
 
 #ifdef INTEL_HEX_DECODER_ENABLE
+#include "../modules/hex_decoders/hex_decoders_common.h"
 #include "../modules/hex_decoders/ihex.h"
+#endif
+
+#ifdef MOTOROLA_HEX_DECODER_ENABLE
+#include "../modules/hex_decoders/hex_decoders_common.h"
+#include "../modules/hex_decoders/s3_hex.h"
 #endif
 
 #ifdef MODBUS_ENABLE
