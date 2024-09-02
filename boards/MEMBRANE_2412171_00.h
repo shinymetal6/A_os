@@ -161,6 +161,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	*/
 #define	ITCM_AREA_CODE		//__attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	//__attribute__ ((aligned (32)))
+#define REPROG_DATA_AREA	__attribute__((section(".reprog_data_start")))   	 __attribute__ ((aligned (32)))
+#define BOARDINFO_DATA_AREA	__attribute__((section(".board_infoStart")))   	 	__attribute__ ((aligned (32)))
 
 #define	A_HAS_UART1				1
 //#define	A_HAS_UART2			1

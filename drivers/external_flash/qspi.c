@@ -41,7 +41,7 @@ QSPI_HandleTypeDef *qspi_init(void)
 	QSPI_memory.EraseSectorsNumber = SECTOR_COUNT;
 	QSPI_memory.ProgPageSize = MEM_PAGE_SIZE;
 	QSPI_memory.ProgPagesNumber = PAGE_COUNT;
-	QSPI_memory.BlockSize = w25q_GetBlockSize();
+	QSPI_memory.BlockSize = w25q_GetSBlockSize();
 #endif
 	return &HQSPI1;
 }

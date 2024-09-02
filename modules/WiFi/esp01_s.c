@@ -110,10 +110,25 @@ esp_cmds_t	esp_web_cmds[] =
 uint8_t ESP01S_AT_reply(char *reply)
 {
 uint16_t	i;
+char		*valid_char_reply;
+
+valid_char_reply = reply;
+	for(i=0;i<8;i++)
+	{
+		if (( esp_wifi.rx_buf[i] >= 'A') && ( esp_wifi.rx_buf[i] <= 'z'))
+		{
+			valid_char_reply -= 2;
+			break;
+		}
+		else
+			valid_char_reply++;
+	}
+	if ( i == 8 )
+		return 1;
 
 	for(i=0;i<esp_wifi.rx_buf_max_len-6;i++)
 	{
-		if (( esp_wifi.rx_buf[i]==reply[0])&&( esp_wifi.rx_buf[i+1]==reply[1])&&( esp_wifi.rx_buf[i+2]==reply[2])&&( esp_wifi.rx_buf[i+3]==reply[3])&&( esp_wifi.rx_buf[i+4]==reply[4])&&( esp_wifi.rx_buf[i+5]==reply[5]))
+		if (( esp_wifi.rx_buf[i]==valid_char_reply[0])&&( esp_wifi.rx_buf[i+1]==valid_char_reply[1])&&( esp_wifi.rx_buf[i+2]==valid_char_reply[2])&&( esp_wifi.rx_buf[i+3]==valid_char_reply[3])&&( esp_wifi.rx_buf[i+4]==valid_char_reply[4])&&( esp_wifi.rx_buf[i+5]==valid_char_reply[5]))
 			return 0;
 	}
 	return 1;

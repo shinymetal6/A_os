@@ -30,9 +30,28 @@
 #define	IHEX_EXTENDED_LINEAR_ADDRESS	0x04
 #define	IHEX_START_LINEAR_ADDRESS		0x05
 
+typedef struct {
+	uint8_t		ihex_line[32];
+	uint8_t		record_type;
+	uint8_t		data_len;
+	uint32_t	address;
+	uint32_t	extended_address;
+	uint32_t	extended_linear_address;
+	uint32_t	start_segment_address;
+	uint32_t	start_linear_address;
+	uint32_t	absolute_address;
+	uint8_t		*dest_data_ptr;
+	uint8_t		*dest_data_current_ptr;
+	uint32_t	stored_bytes;
+} IHex_struct_t;
+
+extern	uint8_t	ihex_init(uint8_t *dest_data_ptr);
 extern	uint8_t	ihex_decode(uint8_t *data_ptr, uint8_t data_len);
-extern	uint8_t	*get_ihex_data(void);
-
-
+extern	uint32_t ihex_get_decoded_datalen(void);
+extern	uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len);
+extern	uint32_t ihex_get_crlflen(uint8_t *data_ptr);
+extern	uint32_t ihex_get_data_len(uint8_t *data_ptr);
+extern	uint8_t	*get_ihex_data_ptr(void);
+extern	uint32_t get_ihex_address(void);
 
 #endif /* MODULES_HEX_DECODERS_IHEX_H_ */

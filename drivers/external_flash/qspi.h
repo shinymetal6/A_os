@@ -29,15 +29,15 @@
 #if defined QSPI_ENABLED
 
 #include "main.h"
-//#include "n25q128a.h"
 
 extern	QSPI_HandleTypeDef 	hqspi;
 #define	A_qspi				hqspi
 
 /* N25Q128A13EF840E Micron memory */
 /* Size of the flash */
-#define QSPI_FLASH_SIZE            23     /* Address bus width to access whole memory space */
-#define QSPI_PAGE_SIZE             256
+#define QSPI_FLASH_SIZE            	23     /* Address bus width to access whole memory space */
+#define QSPI_PAGE_SIZE             	256
+#define QSPI_BLOCK_SIZE 			(32*1024)					// 32 KB: 128 pages
 
 /* This alias is added as the name of Memory mapped fucntion changed */   
 #define BSP_QSPI_MemoryMappedMode  BSP_QSPI_EnableMemoryMappedMode   
