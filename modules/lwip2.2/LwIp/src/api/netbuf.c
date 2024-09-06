@@ -41,6 +41,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
 
 #include "../include/lwip/opt.h"
 
@@ -248,3 +251,4 @@ netbuf_first(struct netbuf *buf)
 }
 
 #endif /* LWIP_NETCONN */
+#endif // #ifdef	NETWORKING_ENABLED

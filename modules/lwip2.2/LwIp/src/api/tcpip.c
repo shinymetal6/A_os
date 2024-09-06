@@ -35,7 +35,9 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if !NO_SYS /* don't build if not configured for use in lwipopts.h */
@@ -713,3 +715,4 @@ mem_free_callback(void *m)
 }
 
 #endif /* !NO_SYS */
+#endif // #ifdef	NETWORKING_ENABLED

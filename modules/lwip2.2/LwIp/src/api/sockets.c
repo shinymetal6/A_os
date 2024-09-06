@@ -37,6 +37,9 @@
  *
  */
 
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_SOCKET /* don't build if not configured for use in lwipopts.h */
@@ -4242,3 +4245,4 @@ lwip_socket_drop_registered_mld6_memberships(int s)
 #endif /* LWIP_IPV6_MLD */
 
 #endif /* LWIP_SOCKET */
+#endif // #ifdef	NETWORKING_ENABLED

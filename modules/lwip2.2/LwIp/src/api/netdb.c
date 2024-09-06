@@ -34,7 +34,9 @@
  * Author: Simon Goldschmidt
  *
  */
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/netdb.h"
 
 #if LWIP_DNS && LWIP_SOCKET
@@ -425,3 +427,4 @@ lwip_getaddrinfo(const char *nodename, const char *servname,
 }
 
 #endif /* LWIP_DNS && LWIP_SOCKET */
+#endif // #ifdef	NETWORKING_ENABLED

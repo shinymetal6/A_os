@@ -63,7 +63,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define MQTT_ENABLE				1
 #define	POWERSAVING_ENABLED			1
 #define	INTEL_HEX_DECODER_ENABLE	1
-#define	MOTOROLA_HEX_DECODER_ENABLE	1
+//#define	MOTOROLA_HEX_DECODER_ENABLE	1
 
 #ifdef NETWORKING_ENABLED
 	#define	WIFI_ESP01S				1

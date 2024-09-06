@@ -36,6 +36,10 @@
  *
  */
 
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
+
 #include "../include/lwip/err.h"
 #include "../include/lwip/def.h"
 #include "../include/lwip/sys.h"
@@ -113,3 +117,4 @@ lwip_strerr(err_t err)
 }
 
 #endif /* LWIP_DEBUG */
+#endif // #ifdef	NETWORKING_ENABLED

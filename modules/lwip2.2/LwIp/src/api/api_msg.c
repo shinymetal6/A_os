@@ -36,6 +36,10 @@
  *
  */
 
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
+
 #include "../include/lwip/opt.h"
 
 #if LWIP_NETCONN /* don't build if not configured for use in lwipopts.h */
@@ -2175,3 +2179,5 @@ lwip_netconn_do_gethostbyname(void *arg)
 #endif /* LWIP_DNS */
 
 #endif /* LWIP_NETCONN */
+
+#endif // #ifdef	NETWORKING_ENABLED

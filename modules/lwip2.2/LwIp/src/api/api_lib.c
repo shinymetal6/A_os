@@ -55,6 +55,10 @@
 /* This is the part of the API that is linked with
    the application */
 
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
+
 #include "../include/lwip/opt.h"
 
 #if LWIP_NETCONN /* don't build if not configured for use in lwipopts.h */
@@ -1365,3 +1369,5 @@ netconn_thread_cleanup(void)
 #endif /* LWIP_NETCONN_SEM_PER_THREAD */
 
 #endif /* LWIP_NETCONN */
+
+#endif // #ifdef	NETWORKING_ENABLED

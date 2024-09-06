@@ -37,7 +37,9 @@
  * This file is part of the lwIP TCP/IP stack.
  *
  */
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef	NETWORKING_ENABLED
 #include "../include/lwip/opt.h"
 
 #if LWIP_NETIF_API /* don't build if not configured for use in lwipopts.h */
@@ -378,3 +380,4 @@ netifapi_netif_index_to_name(u8_t idx, char *name)
 }
 
 #endif /* LWIP_NETIF_API */
+#endif // #ifdef	NETWORKING_ENABLED

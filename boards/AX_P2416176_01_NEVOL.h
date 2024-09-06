@@ -50,11 +50,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	LED_1_GPIOPORT			LED_GPIO_Port
 #define	LED_1_GPIOBIT			LED_Pin
 
-#define	QSPI_ENABLED			1
-#define	WIRELESS_ENABLED		1
+//#define	QSPI_ENABLED			1
+//#define	WIRELESS_ENABLED		1
 //#define	WIRELESS_NRF24L01		1
 //#define	LORA_ENABLED			1
-#define	NETWORKING_ENABLED		1
+//#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED				1
 //#define	XMODEM_ENABLE			1
 //#define	USB_XMODEM_ENABLE		1
@@ -139,11 +139,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 //#define	A_HAS_UART1			1
 #define	A_HAS_UART2			1
-//#define	A_HAS_UART3				1
+#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
-//#define	A_HAS_UART5			1
+#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1
-#define	A_HAS_UART7			1
+//#define	A_HAS_UART7			1
 //#define	A_HAS_UART8			1
 #if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7) || defined(A_HAS_UART8)
 	#define	A_HAS_UARTS			1
@@ -160,7 +160,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	A_HAS_I2C1				1
 //#define	A_HAS_I2C2				1
 //#define	A_HAS_I2C3				1
-//#define	A_HAS_I2C4				1
+#define	A_HAS_I2C4				1
 #if defined(A_HAS_I2C1) || defined(A_HAS_I2C2) || defined(A_HAS_I2C3) || defined(A_HAS_I2C4)
 	#define	A_HAS_I2C_BUS				1
 #endif

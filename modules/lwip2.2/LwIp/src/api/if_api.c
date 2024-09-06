@@ -39,6 +39,10 @@
  * Author: Joel Cunningham <joel.cunningham@me.com>
  *
  */
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef	NETWORKING_ENABLED
+
 #include "../include/lwip/opt.h"
 
 #if LWIP_SOCKET
@@ -100,3 +104,4 @@ lwip_if_nametoindex(const char *ifname)
 }
 
 #endif /* LWIP_SOCKET */
+#endif // #ifdef	NETWORKING_ENABLED
