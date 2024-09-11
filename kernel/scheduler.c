@@ -72,6 +72,7 @@ __attribute__((naked)) void PendSV_Handler(void)
 void schedule(void)
 {
 	//pend the pendsv exception
+	NVIC_EnableIRQ(PendSV_IRQn);
 	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	__DSB ();
 	__enable_irq();

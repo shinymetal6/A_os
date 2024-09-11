@@ -26,6 +26,7 @@
 #ifdef	STM32G491xx
 
 #define FLASH_G491_TIMEOUT_VALUE              50000U /* 50 s */
+#ifdef BOH
 #define FLASH_NB_DOUBLE_WORDS_IN_ROW  32
 
 #define	DTCM_VECT_TAB_BASE_ADDRESS	0x20000000
@@ -59,7 +60,7 @@
 
 extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
-
+#endif
 #endif /* #ifdef	STM32G491xx */
 
 #endif /* KERNEL_FLASH_UPDATER_STM32G491_FLASH_UPDATER_H_ */

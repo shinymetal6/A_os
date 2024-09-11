@@ -61,6 +61,8 @@ extern	uint8_t qspi_EraseBlockByAddress(uint32_t BlockAddress);
 extern	uint8_t qspi_Erase_Sector(uint32_t SectorAddress);
 extern	uint8_t qspi_Erase_Chip(void);
 extern	uint32_t qspi_GetBlockSize(void);
+extern	uint32_t	qspi_get_crc(uint32_t 	*data_ptr , uint32_t data_len);
+
 
 #ifdef __cplusplus
 }

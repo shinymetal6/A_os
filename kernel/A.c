@@ -145,16 +145,12 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
     Asys.g_os_started = 1;
 }
 
+
 void A_init_mem(void)
 {
-    __ASM volatile ("dsb" : : : "memory");
-	bzero((uint8_t *)&Asys,sizeof(Asys));
-    __ASM volatile ("dsb" : : : "memory");
-	bzero((uint8_t *)HWMngr,sizeof(HWMngr));
-    __ASM volatile ("dsb" : : : "memory");
-	bzero((uint8_t *)process,sizeof(process));
-    __ASM volatile ("dsb" : : : "memory");
-	bzero((uint8_t *)SRAM_START,SRAM_SIZE);
+	Asys.osSysRam_start = (uint32_t *)&_osSysRam_start;
+	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
+	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);
 #endif

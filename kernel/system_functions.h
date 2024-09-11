@@ -14,41 +14,16 @@
  * Project : A_os
 */
 /*
- * system_functions.c
+ * system_functions.h
  *
- *  Created on: Sep 18, 2023
+ *  Created on: Sep 11, 2024
  *      Author: fil
  */
 
 
-#include "main.h"
-//#include "kernel_opt.h"
-#include "system_functions.h"
+#ifndef KERNEL_SYSTEM_FUNCTIONS_H_
+#define KERNEL_SYSTEM_FUNCTIONS_H_
 
-uint32_t A_bit_index_to_num(uint32_t bit_index )
-{
-uint8_t shft = 0;
-	while(((bit_index >> shft) & 1) == 0)
-		shft++;
-	return shft;
-}
+extern	void A_clear32(uint32_t	*ptr,uint32_t size);
 
-uint32_t time_start;
-uint32_t usec_elapsed;
-void A_get_timelapse_start(void)
-{
-	time_start = DWT->CYCCNT;
-}
-
-uint32_t A_get_timelapse_end(void)
-{
-    usec_elapsed = (DWT->CYCCNT - time_start)/480;
-    return	usec_elapsed;
-}
-
-void A_clear32(uint32_t	*ptr,uint32_t size)
-{
-	uint32_t	i;
-	for(i=0;i<size;i++)
-		ptr[i] = 0;
-}
+#endif /* KERNEL_SYSTEM_FUNCTIONS_H_ */

@@ -268,6 +268,8 @@ typedef struct
 
 typedef struct
 {
+	uint32_t	*osSysRam_start;
+	uint32_t	osSysRam_size_word;
 	uint32_t	g_tick_count;
 	uint32_t	g_os_started;
 	uint8_t		*first_mem;

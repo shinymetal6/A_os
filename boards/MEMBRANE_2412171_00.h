@@ -32,9 +32,12 @@ extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_CHUNK_SIZE		    256
 #define	POOL_SIZE			    (POOL_END - POOL_START)
 // POOL_NUM must be a constant value to compile
-#define	POOL_NUM			    32
 //#define POOL_ENABLE				1
-
+#ifdef	POOL_ENABLE
+	#define	POOL_NUM			    32
+#else
+	#define	POOL_NUM			    0
+#endif
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SRAM_START				(uint32_t )(&_osSysRam_start)
@@ -161,8 +164,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	*/
 #define	ITCM_AREA_CODE		//__attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	//__attribute__ ((aligned (32)))
-#define REPROG_DATA_AREA	__attribute__((section(".reprog_data_start")))   	 __attribute__ ((aligned (32)))
-#define BOARDINFO_DATA_AREA	__attribute__((section(".board_infoStart")))   	 	__attribute__ ((aligned (32)))
+#define FLASHDATARAM_AREA	__attribute__((section(".FlashDataRamStart")))   __attribute__ ((aligned (32)))
+#define BOARDINFO_DATA_AREA	__attribute__((section(".board_infoStart")))   	 __attribute__ ((aligned (32)))
 
 #define	A_HAS_UART1				1
 //#define	A_HAS_UART2			1
@@ -217,7 +220,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		170000000U
+#define HSI_CLOCK         		85000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 #define	PendSV_PRIORITY			15

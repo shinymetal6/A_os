@@ -81,6 +81,8 @@ extern	void 	A_Error_Handler(char * file, int line);
 #define	TIMERFLAGS_DISABLED			0x00
 #define	TIMERFLAGS_USERMASK			0x0f
 
+#include "system_functions.h"
+
 /* hwmanager */
 extern	uint32_t allocate_hw(uint8_t peripheral,uint8_t config);
 extern	uint32_t deallocate_hw(uint8_t peripheral);
