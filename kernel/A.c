@@ -286,6 +286,7 @@ void A_initialize_onchip_peripherals(void)
 
 void A_start(void)
 {
+	HAL_Delay(2);	// wait some ticks so system will correctly fires some irqs
 	sprintf(Asys.version,"%s",A_OS_VERSION);
 	A_initialize_onchip_peripherals();
 	A_PreOS_Init();

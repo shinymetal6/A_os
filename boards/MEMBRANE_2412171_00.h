@@ -220,7 +220,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		85000000U
+#define HSI_CLOCK         		170000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 #define	PendSV_PRIORITY			15

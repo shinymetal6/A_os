@@ -68,12 +68,10 @@ ITCM_AREA_CODE int32_t A_GetTick(void)
 ITCM_AREA_CODE uint32_t HAL_GetTick(void)
 {
 uint32_t	ret_val;
-	//__disable_irq();
 	if ( Asys.g_os_started )
 		ret_val =  Asys.g_tick_count;
 	else
 		ret_val =  uwTick;
-	//__enable_irq();
 	return ret_val;
 }
 
@@ -147,7 +145,10 @@ ITCM_AREA_CODE void  SysTick_Handler(void)
 		schedule();
 	}
 	else
+	{
 		HAL_IncTick();
+		HAL_SYSTICK_IRQHandler();
+	}
 	__enable_irq();
 }
 
