@@ -108,9 +108,6 @@
 	#endif
 #endif
 
-#ifdef STM32WL5Mxx
-		#include "../boards/STM32WL5MOC_CM0.h"
-#endif
 
 #ifdef STM32G491xx
 	#ifdef STM32G491RE_NUCLEO
@@ -123,6 +120,14 @@
 		#include "../boards/MEMBRANE_2412171_00.h"
 	#endif
 #endif
+
+#ifdef STM32WL55xx
+	#ifdef CORE_CM4
+		#include "../boards/STM32WL55xx_CM4.h"
+	#endif
+#endif
+
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

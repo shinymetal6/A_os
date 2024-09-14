@@ -51,16 +51,22 @@ MEMORY
 /* Sections */
 SECTIONS
 {
+	/* osSysRam is struct + stacks */
+	/* Considering 4k of sys structs + 2k of scheduler stack + 1k of user processes stacks means 10k total , 0x2400 */
 	_osSysRam_start     = LOADADDR(.osSysRamStart);
-	.osSysRamStart 		0x20008000 : {. = ALIGN(4); KEEP(*(.osSysRamStart))}
+	.osSysRamStart 		0x20004000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamStart))}
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
-	.osSysRamEnd 		0x2000C000 : {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	.osSysRamEnd 		0x20008000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 	
-	_mempool_start      = LOADADDR(.osMemPoolStart);
-	.osMemPoolStart		0x2000C000 : {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
-    _mempool_end        = LOADADDR(.osMemPoolEnd);
-	.osMemPoolEnd  		0x20010000 : {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
-
+	_FlashDataRam_start     = LOADADDR(.FlashDataRamStart);
+	.FlashDataRamStart 		0x20008000 (NOLOAD): {. = ALIGN(4); KEEP(*(.FlashDataRamStart))}
+	_FlashDataRam_end       = LOADADDR(.FlashDataRamEnd);
+	.FlashDataRamEnd 		0x20018000 (NOLOAD): {. = ALIGN(4); KEEP(*(.FlashDataRamEnd))}
+	
+	_board_info_start      = LOADADDR(.board_infoStart);
+	.board_infoStart		0x800FC00 : {. = ALIGN(4); KEEP(*(.board_infoStart))}
+    _board_info_end        = LOADADDR(.board_infoEnd);
+	.board_infoEnd  		0x800FF00 : {. = ALIGN(4); KEEP(*(.board_infoEnd))}
 	
 	_fdata_start = LOADADDR(.isr_vector);
 	
@@ -71,7 +77,6 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
-
   .aos_nver :
   {
     . = ALIGN(4);
@@ -104,13 +109,15 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab   : {
+  .ARM.extab (READONLY) : /* The "READONLY" keyword is only supported in GCC11 and later, remove it if using GCC10 or earlier. */
+  {
     . = ALIGN(4);
     *(.ARM.extab* .gnu.linkonce.armextab.*)
     . = ALIGN(4);
   } >FLASH
 
-  .ARM : {
+  .ARM (READONLY) : /* The "READONLY" keyword is only supported in GCC11 and later, remove it if using GCC10 or earlier. */
+  {
     . = ALIGN(4);
     __exidx_start = .;
     *(.ARM.exidx*)
@@ -118,7 +125,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .preinit_array     :
+  .preinit_array (READONLY) : /* The "READONLY" keyword is only supported in GCC11 and later, remove it if using GCC10 or earlier. */
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__preinit_array_start = .);
@@ -127,7 +134,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .init_array :
+  .init_array (READONLY) : /* The "READONLY" keyword is only supported in GCC11 and later, remove it if using GCC10 or earlier. */
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__init_array_start = .);
@@ -137,7 +144,7 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .fini_array :
+  .fini_array (READONLY) : /* The "READONLY" keyword is only supported in GCC11 and later, remove it if using GCC10 or earlier. */
   {
     . = ALIGN(4);
     PROVIDE_HIDDEN (__fini_array_start = .);
@@ -146,7 +153,7 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
     . = ALIGN(4);
   } >FLASH
-
+  
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
@@ -191,6 +198,14 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+
+  .aos_flash_end :
+  {
+    . = ALIGN(4);
+    KEEP(*(.aos_flash_end)) /* aos name and version */
+    . = ALIGN(4);
+  } >FLASH
+
 
   /* Remove information from the compiler libraries */
   /DISCARD/ :
