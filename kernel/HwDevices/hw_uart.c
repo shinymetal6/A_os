@@ -213,6 +213,17 @@ uint32_t	i;
 	__enable_irq();
 }
 
+uint8_t uart_err = 0;
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+uint32_t	i;
+	for(i=HW_UART1;i<HW_UART1+A_MAX_UART;i++)
+	{
+		if (HW_Uart[i-HW_UART1].hwuart_handle == huart)
+			HW_Uart[i-HW_UART1].rx_err_cntr++;
+	}
+}
+
 void HAL_UART_RxTimeoutCheckCallback(void)
 {
 uint32_t	i;

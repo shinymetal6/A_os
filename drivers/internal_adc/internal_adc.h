@@ -41,7 +41,9 @@ typedef struct _ControlAdcDef
 #define HW_ADC_ERROR_HW_NOT_OWNED	1
 
 #ifdef ADC_SINGLE_CHANNEL
-extern	uint8_t IntAdc_Init(uint8_t hw_adc_index);
+//extern	uint8_t IntAdc_Init(uint8_t hw_adc_index);
+extern	uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len);
+
 extern	uint8_t IntAdc_Start(void);
 extern	uint8_t IntAdc_Stop(void);
 

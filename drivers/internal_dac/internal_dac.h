@@ -29,18 +29,28 @@
 
 typedef struct _ControlDacDef
 {
-	uint8_t 	dac_out_cntr;
-	uint8_t 	dac_level0;
-	uint8_t 	dac_level1;
-	uint8_t 	dac_level_done;
-	uint16_t	dac_measure_value;
+	uint32_t 	dac_out_cntr;
+	uint32_t 	cycle_count_table;
+	uint32_t 	cycle_count_value;
+	uint32_t 	output_value;
 	uint8_t 	dac_flag;
 	uint16_t 	*user_table;
+	__attribute__ ((aligned (32))) int16_t dac_table[DAC_WAVETABLE_SIZE];
 }ControlDacDef;
+/* dac_flag */
+
+#define	DAC_TABLE1_OUT		0x01
+#define	DAC_TABLE2_OUT		0x02
+#define	DAC_3ST_AT_END		0x10
+#define	DAC_WAKEUP_AT_CYCLE	0x20
+#define	DAC_LOCKED			0x40
+#define	DAC_TWO_SEQUENCE	0x80
 
 extern	uint8_t IntDac_Init(uint16_t *user_table);
-extern	uint8_t IntDac_Start(uint8_t dac_level0,uint8_t dac_level1 , uint8_t dac_level_done, uint16_t dac_measure_value);
+extern	uint8_t IntDac_Start(uint32_t wakeup_at_cycle_end);
+extern	uint8_t IntDac_2sequence_Start(uint32_t cycle_count_table,uint32_t cycle_count_value , uint32_t output_value, uint32_t three_state_at_end);
 extern	uint8_t IntDac_Stop(void);
 extern	uint16_t *IntDac_Get_SineTab(void);
+extern	uint16_t *IntDac_Current_Tab(void);
 
 #endif /* DRIVERS_INTERNAL_DAC_INTERNAL_DAC_H_ */

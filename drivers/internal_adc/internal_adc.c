@@ -36,14 +36,15 @@ ControlAdcDef		ControlAdc;
 
 #ifdef ADC_SINGLE_CHANNEL
 
-uint8_t IntAdc_Init(uint8_t hw_adc_index)
+uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 {
 #ifdef ADC_HAS_OPAMP
 	HAL_OPAMP_Start(&OPAMP_HANDLE);
 #endif
 	if ( HWMngr[hw_adc_index].process != Asys.current_process )
 		return HW_ADC_ERROR_HW_NOT_OWNED;
-	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],2) )
+//	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],2) )
+	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,analog_buffer,len) )
 		return 1;
 	ControlAdc.hw_adc_index = hw_adc_index;
 	return HW_ADC_ERROR_NONE;

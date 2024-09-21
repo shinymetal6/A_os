@@ -45,7 +45,6 @@ VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
 
 AOS_FLASH_END	uint8_t	aos_end[32]	 			= "A_os End Code";
 
-
 #ifdef A_HAS_UARTS
 SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
 #endif
@@ -151,6 +150,7 @@ void A_init_mem(void)
 	Asys.osSysRam_start = (uint32_t *)&_osSysRam_start;
 	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
 	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
+
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);
 #endif

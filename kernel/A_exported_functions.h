@@ -42,6 +42,7 @@ extern	uint8_t *mem_get(uint32_t size );
 extern	uint32_t mem_release(uint8_t *data_ptr);
 
 /* timer */
+extern	void DWT_Delay_us(uint32_t au32_microseconds);
 extern	void task_delay(uint32_t tick_count);
 extern	uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags);
 extern	uint32_t start_timer(uint8_t timer_id);

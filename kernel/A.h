@@ -131,6 +131,7 @@ typedef struct _HW_Uart_t
 	uint16_t			timeout;
 	uint16_t			timeout_reload_value;
 	uint8_t				rx_char;
+	uint32_t			rx_err_cntr;
 }HW_Uart_t;
 
 #define	A_MAX_UART		8
