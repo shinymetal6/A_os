@@ -33,19 +33,7 @@ extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 uint16_t	dac_value=0;
 ControlDacDef	ControlDac;
 
-#ifdef STEADY_DAC_VALUE
-void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
-{
-	dac_value+=10;
-	dac_value &=0xfff;
-	HAL_DAC_SetValue(&DAC_HANDLE, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);
-}
-uint8_t IntDac_Start(void)
-{
-	return HAL_DAC_SetValue(&DAC_HANDLE, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);
-}
-#else
-
+#ifdef PROVIDE_SAMPLE_DAC_SINE
 __attribute__ ((aligned (32))) const uint16_t dac_sine_tab[DAC_WAVETABLE_SIZE] =
 {
 		0x800, 0x832, 0x864, 0x896, 0x8c8, 0x8fa, 0x92c, 0x95e,
@@ -81,59 +69,44 @@ __attribute__ ((aligned (32))) const uint16_t dac_sine_tab[DAC_WAVETABLE_SIZE] =
 		0x4f0, 0x51f, 0x54e, 0x57d, 0x5ad, 0x5dd, 0x60e, 0x63f,
 		0x670, 0x6a1, 0x6d3, 0x705, 0x737, 0x769, 0x79b, 0x7cd,
 };
+#endif // #ifdef PROVIDE_SAMPLE_DAC_SINE
 
-uint8_t IntDac_Init(uint16_t *user_table)
+uint8_t IntDac_Init(uint16_t *user_table,uint16_t dac_user_table_size)
 {
 uint32_t	i;
 
 	if ( HWMngr[HW_DAC].process != Asys.current_process )
 		return HW_DAC_ERROR_HW_NOT_OWNED;
 
-	if (user_table != NULL )
-	{
-		ControlDac.user_table = user_table;
-		for(i=0;i<DAC_WAVETABLE_SIZE;i++)
-			ControlDac.dac_table[i] = ControlDac.user_table[i];
-	}
-	else
-	{
-		ControlDac.user_table = NULL;
-		for(i=0;i<DAC_WAVETABLE_SIZE;i++)
-			ControlDac.dac_table[i] = dac_sine_tab[i];
-	}
-	if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)ControlDac.dac_table, DAC_WAVETABLE_SIZE,DAC_ALIGN_12B_R) == 0 )
+	if ((user_table == NULL ) || ( dac_user_table_size == 0) || (dac_user_table_size >= 1024 ))
+		return HW_DAC_ERROR_INIT;
+
+	ControlDac.dac_user_table_size = dac_user_table_size;
+	for(i=0;i<dac_user_table_size;i++)
+		ControlDac.dac_table[i] = user_table[i];
+
+	if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)ControlDac.dac_table, ControlDac.dac_user_table_size,DAC_ALIGN_12B_R) == 0 )
 		return HW_DAC_ERROR_NONE;
 	return HW_DAC_ERROR_INIT;
 }
 
 
-uint8_t IntDac_Start(uint32_t wakeup_at_cycle_end)
+uint8_t IntDac_Start(uint32_t wakeup_cycle_count,uint8_t dac_flags)
 {
 	if ( HWMngr[HW_DAC].process != Asys.current_process )
 		return HW_DAC_ERROR_HW_NOT_OWNED;
 	if ((ControlDac.dac_flag & DAC_LOCKED) == DAC_LOCKED)
 		return HW_DAC_ERROR_HW_NOT_OWNED;
 	ControlDac.dac_flag = DAC_LOCKED;
-	if ( wakeup_at_cycle_end )
-		ControlDac.dac_flag |= DAC_WAKEUP_AT_CYCLE;
-	HAL_TIM_Base_Start(&DAC_TIMER);
-	return HW_DAC_ERROR_NONE;
-}
 
-uint8_t IntDac_2sequence_Start(uint32_t cycle_count_table,uint32_t cycle_count_value , uint32_t output_value, uint32_t three_state_at_end)
-{
-	if ( HWMngr[HW_DAC].process != Asys.current_process )
-		return HW_DAC_ERROR_HW_NOT_OWNED;
-	if ((ControlDac.dac_flag & DAC_LOCKED) == DAC_LOCKED)
-		return HW_DAC_ERROR_HW_NOT_OWNED;
+	ControlDac.dac_flag &= ~dac_flags;
+	ControlDac.dac_flag |= dac_flags;
+	ControlDac.wakeup_cycle_count = ControlDac.wakeup_cycle_count_counter = wakeup_cycle_count;
+	ControlDac.dac_flag |= DAC_RUNNING;
+	//	Set PA4 to DAC mode:
+	GPIOA->PUPDR |= (DAC_NO_PULL << (4 * 2));
+	GPIOA->MODER |= (DAC_IS_RUNNING << (4 * 2));
 
-	ControlDac.cycle_count_table = cycle_count_table;
-	ControlDac.cycle_count_value = cycle_count_value;
-	ControlDac.output_value = output_value;
-	ControlDac.dac_out_cntr = 0;
-	ControlDac.dac_flag = DAC_TWO_SEQUENCE | DAC_LOCKED | DAC_TABLE1_OUT;
-	if ( three_state_at_end )
-		ControlDac.dac_flag |= DAC_3ST_AT_END;
 	HAL_TIM_Base_Start(&DAC_TIMER);
 	return HW_DAC_ERROR_NONE;
 }
@@ -142,62 +115,67 @@ uint8_t IntDac_Stop(void)
 {
 	if ( HWMngr[HW_DAC].process != Asys.current_process )
 		return HW_DAC_ERROR_HW_NOT_OWNED;
+
+	if ( ControlDac.dac_flag & DAC_PU_AT_END)
+		GPIOA->PUPDR |= (DAC_PULLED_UP << (DAC_PORT_PIN * 2));
+	if ( ControlDac.dac_flag & DAC_PD_AT_END)
+		GPIOA->PUPDR |= (DAC_PULLED_DOWN << (DAC_PORT_PIN * 2));
+	if ( ControlDac.dac_flag & DAC_3ST_AT_END)		//	Set PA4 to analog mode:
+		GPIOA->MODER |= (DAC_IS_3ST      << (DAC_PORT_PIN * 2));
+
 	HAL_TIM_Base_Stop(&DAC_TIMER);
 	ControlDac.dac_flag = 0;
 	ControlDac.dac_out_cntr = 0;
 	return HW_DAC_ERROR_NONE;
 }
 
+#ifdef PROVIDE_SAMPLE_DAC_SINE
 uint16_t *IntDac_Get_SineTab(void)
 {
 	return (uint16_t *)dac_sine_tab;
 }
+#endif // #ifdef PROVIDE_SAMPLE_DAC_SINE
+
 
 uint16_t *IntDac_Current_Tab(void)
 {
 	return (uint16_t *)ControlDac.dac_table;
 }
 
-void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+uint8_t IntDac_UpdateCurrentTab(uint16_t *user_table,uint16_t dac_user_table_size)
 {
-uint16_t	i;
-	ControlDac.dac_out_cntr++;
-	if ( ControlDac.dac_flag & DAC_TWO_SEQUENCE)
-	{
-		if ( ControlDac.dac_flag & DAC_TABLE1_OUT )
-		{
-			if ( ControlDac.dac_out_cntr >= ControlDac.cycle_count_table)
-			{
-				for(i=0;i<DAC_WAVETABLE_SIZE;i++)
-					ControlDac.dac_table[i] = ControlDac.output_value;
-				activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.cycle_count_table);
-				ControlDac.dac_flag &= ~DAC_TABLE1_OUT;
-				ControlDac.dac_flag |=  DAC_TABLE2_OUT;
-				ControlDac.dac_out_cntr = 0;
-			}
-		}
-		else
-		{
-			if ( ControlDac.dac_out_cntr >= ControlDac.cycle_count_value )
-			{
-				HAL_TIM_Base_Stop(&DAC_TIMER);
-				activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.cycle_count_value);
-				if ( ControlDac.dac_flag & DAC_3ST_AT_END )
-				{
+uint32_t	i;
+	if ((user_table == NULL ) || ( dac_user_table_size != ControlDac.dac_user_table_size))
+		return HW_DAC_ERROR_INIT;
 
-				}
-				ControlDac.dac_flag = 0;
-				ControlDac.dac_out_cntr = 0;
-			}
-		}
-	}
-	else
-	{
-		activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,0xffffffff);
-	}
+	ControlDac.dac_user_table_size = dac_user_table_size;
+	for(i=0;i<dac_user_table_size;i++)
+		ControlDac.dac_table[i] = user_table[i];
+	return HW_DAC_ERROR_NONE;
 }
 
-#endif // #ifdef STEADY_DAC_VALUE
+
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+{
+	if ( ControlDac.wakeup_cycle_count_counter )
+		ControlDac.wakeup_cycle_count_counter--;
+	if ( ControlDac.wakeup_cycle_count_counter == 0 )
+	{
+		if ( ControlDac.dac_flag & DAC_WAKEUP_AT_CYCLE)
+			activate_process(HWMngr[HW_DAC].process,EVENT_DAC_IRQ,ControlDac.wakeup_cycle_count_counter);
+		if ( ControlDac.dac_flag & DAC_STOP_AT_END)
+		{
+			HAL_TIM_Base_Stop(&DAC_TIMER);
+			ControlDac.dac_flag &= ~( DAC_LOCKED | DAC_RUNNING);
+			if ( ControlDac.dac_flag & DAC_PU_AT_END)
+				GPIOA->PUPDR |= (DAC_PULLED_UP << (DAC_PORT_PIN * 2));
+			if ( ControlDac.dac_flag & DAC_PD_AT_END)
+				GPIOA->PUPDR |= (DAC_PULLED_DOWN << (DAC_PORT_PIN * 2));
+			if ( ControlDac.dac_flag & DAC_3ST_AT_END)		//	Set PA4 to analog mode:
+				GPIOA->MODER |= (DAC_IS_3ST      << (DAC_PORT_PIN * 2));
+		}
+	}
+}
 
 #endif // #ifdef DAC_ENABLED
 

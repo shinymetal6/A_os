@@ -32,9 +32,6 @@
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
-ControlAdcDef		ControlAdc;
-
-#ifdef ADC_SINGLE_CHANNEL
 
 uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 {
@@ -43,63 +40,44 @@ uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 #endif
 	if ( HWMngr[hw_adc_index].process != Asys.current_process )
 		return HW_ADC_ERROR_HW_NOT_OWNED;
-//	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,(uint32_t *)&ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER],2) )
-	if ( HAL_ADC_Start_DMA(&ADC_HANDLE,analog_buffer,len) )
-		return 1;
-	ControlAdc.hw_adc_index = hw_adc_index;
-	return HW_ADC_ERROR_NONE;
-}
-
-uint8_t IntAdc_Start(void)
-{
-	return HAL_TIM_Base_Start(&ADC_TIMER);
-}
-
-uint8_t IntAdc_Stop(void)
-{
-	return HAL_TIM_Base_Stop(&ADC_TIMER);
-}
-
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-	if ( hadc == &ADC_HANDLE)
+	if ( hw_adc_index == HW_ADC1)
 	{
-		if ( ControlAdc.hw_adc_index == HW_ADC1)
-		{
-			ControlAdc.adc_flag |= INT_ADC_ANALOG_IN1_DONE;
-			activate_process(HWMngr[HW_ADC1].process,EVENT_ADC1_IRQ,ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER]);
-		}
-		if ( ControlAdc.hw_adc_index == HW_ADC2)
-		{
-			ControlAdc.adc_flag |= INT_ADC_ANALOG_IN2_DONE;
-			activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,ControlAdc.analog_in[ADC_SINGLE_CHANNEL_NUMBER]);
-		}
+		if ( HAL_ADC_Start_DMA(&ADC_HANDLE1,analog_buffer,len) )
+			return 1;
 	}
+	if ( hw_adc_index == HW_ADC2)
+	{
+		if ( HAL_ADC_Start_DMA(&ADC_HANDLE2,analog_buffer,len) )
+			return 1;
+	}
+	return HW_ADC_ERROR_NONE;
 }
 
-#else
+uint8_t IntAdc_Start(uint8_t hw_adc_index)
+{
+	if ( hw_adc_index == HW_ADC1 )
+		return HAL_TIM_Base_Start(&ADC1_TIMER);
+	if ( hw_adc_index == HW_ADC2 )
+		return HAL_TIM_Base_Start(&ADC2_TIMER);
+	return HW_ADC_GENERIC_ERROR;
+}
+
+uint8_t IntAdc_Stop(uint8_t hw_adc_index)
+{
+	if ( hw_adc_index == HW_ADC1 )
+		return HAL_TIM_Base_Stop(&ADC1_TIMER);
+	if ( hw_adc_index == HW_ADC2 )
+		return HAL_TIM_Base_Stop(&ADC2_TIMER);
+	return HW_ADC_GENERIC_ERROR;
+}
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	if ( hadc == &CONTROL_ADC1)
-		ControlAdc.adc_flag |= INT_ADC_POT_DONE;
-	if ( hadc == &ANALOG_IN_ADC2)
-		ControlAdc.adc_flag |= INT_ADC_ANALOG_IN2_DONE;
-
+	if ( hadc == &ADC_HANDLE1)
+		activate_process(HWMngr[HW_ADC1].process,EVENT_ADC1_IRQ,HW_ADC1);
+	if ( hadc == &ADC_HANDLE2)
+		activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,HW_ADC2);
 }
-
-uint8_t IntAdc_Start(void)
-{
-	if ( HWMngr[HW_ADC1].process != Asys.current_process )
-		return HW_ADC_ERROR_HW_NOT_OWNED;
-	if ( HWMngr[HW_ADC2].process != Asys.current_process )
-		return HW_ADC_ERROR_HW_NOT_OWNED;
-	HAL_ADC_Start_DMA(&CONTROL_ADC1,   (uint32_t *)&ControlAdc.pot[0], 6);
-	HAL_ADC_Start_DMA(&ANALOG_IN_ADC2, (uint32_t *)&ControlAdc.analog_in[0], 4);
-	HAL_TIM_Base_Start_IT(&CONTROL_TIMER);
-	return HW_ADC_ERROR_NONE;
-}
-#endif
 
 #endif	//#ifdef ADC_DAC_ENABLED
 

@@ -65,21 +65,31 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define MQTT_ENABLE				1
 #define INTERNAL_ADC_ENABLED		1
 #define INTERNAL_DAC_ENABLED		1
-//#define ADC_HAS_OPAMP				1
 
 #ifdef INTERNAL_ADC_ENABLED
 	extern	ADC_HandleTypeDef 			hadc1;
-	#define ADC_HANDLE					hadc1
-	extern	TIM_HandleTypeDef htim6;
-	//#define ADC_TIM_FOR_DAC				1
-	#define ADC_TIMER					htim6
+	#define ADC_HANDLE1					hadc1
+	extern	ADC_HandleTypeDef 			hadc2;
+	#define ADC_HANDLE2					hadc2
+	extern	TIM_HandleTypeDef 			htim6;
+	extern	TIM_HandleTypeDef 			htim7;
+	//#define ADC1_TIM_FOR_DAC				1
+	//#define ADC2_TIM_FOR_DAC				1
+	//#define ADC_HAS_OPAMP1				1
+	//#define ADC_HAS_OPAMP2				1
+	#define ADC1_TIMER						htim6
+	#define ADC2_TIMER						htim7
 	#define ADC_SINGLE_CHANNEL			1
 	#ifdef ADC_SINGLE_CHANNEL
 		#define ADC_SINGLE_CHANNEL_NUMBER	0
 	#endif
-	#ifdef ADC_HAS_OPAMP
+	#ifdef ADC_HAS_OPAMP1
 		extern	OPAMP_HandleTypeDef 	hopamp1;
 		#define OPAMP_HANDLE			hopamp1
+	#endif
+	#ifdef ADC_HAS_OPAMP2
+		extern	OPAMP_HandleTypeDef 	hopamp2;
+		#define OPAMP_HANDLE			hopamp2
 	#endif
 #endif
 
@@ -91,12 +101,14 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#ifdef DAC_USER_WAVETABLE
 		#define DAC_WAVETABLE_SIZE				256
 	#endif
-	#ifndef STEADY_DAC_VALUE
-		#ifdef ADC_TIM_FOR_DAC
-			#define DAC_TIMER				ADC_TIMER
+	#ifdef ADC1_TIM_FOR_DAC
+		#define DAC_TIMER				ADC1_TIMER
+	#else
+		#ifdef ADC2_TIM_FOR_DAC
+			#define DAC_TIMER				ADC2_TIMER
 		#else
-			extern	TIM_HandleTypeDef 		htim7;
-			#define DAC_TIMER				htim7
+			extern	TIM_HandleTypeDef 		htim15;
+			#define DAC_TIMER				htim15
 		#endif
 	#endif
 #endif

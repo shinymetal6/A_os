@@ -25,33 +25,14 @@
 
 #ifdef INTERNAL_ADC_ENABLED
 
-typedef struct _ControlAdcDef
-{
-	uint8_t 	hw_adc_index;
-	uint16_t 	pot[6];
-	uint16_t 	analog_in[4];
-	uint8_t 	adc_flag;
-}ControlAdcDef;
-
-#define	INT_ADC_POT_DONE		0x80
-#define	INT_ADC_ANALOG_IN1_DONE	0x40
-#define	INT_ADC_ANALOG_IN2_DONE	0x20
-
 #define HW_ADC_ERROR_NONE			0
 #define HW_ADC_ERROR_HW_NOT_OWNED	1
+#define HW_ADC_GENERIC_ERROR		2
 
-#ifdef ADC_SINGLE_CHANNEL
-//extern	uint8_t IntAdc_Init(uint8_t hw_adc_index);
 extern	uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len);
 
-extern	uint8_t IntAdc_Start(void);
-extern	uint8_t IntAdc_Stop(void);
-
-#else
-extern	uint8_t IntAdc_Start(void);
-
-#endif  // #ifdef ADC_SINGLE_CHANNEL
-
+extern	uint8_t IntAdc_Start(uint8_t hw_adc_index);
+extern	uint8_t IntAdc_Stop(uint8_t hw_adc_index);
 
 #endif // #ifdef INTERNAL_ADC_ENABLED
 
