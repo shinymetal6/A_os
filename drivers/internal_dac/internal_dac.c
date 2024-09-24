@@ -30,8 +30,7 @@
 #include "internal_dac.h"
 
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
-uint16_t	dac_value=0;
-ControlDacDef	ControlDac;
+ControlDacDef		ControlDac;
 
 #ifdef PROVIDE_SAMPLE_DAC_SINE
 __attribute__ ((aligned (32))) const uint16_t dac_sine_tab[DAC_WAVETABLE_SIZE] =
@@ -104,8 +103,8 @@ uint8_t IntDac_Start(uint32_t wakeup_cycle_count,uint8_t dac_flags)
 	ControlDac.wakeup_cycle_count = ControlDac.wakeup_cycle_count_counter = wakeup_cycle_count;
 	ControlDac.dac_flag |= DAC_RUNNING;
 	//	Set PA4 to DAC mode:
-	GPIOA->PUPDR |= (DAC_NO_PULL << (4 * 2));
-	GPIOA->MODER |= (DAC_IS_RUNNING << (4 * 2));
+	GPIOA->PUPDR |= (DAC_NO_PULL    << (DAC_PORT_PIN * 2));
+	GPIOA->MODER |= (DAC_IS_RUNNING << (DAC_PORT_PIN * 2));
 
 	HAL_TIM_Base_Start(&DAC_TIMER);
 	return HW_DAC_ERROR_NONE;
@@ -117,7 +116,7 @@ uint8_t IntDac_Stop(void)
 		return HW_DAC_ERROR_HW_NOT_OWNED;
 
 	if ( ControlDac.dac_flag & DAC_PU_AT_END)
-		GPIOA->PUPDR |= (DAC_PULLED_UP << (DAC_PORT_PIN * 2));
+		GPIOA->PUPDR |= (DAC_PULLED_UP   << (DAC_PORT_PIN * 2));
 	if ( ControlDac.dac_flag & DAC_PD_AT_END)
 		GPIOA->PUPDR |= (DAC_PULLED_DOWN << (DAC_PORT_PIN * 2));
 	if ( ControlDac.dac_flag & DAC_3ST_AT_END)		//	Set PA4 to analog mode:
@@ -168,7 +167,7 @@ void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 			HAL_TIM_Base_Stop(&DAC_TIMER);
 			ControlDac.dac_flag &= ~( DAC_LOCKED | DAC_RUNNING);
 			if ( ControlDac.dac_flag & DAC_PU_AT_END)
-				GPIOA->PUPDR |= (DAC_PULLED_UP << (DAC_PORT_PIN * 2));
+				GPIOA->PUPDR |= (DAC_PULLED_UP   << (DAC_PORT_PIN * 2));
 			if ( ControlDac.dac_flag & DAC_PD_AT_END)
 				GPIOA->PUPDR |= (DAC_PULLED_DOWN << (DAC_PORT_PIN * 2));
 			if ( ControlDac.dac_flag & DAC_3ST_AT_END)		//	Set PA4 to analog mode:

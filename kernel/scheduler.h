@@ -34,6 +34,7 @@ typedef struct
 	uint8_t		*mbx[MAILBOX_NUM];
 	uint32_t	mbx_size[MAILBOX_NUM];
 	uint8_t		mbx_number;
+	uint8_t		mbx_bits;
 	uint32_t	wakeup_rsn;
 	uint32_t	wakeup_flags;
 	uint8_t		semaphore_flags;

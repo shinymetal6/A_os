@@ -42,13 +42,17 @@ uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 		return HW_ADC_ERROR_HW_NOT_OWNED;
 	if ( hw_adc_index == HW_ADC1)
 	{
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE1, ADC_SINGLE_ENDED) )
+			return HW_ADC_GENERIC_ERROR;
 		if ( HAL_ADC_Start_DMA(&ADC_HANDLE1,analog_buffer,len) )
-			return 1;
+			return HW_ADC_GENERIC_ERROR;
 	}
 	if ( hw_adc_index == HW_ADC2)
 	{
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE2, ADC_SINGLE_ENDED) )
+			return HW_ADC_GENERIC_ERROR;
 		if ( HAL_ADC_Start_DMA(&ADC_HANDLE2,analog_buffer,len) )
-			return 1;
+			return HW_ADC_GENERIC_ERROR;
 	}
 	return HW_ADC_ERROR_NONE;
 }
