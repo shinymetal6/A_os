@@ -35,8 +35,13 @@ extern	Asys_t		Asys;
 
 uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 {
-#ifdef ADC_HAS_OPAMP
-	HAL_OPAMP_Start(&OPAMP_HANDLE);
+#ifdef ADC_HAS_OPAMP1
+	HAL_OPAMP_SelfCalibrate(&OPAMP1_HANDLE);
+	HAL_OPAMP_Start(&OPAMP1_HANDLE);
+#endif
+#ifdef ADC_HAS_OPAMP2
+	HAL_OPAMP_SelfCalibrate(&OPAMP2_HANDLE);
+	HAL_OPAMP_Start(&OPAMP2_HANDLE);
 #endif
 	if ( HWMngr[hw_adc_index].process != Asys.current_process )
 		return HW_ADC_ERROR_HW_NOT_OWNED;
@@ -55,6 +60,28 @@ uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 			return HW_ADC_GENERIC_ERROR;
 	}
 	return HW_ADC_ERROR_NONE;
+}
+
+uint8_t IntAdc_OpAmpGain(uint8_t gain)
+{
+#ifdef ADC_HAS_OPAMP1
+	if ( gain < 63 )
+	{
+		OPAMP1_HANDLE.Instance->CSR &= ~OPAMP_CSR_PGGAIN_Msk;
+		OPAMP1_HANDLE.Instance->CSR |= (gain << OPAMP_CSR_PGGAIN_Pos);
+		return 0;
+	}
+#endif
+#ifdef ADC_HAS_OPAMP2
+	if ( gain < 63 )
+	{
+		OPAMP2_HANDLE.Instance->CSR &= ~OPAMP_CSR_PGGAIN_Msk;
+		OPAMP2_HANDLE.Instance->CSR |= (gain << OPAMP_CSR_PGGAIN_Pos);
+		return 0;
+	}
+#endif
+
+	return 1;
 }
 
 uint8_t IntAdc_Start(uint8_t hw_adc_index)

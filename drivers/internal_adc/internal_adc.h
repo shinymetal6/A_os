@@ -33,6 +33,8 @@ extern	uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t
 
 extern	uint8_t IntAdc_Start(uint8_t hw_adc_index);
 extern	uint8_t IntAdc_Stop(uint8_t hw_adc_index);
+extern	uint8_t IntAdc_OpAmpGain(uint8_t gain);
+
 
 #endif // #ifdef INTERNAL_ADC_ENABLED
 

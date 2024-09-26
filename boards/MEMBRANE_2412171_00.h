@@ -75,22 +75,23 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	extern	TIM_HandleTypeDef 			htim7;
 	//#define ADC1_TIM_FOR_DAC				1
 	//#define ADC2_TIM_FOR_DAC				1
-	//#define ADC_HAS_OPAMP1				1
+	#define ADC_HAS_OPAMP1				1
+	#ifdef ADC_HAS_OPAMP1
+		extern	OPAMP_HandleTypeDef 	hopamp1;
+		#define OPAMP1_HANDLE			hopamp1
+	#endif
 	//#define ADC_HAS_OPAMP2				1
+#ifdef ADC_HAS_OPAMP2
+	extern	OPAMP_HandleTypeDef 	hopamp2;
+	#define OPAMP_HANDLE			hopamp2
+#endif
 	#define ADC1_TIMER						htim6
 	#define ADC2_TIMER						htim7
 	#define ADC_SINGLE_CHANNEL			1
 	#ifdef ADC_SINGLE_CHANNEL
 		#define ADC_SINGLE_CHANNEL_NUMBER	0
 	#endif
-	#ifdef ADC_HAS_OPAMP1
-		extern	OPAMP_HandleTypeDef 	hopamp1;
-		#define OPAMP_HANDLE			hopamp1
-	#endif
-	#ifdef ADC_HAS_OPAMP2
-		extern	OPAMP_HandleTypeDef 	hopamp2;
-		#define OPAMP_HANDLE			hopamp2
-	#endif
+
 #endif
 
 #ifdef INTERNAL_DAC_ENABLED
