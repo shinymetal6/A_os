@@ -116,8 +116,11 @@
 	#ifdef NEVOL_2416176_00
 		#include "../boards/AX_P2416176_00_NEVOL.h"
 	#endif
-	#ifdef MEMBRANE_2412171_00
-		#include "../boards/MEMBRANE_2412171_00.h"
+	#ifdef MEMBRANE_WS_2412171_00
+		#include "../boards/MEMBRANE_WS_2412171_00.h"
+	#endif
+	#ifdef MEMBRANE_TEMP_2412171_00
+		#include "../boards/MEMBRANE_TEMP_2412171_00.h"
 	#endif
 #endif
 

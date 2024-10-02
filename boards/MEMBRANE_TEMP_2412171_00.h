@@ -250,4 +250,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	MACHINE_NAME		"Membrane"
 #define	MACHINE_VERSION		"A"
 
+#define	MEMBRANE_COMMON		1
+
 #endif /* BOARDS_MEMBRANE_2412171_00_H_ */
