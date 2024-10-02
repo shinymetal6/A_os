@@ -23,7 +23,7 @@
 #ifndef KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_
 #define KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_
 
-extern	void flash_update(uint8_t *data,uint32_t size);
+extern	void flash_update(uint32_t flash_address_offset,uint8_t *data,uint32_t size);
 
 
 #endif /* KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_ */

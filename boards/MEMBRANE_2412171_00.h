@@ -177,8 +177,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	*/
 #define	ITCM_AREA_CODE		//__attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	//__attribute__ ((aligned (32)))
-#define FLASHDATARAM_AREA	__attribute__((section(".FlashDataRamStart")))   __attribute__ ((aligned (32)))
-#define BOARDINFO_DATA_AREA	__attribute__((section(".board_infoStart")))   	 __attribute__ ((aligned (32)))
+#define FLASHDATARAM_AREA		__attribute__((section(".FlashDataRamStart")))   	__attribute__ ((aligned (32)))
+#define BOARDINFO_DATA_AREA		__attribute__((section(".board_infoStart")))   	 	__attribute__ ((aligned (32)))
+#define BOARDPARAMETERS_AREA	__attribute__((section(".board_paramStart")))		__attribute__ ((aligned (32)))
 
 #define	A_HAS_UART1				1
 //#define	A_HAS_UART2			1

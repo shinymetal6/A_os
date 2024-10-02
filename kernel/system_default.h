@@ -147,6 +147,6 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"v2024.09.00-rc4"
+#define	A_OS_VERSION			"v2024.10.00-rc0"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

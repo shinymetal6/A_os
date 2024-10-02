@@ -111,9 +111,10 @@ G491_RAMFUNC void G491_DWT_Delay_us(uint32_t au32_microseconds)
 }
 
 
-G491_RAMFUNC void flash_update(uint8_t *flash_data,uint32_t size)
+G491_RAMFUNC void flash_update(uint32_t flash_address_offset,uint8_t *flash_data,uint32_t size)
 {
-uint32_t PagesToErase = size / FLASH_PAGE_SIZE;
+uint32_t 	FirstPage    = flash_address_offset / FLASH_PAGE_SIZE;
+uint32_t 	PagesToErase = size / FLASH_PAGE_SIZE;
 uint32_t	i;
 	/* stops A_os schedule activities */
 	__disable_irq();
@@ -124,7 +125,7 @@ uint32_t	i;
 		HAL_NVIC_DisableIRQ(i);
 	__enable_irq();
 	/* go to low clock after a bit of delay */
-	HAL_Delay(10);
+    G491_DWT_Delay_us(100000);
 	HAL_RCC_DeInit();
 
 	__disable_irq();
@@ -134,8 +135,8 @@ uint32_t	i;
 	__HAL_FLASH_INSTRUCTION_CACHE_RESET();
 
 	G491_flash_unlock();
-	G491_flash_erase(0,PagesToErase);
-	G491_flash_write(flash_data,(uint8_t *)FLASH_BASE,size);
+	G491_flash_erase(FirstPage,PagesToErase);
+	G491_flash_write(flash_data,(uint8_t *)(FLASH_BASE+flash_address_offset),size);
     G491_flash_Lock();
     // All done, restart
     G491_DWT_Delay_us(100000);
@@ -143,6 +144,7 @@ uint32_t	i;
 	__DSB();
 
 	NVIC_SystemReset();
+	while(1);
 }
 
 #endif // #ifdef STM32G491xx
