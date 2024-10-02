@@ -34,12 +34,27 @@ extern	UART_HandleTypeDef huart3;
 extern	void DWT_Delay_us(uint32_t au32_microseconds);
 
 dmx_t	dmx;
-#define set_pc10_gpio() GPIOC->MODER = 1 << 20
-#define set_pc10_uart() GPIOC->MODER = 1 << 21
+/*
+ * moder :
+ * 	00 = input
+ * 	01 : output
+ * 	10 : alternate
+ * 	11 : analog
+ */
+#define set_pc10_gpio() \
+	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
+	GPIOC->MODER = 1 << 20;\
+	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
+	GPIOA->MODER = 1 << 30;
+
+#define set_pc10_uart() \
+	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
+	GPIOC->MODER = 1 << 21;\
+	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
+	GPIOA->MODER = 1 << 31;
 
 void dmx512_start(void)
 {
-
 	set_pc10_gpio();
 	DWT_Delay_us(120);
 	set_pc10_uart();
