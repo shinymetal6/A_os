@@ -30,8 +30,10 @@
 extern	void wait_event(uint32_t events);
 
 extern	uint8_t get_current_process(void);
+/*
 extern	uint32_t get_activation_flags(void);
 extern	uint32_t get_wakeup_rsn(void);
+*/
 extern	uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags );
 
 extern	void A_TimeDebug_High(void);
