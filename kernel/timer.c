@@ -75,7 +75,6 @@ uint32_t	ret_val;
 	return ret_val;
 }
 
-#define	NEW_TASK_DELAY	1
 ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 {
 	__disable_irq();
@@ -83,17 +82,12 @@ ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 	{
 		process[Asys.current_process].delay_value = Asys.g_tick_count + tick_count;
 		process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
-#ifdef NEW_TASK_DELAY
 		process[Asys.current_process].wait_event |= SUSPEND_ON_DELAY;
 		process[Asys.current_process].wakeup_rsn &= ~SUSPEND_ON_DELAY;
 		while((process[Asys.current_process].wakeup_rsn & WAKEUP_FROM_DELAY) != WAKEUP_FROM_DELAY )
 			schedule();
 		process[Asys.current_process].wakeup_rsn &= ~SUSPEND_ON_DELAY;
 		process[Asys.current_process].wakeup_flags &= ~SUSPEND_ON_DELAY;
-#else
-		process[Asys.current_process].wait_event = SUSPEND_ON_DELAY;
-		schedule();
-#endif
 	}
 	__enable_irq();
 }
@@ -108,11 +102,7 @@ register uint8_t	i,j;
 		{
 			if(Asys.g_tick_count >= process[i].delay_value)
 			{
-#ifdef NEW_TASK_DELAY
 				activate_process(i,WAKEUP_FROM_DELAY,WAKEUP_FROM_DELAY);
-#else
-				process[i].current_state |= PROCESS_READY_STATE;
-#endif
 			}
 		}
 
