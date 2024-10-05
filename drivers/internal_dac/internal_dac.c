@@ -107,6 +107,7 @@ uint8_t IntDac_Start(uint32_t wakeup_cycle_count,uint8_t dac_flags)
 	GPIOA->MODER |= (DAC_IS_RUNNING << (DAC_PORT_PIN * 2));
 
 	HAL_TIM_Base_Start(&DAC_TIMER);
+
 	return HW_DAC_ERROR_NONE;
 }
 
@@ -123,6 +124,7 @@ uint8_t IntDac_Stop(void)
 		GPIOA->MODER |= (DAC_IS_3ST      << (DAC_PORT_PIN * 2));
 
 	HAL_TIM_Base_Stop(&DAC_TIMER);
+
 	ControlDac.dac_flag = 0;
 	ControlDac.dac_out_cntr = 0;
 	return HW_DAC_ERROR_NONE;

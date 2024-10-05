@@ -97,7 +97,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #ifdef INTERNAL_DAC_ENABLED
 	extern	DAC_HandleTypeDef 			hdac1;
 	#define DAC_HANDLE					hdac1
-	//#define STEADY_DAC_VALUE			1
 	#define DAC_USER_WAVETABLE				1
 	#ifdef DAC_USER_WAVETABLE
 		#define DAC_WAVETABLE_SIZE				256

@@ -53,6 +53,8 @@ dmx_t	dmx;
 	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
 	GPIOA->MODER = 1 << 31;
 
+
+
 void dmx512_start(void)
 {
 	set_pc10_gpio();
