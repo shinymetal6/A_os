@@ -135,6 +135,11 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
 
+#include "../drivers/gpio_utls/gpio.h"
+
+#ifdef DHT11_ENABLE
+#include "../drivers/sensors/dht11/dht11_drv.h"
+#endif
 #ifdef INTERNAL_ADC_ENABLED
 #include "../drivers/internal_adc/internal_adc.h"
 #endif

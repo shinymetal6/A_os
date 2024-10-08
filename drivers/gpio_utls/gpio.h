@@ -1,50 +1,40 @@
 /*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : bb1xx_743_00
+*/
+/*
  * gpio.h
  *
- *  Created on: Apr 12, 2024
- *      Author: Luigi F
+ *  Created on: Jan 3, 2024
+ *      Author: fil
  */
 
 #ifndef DRIVERS_GPIO_UTLS_GPIO_H_
 #define DRIVERS_GPIO_UTLS_GPIO_H_
 
-//Pin Mode enum
-typedef enum
-{
-	ONE_OUTPUT = 0,
-	ONE_INPUT,
-}OnePinMode_Typedef;
+#define	PULL_DOWN		0
+#define	PULL_UP			1
+#define	PULL_NONE		2
 
-typedef enum
-{
-    GPIO_MODER_INPUT     = 0b00,
-    GPIO_MODER_OUTPUT    = 0b01,
-    GPIO_MODER_ALTERNATE = 0b10,
-    GPIO_MODER_ANALOG    = 0b11,
-}GPIO_MODER;
+#define	SPEED_LOW		0
+#define	SPEED_MEDIUM	1
+#define	SPEED_HIGH		2
 
-
-typedef enum
-{
-	GPIO_PUPDR_NPULLUP   = 0b00,       /*!< No Pull-up or Pull-down activation  */
-	GPIO_PUPDR_PULLUP    = 0b01,       /*!< Pull-up activation                  */
-	GPIO_PUPDR_PULLDOWN  = 0b10,       /*!< Pull-down activation                */
-}GPIO_PUPDR;
-
-
-typedef enum
-{
-	GPIO_OSPEEDR_Low_speed        = 0b00,
-	GPIO_OSPEEDR_Medium_speed     = 0b01,
-	GPIO_OSPEEDR_High_speed       = 0b10,
-	GPIO_OSPEEDR_Very_high_speed  = 0b11,
-}GPIO_OSPEEDR;
-
-
-
-void GPIO_SetMODER(GPIO_TypeDef *gpio,  uint16_t DataPin, GPIO_MODER mode);
-void GPIO_SetPUPDR(GPIO_TypeDef *gpio,  uint16_t DataPin, GPIO_PUPDR mode);
-void GPIO_SetOSPEEDR(GPIO_TypeDef *gpio,  uint16_t DataPin, GPIO_OSPEEDR mode);
-
+extern void GPIO_SetGpioOUT(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState);
+extern void GPIO_SetGpioIN(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t pullup);
+extern void GPIO_SetGpioAlternate(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin);
+extern void GPIO_SetPUPDR(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t pullup);
+extern void GPIO_SetOSPEEDR(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, uint16_t speed);
 
 #endif /* DRIVERS_GPIO_UTLS_GPIO_H_ */

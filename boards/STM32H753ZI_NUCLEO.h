@@ -57,11 +57,20 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	BUTTON_GPIOPORT			B1_GPIO_Port
 #define	BUTTON_GPIOBIT			B1_Pin
 
-#define	NETWORKING_ENABLED			1
-#define	USB_DEVICE_ENABLED				1
+#define	NETWORKING_ENABLED		1
+#define	USB_DEVICE_ENABLED		1
 #define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1
+
+#define	DHT11_ENABLE			1
+#ifdef DHT11_ENABLE
+	extern	TIM_HandleTypeDef 			htim2;
+	#define DHT11_TIMER					htim2
+
+	#define	GPIOPORT_DHT11				GPIOA
+	#define	GPIOBIT_DHT11				3
+#endif // #ifdef DHT11_ENABLE
 
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
