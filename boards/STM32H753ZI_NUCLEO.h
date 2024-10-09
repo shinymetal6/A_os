@@ -63,14 +63,14 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1
 
-#define	DHT11_ENABLE			1
-#ifdef DHT11_ENABLE
+#define	DHTXX_AM230X_ENABLE			1
+#ifdef DHTXX_AM230X_ENABLE
 	extern	TIM_HandleTypeDef 			htim2;
-	#define DHT11_TIMER					htim2
+	#define DHTXX_AM230X_TIMER			htim2
 
-	#define	GPIOPORT_DHT11				GPIOA
-	#define	GPIOBIT_DHT11				3
-#endif // #ifdef DHT11_ENABLE
+	#define	GPIOPORT_DHTXX_AM230X		GPIOA
+	#define	GPIOBIT_DHTXX_AM230X		3
+#endif // #ifdef DHTXX_AM230X_ENABLE
 
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
