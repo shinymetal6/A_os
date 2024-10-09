@@ -26,6 +26,14 @@
 
 #define	DHT11_MAX_SAMPLES_LEN		128
 #define	DHT11_MAX_BITBYTES_LEN		80
+#define	DHT11_BYTES_NUM				5
+#define	DHT11_START_MINIMUM			75
+#define	DHT11_START_MAXIMUM			90
+
+#define	DHT11_50uLOW_MIN			40
+#define	DHT11_50uLOW_MAX			70
+#define	DHT11_DECODED_0				30
+#define	DHT11_DECODED_1MIN			50
 
 typedef struct
 {
@@ -35,13 +43,18 @@ typedef struct
 	uint32_t	samples_number;
 	uint32_t	dht11_samples[DHT11_MAX_SAMPLES_LEN];
 	uint32_t	dht11_bitbytes[DHT11_MAX_BITBYTES_LEN];
+	uint32_t	dht11_decoded[DHT11_BYTES_NUM];
+	uint8_t		checksum;
 }Dht11_Drv_TypeDef;
 /* status */
 #define	DHT11_STARTBIT	0x01
 #define	DHT11_ACQRUN	0x02
-#define	DHT11_RUNNING	0x80
+#define	DHT11_VALID		0x08
+#define	DHT11_RUNNING	0x40
+#define	DHT11_ACQDONE	0x80
 
 #define	DHT11_START_TICKS	18
+#define	DHT11_CYCLE_TICKS	6
 
 enum DHT11_STATE_MACHINE {
   DHT11_IDLE,
@@ -55,5 +68,6 @@ extern	void dht11_init(void);
 extern	uint8_t dht11_start(void);
 extern	void dht11_worker(void);
 extern	uint8_t dht11_get_status(void);
+extern	uint8_t dht11_get_values(uint8_t *values);
 
 #endif /* STM32H753_SAMPLES_DHT11_DRV_H_ */
