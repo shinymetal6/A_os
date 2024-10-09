@@ -92,6 +92,7 @@ uint8_t		byte_val,byte_mask;
 						Dhtxx_am230x_Drv.checksum += Dhtxx_am230x_Drv.dhtxx_am230x_decoded[j];
 					if ( Dhtxx_am230x_Drv.checksum == Dhtxx_am230x_Drv.dhtxx_am230x_decoded[DHTXX_AM230X_BYTES_NUM-1])
 						return 0;
+					Dhtxx_am230x_Drv.errors++;
 					return 1;
 				}
 				byte_val = 0;
@@ -99,6 +100,7 @@ uint8_t		byte_val,byte_mask;
 			}
 		}
 	}
+	Dhtxx_am230x_Drv.errors++;
 	return 1;
 }
 
@@ -150,7 +152,7 @@ static void dhtxx_am230x_worker(void)
 void dhtxx_am230x_init(void)
 {
 	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
-	Dhtxx_am230x_Drv.ticks = 0;
+	Dhtxx_am230x_Drv.ticks = Dhtxx_am230x_Drv.errors = 0;
 	set_after_check_timers_callback(dhtxx_am230x_worker);
 }
 

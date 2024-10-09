@@ -45,6 +45,7 @@ typedef struct
 	uint32_t	dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];
 	uint32_t	dhtxx_am230x_decoded[DHTXX_AM230X_BYTES_NUM];
 	uint8_t		checksum;
+	uint32_t	errors;
 }Dhtxx_am230x_Drv_TypeDef;
 /* status */
 #define	DHTXX_AM230X_STARTBIT	0x01
