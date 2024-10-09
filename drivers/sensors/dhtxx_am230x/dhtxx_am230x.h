@@ -66,7 +66,6 @@ enum DHTXX_AM230X_STATE_MACHINE {
 
 extern	void dhtxx_am230x_init(void);
 extern	uint8_t dhtxx_am230x_start(void);
-extern	void dhtxx_am230x_worker(void);
 extern	uint8_t dhtxx_am230x_get_status(void);
 extern	uint8_t dhtxx_am230x_get_values(uint8_t *values);
 

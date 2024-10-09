@@ -31,26 +31,9 @@
 
 Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv;
 
-uint8_t dhtxx_am230x_start(void)
-{
-uint32_t	i;
-	if (( Dhtxx_am230x_Drv.status & DHTXX_AM230X_RUNNING) == DHTXX_AM230X_RUNNING )
-		return 1;
-	for(i=0;i<DHTXX_AM230X_MAX_SAMPLES_LEN  ;i++)
-		Dhtxx_am230x_Drv.dhtxx_am230x_samples[i] = 0;
-	Dhtxx_am230x_Drv.status = DHTXX_AM230X_RUNNING;
-	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
-	return 0;
-}
-
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 	Dhtxx_am230x_Drv.status = DHTXX_AM230X_ACQDONE;
-}
-
-uint8_t dhtxx_am230x_get_status(void)
-{
-	return Dhtxx_am230x_Drv.status;
 }
 
 static void dhtxx_am230x_create_bitbytes(void)
@@ -65,7 +48,7 @@ uint32_t	i,initial,temp;
 	}
 }
 
-uint8_t dhtxx_am230x_decode(void)
+static uint8_t dhtxx_am230x_decode(void)
 {
 uint32_t	i,j,initial,byteindex;
 uint8_t		byte_val,byte_mask;
@@ -119,7 +102,7 @@ uint8_t		byte_val,byte_mask;
 	return 1;
 }
 
-void dhtxx_am230x_worker(void)
+static void dhtxx_am230x_worker(void)
 {
 	if ( Dhtxx_am230x_Drv.ticks )
 		Dhtxx_am230x_Drv.ticks--;
@@ -141,6 +124,7 @@ void dhtxx_am230x_worker(void)
 			Dhtxx_am230x_Drv.status |= DHTXX_AM230X_ACQRUN;
 			GPIO_SetGpioAlternate(GPIOPORT_DHTXX_AM230X,GPIOBIT_DHTXX_AM230X);
 			Dhtxx_am230x_Drv.samples_number = 0;
+			DHTXX_AM230X_TIMER.Instance->CNT = 0;
 			HAL_TIM_IC_Start_DMA(&DHTXX_AM230X_TIMER,TIM_CHANNEL_4, Dhtxx_am230x_Drv.dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
 			Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_WAIT_FOR_TIM_END;
 			Dhtxx_am230x_Drv.ticks = DHTXX_AM230X_CYCLE_TICKS;
@@ -163,6 +147,30 @@ void dhtxx_am230x_worker(void)
 	}
 }
 
+void dhtxx_am230x_init(void)
+{
+	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
+	Dhtxx_am230x_Drv.ticks = 0;
+	set_after_check_timers_callback(dhtxx_am230x_worker);
+}
+
+uint8_t dhtxx_am230x_start(void)
+{
+uint32_t	i;
+	if (( Dhtxx_am230x_Drv.status & DHTXX_AM230X_RUNNING) == DHTXX_AM230X_RUNNING )
+		return 1;
+	for(i=0;i<DHTXX_AM230X_MAX_SAMPLES_LEN  ;i++)
+		Dhtxx_am230x_Drv.dhtxx_am230x_samples[i] = 0;
+	Dhtxx_am230x_Drv.status = DHTXX_AM230X_RUNNING;
+	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
+	return 0;
+}
+
+uint8_t dhtxx_am230x_get_status(void)
+{
+	return Dhtxx_am230x_Drv.status;
+}
+
 uint8_t dhtxx_am230x_get_values(uint8_t *values)
 {
 uint8_t j;
@@ -174,13 +182,6 @@ uint8_t j;
 	else
 		return 1;
 	return 0;
-}
-
-void dhtxx_am230x_init(void)
-{
-	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
-	Dhtxx_am230x_Drv.ticks = 0;
-	set_after_check_timers_callback(dhtxx_am230x_worker);
 }
 
 #endif
