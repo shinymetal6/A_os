@@ -34,6 +34,8 @@
 #define	PERIPHERAL_NUM			32
 #define	HWDEVICES_NUM			32
 #define	MODULES_NUM				32
+#define	TIMER_CALLBACK_ARRAY_SIZE	8
+#define	NUM_MAX_DRIVERS			32
 
 #define DUMMY_XPSR  				0x01000000U
 

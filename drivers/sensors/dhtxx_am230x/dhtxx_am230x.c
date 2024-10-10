@@ -28,8 +28,10 @@
 
 #ifdef DHTXX_AM230X_ENABLE
 #include "dhtxx_am230x.h"
+#include <string.h>
 
 Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv;
+extern	DriversDefs_t		DriversDefs[NUM_MAX_DRIVERS];
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -149,11 +151,27 @@ static void dhtxx_am230x_worker(void)
 	}
 }
 
+DriversDefs_t	this_DriversDefs =
+{
+		.before_check_timers_callback = dhtxx_am230x_worker,
+		.after_check_timers_callback = NULL,
+		.driver_name = "dhtxx_am230x",
+};
+
+extern	uint32_t	driver_register(DriversDefs_t *driver);
+
 void dhtxx_am230x_init(void)
 {
 	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
 	Dhtxx_am230x_Drv.ticks = Dhtxx_am230x_Drv.errors = 0;
-	set_before_check_timers_callback(dhtxx_am230x_worker);
+	this_DriversDefs.process = get_current_process();
+	this_DriversDefs.before_check_timers_callback = dhtxx_am230x_worker;
+	driver_register(&this_DriversDefs);
+}
+
+void dhtxx_am230x_deinit(void)
+{
+	driver_unregister(&this_DriversDefs);
 }
 
 uint8_t dhtxx_am230x_start(void)

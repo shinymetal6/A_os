@@ -137,6 +137,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 
 #include "../drivers/gpio_utls/gpio.h"
+#include "../drivers/drivers_common.h"
 
 #ifdef DHTXX_AM230X_ENABLE
 #include "../drivers/sensors/dhtxx_am230x/dhtxx_am230x.h"

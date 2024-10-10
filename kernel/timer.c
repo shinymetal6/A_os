@@ -32,7 +32,6 @@ extern	Asys_t		Asys;
 
 extern	__IO uint32_t uwTick;
 
-#define	TIMER_CALLBACK_ARRAY_SIZE	8
 
 SYSTEM_RAM	void 		(*before_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
 SYSTEM_RAM	void 		(*after_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
