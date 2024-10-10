@@ -153,7 +153,7 @@ void dhtxx_am230x_init(void)
 {
 	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
 	Dhtxx_am230x_Drv.ticks = Dhtxx_am230x_Drv.errors = 0;
-	set_after_check_timers_callback(dhtxx_am230x_worker);
+	set_before_check_timers_callback(dhtxx_am230x_worker);
 }
 
 uint8_t dhtxx_am230x_start(void)

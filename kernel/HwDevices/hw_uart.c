@@ -296,4 +296,7 @@ void A_hw_uart_init(void)
 	HW_Uart[HW_UART8-HW_UART1].hwuart_handle = &huart8;
 	HW_Uart[HW_UART8-HW_UART1].hwuart_index  = HW_UART8;
 #endif
+#ifdef	A_HAS_UARTS
+	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
+#endif
 }

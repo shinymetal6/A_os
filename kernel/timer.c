@@ -32,6 +32,9 @@ extern	Asys_t		Asys;
 
 extern	__IO uint32_t uwTick;
 
+#define	TIMER_CALLBACK_ARRAY_SIZE	8
+
+#ifdef OLD_CALLBACK
 #ifdef	A_HAS_UARTS
 void 		(*before_check_timers_callback)(void) = HAL_UART_RxTimeoutCheckCallback;
 void 		(*after_check_timers_callback)(void)  = NULL;
@@ -39,15 +42,55 @@ void 		(*after_check_timers_callback)(void)  = NULL;
 void 		(*before_check_timers_callback)(void) = NULL;
 void 		(*after_check_timers_callback)(void)  = NULL;
 #endif
+#else
+SYSTEM_RAM	void 		(*before_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
+SYSTEM_RAM	void 		(*after_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
+#endif
 
-ITCM_AREA_CODE void set_before_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t set_before_check_timers_callback(void (*callback)(void))
 {
-	before_check_timers_callback = callback;
+#ifdef OLD_CALLBACK
+	if ( before_check_timers_callback == NULL )
+	{
+		before_check_timers_callback = callback;
+		return 0;
+	}
+	return 1;
+#else
+uint32_t	i;
+	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
+	{
+		if ( before_check_timers_callback_array[i] == NULL )
+		{
+			before_check_timers_callback_array[i] = callback;
+			return 0;
+		}
+	}
+	return 1;
+#endif
 }
 
-ITCM_AREA_CODE void set_after_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t set_after_check_timers_callback(void (*callback)(void))
 {
-	after_check_timers_callback = callback;
+#ifdef OLD_CALLBACK
+	if ( after_check_timers_callback == NULL )
+	{
+		after_check_timers_callback = callback;
+		return 0;
+	}
+	return 1;
+#else
+uint32_t	i;
+	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
+	{
+		if ( after_check_timers_callback_array[i] == NULL )
+		{
+			after_check_timers_callback_array[i] = callback;
+			return 0;
+		}
+	}
+	return 1;
+#endif
 }
 
 ITCM_AREA_CODE void update_global_tick_count(void)
@@ -56,7 +99,6 @@ ITCM_AREA_CODE void update_global_tick_count(void)
 	Asys.g_tick_count++;
 	// update the HAL timer, if someone need it
 	uwTick++;
-
 	__enable_irq();
 }
 
@@ -133,30 +175,6 @@ register uint8_t	i,j;
 	}
 }
 
-ITCM_AREA_CODE void  SysTick_Handler(void)
-{
-	__disable_irq();
-	if ( Asys.g_os_started )
-	{
-		update_global_tick_count();
-		if ( before_check_timers_callback != NULL)
-			before_check_timers_callback();
-
-		check_timers();
-
-		if ( after_check_timers_callback != NULL)
-			after_check_timers_callback();
-
-		//pend the pendsv exception
-		schedule();
-	}
-	else
-	{
-		HAL_IncTick();
-		HAL_SYSTICK_IRQHandler();
-	}
-	__enable_irq();
-}
 
 ITCM_AREA_CODE uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags)
 {
@@ -233,4 +251,64 @@ uint8_t tim_exp = process[Asys.current_process].timer_expired;
 	process[Asys.current_process].timer_expired &= ~tim_exp;
 	return tim_exp;
 }
+
+#ifdef OLD_CALLBACK
+ITCM_AREA_CODE void  SysTick_Handler(void)
+{
+	__disable_irq();
+	if ( Asys.g_os_started )
+	{
+		update_global_tick_count();
+		if ( before_check_timers_callback != NULL)
+			before_check_timers_callback();
+
+		check_timers();
+
+		if ( after_check_timers_callback != NULL)
+			after_check_timers_callback();
+
+		//pend the pendsv exception
+		schedule();
+	}
+	else
+	{
+		HAL_IncTick();
+		HAL_SYSTICK_IRQHandler();
+	}
+	__enable_irq();
+}
+#else
+ITCM_AREA_CODE void  SysTick_Handler(void)
+{
+uint32_t	i;
+	__disable_irq();
+	if ( Asys.g_os_started )
+	{
+		update_global_tick_count();
+
+		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
+		{
+			if ( before_check_timers_callback_array[i] != NULL )
+				before_check_timers_callback_array[i]();
+		}
+
+		check_timers();
+
+		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
+		{
+			if ( after_check_timers_callback_array[i] != NULL )
+				after_check_timers_callback_array[i]();
+		}
+
+		//pend the pendsv exception
+		schedule();
+	}
+	else
+	{
+		HAL_IncTick();
+		HAL_SYSTICK_IRQHandler();
+	}
+	__enable_irq();
+}
+#endif
 
