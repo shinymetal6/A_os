@@ -70,26 +70,6 @@ __attribute__ ((aligned (32))) const uint16_t dac_sine_tab[DAC_WAVETABLE_SIZE] =
 };
 #endif // #ifdef PROVIDE_SAMPLE_DAC_SINE
 
-uint8_t IntDac_Init(uint16_t *user_table,uint16_t dac_user_table_size)
-{
-uint32_t	i;
-
-	if ( HWMngr[HW_DAC].process != Asys.current_process )
-		return HW_DAC_ERROR_HW_NOT_OWNED;
-
-	if ((user_table == NULL ) || ( dac_user_table_size == 0) || (dac_user_table_size >= 1024 ))
-		return HW_DAC_ERROR_INIT;
-
-	ControlDac.dac_user_table_size = dac_user_table_size;
-	for(i=0;i<dac_user_table_size;i++)
-		ControlDac.dac_table[i] = user_table[i];
-
-	if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)ControlDac.dac_table, ControlDac.dac_user_table_size,DAC_ALIGN_12B_R) == 0 )
-		return HW_DAC_ERROR_NONE;
-	return HW_DAC_ERROR_INIT;
-}
-
-
 uint8_t IntDac_Start(uint32_t wakeup_cycle_count,uint8_t dac_flags)
 {
 	if ( HWMngr[HW_DAC].process != Asys.current_process )
@@ -178,5 +158,35 @@ void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 	}
 }
 
+
+DriversDefs_t	DAC_DriversDefs =
+{
+		.before_check_timers_callback = NULL,
+		.after_check_timers_callback = NULL,
+		.driver_name = "internal dac",
+};
+
+uint8_t IntDac_Init(uint16_t *user_table,uint16_t dac_user_table_size)
+{
+uint32_t	i;
+	if ( allocate_hw(HW_DAC,0) == 0 )
+		return HW_DAC_ERROR_HW_NOT_OWNED;
+
+	if ( HWMngr[HW_DAC].process != Asys.current_process )
+		return HW_DAC_ERROR_HW_NOT_OWNED;
+
+	if ((user_table == NULL ) || ( dac_user_table_size == 0) || (dac_user_table_size >= 1024 ))
+		return HW_DAC_ERROR_INIT;
+
+	ControlDac.dac_user_table_size = dac_user_table_size;
+	for(i=0;i<dac_user_table_size;i++)
+		ControlDac.dac_table[i] = user_table[i];
+
+	if ( HAL_DAC_Start_DMA(&DAC_HANDLE, DAC_CHANNEL_1, (uint32_t *)ControlDac.dac_table, ControlDac.dac_user_table_size,DAC_ALIGN_12B_R) != 0 )
+		return HW_DAC_ERROR_INIT;
+
+	DAC_DriversDefs.process = get_current_process();
+	return driver_register(&DAC_DriversDefs);
+}
 #endif // #ifdef DAC_ENABLED
 

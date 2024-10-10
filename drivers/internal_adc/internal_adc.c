@@ -33,35 +33,6 @@
 extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
 extern	Asys_t		Asys;
 
-uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
-{
-#ifdef ADC_HAS_OPAMP1
-	HAL_OPAMP_SelfCalibrate(&OPAMP1_HANDLE);
-	HAL_OPAMP_Start(&OPAMP1_HANDLE);
-#endif
-#ifdef ADC_HAS_OPAMP2
-	HAL_OPAMP_SelfCalibrate(&OPAMP2_HANDLE);
-	HAL_OPAMP_Start(&OPAMP2_HANDLE);
-#endif
-	if ( HWMngr[hw_adc_index].process != Asys.current_process )
-		return HW_ADC_ERROR_HW_NOT_OWNED;
-	if ( hw_adc_index == HW_ADC1)
-	{
-		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE1, ADC_SINGLE_ENDED) )
-			return HW_ADC_GENERIC_ERROR;
-		if ( HAL_ADC_Start_DMA(&ADC_HANDLE1,analog_buffer,len) )
-			return HW_ADC_GENERIC_ERROR;
-	}
-	if ( hw_adc_index == HW_ADC2)
-	{
-		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE2, ADC_SINGLE_ENDED) )
-			return HW_ADC_GENERIC_ERROR;
-		if ( HAL_ADC_Start_DMA(&ADC_HANDLE2,analog_buffer,len) )
-			return HW_ADC_GENERIC_ERROR;
-	}
-	return HW_ADC_ERROR_NONE;
-}
-
 uint8_t IntAdc_OpAmpGain(uint8_t gain)
 {
 #ifdef ADC_HAS_OPAMP1
@@ -108,6 +79,47 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 		activate_process(HWMngr[HW_ADC1].process,EVENT_ADC1_IRQ,HW_ADC1);
 	if ( hadc == &ADC_HANDLE2)
 		activate_process(HWMngr[HW_ADC2].process,EVENT_ADC2_IRQ,HW_ADC2);
+}
+
+DriversDefs_t	ADC_DriversDefs =
+{
+		.before_check_timers_callback = NULL,
+		.after_check_timers_callback = NULL,
+		.driver_name = "internal adc",
+};
+
+uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
+{
+
+	if ( allocate_hw(hw_adc_index,0) == 0 )
+		return HW_ADC_ERROR_HW_NOT_OWNED;
+
+#ifdef ADC_HAS_OPAMP1
+	HAL_OPAMP_SelfCalibrate(&OPAMP1_HANDLE);
+	HAL_OPAMP_Start(&OPAMP1_HANDLE);
+#endif
+#ifdef ADC_HAS_OPAMP2
+	HAL_OPAMP_SelfCalibrate(&OPAMP2_HANDLE);
+	HAL_OPAMP_Start(&OPAMP2_HANDLE);
+#endif
+	if ( HWMngr[hw_adc_index].process != Asys.current_process )
+		return HW_ADC_ERROR_HW_NOT_OWNED;
+	if ( hw_adc_index == HW_ADC1)
+	{
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE1, ADC_SINGLE_ENDED) )
+			return HW_ADC_GENERIC_ERROR;
+		if ( HAL_ADC_Start_DMA(&ADC_HANDLE1,analog_buffer,len) )
+			return HW_ADC_GENERIC_ERROR;
+	}
+	if ( hw_adc_index == HW_ADC2)
+	{
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE2, ADC_SINGLE_ENDED) )
+			return HW_ADC_GENERIC_ERROR;
+		if ( HAL_ADC_Start_DMA(&ADC_HANDLE2,analog_buffer,len) )
+			return HW_ADC_GENERIC_ERROR;
+	}
+	ADC_DriversDefs.process = get_current_process();
+	return driver_register(&ADC_DriversDefs);
 }
 
 #endif	//#ifdef ADC_DAC_ENABLED
