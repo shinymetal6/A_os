@@ -42,7 +42,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define SIZE_SCHED_STACK		2048U
 #define SCHED_STACK_START		SRAM_END
 
-#define IDLE_STACK_START		(uint32_t )(&_osSysRam_end - SIZE_SCHED_STACK)
+#define IDLE_STACK_START		(uint32_t )((uint32_t )&_osSysRam_end - (uint32_t )SIZE_SCHED_STACK)
 #define SIZE_IDLE_STACK          2048U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
 
@@ -122,10 +122,65 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	CODEC_ENABLED			1
 #define	CODEC_NAU88C22			1
 #define	HWRANDOM_GEN			1
-#define	ADC_ENABLED				1
-#define	DAC_ENABLED				1
 #define	USB_DEVICE_ENABLED		1
 //#define	USB_HOST_ENABLED		1
+
+#define INTERNAL_ADC_ENABLED		1
+#define INTERNAL_DAC_ENABLED		1
+
+#ifdef INTERNAL_ADC_ENABLED
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define ADC_HANDLE1					hadc1
+	extern	ADC_HandleTypeDef 			hadc2;
+	#define ADC_HANDLE2					hadc2
+	extern	TIM_HandleTypeDef 			htim6;
+	#define ADC1_TIMER					htim6
+	#define	ADC2_USES_ADC1_TIMER			1
+#ifdef ADC2_USES_ADC1_TIMER
+	#define ADC2_TIMER					ADC1_TIMER
+#else
+	extern	TIM_HandleTypeDef 			htim7;
+	#define ADC2_TIMER					htim7
+#endif
+
+	//#define ADC1_TIM_FOR_DAC				1
+	//#define ADC2_TIM_FOR_DAC				1
+	//#define ADC_HAS_OPAMP1				1
+	#ifdef ADC_HAS_OPAMP1
+		extern	OPAMP_HandleTypeDef 	hopamp1;
+		#define OPAMP1_HANDLE			hopamp1
+	#endif
+	//#define ADC_HAS_OPAMP2				1
+#ifdef ADC_HAS_OPAMP2
+	extern	OPAMP_HandleTypeDef 	hopamp2;
+	#define OPAMP_HANDLE			hopamp2
+#endif
+	//#define ADC_SINGLE_CHANNEL			1
+	#ifdef ADC_SINGLE_CHANNEL
+		#define ADC_SINGLE_CHANNEL_NUMBER	0
+	#endif
+
+#endif
+
+#ifdef INTERNAL_DAC_ENABLED
+	extern	DAC_HandleTypeDef 			hdac1;
+	#define DAC_HANDLE					hdac1
+	#define DAC_USER_WAVETABLE				1
+	#ifdef DAC_USER_WAVETABLE
+		#define DAC_WAVETABLE_SIZE				256
+	#endif
+	#ifdef ADC1_TIM_FOR_DAC
+		#define DAC_TIMER				ADC1_TIMER
+	#else
+		#ifdef ADC2_TIM_FOR_DAC
+			#define DAC_TIMER				ADC2_TIMER
+		#else
+			extern	TIM_HandleTypeDef 		htim15;
+			#define DAC_TIMER				htim15
+		#endif
+	#endif
+#endif
+
 #define	USE_ITCM				1
 #define	I2STX_PRIORITY			7
 #define	I2SRX_PRIORITY			7
@@ -145,20 +200,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	MICROSD_DETECT_IOPORT	SD_DETECT_GPIO_Port
 	#define	MICROSD_DETECT_PIN		SD_DETECT_Pin
 #endif // #ifdef SDCARD_ENABLED
-
-#ifdef ADC_ENABLED
-	#define	INTERNAL_ADC_ENABLED		1
-	extern	ADC_HandleTypeDef 	hadc1;
-	extern	ADC_HandleTypeDef 	hadc2;
-	extern	TIM_HandleTypeDef 	htim6;
-	#define	CONTROL_ADC1		hadc1
-	#define	ANALOG_IN_ADC2		hadc2
-	#define	CONTROL_TIMER		htim6
-#endif // #ifdef ADC_DAC_ENABLED
-
-#ifdef DAC_ENABLED
-	extern	DAC_HandleTypeDef hdac1;
-#endif // #ifdef DAC_ENABLED
 
 #ifdef LCD_096_ENABLED
 	extern SPI_HandleTypeDef hspi1;
@@ -248,7 +289,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	DFU_BOOT_VERSION		0x91
 
 #define	BOARD_NAME			"VB1xx"
-#define	MACHINE_NAME		"Vb101_VCO"
+#define	MACHINE_NAME		"Vb101_VCO_01"
 #define	MACHINE_VERSION		"A"
 #define	ASSIGNED			1
 

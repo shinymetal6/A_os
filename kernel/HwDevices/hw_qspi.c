@@ -82,11 +82,23 @@ uint8_t A_qspi_read(uint8_t* data,uint32_t addr, uint32_t size)
 	return qspi_Read(data, addr, size);
 }
 
-QSPI_HandleTypeDef *A_qspi_init(void)
+DriversDefs_t	QSPI_DriversDefs =
 {
-	if ( HWMngr[HW_QSPI].process != Asys.current_process )
-		return 0;
-	return qspi_init();
+		.before_check_timers_callback = NULL,
+		.after_check_timers_callback = NULL,
+		.driver_name = "QSPI",
+};
+
+uint32_t A_qspi_init(void)
+{
+	if ( allocate_hw(HW_QSPI,0) == 0 )
+		return HW_QSPI_ERROR_HW_NOT_OWNED;
+	if ( qspi_init() == 0 )
+	{
+		QSPI_DriversDefs.process = get_current_process();
+		return driver_register(&QSPI_DriversDefs);
+	}
+	return HW_QSPI_ERROR_ALLOCATION;
 }
 
 #endif

@@ -39,7 +39,7 @@ extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 AUDIO_FAST_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-extern	ControlAdcDef	ControlAdc;
+//extern	ControlAdcDef	ControlAdc;
 
 #define	OSCILLATORS	1
 

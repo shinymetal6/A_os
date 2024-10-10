@@ -55,40 +55,34 @@ MEMORY
 SECTIONS
 {
 	_osSysRam_start     = LOADADDR(.osSysRamStart);
-	.osSysRamStart 		0x20000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamStart))}
+	.osSysRamStart 		0x20000000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamStart))}
 	_osSysRam_end       = LOADADDR(.osSysRamEnd);
-	.osSysRamEnd 		0x20010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
+	.osSysRamEnd 		0x20008000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osSysRamEnd))}
 
 	_dtcm_user_data_start  = LOADADDR(.dtcm_user_data);
-	.dtcm_user_data	 	0x20010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
+	.dtcm_user_data	 	0x20008000 (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_user_data))}
 	_dtcm_user_data_end  	= LOADADDR(.dtcm_user_data_end);
-	.dtcm_user_data_end	0x2001C000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
+	.dtcm_user_data_end	0x2001E000 (NOLOAD): {. = ALIGN(4); KEEP(*(.dtcm_user_data_end))}
 	
 	_mempool_start      = LOADADDR(.osMemPoolStart);
-	.osMemPoolStart		0x2001C000  (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
+	.osMemPoolStart		0x2000C000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolStart))}
     _mempool_end        = LOADADDR(.osMemPoolEnd);
-	.osMemPoolEnd  		0x20020000  (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
+	.osMemPoolEnd  		0x20020000 (NOLOAD): {. = ALIGN(4); KEEP(*(.osMemPoolEnd))}
 		
 	_dmaNoCache_start   = LOADADDR(.dmaNoCache);
-	.dmaNoCache	        0x24070000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dmaNoCache))}
+	.dmaNoCache	        0x24070000 (NOLOAD): {. = ALIGN(4); KEEP(*(.dmaNoCache))}
 	_dmaNoCache_end     = LOADADDR(.dmaNoCacheEnd);
-	.dmaNoCacheEnd      0x24080000  (NOLOAD): {. = ALIGN(4); KEEP(*(.dmaNoCacheEnd))}
+	.dmaNoCacheEnd      0x24080000 (NOLOAD): {. = ALIGN(4); KEEP(*(.dmaNoCacheEnd))}
 	
 	_d2ram_start      	= LOADADDR(.d2ram);
-	.d2ram		  		0x30000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.d2ram))}
+	.d2ram		  		0x30000000 (NOLOAD): {. = ALIGN(4); KEEP(*(.d2ram))}
     _d2ram_end       	= LOADADDR(.d2ramEnd);
-	.d2ramEnd  			0x30048000  (NOLOAD): {. = ALIGN(4); KEEP(*(.d2ramEnd))}
-	
-	_d3ram_start      	= LOADADDR(.d3ram);
-	.d3ram		  		0x38000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.d3ram))}
-    _d3ram_end       	= LOADADDR(.d3ramEnd);
-	.d3ramEnd  			0x38010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.d3ramEnd))}
+	.d2ramEnd  			0x30048000 (NOLOAD): {. = ALIGN(4); KEEP(*(.d2ramEnd))}
 	
 	_framebuffer_start 	= LOADADDR(.framebuffer);
-	.framebuffer		0x38000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.framebuffer))}
+	.framebuffer		0x38000000 (NOLOAD): {. = ALIGN(4); KEEP(*(.framebuffer))}
     _framebuffer_end    = LOADADDR(.framebufferEnd);
-	.framebufferEnd  	0x38010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.framebufferEnd))}
-	
+	.framebufferEnd  	0x38010000 (NOLOAD): {. = ALIGN(4); KEEP(*(.framebufferEnd))}
 	
 	_fdata_start = LOADADDR(.isr_vector);
 	
@@ -99,7 +93,7 @@ SECTIONS
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
-  
+
   .aos_nver :
   {
     . = ALIGN(4);
@@ -133,14 +127,14 @@ SECTIONS
     . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab (READONLY)  : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
+  .ARM.extab   (READONLY) : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
   .ARM (READONLY) : {
     __exidx_start = .;
     *(.ARM.exidx*)
     __exidx_end = .;
   } >FLASH
 
-  .preinit_array (READONLY)    :
+  .preinit_array   (READONLY)  :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
@@ -179,6 +173,7 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM_D1 AT> FLASH
+
 
   _sid3_data = LOADADDR(.d3_data);
   .d3_data :
@@ -227,7 +222,8 @@ SECTIONS
     . = ALIGN(4);
     _eflash_end_start = .;        /* define a global symbol at data end */
   } > FLASH
-  
+
+
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
@@ -265,4 +261,5 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
+
 

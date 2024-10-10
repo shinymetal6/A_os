@@ -51,7 +51,7 @@ typedef struct {
   uint32_t BlockSize;    	   /*!< Size of the block */
 } QSPI_Info;
 
-extern	QSPI_HandleTypeDef *qspi_init(void);
+extern	uint32_t qspi_init(void);
 extern	uint8_t qspi_Read(uint8_t* pData, uint32_t ReadAddr, uint32_t Size);
 extern	uint8_t qspi_WriteEnable(void);
 extern	uint8_t qspi_WriteDisable(void);
@@ -61,7 +61,7 @@ extern	uint8_t qspi_EraseBlockByAddress(uint32_t BlockAddress);
 extern	uint8_t qspi_Erase_Sector(uint32_t SectorAddress);
 extern	uint8_t qspi_Erase_Chip(void);
 extern	uint32_t qspi_GetBlockSize(void);
-extern	uint32_t	qspi_get_crc(uint32_t 	*data_ptr , uint32_t data_len);
+extern	uint32_t qspi_get_crc(uint32_t 	*data_ptr , uint32_t data_len);
 
 
 #ifdef __cplusplus

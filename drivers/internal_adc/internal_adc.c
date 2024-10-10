@@ -60,7 +60,11 @@ uint8_t IntAdc_Start(uint8_t hw_adc_index)
 	if ( hw_adc_index == HW_ADC1 )
 		return HAL_TIM_Base_Start(&ADC1_TIMER);
 	if ( hw_adc_index == HW_ADC2 )
+#ifdef ADC2_USES_ADC1_TIMER
+		return 0;
+#else
 		return HAL_TIM_Base_Start(&ADC2_TIMER);
+#endif
 	return HW_ADC_GENERIC_ERROR;
 }
 
@@ -69,7 +73,11 @@ uint8_t IntAdc_Stop(uint8_t hw_adc_index)
 	if ( hw_adc_index == HW_ADC1 )
 		return HAL_TIM_Base_Stop(&ADC1_TIMER);
 	if ( hw_adc_index == HW_ADC2 )
+#ifdef ADC2_USES_ADC1_TIMER
+		return 0;
+#else
 		return HAL_TIM_Base_Stop(&ADC2_TIMER);
+#endif
 	return HW_ADC_GENERIC_ERROR;
 }
 
@@ -106,14 +114,22 @@ uint8_t IntAdc_Init(uint8_t hw_adc_index,uint32_t *analog_buffer,uint32_t len)
 		return HW_ADC_ERROR_HW_NOT_OWNED;
 	if ( hw_adc_index == HW_ADC1)
 	{
+#ifdef STM32H743xx
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE1, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED) )
+#else
 		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE1, ADC_SINGLE_ENDED) )
+#endif
 			return HW_ADC_GENERIC_ERROR;
 		if ( HAL_ADC_Start_DMA(&ADC_HANDLE1,analog_buffer,len) )
 			return HW_ADC_GENERIC_ERROR;
 	}
 	if ( hw_adc_index == HW_ADC2)
 	{
+#ifdef STM32H743xx
+		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE2,ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED) )
+#else
 		if ( HAL_ADCEx_Calibration_Start(&ADC_HANDLE2, ADC_SINGLE_ENDED) )
+#endif
 			return HW_ADC_GENERIC_ERROR;
 		if ( HAL_ADC_Start_DMA(&ADC_HANDLE2,analog_buffer,len) )
 			return HW_ADC_GENERIC_ERROR;

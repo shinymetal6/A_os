@@ -32,7 +32,7 @@ extern	Asys_t			Asys;
 #ifdef QSPI_WINBOND
 #include "w25q.h"
 #endif
-QSPI_HandleTypeDef *qspi_init(void)
+uint32_t qspi_init(void)
 {
 #ifdef QSPI_WINBOND
 	Asys.qspi_id = w25q_Init();
@@ -42,8 +42,9 @@ QSPI_HandleTypeDef *qspi_init(void)
 	QSPI_memory.ProgPageSize = MEM_PAGE_SIZE;
 	QSPI_memory.ProgPagesNumber = PAGE_COUNT;
 	QSPI_memory.BlockSize = w25q_GetSBlockSize();
+	return 0;
 #endif
-	return &HQSPI1;
+	return 1;
 }
 
 uint8_t qspi_WriteEnable(void)
