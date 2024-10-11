@@ -65,11 +65,15 @@ enum DHTXX_AM230X_STATE_MACHINE {
   DHTXX_AM230X_END
 };
 
+/*
 extern	uint32_t dhtxx_am230x_init(void);
 extern	uint32_t dhtxx_am230x_deinit(void);
-extern	uint8_t dhtxx_am230x_start(void);
-extern	uint8_t dhtxx_am230x_get_status(void);
-extern	uint8_t dhtxx_am230x_get_values(uint8_t *values);
+extern	uint32_t dhtxx_am230x_start(void);
+extern	uint32_t dhtxx_am230x_get_status(void);
+extern	uint32_t dhtxx_am230x_get_values(uint8_t *values);
+extern	void dhtxx_am230x_worker(void);
+*/
+extern	DriversDefsSensors_t *dhtxx_set_drv_struct(void);
 
 
 #endif /* DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_ */

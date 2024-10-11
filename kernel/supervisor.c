@@ -22,6 +22,7 @@
 
 #include "main.h"
 #include "A.h"
+#include "A_exported_functions.h"
 #include "system_default.h"
 #include "scheduler.h"
 #include "kernel_opt.h"
@@ -62,6 +63,7 @@ ITCM_AREA_CODE void supervisor(void)
 #ifdef POWERSAVING_ENABLED
 		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
 #endif
+		sensors_driver_init();
 		schedule();
 	}
 }
