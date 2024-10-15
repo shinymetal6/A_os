@@ -16,21 +16,13 @@
 /*
  * driver_skeleton.h
  *
- *  Created on: Oct 14, 2024
+ *  Created on: Oct 15, 2024
  *      Author: fil
  */
 
 #ifndef DRIVERS_DRIVER_SKELETON_H_
 #define DRIVERS_DRIVER_SKELETON_H_
 
-typedef struct
-{
-	uint8_t		status;
-	uint8_t		state_machine;
-	uint32_t	ticks;
-	uint32_t	frequency;
-	uint32_t	pulse_width;
-	uint32_t	errors;
-}driver_skel_Drv_TypeDef;
+
 
 #endif /* DRIVERS_DRIVER_SKELETON_H_ */

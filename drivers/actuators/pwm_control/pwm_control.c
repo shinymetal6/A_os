@@ -27,59 +27,62 @@
 #include "../../../kernel/scheduler.h"
 #ifdef A_HAS_MOTOR_CNTRL
 #include "pwm_control.h"
+#include <string.h>
 
 static Pwm_Control_Drv_TypeDef	Pwm_Control_Drv;
+extern	DriversDefs_t	*DriversDefs[MAX_DRIVERS];
 
-static uint32_t pwm_control_start(void)
+static uint32_t pwm_control_start(uint8_t handle)
 {
-	Pwm_Control_Drv.status |= PWM_CHANNEL_RUNNING;
-	HAL_TIM_PWM_Start(Pwm_Control_Drv.timer,Pwm_Control_Drv.channel);
+	if ( HAL_TIM_PWM_Start((TIM_HandleTypeDef *)DriversDefs[handle]->peripheral,DriversDefs[handle]->peripheral_channel) == 0 )
+		DriversDefs[handle]->status |= DRIVER_STATUS_RUNNING;
 	return 0;
 }
 
-static uint32_t pwm_control_stop(void)
+static uint32_t pwm_control_stop(uint8_t handle)
 {
-	Pwm_Control_Drv.status &= ~PWM_CHANNEL_RUNNING;
-	HAL_TIM_PWM_Stop(Pwm_Control_Drv.timer,Pwm_Control_Drv.channel);
+	if ( HAL_TIM_PWM_Stop((TIM_HandleTypeDef *)DriversDefs[handle]->peripheral,DriversDefs[handle]->peripheral_channel) == 0 )
+		DriversDefs[handle]->status &= ~DRIVER_STATUS_RUNNING;
 	return 0;
 }
 
-static uint32_t pwm_control_get_status(void)
+static uint32_t pwm_control_get_status(uint8_t handle)
 {
-	return 0;
+	return DriversDefs[handle]->status;
 }
 
-static uint32_t pwm_control_get_values(uint8_t *values)
-{
-	return 0;
-}
-
-static uint32_t pwm_control_select_channel(uint8_t channel)
-{
-	if ( channel >= A_HAS_MOTOR_CNTRL_NUMBER )
-		return 1;
-	return 0;
-}
-
-static uint32_t pwm_control_set_values(uint8_t *values,uint8_t values_number)
+static uint32_t pwm_control_get_values(uint8_t handle,uint8_t *values)
 {
 	return 0;
 }
 
-static uint32_t pwm_control_extended_actions(uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+static uint32_t pwm_control_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
+	return 0;
+}
+
+static uint32_t pwm_control_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+{
+TIM_HandleTypeDef *timer = (TIM_HandleTypeDef *)DriversDefs[handle]->peripheral;
 	switch ( action )
 	{
+	case	PWM_EA_SET_PWM_PRESCALER:
+		timer->Instance->PSC = Pwm_Control_Drv.prescaler = action_parameter;
+		break;
 	case	PWM_EA_SET_PWM_PERIOD:
-		switch(Pwm_Control_Drv.channel)
+		switch(DriversDefs[handle]->peripheral_channel)
 		{
-		case	TIM_CHANNEL_1	:	Pwm_Control_Drv.timer->Instance->CCR1 = action_parameter; break;
-		case	TIM_CHANNEL_2	:	Pwm_Control_Drv.timer->Instance->CCR2 = action_parameter; break;
-		case	TIM_CHANNEL_3	:	Pwm_Control_Drv.timer->Instance->CCR3 = action_parameter; break;
-		case	TIM_CHANNEL_4	:	Pwm_Control_Drv.timer->Instance->CCR4 = action_parameter; break;
+		case	TIM_CHANNEL_1	:	timer->Instance->CCR1 = action_parameter; Pwm_Control_Drv.pulse_width = action_parameter;break;
+		case	TIM_CHANNEL_2	:	timer->Instance->CCR2 = action_parameter; Pwm_Control_Drv.pulse_width = action_parameter;break;
+		case	TIM_CHANNEL_3	:	timer->Instance->CCR3 = action_parameter; Pwm_Control_Drv.pulse_width = action_parameter;break;
+		case	TIM_CHANNEL_4	:	timer->Instance->CCR4 = action_parameter; Pwm_Control_Drv.pulse_width = action_parameter;break;
 		}
 		break;
 	case	PWM_EA_SET_PWM_DIRECTION:
+		if ( action_parameter )
+			HAL_GPIO_WritePin((GPIO_TypeDef *)DriversDefs[handle]->gpio_port[0],DriversDefs[handle]->gpio_bit[0],GPIO_PIN_SET);
+		else
+			HAL_GPIO_WritePin((GPIO_TypeDef *)DriversDefs[handle]->gpio_port[0],DriversDefs[handle]->gpio_bit[0],GPIO_PIN_RESET);
 		break;
 	default:
 		return 1;
@@ -87,22 +90,19 @@ static uint32_t pwm_control_extended_actions(uint8_t action,uint32_t action_para
 	return 0;
 }
 
-extern	DriversDefsActuators_t	Pwm_Control_Drv_ArduinoShield;
+extern	DriversDefs_t	Pwm_Control_Drv_ArduinoShield;
 
-uint32_t pwm_control_deinit(void)
+uint32_t pwm_control_deinit(uint8_t handle)
 {
-	return actuators_driver_unregister(&Pwm_Control_Drv_ArduinoShield);
+	return driver_unregister(&Pwm_Control_Drv_ArduinoShield);
 }
 
-static uint32_t pwm_control_init(void)
+static uint32_t pwm_control_init(uint8_t handle)
 {
-	Pwm_Control_Drv.timer = (TIM_HandleTypeDef *)Pwm_Control_Drv_ArduinoShield.peripheral;
-	Pwm_Control_Drv.channel = Pwm_Control_Drv_ArduinoShield.peripheral_channel;
-	Pwm_Control_Drv.status |= PWM_CHANNEL_INITIALIZED;
 	return 0;
 }
 
-DriversDefsActuators_t	Pwm_Control_Drv_ArduinoShield =
+DriversDefs_t	Pwm_Control_Drv_ArduinoShield =
 {
 	.periodic_before_check_timers_callback = NULL,
 	.periodic_after_check_timers_callback = NULL,
@@ -112,7 +112,6 @@ DriversDefsActuators_t	Pwm_Control_Drv_ArduinoShield =
 	.deinit = pwm_control_deinit,
 	.start = pwm_control_start,
 	.stop = pwm_control_stop,
-	.select_channel = pwm_control_select_channel,
 	.extended_action = pwm_control_extended_actions,
 	.get_status = pwm_control_get_status,
 	.get_values = pwm_control_get_values,
@@ -120,10 +119,11 @@ DriversDefsActuators_t	Pwm_Control_Drv_ArduinoShield =
 	.driver_name = "pwm_control_ArduinoShield",
 };
 
-
-DriversDefsActuators_t *pwm_control_set_drv_struct(void)
+uint32_t pwm_control_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index)
 {
-	return &Pwm_Control_Drv_ArduinoShield;
+	memcpy(new_struct,&Pwm_Control_Drv_ArduinoShield,sizeof(Pwm_Control_Drv_ArduinoShield));
+	new_struct->peripheral_index = peripheral_index;
+	return 0;
 }
 
 #endif // #ifdef A_HAS_MOTOR_CNTRL

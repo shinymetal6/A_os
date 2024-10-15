@@ -25,21 +25,17 @@
 
 typedef struct
 {
-	uint8_t		status;
-	uint8_t		state_machine;
-	uint32_t	ticks;
-	uint32_t	frequency;
-	uint32_t	pulse_width;
-	uint32_t	channel;
-	TIM_HandleTypeDef *timer;
+	uint32_t			prescaler;
+	uint32_t			pulse_width;
 }Pwm_Control_Drv_TypeDef;
 /* status */
 #define	PWM_CHANNEL_INITIALIZED		0x01
 #define	PWM_CHANNEL_RUNNING			0x80
 
-#define	PWM_EA_SET_PWM_PERIOD		1
-#define	PWM_EA_SET_PWM_DIRECTION	2
+#define	PWM_EA_SET_PWM_PRESCALER	1
+#define	PWM_EA_SET_PWM_PERIOD		2
+#define	PWM_EA_SET_PWM_DIRECTION	3
 
-extern	DriversDefsActuators_t *pwm_control_set_drv_struct(void);
+extern	uint32_t pwm_control_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index);
 
 #endif /* DRIVERS_ACTUATORS_PWM_CONTROL_PWM_CONTROL_H_ */

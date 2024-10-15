@@ -30,8 +30,8 @@
 #include "dhtxx_am230x.h"
 #include <string.h>
 
-Dhtxx_am230x_Drv_TypeDef		Dhtxx_am230x_Drv;
-extern	DriversDefsSensors_t	DriversDefs[MAX_SENSORS_DRIVERS];
+Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv;
+extern	DriversDefs_t		DriversDefs[MAX_DRIVERS];
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -151,23 +151,14 @@ static void dhtxx_am230x_worker(void)
 	}
 }
 
-/*
-DriversDefs_t	this_DriversDefs =
-{
-	.periodic_before_check_timers_callback = dhtxx_am230x_worker,
-	.periodic_after_check_timers_callback = NULL,
-	.driver_name = "dhtxx_am230x",
-};
-*/
-
-static uint32_t dhtxx_am230x_init(void)
+static uint32_t dhtxx_am230x_init(uint8_t handle)
 {
 	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
 	Dhtxx_am230x_Drv.ticks = Dhtxx_am230x_Drv.errors = 0;
 	return 0;
 }
 
-static uint32_t dhtxx_am230x_start(void)
+static uint32_t dhtxx_am230x_start(uint8_t handle)
 {
 uint32_t	i;
 	if (( Dhtxx_am230x_Drv.status & DHTXX_AM230X_RUNNING) == DHTXX_AM230X_RUNNING )
@@ -179,12 +170,12 @@ uint32_t	i;
 	return 0;
 }
 
-static uint32_t dhtxx_am230x_get_status(void)
+static uint32_t dhtxx_am230x_get_status(uint8_t handle)
 {
 	return Dhtxx_am230x_Drv.status;
 }
 
-static uint32_t dhtxx_am230x_get_values(uint8_t *values)
+static uint32_t dhtxx_am230x_get_values(uint8_t handle,uint8_t *values)
 {
 uint8_t j;
 	if (( Dhtxx_am230x_Drv.status & DHTXX_AM230X_VALID) == DHTXX_AM230X_VALID)
@@ -197,14 +188,14 @@ uint8_t j;
 	return 0;
 }
 
-extern	DriversDefsSensors_t	dhtxx_am230x_driver_struct;
+extern	DriversDefs_t	dhtxx_am230x_driver_struct;
 
-uint32_t dhtxx_am230x_deinit(void)
+uint32_t dhtxx_am230x_deinit(uint8_t handle)
 {
-	return sensors_driver_unregister(&dhtxx_am230x_driver_struct);
+	return driver_unregister(&dhtxx_am230x_driver_struct);
 }
 
-DriversDefsSensors_t	dhtxx_am230x_driver_struct =
+DriversDefs_t	dhtxx_am230x_driver_struct =
 {
 		.periodic_before_check_timers_callback = dhtxx_am230x_worker,
 		.periodic_after_check_timers_callback = NULL,
@@ -217,11 +208,12 @@ DriversDefsSensors_t	dhtxx_am230x_driver_struct =
 		.driver_name = "dhtxx_am230x",
 };
 
-DriversDefsSensors_t *dhtxx_set_drv_struct(void)
+uint32_t dhtxx_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index)
 {
-	return &dhtxx_am230x_driver_struct;
+	memcpy(new_struct,&dhtxx_am230x_driver_struct,sizeof(dhtxx_am230x_driver_struct));
+	new_struct->peripheral_index = peripheral_index;
+	return 0;
 }
-
 
 
 #endif
