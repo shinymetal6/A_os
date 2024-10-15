@@ -129,7 +129,7 @@ static void dhtxx_am230x_worker(void)
 			GPIO_SetGpioAlternate(GPIOPORT_DHTXX_AM230X,GPIOBIT_DHTXX_AM230X);
 			Dhtxx_am230x_Drv.samples_number = 0;
 			DHTXX_AM230X_TIMER.Instance->CNT = 0;
-			HAL_TIM_IC_Start_DMA(&DHTXX_AM230X_TIMER,TIM_CHANNEL_4, Dhtxx_am230x_Drv.dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
+			HAL_TIM_IC_Start_DMA(&DHTXX_AM230X_TIMER,DHTXX_AM230X_TIM_CHANNEL, Dhtxx_am230x_Drv.dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
 			Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_WAIT_FOR_TIM_END;
 			Dhtxx_am230x_Drv.ticks = DHTXX_AM230X_CYCLE_TICKS;
 		}
@@ -137,7 +137,7 @@ static void dhtxx_am230x_worker(void)
 	case	DHTXX_AM230X_WAIT_FOR_TIM_END:
 		if ( Dhtxx_am230x_Drv.ticks == 0 )
 		{
-			HAL_TIM_IC_Stop_DMA(&DHTXX_AM230X_TIMER,TIM_CHANNEL_4);
+			HAL_TIM_IC_Stop_DMA(&DHTXX_AM230X_TIMER,DHTXX_AM230X_TIM_CHANNEL);
 			GPIO_SetGpioIN(GPIOPORT_DHTXX_AM230X,GPIOBIT_DHTXX_AM230X,1);
 			Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_END;
 		}

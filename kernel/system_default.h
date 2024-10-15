@@ -61,6 +61,10 @@
 	#ifdef STM32H753ZI_NUCLEO
 		#include "../boards/STM32H753ZI_NUCLEO.h"
 	#endif
+	#ifdef STM32H753ZI_NUCLEO_MOTOR_SHIELD
+		#include "../boards/STM32H753ZI_NUCLEO_MOTOR_SHIELD.h"
+	#endif
+
 #endif
 
 #ifdef	STM32H563xx

@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * STM32H753ZI_NUCLEO.h
+ * STM32H753ZI_NUCLEO_MOTOR_SHIELD.h
  *
- *  Created on: Apr 19, 2024
+ *  Created on: Oct 14, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32H753ZI_NUCLEO_H_
-#define BOARDS_STM32H753ZI_NUCLEO_H_
+#ifndef BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_
+#define BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_
 
 /* Memories */
 
@@ -71,6 +71,40 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	GPIOPORT_DHTXX_AM230X		GPIOA
 	#define	GPIOBIT_DHTXX_AM230X		3
 #endif // #ifdef DHTXX_AM230X_ENABLE
+
+#define	MOTOR_CNTRL_A			1
+#ifdef MOTOR_CNTRL_A
+	extern	TIM_HandleTypeDef 				htim1;
+	#define MOTOR_CNTRL_PWM_A				htim1
+	#define MOTOR_CNTRL_DIRECT_PWM_A		TIM1
+	#define MOTOR_CNTRL_CHANNEL_A			TIM_CHANNEL_3
+	#define MOTOR_CNTRL_PWM_A_PERIOD		10000
+	#define MOTOR_CNTRL_DIR_A_GPIOPORT		DIR_A_GPIO_Port
+	#define MOTOR_CNTRL_DIR_A_GPIOBIT		DIR_A_Pin
+	#define MOTOR_CNTRL_BRAKE_A_GPIOPORT	BRAKE_A_GPIO_Port
+	#define MOTOR_CNTRL_BRAKE_A_GPIOBIT		BRAKE_A_Pin
+#endif
+
+#define	MOTOR_CNTRL_B			1
+#ifdef MOTOR_CNTRL_B
+	extern	TIM_HandleTypeDef 				htim3;
+	#define MOTOR_CNTRL_PWM_B				htim3
+	#define MOTOR_CNTRL_CHANNEL_B			TIM_CHANNEL_2
+	#define MOTOR_CNTRL_PWM_B_PERIOD		10000
+	#define MOTOR_CNTRL_DIR_B_GPIOPORT		DIR_B_GPIO_Port
+	#define MOTOR_CNTRL_DIR_B_GPIOBIT		DIR_B_Pin
+	#define MOTOR_CNTRL_BRAKE_B_GPIOPORT	BRAKE_B_GPIO_Port
+	#define MOTOR_CNTRL_BRAKE_B_GPIOBIT		BRAKE_B_Pin
+#endif
+
+#if defined(MOTOR_CNTRL_A) || defined(MOTOR_CNTRL_B)
+	#define	A_HAS_MOTOR_CNTRL				1
+	#if defined(MOTOR_CNTRL_A) && defined(MOTOR_CNTRL_B)
+		#define	A_HAS_MOTOR_CNTRL_NUMBER				2
+	#else
+		#define	A_HAS_MOTOR_CNTRL_NUMBER				1
+	#endif
+#endif
 
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
@@ -151,9 +185,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"STM32H753ZI_NUCLEO"
-#define	MACHINE_NAME		"STM32H753ZI_NUCLEO"
+#define	BOARD_NAME			"STM32H753ZI_NUCLEO_MOTOR_SHIELD"
+#define	MACHINE_NAME		"STM32H753ZI_NUCLEO_MOTOR_SHIELD"
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_STM32H753ZI_NUCLEO_H_ */
+#endif /* BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_ */
