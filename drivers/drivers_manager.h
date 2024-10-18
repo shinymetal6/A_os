@@ -32,6 +32,7 @@ typedef struct
 	uint8_t		peripheral_index;
 	uint32_t	*peripheral;
 	uint32_t	peripheral_channel;
+	uint32_t	peripheral_channel_slave;
 	uint32_t	*gpio_port[4];
 	uint32_t	gpio_bit[4];
 	uint32_t	(*init)(uint8_t handle);
@@ -39,12 +40,13 @@ typedef struct
 	uint32_t	(*start)(uint8_t handle);
 	uint32_t	(*stop)(uint8_t handle);
 	uint32_t	(*get_status)(uint8_t handle);
-	uint32_t	(*get_values)(uint8_t handle, uint8_t *values);
+	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
 	uint32_t	(*set_status)(uint8_t handle);
 	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
 	uint32_t	(*extended_action)(uint8_t handle, uint8_t action,uint32_t action_parameter,uint32_t extension_parameter);
 	void 		(*periodic_before_check_timers_callback)(void);
 	void 		(*periodic_after_check_timers_callback)(void);
+	uint32_t	*driver_data;
 	char		driver_name[32];
 }DriversDefs_t;
 /* status */
@@ -64,7 +66,8 @@ extern	uint32_t	driver_register(DriversDefs_t *driver,uint32_t flags);
 extern	uint32_t	driver_unregister(DriversDefs_t *driver);
 extern	uint32_t 	driver_start(uint32_t handle);
 extern	uint32_t 	driver_extended_action(uint32_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter);
-extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values);
+extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number);
+extern	uint32_t 	driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number);
 
 #ifdef DHTXX_AM230X_ENABLE
 #include "sensors/dhtxx_am230x/dhtxx_am230x.h"
@@ -72,6 +75,10 @@ extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values);
 
 #ifdef A_HAS_MOTOR_CNTRL
 #include "actuators/pwm_control/pwm_control.h"
+#endif
+
+#ifdef DDC_SYSTEM_ENABLE
+#include "actuators/dcc/dcc.h"
 #endif
 
 #endif /* DRIVERS_DRIVERS_MANAGER_H_ */

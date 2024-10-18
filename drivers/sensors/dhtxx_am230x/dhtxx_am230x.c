@@ -31,7 +31,7 @@
 #include <string.h>
 
 Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv;
-extern	DriversDefs_t		DriversDefs[MAX_DRIVERS];
+extern	DriversDefs_t		*DriversDefs[MAX_DRIVERS];
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -108,6 +108,8 @@ uint8_t		byte_val,byte_mask;
 
 static void dhtxx_am230x_worker(void)
 {
+TIM_HandleTypeDef *timer = (TIM_HandleTypeDef *)DriversDefs[Dhtxx_am230x_Drv.handle]->peripheral;
+
 	if ( Dhtxx_am230x_Drv.ticks )
 		Dhtxx_am230x_Drv.ticks--;
 	switch(Dhtxx_am230x_Drv.state_machine)
@@ -128,8 +130,8 @@ static void dhtxx_am230x_worker(void)
 			Dhtxx_am230x_Drv.status |= DHTXX_AM230X_ACQRUN;
 			GPIO_SetGpioAlternate(GPIOPORT_DHTXX_AM230X,GPIOBIT_DHTXX_AM230X);
 			Dhtxx_am230x_Drv.samples_number = 0;
-			DHTXX_AM230X_TIMER.Instance->CNT = 0;
-			HAL_TIM_IC_Start_DMA(&DHTXX_AM230X_TIMER,DHTXX_AM230X_TIM_CHANNEL, Dhtxx_am230x_Drv.dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
+			timer->Instance->CNT = 0;
+			HAL_TIM_IC_Start_DMA(timer,DHTXX_AM230X_TIM_CHANNEL, Dhtxx_am230x_Drv.dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
 			Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_WAIT_FOR_TIM_END;
 			Dhtxx_am230x_Drv.ticks = DHTXX_AM230X_CYCLE_TICKS;
 		}
@@ -137,7 +139,7 @@ static void dhtxx_am230x_worker(void)
 	case	DHTXX_AM230X_WAIT_FOR_TIM_END:
 		if ( Dhtxx_am230x_Drv.ticks == 0 )
 		{
-			HAL_TIM_IC_Stop_DMA(&DHTXX_AM230X_TIMER,DHTXX_AM230X_TIM_CHANNEL);
+			HAL_TIM_IC_Stop_DMA(timer,DHTXX_AM230X_TIM_CHANNEL);
 			GPIO_SetGpioIN(GPIOPORT_DHTXX_AM230X,GPIOBIT_DHTXX_AM230X,1);
 			Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_END;
 		}
@@ -155,6 +157,7 @@ static uint32_t dhtxx_am230x_init(uint8_t handle)
 {
 	Dhtxx_am230x_Drv.state_machine = DHTXX_AM230X_IDLE;
 	Dhtxx_am230x_Drv.ticks = Dhtxx_am230x_Drv.errors = 0;
+	Dhtxx_am230x_Drv.handle = handle;
 	return 0;
 }
 
@@ -175,7 +178,7 @@ static uint32_t dhtxx_am230x_get_status(uint8_t handle)
 	return Dhtxx_am230x_Drv.status;
 }
 
-static uint32_t dhtxx_am230x_get_values(uint8_t handle,uint8_t *values)
+static uint32_t dhtxx_am230x_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 uint8_t j;
 	if (( Dhtxx_am230x_Drv.status & DHTXX_AM230X_VALID) == DHTXX_AM230X_VALID)
@@ -199,6 +202,8 @@ DriversDefs_t	dhtxx_am230x_driver_struct =
 {
 		.periodic_before_check_timers_callback = dhtxx_am230x_worker,
 		.periodic_after_check_timers_callback = NULL,
+		.peripheral = (uint32_t *)&DHTXX_AM230X_TIMER,
+		.peripheral_channel = DHTXX_AM230X_TIM_CHANNEL,
 		.init = dhtxx_am230x_init,
 		.deinit = dhtxx_am230x_deinit,
 		.start = dhtxx_am230x_start,

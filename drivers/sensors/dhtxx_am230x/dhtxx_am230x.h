@@ -40,6 +40,7 @@ typedef struct
 	uint8_t		status;
 	uint8_t		state_machine;
 	uint32_t	ticks;
+	uint8_t		handle;
 	uint32_t	samples_number;
 	uint32_t	dhtxx_am230x_samples[DHTXX_AM230X_MAX_SAMPLES_LEN];
 	uint32_t	dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];

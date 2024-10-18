@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * STM32H753ZI_NUCLEO_MOTOR_SHIELD.h
+ * STM32H753ZI_DCC_MOTOR_SHIELD.h
  *
- *  Created on: Oct 14, 2024
+ *  Created on: Oct 16, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_
-#define BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_
+#ifndef BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_
+#define BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_
 
 #include	"boards_common_mem.h"
 /* Memories */
@@ -63,13 +63,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1
-//#define	DDC_SYSTEM_ENABLE		1
+#define	DDC_SYSTEM_ENABLE		1
 
-#define	DHTXX_AM230X_ENABLE		1
-#define	MOTOR_CNTRL_A			1
-#define	MOTOR_CNTRL_B			1
+//#define	DHTXX_AM230X_ENABLE		1
+//#define	MOTOR_CNTRL_A			1
+//#define	MOTOR_CNTRL_B			1
 
-#define	DHTXX_AM230X_ENABLE			1
 #ifdef DHTXX_AM230X_ENABLE
 	extern	TIM_HandleTypeDef 				htim2;
 	#define DHTXX_AM230X_TIMER				htim2
@@ -78,7 +77,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	GPIOBIT_DHTXX_AM230X			3
 #endif // #ifdef DHTXX_AM230X_ENABLE
 
-#define	MOTOR_CNTRL_A			1
 #ifdef MOTOR_CNTRL_A
 	extern	TIM_HandleTypeDef 				htim1;
 	#define MOTOR_CNTRL_PWM_A				htim1
@@ -92,7 +90,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_TIMER2					1
 #endif
 
-#define	MOTOR_CNTRL_B			1
 #ifdef MOTOR_CNTRL_B
 	extern	TIM_HandleTypeDef 				htim3;
 	#define MOTOR_CNTRL_PWM_B				htim3
@@ -125,7 +122,14 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef USB_ENABLED
 
 #ifdef DDC_SYSTEM_ENABLE
-	#define	A_HAS_TIMER8			1
+	#define	A_HAS_TIMER1			1
+	extern	TIM_HandleTypeDef 		htim1;
+	#define DCC_TIMER					htim1
+	#define DCC_CHANNEL_OUT			TIM_CHANNEL_3
+	#define DCC_CHANNEL_CUTOUT		TIM_CHANNEL_4
+	#define DCC_ENABLE_PORT			DCC_ENABLE_GPIO_Port
+	#define DCC_ENABLE_GPIOBIT		DCC_ENABLE_Pin
+	#define	DCC_TIMER_DUAL_PHASE	1
 #endif // #ifdef DDC_SYSTEM_ENABLE
 
 
@@ -203,4 +207,4 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_STM32H753ZI_NUCLEO_MOTOR_SHIELD_H_ */
+#endif /* BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_ */

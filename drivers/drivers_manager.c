@@ -90,7 +90,6 @@ uint32_t	i,drv_ret;
 						}
 
 					}
-
 				}
 				driver_request --;
 				if ( driver_request == 0)
@@ -108,10 +107,17 @@ uint32_t driver_start(uint32_t handle)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t driver_get_values(uint32_t handle,uint8_t *values)
+uint32_t driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
 	if ( DriversDefs[handle]->get_values != NULL )
-		return DriversDefs[handle]->get_values(handle,values);
+		return DriversDefs[handle]->get_values(handle,values,values_number);
+	return DRIVER_REQUEST_FAILED;
+}
+
+uint32_t driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+{
+	if ( DriversDefs[handle]->set_values != NULL )
+		return DriversDefs[handle]->set_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
@@ -121,5 +127,4 @@ uint32_t driver_extended_action(uint32_t handle,uint8_t action,uint32_t action_p
 		return DriversDefs[handle]->extended_action(handle,action,action_parameter,extension_parameter);
 	return DRIVER_REQUEST_FAILED;
 }
-
 

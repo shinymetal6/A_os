@@ -51,7 +51,7 @@ static uint32_t pwm_control_get_status(uint8_t handle)
 	return DriversDefs[handle]->status;
 }
 
-static uint32_t pwm_control_get_values(uint8_t handle,uint8_t *values)
+static uint32_t pwm_control_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
