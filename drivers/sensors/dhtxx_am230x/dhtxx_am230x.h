@@ -37,16 +37,21 @@
 
 typedef struct
 {
-	uint8_t		status;
-	uint8_t		state_machine;
-	uint32_t	ticks;
-	uint8_t		handle;
-	uint32_t	samples_number;
-	uint32_t	dhtxx_am230x_samples[DHTXX_AM230X_MAX_SAMPLES_LEN];
-	uint32_t	dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];
-	uint32_t	dhtxx_am230x_decoded[DHTXX_AM230X_BYTES_NUM];
-	uint8_t		checksum;
-	uint32_t	errors;
+	uint8_t				status;
+	uint8_t				state_machine;
+	uint32_t			ticks;
+	uint8_t				handle;
+	uint32_t			samples_number;
+	uint32_t			dhtxx_am230x_samples[DHTXX_AM230X_MAX_SAMPLES_LEN];
+	uint32_t			dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];
+	uint32_t			dhtxx_am230x_decoded[DHTXX_AM230X_BYTES_NUM];
+	uint8_t				checksum;
+	uint32_t			errors;
+	TIM_HandleTypeDef 	*dht_timer;
+	uint16_t 			dht_channel;
+	GPIO_TypeDef	 	*enable_port[1];
+	uint16_t			enable_bit[1];
+	char				driver_name[32];
 }Dhtxx_am230x_Drv_TypeDef;
 /* status */
 #define	DHTXX_AM230X_STARTBIT	0x01

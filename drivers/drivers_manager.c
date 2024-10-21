@@ -28,22 +28,23 @@
 #include <string.h>
 #include "drivers_manager.h"
 
-SYSTEM_RAM	DriversDefs_t	*DriversDefs[MAX_DRIVERS];
+extern		DriverStruct_t	*DriverStruct[MAX_DRIVERS];
 SYSTEM_RAM	uint8_t			last_used_handle=0,driver_request = 0;
 
-uint32_t	driver_register(DriversDefs_t *driver,uint32_t flags)
+uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
 {
-	if ( DriversDefs[last_used_handle] == NULL )
+	if ( DriverStruct[last_used_handle] == NULL )
 	{
-		DriversDefs[last_used_handle] = driver;
-		DriversDefs[last_used_handle]->process = get_current_process();
-		DriversDefs[last_used_handle]->flags |= flags;
+		DriverStruct[last_used_handle] = driver;
+		DriverStruct[last_used_handle]->process = get_current_process();
+		DriverStruct[last_used_handle]->flags |= flags;
+		DriverStruct[last_used_handle]->driver_private_data = private_drv_struct;
 
 		if (driver->periodic_before_check_timers_callback != NULL  )
 			set_before_check_timers_callback(driver->periodic_before_check_timers_callback);
 		if (driver->periodic_after_check_timers_callback != NULL  )
 			set_after_check_timers_callback(driver->periodic_after_check_timers_callback);
-		DriversDefs[last_used_handle]->status = DRIVER_STATUS_REQUESTED;
+		DriverStruct[last_used_handle]->status = DRIVER_STATUS_REQUESTED;
 
 		last_used_handle++;
 		driver_request++;
@@ -52,14 +53,14 @@ uint32_t	driver_register(DriversDefs_t *driver,uint32_t flags)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t	driver_unregister(DriversDefs_t *driver)
+uint32_t	driver_unregister(DriverStruct_t *driver)
 {
 uint32_t	i;
 	for(i=0;i<MAX_DRIVERS;i++)
 	{
-		if ( strcmp(DriversDefs[i]->driver_name,driver->driver_name) == 0 )
+		if ( strcmp(DriverStruct[i]->driver_name,driver->driver_name) == 0 )
 		{
-			DriversDefs[i] = NULL;
+			DriverStruct[i] = NULL;
 			last_used_handle--;
 			return 0;
 		}
@@ -67,26 +68,26 @@ uint32_t	i;
 	return 1;
 }
 
-uint32_t driver_init(void)
+uint32_t driver_scan(void)
 {
 uint32_t	i,drv_ret;
 	if (driver_request )
 	{
 		for(i=0;i<MAX_DRIVERS;i++)
 		{
-			if (( DriversDefs[i]->status & DRIVER_STATUS_REQUESTED) ==  DRIVER_STATUS_REQUESTED)
+			if (( DriverStruct[i]->status & DRIVER_STATUS_REQUESTED) ==  DRIVER_STATUS_REQUESTED)
 			{
-				DriversDefs[i]->status = DRIVER_STATUS_IN_USE;
-				if ( DriversDefs[i]->init != NULL )
+				DriverStruct[i]->status = DRIVER_STATUS_IN_USE;
+				if ( DriverStruct[i]->init != NULL )
 				{
-					if ( (drv_ret = DriversDefs[i]->init(i)) == DRIVER_REQUEST_FAILED)
-						DriversDefs[i]->status = DRIVER_STATUS_FAILED;
+					if ( (drv_ret = DriverStruct[i]->init(i)) == DRIVER_REQUEST_FAILED)
+						DriverStruct[i]->status = DRIVER_STATUS_FAILED;
 					else
 					{
-						if (( DriversDefs[i]->flags & DRIVER_FLAGS_AUTOSTART) == DRIVER_FLAGS_AUTOSTART)
+						if (( DriverStruct[i]->flags & DRIVER_FLAGS_AUTOSTART) == DRIVER_FLAGS_AUTOSTART)
 						{
-							if ( DriversDefs[i]->start != NULL )
-								DriversDefs[i]->start(i);
+							if ( DriverStruct[i]->start != NULL )
+								DriverStruct[i]->start(i);
 						}
 
 					}
@@ -102,29 +103,73 @@ uint32_t	i,drv_ret;
 
 uint32_t driver_start(uint32_t handle)
 {
-	if ( DriversDefs[handle]->start != NULL )
-		return DriversDefs[handle]->start(handle);
+	if ( DriverStruct[handle]->start != NULL )
+		return DriverStruct[handle]->start(handle);
 	return DRIVER_REQUEST_FAILED;
 }
 
 uint32_t driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
-	if ( DriversDefs[handle]->get_values != NULL )
-		return DriversDefs[handle]->get_values(handle,values,values_number);
+	if ( DriverStruct[handle]->get_values != NULL )
+		return DriverStruct[handle]->get_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
 uint32_t driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
-	if ( DriversDefs[handle]->set_values != NULL )
-		return DriversDefs[handle]->set_values(handle,values,values_number);
+	if ( DriverStruct[handle]->set_values != NULL )
+		return DriverStruct[handle]->set_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
 uint32_t driver_extended_action(uint32_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
 {
-	if ( DriversDefs[handle]->extended_action != NULL )
-		return DriversDefs[handle]->extended_action(handle,action,action_parameter,extension_parameter);
+	if ( DriverStruct[handle]->extended_action != NULL )
+		return DriverStruct[handle]->extended_action(handle,action,action_parameter,extension_parameter);
 	return DRIVER_REQUEST_FAILED;
+}
+
+uint32_t driver_get_handle_from_dma_channel(uint32_t *handle1 , uint32_t *handle2)
+{
+uint32_t	i,drv_ret=0;
+BasicDriverStruct_t	*BasicDriverStruct;
+	for(i=0;i<MAX_DRIVERS;i++)
+	{
+		if ( DriverStruct[i] != NULL )
+		{
+			if (( DriverStruct[i]->status & DRIVER_STATUS_IN_USE) ==  DRIVER_STATUS_IN_USE)
+			{
+				if ( DriverStruct[i]->driver_private_data != NULL)
+				{
+					BasicDriverStruct = (BasicDriverStruct_t	*)DriverStruct[i]->driver_private_data;
+					if ( BasicDriverStruct->hdma[0] != NULL)
+					{
+						*handle1 = i;
+						drv_ret++;
+					}
+					if ( BasicDriverStruct->hdma[1] != NULL)
+					{
+						*handle2 = i;
+						drv_ret++;
+					}
+				}
+			}
+		}
+	}
+	return drv_ret;
+}
+
+uint32_t 	driver_init(void)
+{
+uint32_t	i,drv_ret=0;
+uint32_t size;
+
+	size = sizeof(DriverStruct_t) / 4;
+
+	for(i=0;i<MAX_DRIVERS;i++)
+	{
+		A_clear32((uint32_t	*)&DriverStruct[i],size);
+	}
+	return drv_ret;
 }
 

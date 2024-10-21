@@ -65,11 +65,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define MQTT_ENABLE				1
 //#define	DDC_SYSTEM_ENABLE		1
 
-#define	DHTXX_AM230X_ENABLE		1
-#define	MOTOR_CNTRL_A			1
-#define	MOTOR_CNTRL_B			1
-
-#define	DHTXX_AM230X_ENABLE			1
+//#define	DHTXX_AM230X_ENABLE			1
 #ifdef DHTXX_AM230X_ENABLE
 	extern	TIM_HandleTypeDef 				htim2;
 	#define DHTXX_AM230X_TIMER				htim2

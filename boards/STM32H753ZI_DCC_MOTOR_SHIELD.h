@@ -63,7 +63,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1
-#define	DDC_SYSTEM_ENABLE		1
+#define	DCC_SYSTEM_ENABLE		1
 
 //#define	DHTXX_AM230X_ENABLE		1
 //#define	MOTOR_CNTRL_A			1
@@ -121,16 +121,16 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
-#ifdef DDC_SYSTEM_ENABLE
+#ifdef DCC_SYSTEM_ENABLE
 	#define	A_HAS_TIMER1			1
 	extern	TIM_HandleTypeDef 		htim1;
-	#define DCC_TIMER					htim1
+	#define DCC_TIMER				htim1
 	#define DCC_CHANNEL_OUT			TIM_CHANNEL_3
 	#define DCC_CHANNEL_CUTOUT		TIM_CHANNEL_4
 	#define DCC_ENABLE_PORT			DCC_ENABLE_GPIO_Port
 	#define DCC_ENABLE_GPIOBIT		DCC_ENABLE_Pin
 	#define	DCC_TIMER_DUAL_PHASE	1
-#endif // #ifdef DDC_SYSTEM_ENABLE
+#endif // #ifdef DCC_SYSTEM_ENABLE
 
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))

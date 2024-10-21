@@ -26,10 +26,10 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 
-#ifdef DDC_SYSTEM_ENABLE
-#include "dcc_OK01.h"
+#ifdef DCC_SYSTEM_ENABLE
+#include "dcc.h"
 #include <string.h>
-extern	DriversDefs_t	*DriversDefs[MAX_DRIVERS];
+extern	DriverStruct_t	*DriverStruct[MAX_DRIVERS];
 
 static DCC_Drv_Pkt_TypeDef	DCC_StandardIdle_Pkt =
 {
@@ -139,37 +139,42 @@ static DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 static DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 static DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
 
-static DCC_Control_Drv_TypeDef	DCC_Control_Drv;
 
 static void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 {
-	if ( hdma == DCC_Control_Drv.dcc_hdma )
+uint32_t handle_dcc , handle_cutout;
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
+	if ( driver_get_handle_from_dma_channel(&handle_dcc,&handle_cutout) )
 	{
-		if (( DCC_Control_Drv.status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
+		DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle_dcc]->driver_private_data;
+		if ( hdma == DCC_Control_Drv->hdma[0] )
 		{
-			GPIO_SetGpioOUT(DCC_Control_Drv.enable_port, DCC_Control_Drv.enable_bit, GPIO_PIN_SET);
-			memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
-			if (( DCC_Control_Drv.status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-				memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
-			else
-				memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-			if ( DCC_Control_Drv.repetition_counter )
-				DCC_Control_Drv.repetition_counter--;
-			else
-				DCC_Control_Drv.status &= ~DCC_PACKET_PENDING;
-		}
-		else
-		{
-			GPIO_SetGpioOUT(DCC_Control_Drv.enable_port, DCC_Control_Drv.enable_bit, GPIO_PIN_RESET);
-			if (( DCC_Control_Drv.status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
+			if (( DCC_Control_Drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
-				if (( DCC_Control_Drv.status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-				{
+				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
+				memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
+				if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
+					memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
+				else
 					memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-					DCC_Control_Drv.status &= ~DCC_PACKET_EXTENDED;
+				if ( DCC_Control_Drv->repetition_counter )
+					DCC_Control_Drv->repetition_counter--;
+				else
+					DCC_Control_Drv->status &= ~DCC_PACKET_PENDING;
+			}
+			else
+			{
+				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
+				if (( DCC_Control_Drv->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
+				{
+					if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
+					{
+						memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+						DCC_Control_Drv->status &= ~DCC_PACKET_EXTENDED;
+					}
+					memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+					DCC_Control_Drv->status &= ~DCC_PACKET_INPROGRESS;
 				}
-				memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-				DCC_Control_Drv.status &= ~DCC_PACKET_INPROGRESS;
 			}
 		}
 	}
@@ -177,33 +182,39 @@ static void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 
 static void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
 {
-	if ( hdma == DCC_Control_Drv.dcc_hdma )
+uint32_t handle_dcc , handle_cutout;
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
+	if ( driver_get_handle_from_dma_channel(&handle_dcc,&handle_cutout) )
 	{
-		if (( DCC_Control_Drv.status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
+		DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle_dcc]->driver_private_data;
+		if ( hdma == DCC_Control_Drv->hdma[1] )
 		{
-			GPIO_SetGpioOUT(DCC_Control_Drv.enable_port, DCC_Control_Drv.enable_bit, GPIO_PIN_SET);
-			memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
-			if (( DCC_Control_Drv.status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-				memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
-			else
-				memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-			if ( DCC_Control_Drv.repetition_counter )
-				DCC_Control_Drv.repetition_counter--;
-			else
-				DCC_Control_Drv.status &= ~DCC_PACKET_PENDING;
-		}
-		else
-		{
-			GPIO_SetGpioOUT(DCC_Control_Drv.enable_port, DCC_Control_Drv.enable_bit, GPIO_PIN_RESET);
-			if (( DCC_Control_Drv.status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
+			if (( DCC_Control_Drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
-				if (( DCC_Control_Drv.status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-				{
+				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
+				memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
+				if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
+					memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
+				else
 					memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-					DCC_Control_Drv.status &= ~DCC_PACKET_EXTENDED;
+				if ( DCC_Control_Drv->repetition_counter )
+					DCC_Control_Drv->repetition_counter--;
+				else
+					DCC_Control_Drv->status &= ~DCC_PACKET_PENDING;
+			}
+			else
+			{
+				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
+				if (( DCC_Control_Drv->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
+				{
+					if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
+					{
+						memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+						DCC_Control_Drv->status &= ~DCC_PACKET_EXTENDED;
+					}
+					memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+					DCC_Control_Drv->status &= ~DCC_PACKET_INPROGRESS;
 				}
-				memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-				DCC_Control_Drv.status &= ~DCC_PACKET_INPROGRESS;
 			}
 		}
 	}
@@ -211,25 +222,27 @@ static void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
 
 static uint8_t dcc_TIM_PWM_Start_DMA(uint8_t handle)
 {
-	if ( HAL_TIM_PWM_Start(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel) )
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
+	if ( HAL_TIM_PWM_Start(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_dcc_channel) )
 		return 1;
 #ifdef DCC_TIMER_DUAL_PHASE
-	if ( HAL_TIMEx_PWMN_Start(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel) )
+	if ( HAL_TIMEx_PWMN_Start(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_180phase_dcc_channel) )
 		return 1;
 #endif
 
-	if ( HAL_TIM_PWM_Start(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel_slave) )
+	if ( HAL_TIM_PWM_Start(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_cutout_channel) )
 		return 1;
 
-	DCC_Control_Drv.dcc_timer->hdma[DCC_Control_Drv.dma_dcc_index]->XferCpltCallback 		= dcc_TIM_DMADelayPulseCplt;
-	DCC_Control_Drv.dcc_timer->hdma[DCC_Control_Drv.dma_dcc_index]->XferHalfCpltCallback 	= dcc_TIM_DMADelayPulseHalfCplt;
+	DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_dcc_index]->XferCpltCallback 		= dcc_TIM_DMADelayPulseCplt;
+	DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_dcc_index]->XferHalfCpltCallback 	= dcc_TIM_DMADelayPulseHalfCplt;
 
-    if (HAL_DMA_Start_IT(DCC_Control_Drv.dcc_timer->hdma[DCC_Control_Drv.dma_dcc_index]   , (uint32_t )&DCC_Pkt[0],    (uint32_t)&DCC_Control_Drv.dcc_timer->Instance->PSC,sizeof(DCC_Pkt)/2) != HAL_OK)
+    if (HAL_DMA_Start_IT(DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_dcc_index]   , (uint32_t )&DCC_Pkt[0],    (uint32_t)&DCC_Control_Drv->dcc_timer->Instance->PSC,sizeof(DCC_Pkt)/2) != HAL_OK)
       return 1;
 
-    if (HAL_DMA_Start_IT(DCC_Control_Drv.dcc_timer->hdma[DCC_Control_Drv.dma_cutout_index], (uint32_t )&DCC_Cutout_Pkt[0], (uint32_t)&DCC_Control_Drv.dcc_timer->Instance->CCR4,sizeof(DCC_Cutout_Pkt)/2) != HAL_OK)
+    if (HAL_DMA_Start_IT(DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_cutout_index], (uint32_t )&DCC_Cutout_Pkt[0], (uint32_t)&DCC_Control_Drv->dcc_timer->Instance->CCR4,sizeof(DCC_Cutout_Pkt)/2) != HAL_OK)
       return 1;
-    DCC_Control_Drv.dcc_timer->Instance->DIER = DCC_Control_Drv.dma_dcc_value | DCC_Control_Drv.dma_cutout_value;
+    DCC_Control_Drv->dcc_timer->Instance->DIER = DCC_Control_Drv->dma_dcc_value | DCC_Control_Drv->dma_cutout_value;
 	return 0;
 }
 
@@ -245,39 +258,44 @@ uint8_t i,mask=0x80;
 	}
 }
 
-static void compile_reset_packet(void)
+static void compile_reset_packet(uint8_t handle)
 {
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
 	memcpy((uint8_t *)&DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-	DCC_Control_Drv.status &= ~DCC_PACKET_EXTENDED;
+	DCC_Control_Drv->status &= ~DCC_PACKET_EXTENDED;
 	encode_byte((uint16_t *)&DCC_WorkPkt.address,0);
 	encode_byte((uint16_t *)&DCC_WorkPkt.instruction,0);
 	encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,0);
 }
 
-static uint8_t one_byte_commands(char cmd)
+static uint8_t one_byte_commands(uint8_t handle,char cmd)
 {
 uint8_t	ret_val = 0;
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 
 	switch ( cmd)
 	{
 	case 'A' 	:
-		DCC_Control_Drv.status |= DCC_ON;
+		DCC_Control_Drv->status |= DCC_ON;
 		break;
 	case 'a' 	:
-		DCC_Control_Drv.status &= ~DCC_ON;
+		DCC_Control_Drv->status &= ~DCC_ON;
 		break;
 	case 'R' 	:
-		compile_reset_packet();
+		compile_reset_packet(handle);
 		break;
 	default:		ret_val = 1;
 	}
 	return ret_val;
 }
 
-uint8_t four_bytes_commands(char cmd,uint16_t track,uint16_t address,uint16_t data)
+uint8_t four_bytes_commands(uint8_t handle,char cmd,uint16_t track,uint16_t address,uint16_t data)
 {
 uint8_t ecc;
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
 	if ( cmd == 'T' )
 	{
 		ecc = address ^ data;
@@ -286,15 +304,17 @@ uint8_t ecc;
 		encode_byte((uint16_t *)&DCC_WorkPkt.address,address);
 		encode_byte((uint16_t *)&DCC_WorkPkt.instruction,data);
 		encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,ecc);
-		DCC_Control_Drv.status &= ~DCC_PACKET_EXTENDED;
+		DCC_Control_Drv->status &= ~DCC_PACKET_EXTENDED;
 		return 0;
 	}
 	return 1;
 }
 
-static uint8_t five_bytes_commands(char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah)
+static uint8_t five_bytes_commands(uint8_t handle,char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah)
 {
 uint8_t ecc;
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
 	if ( cmd == 'T' )
 	{
 		ecc = address ^ datal ^ datah;
@@ -304,7 +324,7 @@ uint8_t ecc;
 		encode_byte((uint16_t *)&DCC_WorkPkt.instruction,datal);
 		encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,datah);
 		encode_byte((uint16_t *)&DCC_WorkPkt.detection_long,ecc);
-		DCC_Control_Drv.status |= ~DCC_PACKET_EXTENDED;
+		DCC_Control_Drv->status |= ~DCC_PACKET_EXTENDED;
 		return 0;
 	}
 	return 1;
@@ -318,11 +338,12 @@ static uint32_t dcc_start(uint8_t handle)
 
 static uint32_t dcc_stop(uint8_t handle)
 {
-	HAL_TIM_PWM_Stop_DMA(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel);
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	HAL_TIM_PWM_Stop_DMA(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_dcc_channel);
 #ifdef DCC_TIMER_DUAL_PHASE
-	HAL_TIMEx_PWMN_Stop_DMA(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel);
+	HAL_TIMEx_PWMN_Stop_DMA(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_180phase_dcc_channel);
 #endif
-	HAL_TIM_PWM_Stop_DMA(DCC_Control_Drv.dcc_timer, DriversDefs[handle]->peripheral_channel_slave);
+	HAL_TIM_PWM_Stop_DMA(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_cutout_channel);
 	return 0;
 }
 
@@ -339,22 +360,23 @@ static uint32_t dcc_get_values(uint8_t handle,uint8_t *values,uint8_t values_num
 
 static uint32_t dcc_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	switch(values_number)
 	{
 	case 1:
-		one_byte_commands(values[DCC_CMD]);
+		one_byte_commands(handle,values[DCC_CMD]);
 		break;
 	case 4:
-		four_bytes_commands(values[DCC_CMD],values[DCC_TRACK],values[DCC_ADDRESS],values[DCC_DATAH]);
+		four_bytes_commands(handle,values[DCC_CMD],values[DCC_TRACK],values[DCC_ADDRESS],values[DCC_DATAH]);
 		break;
 	case 5:
-		five_bytes_commands(values[DCC_CMD],values[DCC_TRACK],values[DCC_ADDRESS],values[DCC_DATAH],values[DCC_DATAL]);
+		five_bytes_commands(handle,values[DCC_CMD],values[DCC_TRACK],values[DCC_ADDRESS],values[DCC_DATAH],values[DCC_DATAL]);
 		break;
 	default:
 		return 1;
 	}
-	DCC_Control_Drv.repetition_counter = DCC_Control_Drv.repetition;
-	DCC_Control_Drv.status |= (DCC_PACKET_PENDING | DCC_PACKET_INPROGRESS);
+	DCC_Control_Drv->repetition_counter = DCC_Control_Drv->repetition;
+	DCC_Control_Drv->status |= (DCC_PACKET_PENDING | DCC_PACKET_INPROGRESS);
 	return 0;
 }
 
@@ -363,56 +385,53 @@ static uint32_t dcc_extended_actions(uint8_t handle,uint8_t action,uint32_t acti
 	return 0;
 }
 
-extern	DriversDefs_t	dcc_Drv;
+extern	DriverStruct_t	dcc_Drv;
 
 uint32_t dcc_deinit(uint8_t handle)
 {
-	DCC_Control_Drv.status = 0;
-	return driver_unregister(&dcc_Drv);
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	DCC_Control_Drv->status = 0;
+	return driver_unregister((DriverStruct_t *)&DriverStruct[handle]);
 }
 
 static uint32_t dcc_init(uint8_t handle)
 {
+DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
 	memcpy((uint8_t *)&DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&DCC_Cutout_Pkt[0],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 	memcpy((uint8_t *)&DCC_Cutout_Pkt[1],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-	DCC_Control_Drv.status = DCC_INITIALIZED;
-	DCC_Control_Drv.handle = handle;
-	DCC_Control_Drv.dcc_timer = (TIM_HandleTypeDef *)DriversDefs[handle]->peripheral;
-	DCC_Control_Drv.enable_port = (GPIO_TypeDef *)DriversDefs[handle]->gpio_port[0];
-	DCC_Control_Drv.enable_bit = DriversDefs[handle]->gpio_bit[0];
-	switch(DriversDefs[handle]->peripheral_channel)
+	DCC_Control_Drv->status = DCC_INITIALIZED;
+	DCC_Control_Drv->handle = handle;
+
+	switch(DCC_Control_Drv->timer_dcc_channel)
 	{
-	case TIM_CHANNEL_1 : DCC_Control_Drv.dma_dcc_value = TIM_DMA_CC1; DCC_Control_Drv.dma_dcc_index = TIM_DMA_ID_CC1;break;
-	case TIM_CHANNEL_2 : DCC_Control_Drv.dma_dcc_value = TIM_DMA_CC2; DCC_Control_Drv.dma_dcc_index = TIM_DMA_ID_CC2;break;
-	case TIM_CHANNEL_3 : DCC_Control_Drv.dma_dcc_value = TIM_DMA_CC3; DCC_Control_Drv.dma_dcc_index = TIM_DMA_ID_CC3;break;
-	case TIM_CHANNEL_4 : DCC_Control_Drv.dma_dcc_value = TIM_DMA_CC4; DCC_Control_Drv.dma_dcc_index = TIM_DMA_ID_CC4;break;
+	case TIM_CHANNEL_1 : DCC_Control_Drv->dma_dcc_value = TIM_DMA_CC1; DCC_Control_Drv->dma_dcc_index = TIM_DMA_ID_CC1;break;
+	case TIM_CHANNEL_2 : DCC_Control_Drv->dma_dcc_value = TIM_DMA_CC2; DCC_Control_Drv->dma_dcc_index = TIM_DMA_ID_CC2;break;
+	case TIM_CHANNEL_3 : DCC_Control_Drv->dma_dcc_value = TIM_DMA_CC3; DCC_Control_Drv->dma_dcc_index = TIM_DMA_ID_CC3;break;
+	case TIM_CHANNEL_4 : DCC_Control_Drv->dma_dcc_value = TIM_DMA_CC4; DCC_Control_Drv->dma_dcc_index = TIM_DMA_ID_CC4;break;
 	default : return 1;
 	}
-	switch(DriversDefs[handle]->peripheral_channel_slave)
+	switch(DCC_Control_Drv->timer_cutout_channel)
 	{
-	case TIM_CHANNEL_1 : DCC_Control_Drv.dma_cutout_value = TIM_DMA_CC1; DCC_Control_Drv.dma_cutout_index = TIM_DMA_ID_CC1;break;
-	case TIM_CHANNEL_2 : DCC_Control_Drv.dma_cutout_value = TIM_DMA_CC2; DCC_Control_Drv.dma_cutout_index = TIM_DMA_ID_CC2;break;
-	case TIM_CHANNEL_3 : DCC_Control_Drv.dma_cutout_value = TIM_DMA_CC3; DCC_Control_Drv.dma_cutout_index = TIM_DMA_ID_CC3;break;
-	case TIM_CHANNEL_4 : DCC_Control_Drv.dma_cutout_value = TIM_DMA_CC4; DCC_Control_Drv.dma_cutout_index = TIM_DMA_ID_CC4;break;
+	case TIM_CHANNEL_1 : DCC_Control_Drv->dma_cutout_value = TIM_DMA_CC1; DCC_Control_Drv->dma_cutout_index = TIM_DMA_ID_CC1;break;
+	case TIM_CHANNEL_2 : DCC_Control_Drv->dma_cutout_value = TIM_DMA_CC2; DCC_Control_Drv->dma_cutout_index = TIM_DMA_ID_CC2;break;
+	case TIM_CHANNEL_3 : DCC_Control_Drv->dma_cutout_value = TIM_DMA_CC3; DCC_Control_Drv->dma_cutout_index = TIM_DMA_ID_CC3;break;
+	case TIM_CHANNEL_4 : DCC_Control_Drv->dma_cutout_value = TIM_DMA_CC4; DCC_Control_Drv->dma_cutout_index = TIM_DMA_ID_CC4;break;
 	default : return 1;
 	}
-	DCC_Control_Drv.dcc_hdma = DCC_Control_Drv.dcc_timer->hdma[DCC_Control_Drv.dma_dcc_index];
-	DCC_Control_Drv.repetition_counter = DCC_Control_Drv.repetition = 0;
-	DCC_Control_Drv.repetition = 5;
+	DCC_Control_Drv->hdma[0] = DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_dcc_index];
+	DCC_Control_Drv->hdma[1] = DCC_Control_Drv->dcc_timer->hdma[DCC_Control_Drv->dma_cutout_index];
+	DCC_Control_Drv->repetition_counter = DCC_Control_Drv->repetition = 0;
+	DCC_Control_Drv->repetition = 5;
 	return 0;
 }
 
-DriversDefs_t	dcc_Drv =
+DriverStruct_t	DCC_Controller =
 {
-	.periodic_before_check_timers_callback = NULL,
-	.periodic_after_check_timers_callback = NULL,
-	.peripheral = (uint32_t *)&DCC_TIMER,
-	.peripheral_channel = DCC_CHANNEL_OUT,
-	.peripheral_channel_slave = DCC_CHANNEL_CUTOUT,
-	.gpio_port[0] = (uint32_t *)DCC_ENABLE_PORT,
-	.gpio_bit[0]  = DCC_ENABLE_GPIOBIT,
+	.bus = NULL,
+	.address = 0,
 	.init = dcc_init,
 	.deinit = dcc_deinit,
 	.start = dcc_start,
@@ -421,15 +440,15 @@ DriversDefs_t	dcc_Drv =
 	.get_status = dcc_get_status,
 	.get_values = dcc_get_values,
 	.set_values = dcc_set_values,
-	.driver_name = "dcc",
+	.periodic_before_check_timers_callback = NULL,
+	.periodic_after_check_timers_callback = NULL,
+	.driver_name = "DCC",
 };
 
-uint32_t dcc_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index)
+uint32_t dcc_allocate_driver(DriverStruct_t *new_struct)
 {
-	memcpy(new_struct,&dcc_Drv,sizeof(dcc_Drv));
-	new_struct->peripheral_index = peripheral_index;
+	memcpy(new_struct,&DCC_Controller,sizeof(DCC_Controller));
 	return 0;
 }
-
-#endif // #ifdef DDC_SYSTEM_ENABLE
+#endif // #ifdef DCC_SYSTEM_ENABLE
 

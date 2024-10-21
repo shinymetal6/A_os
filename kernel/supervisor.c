@@ -63,7 +63,7 @@ ITCM_AREA_CODE void supervisor(void)
 #ifdef POWERSAVING_ENABLED
 		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
 #endif
-		driver_init();
+		driver_scan();
 		schedule();
 	}
 }

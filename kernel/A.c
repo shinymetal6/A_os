@@ -28,6 +28,7 @@
 #include "kernel_opt.h"
 #include "../modules/lwip2.2/version.h"
 #include <strings.h>
+#include <string.h>
 #include <stdio.h>
 
 SYSTEM_RAM		Asys_t			Asys;
@@ -37,6 +38,7 @@ SYSTEM_RAM		HWDevices_t		HWDevices[HWDEVICES_NUM];
 SYSTEM_RAM		Modules_t		Modules[MODULES_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
+SYSTEM_RAM		DriverStruct_t	*DriverStruct[MAX_DRIVERS];
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
@@ -144,12 +146,12 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
     Asys.g_os_started = 1;
 }
 
-
 void A_init_mem(void)
 {
 	Asys.osSysRam_start = (uint32_t *)&_osSysRam_start;
 	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
 	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
+	driver_init();
 
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);

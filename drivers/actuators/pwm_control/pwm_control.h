@@ -25,8 +25,18 @@
 
 typedef struct
 {
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	DMA_HandleTypeDef 	*hdma[2];
+
 	uint32_t			prescaler;
 	uint32_t			pulse_width;
+	TIM_HandleTypeDef 	*pwm_timer;
+	uint16_t 			pwm_channel;
+	GPIO_TypeDef	 	*enable_port[1];
+	uint16_t			enable_bit[1];
+	char				driver_name[32];
 }Pwm_Control_Drv_TypeDef;
 /* status */
 #define	PWM_CHANNEL_INITIALIZED		0x01
@@ -36,6 +46,6 @@ typedef struct
 #define	PWM_EA_SET_PWM_PERIOD		2
 #define	PWM_EA_SET_PWM_DIRECTION	3
 
-extern	uint32_t pwm_control_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index);
+extern	uint32_t pwm_control_allocate_driver(DriverStruct_t *new_struct);
 
 #endif /* DRIVERS_ACTUATORS_PWM_CONTROL_PWM_CONTROL_H_ */

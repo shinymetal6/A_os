@@ -50,7 +50,9 @@ typedef struct {
 typedef struct
 {
 	uint8_t				status;
+	uint8_t				flags;
 	uint8_t				handle;
+	DMA_HandleTypeDef 	*hdma[2];
 	uint8_t				repetition;
 	uint8_t				repetition_counter;
 	uint32_t			dma_dcc_value;
@@ -58,10 +60,13 @@ typedef struct
 	uint32_t			dma_dcc_index;
 	uint32_t			dma_cutout_index;
 	TIM_HandleTypeDef 	*dcc_timer;
-	DMA_HandleTypeDef 	*dcc_hdma;
+	uint32_t			timer_dcc_channel;
+	uint32_t			timer_180phase_dcc_channel;
+	uint32_t			timer_cutout_channel;
 	GPIO_TypeDef	 	*enable_port;
 	uint16_t			enable_bit;
 }DCC_Control_Drv_TypeDef;
+
 /* status */
 #define	DCC_INITIALIZED			0x01
 #define	DCC_RUNNING				0x02
@@ -79,6 +84,7 @@ typedef struct
 #define	DCC_ADDRESS	2
 #define	DCC_DATAH	3
 #define	DCC_DATAL	4
-extern	uint32_t dcc_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index);
+
+extern	uint32_t dcc_allocate_driver(DriverStruct_t *new_struct);
 
 #endif /* DRIVERS_ACTUATORS_DCC_DCC_H_ */

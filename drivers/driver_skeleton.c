@@ -60,11 +60,11 @@ static uint32_t driver_skeleton_extended_actions(uint8_t handle,uint8_t action,u
 	return 0;
 }
 
-extern	DriversDefs_t	Pwm_Control_Drv_ArduinoShield;
+extern	DriverStruct_t	Skeleton_Drv;
 
 uint32_t driver_skeleton_deinit(uint8_t handle)
 {
-	return driver_unregister(&Pwm_Control_Drv_ArduinoShield);
+	return driver_unregister(&Skeleton_Drv);
 }
 
 static uint32_t driver_skeleton_init(uint8_t handle)
@@ -72,10 +72,10 @@ static uint32_t driver_skeleton_init(uint8_t handle)
 	return 0;
 }
 
-DriversDefs_t	Skeleton_Drv =
+DriverStruct_t	Skeleton_Drv =
 {
-	.periodic_before_check_timers_callback = NULL,
-	.periodic_after_check_timers_callback = NULL,
+	.bus = NULL,
+	.address = 0,
 	.init = driver_skeleton_init,
 	.deinit = driver_skeleton_deinit,
 	.start = driver_skeleton_start,
@@ -84,13 +84,14 @@ DriversDefs_t	Skeleton_Drv =
 	.get_status = driver_skeleton_get_status,
 	.get_values = driver_skeleton_get_values,
 	.set_values = driver_skeleton_set_values,
+	.periodic_before_check_timers_callback = NULL,
+	.periodic_after_check_timers_callback = NULL,
 	.driver_name = "driver_skeleton",
 };
 
-uint32_t driver_skeleton_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index)
+uint32_t driver_skeleton_allocate_driver(DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&Skeleton_Drv,sizeof(Skeleton_Drv));
-	new_struct->peripheral_index = peripheral_index;
 	return 0;
 }
 

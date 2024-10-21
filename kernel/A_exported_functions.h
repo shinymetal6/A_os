@@ -139,6 +139,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #include "../drivers/gpio_utls/gpio.h"
 #include "../drivers/drivers_manager.h"
 
+#ifdef DCC_SYSTEM_ENABLE
+#include "../drivers/actuators/dcc/dcc.h"
+#endif
+
 #ifdef INTERNAL_ADC_ENABLED
 #include "../drivers/internal_adc/internal_adc.h"
 #endif
