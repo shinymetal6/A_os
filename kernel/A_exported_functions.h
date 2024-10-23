@@ -143,6 +143,14 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #include "../drivers/actuators/dcc/dcc.h"
 #endif
 
+#ifdef INTERNAL_ADC_DRIVER
+#include "../drivers/analog/intadc_driver/intadc_driver.h"
+#endif
+
+#ifdef INTERNAL_DAC_DRIVER
+#include "../drivers/analog/intdac_driver/intdac_driver.h"
+#endif
+
 #ifdef INTERNAL_ADC_ENABLED
 #include "../drivers/internal_adc/internal_adc.h"
 #endif

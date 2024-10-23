@@ -62,8 +62,26 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1
+#define	INTERNAL_ADC_DRIVER			1
+#define	INTERNAL_DAC_DRIVER			1
 
-#define	DHTXX_AM230X_ENABLE			1
+
+#ifdef INTERNAL_ADC_DRIVER
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define INTERNAL_ADC				hadc1
+#endif // #ifdef INTERNAL_ADC_DRIVER
+
+#ifdef INTERNAL_DAC_DRIVER
+	extern	TIM_HandleTypeDef 			htim7;
+	#define INTERNAL_DAC_TIMER			htim7
+	extern	DAC_HandleTypeDef 			hdac1;
+	#define INTERNAL_DAC				hdac1
+#endif // #ifdef INTERNAL_DAC_DRIVER
+
+
+//#define	DHTXX_AM230X_ENABLE			1
 #ifdef DHTXX_AM230X_ENABLE
 	extern	TIM_HandleTypeDef 			htim2;
 	#define DHTXX_AM230X_TIMER			htim2
