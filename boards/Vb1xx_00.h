@@ -122,8 +122,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	CODEC_ENABLED			1
 #define	CODEC_NAU88C22			1
 #define	HWRANDOM_GEN			1
-#define	ADC_ENABLED				1
-#define	DAC_ENABLED				1
+#define	INTERNAL_ADC_DRIVER		1
 #define	USB_DEVICE_ENABLED		1
 //#define	USB_HOST_ENABLED		1
 #define	USE_ITCM				1
@@ -146,19 +145,12 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	MICROSD_DETECT_PIN		SD_DETECT_Pin
 #endif // #ifdef SDCARD_ENABLED
 
-#ifdef ADC_ENABLED
-	#define	INTERNAL_ADC_ENABLED		1
-	extern	ADC_HandleTypeDef 	hadc1;
-	extern	ADC_HandleTypeDef 	hadc2;
-	extern	TIM_HandleTypeDef 	htim6;
-	#define	CONTROL_ADC1		hadc1
-	#define	ANALOG_IN_ADC2		hadc2
-	#define	CONTROL_TIMER		htim6
-#endif // #ifdef ADC_DAC_ENABLED
-
-#ifdef DAC_ENABLED
-	extern	DAC_HandleTypeDef hdac1;
-#endif // #ifdef DAC_ENABLED
+#ifdef INTERNAL_ADC_DRIVER
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define INTERNAL_ADC				hadc1
+#endif // #ifdef INTERNAL_ADC_DRIVER
 
 #ifdef LCD_096_ENABLED
 	extern SPI_HandleTypeDef hspi1;

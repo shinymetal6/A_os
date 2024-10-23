@@ -151,14 +151,6 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #include "../drivers/analog/intdac_driver/intdac_driver.h"
 #endif
 
-#ifdef INTERNAL_ADC_ENABLED
-#include "../drivers/internal_adc/internal_adc.h"
-#endif
-
-#ifdef INTERNAL_DAC_ENABLED
-#include "../drivers/internal_dac/internal_dac.h"
-#endif
-
 #ifdef XMODEM_ENABLE
 #include "../modules/serial_transfers/xmodem.h"
 #endif
@@ -201,10 +193,6 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
 #endif // #ifdef LCD_2I8_ENABLED
 
-#ifdef ADC_ENABLED
-	#include "../drivers/internal_adc/internal_adc.h"
-#endif // #ifdef ADC_ENABLED
-
 #ifdef QSPI_ENABLED
 	#include "HwDevices/hw_qspi.h"
 	#include "../drivers/external_flash/qspi.h"
@@ -214,14 +202,6 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #ifdef I2CFLASH_ENABLED
 	#include "../drivers/external_flash/i2c_24aaxxx.h"
 #endif // #ifdef I2CFLASH_ENABLED
-
-#ifdef INTERNAL_ADC_ENABLED
-	#include "../drivers/internal_adc/internal_adc.h"
-#endif // #ifdef INTERNAL_ADC_ENABLED
-
-#ifdef INTERNAL_DAC_ENABLED
-	#include "../drivers/internal_dac/internal_dac.h"
-#endif // #ifdef INTERNAL_DAC_ENABLED
 
 #ifdef INTERNAL_RTC_ENABLED
 	#include "../drivers/internal_rtc/internal_rtc.h"

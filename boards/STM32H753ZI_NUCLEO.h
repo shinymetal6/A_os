@@ -68,11 +68,22 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 #ifdef INTERNAL_ADC_DRIVER
 	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC1_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define INTERNAL_ADC1				hadc1
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC2_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc2;
+	#define INTERNAL_ADC2				hadc2
+#endif // #ifdef INTERNAL_ADC_DRIVER
+/*
+#ifdef INTERNAL_ADC_DRIVER
+	extern	TIM_HandleTypeDef 			htim6;
 	#define INTERNAL_ADC_TIMER			htim6
 	extern	ADC_HandleTypeDef 			hadc1;
 	#define INTERNAL_ADC				hadc1
 #endif // #ifdef INTERNAL_ADC_DRIVER
-
+*/
 #ifdef INTERNAL_DAC_DRIVER
 	extern	TIM_HandleTypeDef 			htim7;
 	#define INTERNAL_DAC_TIMER			htim7

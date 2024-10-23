@@ -75,6 +75,8 @@ uint32_t	i,drv_ret;
 	{
 		for(i=0;i<MAX_DRIVERS;i++)
 		{
+			if ( DriverStruct[i] == NULL )
+				return DRIVER_STATUS_INITPEND;
 			if (( DriverStruct[i]->status & DRIVER_STATUS_REQUESTED) ==  DRIVER_STATUS_REQUESTED)
 			{
 				DriverStruct[i]->status = DRIVER_STATUS_IN_USE;

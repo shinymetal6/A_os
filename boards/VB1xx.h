@@ -124,62 +124,8 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	HWRANDOM_GEN			1
 #define	USB_DEVICE_ENABLED		1
 //#define	USB_HOST_ENABLED		1
+#define	INTERNAL_ADC_DRIVER		1
 
-#define INTERNAL_ADC_ENABLED		1
-#define INTERNAL_DAC_ENABLED		1
-
-#ifdef INTERNAL_ADC_ENABLED
-	extern	ADC_HandleTypeDef 			hadc1;
-	#define ADC_HANDLE1					hadc1
-	extern	ADC_HandleTypeDef 			hadc2;
-	#define ADC_HANDLE2					hadc2
-	extern	TIM_HandleTypeDef 			htim6;
-	#define ADC1_TIMER					htim6
-	#define	ADC2_USES_ADC1_TIMER			1
-#ifdef ADC2_USES_ADC1_TIMER
-	#define ADC2_TIMER					ADC1_TIMER
-#else
-	extern	TIM_HandleTypeDef 			htim7;
-	#define ADC2_TIMER					htim7
-#endif
-
-	//#define ADC1_TIM_FOR_DAC				1
-	//#define ADC2_TIM_FOR_DAC				1
-	//#define ADC_HAS_OPAMP1				1
-	#ifdef ADC_HAS_OPAMP1
-		extern	OPAMP_HandleTypeDef 	hopamp1;
-		#define OPAMP1_HANDLE			hopamp1
-	#endif
-	//#define ADC_HAS_OPAMP2				1
-#ifdef ADC_HAS_OPAMP2
-	extern	OPAMP_HandleTypeDef 	hopamp2;
-	#define OPAMP_HANDLE			hopamp2
-#endif
-	//#define ADC_SINGLE_CHANNEL			1
-	#ifdef ADC_SINGLE_CHANNEL
-		#define ADC_SINGLE_CHANNEL_NUMBER	0
-	#endif
-
-#endif
-
-#ifdef INTERNAL_DAC_ENABLED
-	extern	DAC_HandleTypeDef 			hdac1;
-	#define DAC_HANDLE					hdac1
-	#define DAC_USER_WAVETABLE				1
-	#ifdef DAC_USER_WAVETABLE
-		#define DAC_WAVETABLE_SIZE				256
-	#endif
-	#ifdef ADC1_TIM_FOR_DAC
-		#define DAC_TIMER				ADC1_TIMER
-	#else
-		#ifdef ADC2_TIM_FOR_DAC
-			#define DAC_TIMER				ADC2_TIMER
-		#else
-			extern	TIM_HandleTypeDef 		htim15;
-			#define DAC_TIMER				htim15
-		#endif
-	#endif
-#endif
 
 #define	USE_ITCM				1
 #define	I2STX_PRIORITY			7
@@ -269,6 +215,17 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #ifdef WIRELESS_ENABLED
 
 #endif // #ifdef WIRELESS_ENABLED
+
+#ifdef INTERNAL_ADC_DRIVER
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC1_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define INTERNAL_ADC1				hadc1
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC2_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc2;
+	#define INTERNAL_ADC2				hadc2
+#endif // #ifdef INTERNAL_ADC_DRIVER
 
 #define	SAMPLE_FREQUENCY	48000
 #define	SAMPLE_PERIOD		(1.0F / SAMPLE_FREQUENCY)
