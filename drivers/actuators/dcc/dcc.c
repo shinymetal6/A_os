@@ -139,12 +139,38 @@ static DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 static DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 static DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
 
+static uint32_t driver_get_handle_from_dcc_dma_channel(uint32_t *handle_ch0 , uint32_t *handle_ch1)
+{
+uint32_t	i,drv_ret=0;
+DCC_Control_Drv_TypeDef	*BasicDriverStruct;
+	for(i=0;i<MAX_DRIVERS;i++)
+	{
+		if ( DriverStruct[i] != NULL )
+		{
+			if (( DriverStruct[i]->status & DRIVER_STATUS_IN_USE) ==  DRIVER_STATUS_IN_USE)
+			{
+				BasicDriverStruct = (DCC_Control_Drv_TypeDef *)DriverStruct[i]->driver_private_data;
+				if ( BasicDriverStruct->hdma[0] != NULL)
+				{
+					*handle_ch0 = i;
+					drv_ret++;
+				}
+				if ( BasicDriverStruct->hdma[1] != NULL)
+				{
+					*handle_ch1 = i;
+					drv_ret++;
+				}
+			}
+		}
+	}
+	return drv_ret;
+}
 
 static void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 {
 uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
-	if ( driver_get_handle_from_dma_channel(&handle_dcc,&handle_cutout) )
+	if ( driver_get_handle_from_dcc_dma_channel(&handle_dcc,&handle_cutout) )
 	{
 		DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle_dcc]->driver_private_data;
 		if ( hdma == DCC_Control_Drv->hdma[0] )
@@ -184,7 +210,7 @@ static void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
 {
 uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
-	if ( driver_get_handle_from_dma_channel(&handle_dcc,&handle_cutout) )
+	if ( driver_get_handle_from_dcc_dma_channel(&handle_dcc,&handle_cutout) )
 	{
 		DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle_dcc]->driver_private_data;
 		if ( hdma == DCC_Control_Drv->hdma[1] )
@@ -223,6 +249,9 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
 static uint8_t dcc_TIM_PWM_Start_DMA(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
+	if ( DCC_Control_Drv == NULL )
+		return 1;
 
 	if ( HAL_TIM_PWM_Start(DCC_Control_Drv->dcc_timer, DCC_Control_Drv[handle].timer_dcc_channel) )
 		return 1;
@@ -380,7 +409,7 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStru
 	return 0;
 }
 
-static uint32_t dcc_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+static uint32_t dcc_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
@@ -430,8 +459,6 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStru
 
 DriverStruct_t	DCC_Controller =
 {
-	.bus = NULL,
-	.address = 0,
 	.init = dcc_init,
 	.deinit = dcc_deinit,
 	.start = dcc_start,

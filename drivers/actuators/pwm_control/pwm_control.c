@@ -65,28 +65,28 @@ static uint32_t pwm_control_set_values(uint8_t handle,uint8_t *values,uint8_t va
 	return 0;
 }
 
-static uint32_t pwm_control_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+static uint32_t pwm_control_extended_actions(uint32_t handle,uint32_t *action)
 {
 Pwm_Control_Drv_TypeDef	*Pwm_Control_Drv = (Pwm_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef		*timer = Pwm_Control_Drv->pwm_timer;
+Pwm_Control_Actions_TypeDef	*action_struct = (Pwm_Control_Actions_TypeDef *)&action;
 
-	switch ( action )
+	switch ( action_struct->action )
 	{
 	case	PWM_EA_SET_PWM_PRESCALER:
-		timer->Instance->PSC = Pwm_Control_Drv->prescaler = action_parameter;
+		timer->Instance->PSC = action_struct->prescaler;
 		break;
 	case	PWM_EA_SET_PWM_PERIOD:
 		switch(Pwm_Control_Drv->pwm_channel)
 		{
-		case	TIM_CHANNEL_1	:	timer->Instance->CCR1 = action_parameter; break;
-		case	TIM_CHANNEL_2	:	timer->Instance->CCR2 = action_parameter; break;
-		case	TIM_CHANNEL_3	:	timer->Instance->CCR3 = action_parameter; break;
-		case	TIM_CHANNEL_4	:	timer->Instance->CCR4 = action_parameter; break;
+		case	TIM_CHANNEL_1	:	timer->Instance->CCR1 = action_struct->pulse_width; break;
+		case	TIM_CHANNEL_2	:	timer->Instance->CCR2 = action_struct->pulse_width; break;
+		case	TIM_CHANNEL_3	:	timer->Instance->CCR3 = action_struct->pulse_width; break;
+		case	TIM_CHANNEL_4	:	timer->Instance->CCR4 = action_struct->pulse_width; break;
 		}
-		Pwm_Control_Drv->pulse_width = action_parameter;
 		break;
 	case	PWM_EA_SET_PWM_DIRECTION:
-		if ( action_parameter )
+		if ( action_struct->pwm_direction )
 			HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port[0],Pwm_Control_Drv->enable_bit[0],GPIO_PIN_SET);
 		else
 			HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port[0],Pwm_Control_Drv->enable_bit[0],GPIO_PIN_RESET);
@@ -111,8 +111,6 @@ static uint32_t pwm_control_init(uint8_t handle)
 
 DriverStruct_t	Pwm_Control_Drv_ArduinoShield =
 {
-	.bus = NULL,
-	.address = 0,
 	.init = pwm_control_init,
 	.deinit = pwm_control_deinit,
 	.start = pwm_control_start,

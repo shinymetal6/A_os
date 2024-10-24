@@ -29,22 +29,31 @@ typedef struct
 	uint8_t				flags;
 	uint8_t				handle;
 	DMA_HandleTypeDef 	*hdma[2];
-
-	uint32_t			prescaler;
-	uint32_t			pulse_width;
 	TIM_HandleTypeDef 	*pwm_timer;
 	uint16_t 			pwm_channel;
 	GPIO_TypeDef	 	*enable_port[1];
 	uint16_t			enable_bit[1];
-	char				driver_name[32];
 }Pwm_Control_Drv_TypeDef;
+
 /* status */
 #define	PWM_CHANNEL_INITIALIZED		0x01
 #define	PWM_CHANNEL_RUNNING			0x80
 
+typedef struct
+{
+	uint8_t				action;
+	uint32_t			prescaler;
+	uint32_t			pulse_width;
+	uint8_t				pwm_direction;
+}Pwm_Control_Actions_TypeDef;
+/* action */
 #define	PWM_EA_SET_PWM_PRESCALER	1
 #define	PWM_EA_SET_PWM_PERIOD		2
 #define	PWM_EA_SET_PWM_DIRECTION	3
+/* pwm_direction */
+#define	PWM_EA_PWM_DIRECTION_FWD	1
+#define	PWM_EA_PWM_DIRECTION_REV	0
+
 
 extern	uint32_t pwm_control_allocate_driver(DriverStruct_t *new_struct);
 

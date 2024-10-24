@@ -57,13 +57,17 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	BUTTON_GPIOPORT			B1_GPIO_Port
 #define	BUTTON_GPIOBIT			B1_Pin
 
-#define	NETWORKING_ENABLED		1
+//#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED		1
-#define	XMODEM_ENABLE			1
+//#define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
-#define MQTT_ENABLE				1
+//#define MQTT_ENABLE				1
 #define	INTERNAL_ADC_DRIVER			1
 #define	INTERNAL_DAC_DRIVER			1
+//#define	DHTXX_AM230X_ENABLE		1
+//#define	DCC_SYSTEM_ENABLE		1
+//#define	MOTOR_CNTRL_A			1
+//#define	MOTOR_CNTRL_B			1
 
 
 #ifdef INTERNAL_ADC_DRIVER
@@ -76,14 +80,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	extern	ADC_HandleTypeDef 			hadc2;
 	#define INTERNAL_ADC2				hadc2
 #endif // #ifdef INTERNAL_ADC_DRIVER
-/*
-#ifdef INTERNAL_ADC_DRIVER
-	extern	TIM_HandleTypeDef 			htim6;
-	#define INTERNAL_ADC_TIMER			htim6
-	extern	ADC_HandleTypeDef 			hadc1;
-	#define INTERNAL_ADC				hadc1
-#endif // #ifdef INTERNAL_ADC_DRIVER
-*/
+
 #ifdef INTERNAL_DAC_DRIVER
 	extern	TIM_HandleTypeDef 			htim7;
 	#define INTERNAL_DAC_TIMER			htim7
@@ -100,6 +97,51 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	GPIOPORT_DHTXX_AM230X		GPIOA
 	#define	GPIOBIT_DHTXX_AM230X		3
 #endif // #ifdef DHTXX_AM230X_ENABLE
+
+#ifdef MOTOR_CNTRL_A
+	extern	TIM_HandleTypeDef 				htim1;
+	#define MOTOR_CNTRL_PWM_A				htim1
+	#define MOTOR_CNTRL_DIRECT_PWM_A		TIM1
+	#define MOTOR_CNTRL_CHANNEL_A			TIM_CHANNEL_3
+	#define MOTOR_CNTRL_PWM_A_PERIOD		10000
+	#define MOTOR_CNTRL_DIR_A_GPIOPORT		DIR_A_GPIO_Port
+	#define MOTOR_CNTRL_DIR_A_GPIOBIT		DIR_A_Pin
+	#define MOTOR_CNTRL_BRAKE_A_GPIOPORT	BRAKE_A_GPIO_Port
+	#define MOTOR_CNTRL_BRAKE_A_GPIOBIT		BRAKE_A_Pin
+	#define	A_HAS_TIMER2					1
+#endif
+
+#ifdef MOTOR_CNTRL_B
+	extern	TIM_HandleTypeDef 				htim3;
+	#define MOTOR_CNTRL_PWM_B				htim3
+	#define MOTOR_CNTRL_CHANNEL_B			TIM_CHANNEL_2
+	#define MOTOR_CNTRL_PWM_B_PERIOD		10000
+	#define MOTOR_CNTRL_DIR_B_GPIOPORT		DIR_B_GPIO_Port
+	#define MOTOR_CNTRL_DIR_B_GPIOBIT		DIR_B_Pin
+	#define MOTOR_CNTRL_BRAKE_B_GPIOPORT	BRAKE_B_GPIO_Port
+	#define MOTOR_CNTRL_BRAKE_B_GPIOBIT		BRAKE_B_Pin
+	#define	A_HAS_TIMER3					1
+#endif
+
+#if defined(MOTOR_CNTRL_A) || defined(MOTOR_CNTRL_B)
+	#define	A_HAS_MOTOR_CNTRL				1
+	#if defined(MOTOR_CNTRL_A) && defined(MOTOR_CNTRL_B)
+		#define	A_HAS_MOTOR_CNTRL_NUMBER				2
+	#else
+		#define	A_HAS_MOTOR_CNTRL_NUMBER				1
+	#endif
+#endif
+
+#ifdef DCC_SYSTEM_ENABLE
+	#define	A_HAS_TIMER1			1
+	extern	TIM_HandleTypeDef 		htim1;
+	#define DCC_TIMER				htim1
+	#define DCC_CHANNEL_OUT			TIM_CHANNEL_3
+	#define DCC_CHANNEL_CUTOUT		TIM_CHANNEL_4
+	#define DCC_ENABLE_PORT			DCC_ENABLE_GPIO_Port
+	#define DCC_ENABLE_GPIOBIT		DCC_ENABLE_Pin
+	#define	DCC_TIMER_DUAL_PHASE	1
+#endif // #ifdef DCC_SYSTEM_ENABLE
 
 #ifdef NETWORKING_ENABLED
 	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */

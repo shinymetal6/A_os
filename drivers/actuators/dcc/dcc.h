@@ -52,7 +52,6 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
-	DMA_HandleTypeDef 	*hdma[2];
 	uint8_t				repetition;
 	uint8_t				repetition_counter;
 	uint32_t			dma_dcc_value;
@@ -60,6 +59,7 @@ typedef struct
 	uint32_t			dma_dcc_index;
 	uint32_t			dma_cutout_index;
 	TIM_HandleTypeDef 	*dcc_timer;
+	DMA_HandleTypeDef 	*hdma[2];
 	uint32_t			timer_dcc_channel;
 	uint32_t			timer_180phase_dcc_channel;
 	uint32_t			timer_cutout_channel;

@@ -55,7 +55,7 @@ static uint32_t driver_skeleton_set_values(uint8_t handle,uint8_t *values,uint8_
 	return 0;
 }
 
-static uint32_t driver_skeleton_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+static uint32_t driver_skeleton_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
@@ -74,8 +74,6 @@ static uint32_t driver_skeleton_init(uint8_t handle)
 
 DriverStruct_t	Skeleton_Drv =
 {
-	.bus = NULL,
-	.address = 0,
 	.init = driver_skeleton_init,
 	.deinit = driver_skeleton_deinit,
 	.start = driver_skeleton_start,

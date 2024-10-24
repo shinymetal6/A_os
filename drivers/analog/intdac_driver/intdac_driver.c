@@ -1,4 +1,19 @@
 /*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
  * intdac_driver.c
  *
  *  Created on: Oct 23, 2024
@@ -71,8 +86,6 @@ static uint32_t intdac_init(uint8_t handle)
 
 DriverStruct_t	IntDAC_Drv =
 {
-	.bus = NULL,
-	.address = 0,
 	.init = intdac_init,
 	.deinit = intdac_deinit,
 	.start = intdac_start,
@@ -83,7 +96,7 @@ DriverStruct_t	IntDAC_Drv =
 	.set_values = intdac_set_values,
 	.periodic_before_check_timers_callback = NULL,
 	.periodic_after_check_timers_callback = NULL,
-	.driver_name = "intdac",
+	.driver_name = "Internal DAC",
 };
 
 uint32_t intdac_allocate_driver(DriverStruct_t *new_struct)

@@ -124,41 +124,11 @@ uint32_t driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t driver_extended_action(uint32_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+uint32_t driver_extended_action(uint32_t handle,uint32_t *action)
 {
 	if ( DriverStruct[handle]->extended_action != NULL )
-		return DriverStruct[handle]->extended_action(handle,action,action_parameter,extension_parameter);
+		return DriverStruct[handle]->extended_action(handle,action);
 	return DRIVER_REQUEST_FAILED;
-}
-
-uint32_t driver_get_handle_from_dma_channel(uint32_t *handle1 , uint32_t *handle2)
-{
-uint32_t	i,drv_ret=0;
-BasicDriverStruct_t	*BasicDriverStruct;
-	for(i=0;i<MAX_DRIVERS;i++)
-	{
-		if ( DriverStruct[i] != NULL )
-		{
-			if (( DriverStruct[i]->status & DRIVER_STATUS_IN_USE) ==  DRIVER_STATUS_IN_USE)
-			{
-				if ( DriverStruct[i]->driver_private_data != NULL)
-				{
-					BasicDriverStruct = (BasicDriverStruct_t	*)DriverStruct[i]->driver_private_data;
-					if ( BasicDriverStruct->hdma[0] != NULL)
-					{
-						*handle1 = i;
-						drv_ret++;
-					}
-					if ( BasicDriverStruct->hdma[1] != NULL)
-					{
-						*handle2 = i;
-						drv_ret++;
-					}
-				}
-			}
-		}
-	}
-	return drv_ret;
 }
 
 uint32_t 	driver_init(void)

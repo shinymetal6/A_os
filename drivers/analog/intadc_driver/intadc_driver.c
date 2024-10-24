@@ -1,4 +1,19 @@
 /*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
  * intadc_driver.c
  *
  *  Created on: Oct 23, 2024
@@ -51,7 +66,7 @@ static uint32_t intadc_set_values(uint8_t handle,uint8_t *values,uint8_t values_
 	return 0;
 }
 
-static uint32_t intadc_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+static uint32_t intadc_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
@@ -76,8 +91,6 @@ ADC_HandleTypeDef	*adc = Adc_drv->adc;
 
 DriverStruct_t	IntADC_Drv =
 {
-	.bus = NULL,
-	.address = 0,
 	.init = intadc_init,
 	.deinit = intadc_deinit,
 	.start = intadc_start,
@@ -88,7 +101,7 @@ DriverStruct_t	IntADC_Drv =
 	.set_values = intadc_set_values,
 	.periodic_before_check_timers_callback = NULL,
 	.periodic_after_check_timers_callback = NULL,
-	.driver_name = "intadc",
+	.driver_name = "Internal ADC",
 };
 
 uint32_t intadc_allocate_driver(DriverStruct_t *new_struct)
