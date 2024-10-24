@@ -31,7 +31,7 @@
 #include <string.h>
 
 Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv;
-extern	DriversDefs_t		*DriversDefs[MAX_DRIVERS];
+extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
@@ -108,7 +108,10 @@ uint8_t		byte_val,byte_mask;
 
 static void dhtxx_am230x_worker(void)
 {
-TIM_HandleTypeDef *timer = (TIM_HandleTypeDef *)DriversDefs[Dhtxx_am230x_Drv.handle]->peripheral;
+TIM_HandleTypeDef *timer = (TIM_HandleTypeDef *)DriverStruct[Dhtxx_am230x_Drv.handle]->peripheral;
+Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv;
+Dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef	*)DriverStruct[handle_dcc]->driver_private_data;
+
 
 	if ( Dhtxx_am230x_Drv.ticks )
 		Dhtxx_am230x_Drv.ticks--;
@@ -191,19 +194,17 @@ uint8_t j;
 	return 0;
 }
 
-extern	DriversDefs_t	dhtxx_am230x_driver_struct;
+extern	DriverStruct_t	dhtxx_am230x_driver_struct;
 
 uint32_t dhtxx_am230x_deinit(uint8_t handle)
 {
 	return driver_unregister(&dhtxx_am230x_driver_struct);
 }
 
-DriversDefs_t	dhtxx_am230x_driver_struct =
+DriverStruct_t	dhtxx_am230x_driver_struct =
 {
 		.periodic_before_check_timers_callback = dhtxx_am230x_worker,
 		.periodic_after_check_timers_callback = NULL,
-		.peripheral = (uint32_t *)&DHTXX_AM230X_TIMER,
-		.peripheral_channel = DHTXX_AM230X_TIM_CHANNEL,
 		.init = dhtxx_am230x_init,
 		.deinit = dhtxx_am230x_deinit,
 		.start = dhtxx_am230x_start,
@@ -213,10 +214,9 @@ DriversDefs_t	dhtxx_am230x_driver_struct =
 		.driver_name = "dhtxx_am230x",
 };
 
-uint32_t dhtxx_get_drv_struct(DriversDefs_t *new_struct,uint8_t peripheral_index)
+uint32_t dhtxx_allocate_driver(DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&dhtxx_am230x_driver_struct,sizeof(dhtxx_am230x_driver_struct));
-	new_struct->peripheral_index = peripheral_index;
 	return 0;
 }
 

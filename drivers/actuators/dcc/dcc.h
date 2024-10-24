@@ -60,8 +60,8 @@ typedef struct
 	uint32_t			dma_cutout_index;
 	TIM_HandleTypeDef 	*dcc_timer;
 	DMA_HandleTypeDef 	*hdma[2];
-	uint32_t			timer_dcc_channel;
 	uint32_t			timer_180phase_dcc_channel;
+	uint32_t			timer_dcc_channel;
 	uint32_t			timer_cutout_channel;
 	GPIO_TypeDef	 	*enable_port;
 	uint16_t			enable_bit;

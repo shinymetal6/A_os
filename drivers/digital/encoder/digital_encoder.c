@@ -33,12 +33,13 @@ extern	DriverStruct_t			*DriverStruct[MAX_DRIVERS];
 
 static uint32_t digital_encoder_start(uint8_t handle)
 {
+	/*
 DigitalEncoder_Drv_TypeDef	*DigEncoder_Drv = (DigitalEncoder_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 GPIO_TypeDef				*clock_port = DigEncoder_Drv->clock_port;
 uint16_t					clock_bit;
 GPIO_TypeDef				*data_port  = DigEncoder_Drv->data_port;
 uint16_t					data_bit;
-
+*/
 
 	return 0;
 }

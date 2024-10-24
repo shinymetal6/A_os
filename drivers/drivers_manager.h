@@ -73,7 +73,7 @@ extern	uint32_t 	driver_scan(void);
 #include "actuators/pwm_control/pwm_control.h"
 #endif
 
-#ifdef DDC_SYSTEM_ENABLE
+#ifdef DCC_SYSTEM_ENABLE
 #include "actuators/dcc/dcc.h"
 #endif
 

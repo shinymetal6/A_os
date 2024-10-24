@@ -14,18 +14,17 @@
  * Project : A_os
 */
 /*
- * STM32H753ZI_DCC_MOTOR_SHIELD.h
+ * STM32H753ZI_NUCLEO_DHT11.h
  *
- *  Created on: Oct 16, 2024
+ *  Created on: Apr 19, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_
-#define BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_
+#ifndef BOARDS_STM32H753ZI_NUCLEO_DHT11_H_
+#define BOARDS_STM32H753ZI_NUCLEO_DHT11_H_
 
-#include	"boards_common_mem.h"
 /* Memories */
-/*
+
 // memory pool defines
 extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_START			    (uint32_t )(&_mempool_start)
@@ -47,7 +46,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define IDLE_STACK_START		(uint32_t )((uint32_t )&_osSysRam_end - (uint32_t )SIZE_SCHED_STACK)
 #define SIZE_IDLE_STACK          4096U
 #define	FIRST_PRC_STACK_START	 (IDLE_STACK_START - SIZE_IDLE_STACK)
-*/
+
 /* I/O */
 #define	LED_1_GPIOPORT			LD1_GPIO_Port
 #define	LED_1_GPIOBIT			LD1_Pin
@@ -58,25 +57,45 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	BUTTON_GPIOPORT			B1_GPIO_Port
 #define	BUTTON_GPIOBIT			B1_Pin
 
-#define	NETWORKING_ENABLED		1
+//#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED		1
 //#define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
-#define MQTT_ENABLE				1
-
+//#define MQTT_ENABLE				1
 //#define	INTERNAL_ADC_DRIVER			1
 //#define	INTERNAL_DAC_DRIVER			1
-//#define	DHTXX_AM230X_ENABLE		1
+#define	DHTXX_AM230X_ENABLE		1
+//#define	DCC_SYSTEM_ENABLE		1
 //#define	MOTOR_CNTRL_A			1
 //#define	MOTOR_CNTRL_B			1
-#define	DCC_SYSTEM_ENABLE		1
 
+
+#ifdef INTERNAL_ADC_DRIVER
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC1_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc1;
+	#define INTERNAL_ADC1				hadc1
+	extern	TIM_HandleTypeDef 			htim6;
+	#define INTERNAL_ADC2_TIMER			htim6
+	extern	ADC_HandleTypeDef 			hadc2;
+	#define INTERNAL_ADC2				hadc2
+#endif // #ifdef INTERNAL_ADC_DRIVER
+
+#ifdef INTERNAL_DAC_DRIVER
+	extern	TIM_HandleTypeDef 			htim7;
+	#define INTERNAL_DAC_TIMER			htim7
+	extern	DAC_HandleTypeDef 			hdac1;
+	#define INTERNAL_DAC				hdac1
+#endif // #ifdef INTERNAL_DAC_DRIVER
+
+
+//#define	DHTXX_AM230X_ENABLE			1
 #ifdef DHTXX_AM230X_ENABLE
-	extern	TIM_HandleTypeDef 				htim2;
-	#define DHTXX_AM230X_TIMER				htim2
-	#define DHTXX_AM230X_TIM_CHANNEL		TIM_CHANNEL_4
-	#define	GPIOPORT_DHTXX_AM230X			GPIOA
-	#define	GPIOBIT_DHTXX_AM230X			3
+	extern	TIM_HandleTypeDef 			htim2;
+	#define DHTXX_AM230X_TIMER			htim2
+	#define DHTXX_AM230X_TIM_CHANNEL	TIM_CHANNEL_4
+	#define	GPIOPORT_DHTXX_AM230X		GPIOA
+	#define	GPIOBIT_DHTXX_AM230X		3
 #endif // #ifdef DHTXX_AM230X_ENABLE
 
 #ifdef MOTOR_CNTRL_A
@@ -113,7 +132,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#endif
 #endif
 
-
 #ifdef DCC_SYSTEM_ENABLE
 	#define	A_HAS_TIMER1			1
 	extern	TIM_HandleTypeDef 		htim1;
@@ -126,15 +144,13 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #endif // #ifdef DCC_SYSTEM_ENABLE
 
 #ifdef NETWORKING_ENABLED
-// 1 starts dhcp, 0 means fixed IP defined in A.c
-	//#define	NETWORKING_DHCP				1
+	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
 #endif // #ifdef NETWORKING_ENABLED
 
 #ifdef USB_DEVICE_ENABLED
 	#define	USB_CDC				1
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
-
 
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
@@ -206,9 +222,9 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"STM32H753ZI_NUCLEO_MOTOR_SHIELD"
-#define	MACHINE_NAME		"STM32H753ZI_NUCLEO_MOTOR_SHIELD"
+#define	BOARD_NAME			"BOARDS_STM32H753ZI_NUCLEO_DHT11"
+#define	MACHINE_NAME		"BOARDS_STM32H753ZI_NUCLEO_DHT11"
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_STM32H753ZI_DCC_MOTOR_SHIELD_H_ */
+#endif /* BOARDS_STM32H753ZI_NUCLEO_DHT11_H_ */
