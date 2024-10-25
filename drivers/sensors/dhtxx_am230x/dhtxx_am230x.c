@@ -141,7 +141,6 @@ uint8_t		byte_val,byte_mask;
 	return 1;
 }
 
-
 static uint32_t dhtxx_am230x_init(uint8_t handle_dht)
 {
 Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv;
@@ -150,7 +149,6 @@ Dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef	*)DriverStruct[handle_dht]->driver_
 	Dhtxx_am230x_Drv->ticks = Dhtxx_am230x_Drv->errors = 0;
 	return 0;
 }
-
 
 static void dhtxx_am230x_worker(void)
 {
@@ -251,24 +249,24 @@ Dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef	*)DriverStruct[handle_dht]->driver_
 	return 0;
 }
 
-extern	DriverStruct_t	dhtxx_am230x_driver_struct;
+extern	const DriverStruct_t	dhtxx_am230x_driver_struct;
 
 uint32_t dhtxx_am230x_deinit(uint8_t handle)
 {
-	return driver_unregister(&dhtxx_am230x_driver_struct);
+	return driver_unregister((DriverStruct_t *)&dhtxx_am230x_driver_struct);
 }
 
-DriverStruct_t	dhtxx_am230x_driver_struct =
+const DriverStruct_t	dhtxx_am230x_driver_struct =
 {
-		.periodic_before_check_timers_callback = dhtxx_am230x_worker,
-		.periodic_after_check_timers_callback = NULL,
-		.init = dhtxx_am230x_init,
-		.deinit = dhtxx_am230x_deinit,
-		.start = dhtxx_am230x_start,
-		.stop = NULL,
-		.get_status = dhtxx_am230x_get_status,
-		.get_values = dhtxx_am230x_get_values,
-		.driver_name = "dhtxx_am230x",
+	.periodic_before_check_timers_callback = dhtxx_am230x_worker,
+	.periodic_after_check_timers_callback = NULL,
+	.init = dhtxx_am230x_init,
+	.deinit = dhtxx_am230x_deinit,
+	.start = dhtxx_am230x_start,
+	.stop = NULL,
+	.get_status = dhtxx_am230x_get_status,
+	.get_values = dhtxx_am230x_get_values,
+	.driver_name = "dhtxx_am230x",
 };
 
 uint32_t dhtxx_allocate_driver(DriverStruct_t *new_struct)
