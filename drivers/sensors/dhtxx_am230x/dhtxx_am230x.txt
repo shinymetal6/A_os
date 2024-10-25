@@ -1,0 +1,36 @@
+Driver use
+
+1) In user space define the driver's global area:
+DriverStruct_t	dhtxx_am230x_driver;
+uint32_t		dhtxx_am230x_driver_handle;
+
+2) In user space define the driver's private area:
+Dhtxx_am230x_Drv_TypeDef	Dht_Control_Drv[1] =
+{
+	{
+		.device_index = 0,
+		.dht_timer = &DHTXX_AM230X_TIMER,
+		.dht_timer_channel = DHTXX_AM230X_TIM_CHANNEL,
+		.one_wire_port = GPIOPORT_DHTXX_AM230X,
+		.one_wire_bit = GPIOBIT_DHTXX_AM230X,
+		.driver_name = "DHT11 driver",
+	},
+};
+
+3) In the process clone the driver's global area and get the driver's handle:
+	dhtxx_allocate_driver(&dhtxx_am230x_driver);
+	if ( (dhtxx_am230x_driver_handle = driver_register(&dhtxx_am230x_driver,(uint32_t *)&Dht_Control_Drv[0],DRIVER_FLAGS_AUTOSTART)) == DRIVER_REQUEST_FAILED )
+		wait_event(HW_SLEEP_FOREVER);
+
+4) Periodically give a:
+ 	driver_get_values(dhtxx_am230x_driver_handle,dht11_values,0);
+	driver_start(dhtxx_am230x_driver_handle);
+
+Notes :
+1) Modify the fields of Dht_Control_Drv accordingly to your setup for timers, gpio and device index.
+2) If you have more than 1 dht11 connected duplicate as needed the Dht_Control_Drv fields and change 
+	the device_index incrementing it.
+3) the driver_start(dhtxx_am230x_driver_handle) function will clear the dht11 data, so the call to 
+	driver_get_values(dhtxx_am230x_driver_handle,dht11_values,0) must be done before.
+4) The timing is dictated by the dht11 device, so the cycle time must be >= 30 mSec, tested with 50 mSec.
+5) There are 3 pictures that describe how to setup your timer, change the values accordingly to your hardware.

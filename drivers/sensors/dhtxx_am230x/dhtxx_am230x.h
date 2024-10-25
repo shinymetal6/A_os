@@ -24,23 +24,27 @@
 #ifndef DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
 #define DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
 
+#define	MAX_DHT11_DEVICES					8
+
 #define	DHTXX_AM230X_MAX_SAMPLES_LEN		128
 #define	DHTXX_AM230X_MAX_BITBYTES_LEN		80
 #define	DHTXX_AM230X_BYTES_NUM				5
 #define	DHTXX_AM230X_START_MINIMUM			75
 #define	DHTXX_AM230X_START_MAXIMUM			90
 
-#define	DHTXX_AM230X_50uLOW_MIN			40
-#define	DHTXX_AM230X_50uLOW_MAX			70
+#define	DHTXX_AM230X_50uLOW_MIN				40
+#define	DHTXX_AM230X_50uLOW_MAX				70
 #define	DHTXX_AM230X_DECODED_0				30
 #define	DHTXX_AM230X_DECODED_1MIN			50
 
 typedef struct
 {
 	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	uint8_t				device_index;
 	uint8_t				state_machine;
 	uint32_t			ticks;
-	uint8_t				handle;
 	uint32_t			samples_number;
 	uint32_t			dhtxx_am230x_samples[DHTXX_AM230X_MAX_SAMPLES_LEN];
 	uint32_t			dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];
@@ -48,9 +52,9 @@ typedef struct
 	uint8_t				checksum;
 	uint32_t			errors;
 	TIM_HandleTypeDef 	*dht_timer;
-	uint16_t 			dht_channel;
-	GPIO_TypeDef	 	*enable_port[1];
-	uint16_t			enable_bit[1];
+	uint16_t 			dht_timer_channel;
+	GPIO_TypeDef	 	*one_wire_port;
+	uint16_t			one_wire_bit;
 	char				driver_name[32];
 }Dhtxx_am230x_Drv_TypeDef;
 /* status */
