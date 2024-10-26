@@ -1,94 +1,126 @@
-/* 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
 */
 /*
- * sht40.c
+ * .c
  *
- *  Created on: Mar 13, 2024
+ *  Created on: Oct 26, 2024
  *      Author: fil
  */
 
+
 #include "main.h"
 #include "../../../kernel/system_default.h"
-
-#ifdef SENSORS_SHT40
+#include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
+#include "../../../kernel/scheduler.h"
+
 #include "sht40.h"
+#include <string.h>
 
-uint32_t	sht40_status;
+extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
 
- static int32_t	inline SHT40_acq_start(uint8_t	sht40_reg)
+static uint32_t sht40_start(uint8_t handle)
 {
-	return hw_i2c_Send(SENSORS_SHT40_I2C_INDEX,SHT40_ADDR, &sht40_reg, 1);
+Sht40_Drv_TypeDef	*Sht40_Drv;
+	if ( DriverStruct[handle]->process == Asys.current_process)
+	{
+		Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		Sht40_Drv->status = SHT40_STARTED;
+		return HAL_I2C_Master_Transmit(Sht40_Drv->bus,Sht40_Drv->address, (uint8_t *)&Sht40_Drv->precision, 1, SHT40_I2C_TIMEOUT);
+	}
+	else
+		return SHT40_DRIVER_NOT_OWNED;
 }
 
- int32_t  SHT40_Start_HP_Acquisition(void)
+static uint32_t sht40_stop(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_DATA_HP);
+	return 0;
 }
 
- int32_t  SHT40_Start_MP_Acquisition(void)
+static uint32_t sht40_get_status(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_DATA_MP);
+	return 0;
 }
 
- int32_t  SHT40_Start_LP_Acquisition(void)
+static uint32_t sht40_get_values(uint8_t handle,uint8_t *data,uint8_t datalen)
 {
-	return SHT40_acq_start(SHT40_DATA_LP);
+Sht40_Drv_TypeDef	*Sht40_Drv;
+uint32_t	ret_i2c_code;
+	if ( DriverStruct[handle]->process == Asys.current_process)
+	{
+		Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		ret_i2c_code =  HAL_I2C_Master_Receive(Sht40_Drv->bus,Sht40_Drv->address, data, datalen, SHT40_I2C_TIMEOUT);
+		if ( ret_i2c_code == 0 )
+			return datalen;
+		return ret_i2c_code;
+	}
+	else
+		return SHT40_DRIVER_NOT_OWNED;
 }
 
- int32_t  SHT40_Start_Heat200_1sec_Acquisition(void)
+static uint32_t sht40_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
-	return SHT40_acq_start(SHT40_HEAT200_1);
+	return 0;
 }
 
- int32_t  SHT40_Start_Heat200_01sec_Acquisition(void)
+static uint32_t sht40_extended_actions(uint32_t handle,uint32_t *action)
 {
-	return SHT40_acq_start(SHT40_HEAT200_01);
+	return 0;
 }
 
- int32_t  SHT40_Start_Heat110_1sec_Acquisition(void)
+extern	DriverStruct_t	Sht40_Def_Drv;
+
+uint32_t sht40_deinit(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_HEAT110_1);
+	return driver_unregister(&Sht40_Def_Drv);
 }
 
- int32_t  SHT40_Start_Heat110_01sec_Acquisition(void)
+static uint32_t sht40_init(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_HEAT110_01);
+Sht40_Drv_TypeDef	*Sht40_Drv;
+	Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	Sht40_Drv->status = SHT40_STOPPED;
+	if ( Sht40_Drv->power_port != NULL )
+	{
+		if ( Sht40_Drv->power_active_level == 1 )
+			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_SET);
+		else
+			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_RESET);
+	}
+	return 0;
 }
 
- int32_t  SHT40_Start_Heat20_1sec_Acquisition(void)
+DriverStruct_t	Sht40_Def_Drv =
 {
-	return SHT40_acq_start(SHT40_HEAT20_1);
+	.init = sht40_init,
+	.deinit = sht40_deinit,
+	.start = sht40_start,
+	.stop = sht40_stop,
+	.extended_action = sht40_extended_actions,
+	.get_status = sht40_get_status,
+	.get_values = sht40_get_values,
+	.set_values = sht40_set_values,
+	.periodic_before_check_timers_callback = NULL,
+	.periodic_after_check_timers_callback = NULL,
+	.driver_name = "sht40",
+};
+
+uint32_t sht40_allocate_driver(DriverStruct_t *new_struct)
+{
+	memcpy(new_struct,&Sht40_Def_Drv,sizeof(Sht40_Def_Drv));
+	return 0;
 }
 
- int32_t  SHT40_Start_Heat20_01sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT20_01);
-}
-
- int32_t  SHT40_ReadData(uint8_t *pData)
-{
-	return sht40_status = hw_i2c_Get(SENSORS_SHT40_I2C_INDEX, SHT40_ADDR, pData, 6);
-}
-
- int32_t  SHT40_Get_uid(uint8_t *pData)
-{
-uint8_t		sht40_reg = SHT40_UUID;
-	sht40_status =  hw_i2c_Send(SENSORS_SHT40_I2C_INDEX,SHT40_ADDR, &sht40_reg, 1);
-	return sht40_status = hw_i2c_Get(SENSORS_SHT40_I2C_INDEX, SHT40_ADDR, pData, 2);
-}
-
-#endif // #ifdef SENSORS_LPS22DF

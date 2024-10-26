@@ -85,5 +85,8 @@ extern	uint32_t 	driver_scan(void);
 #include "analog/intdac_driver/intdac_driver.h"
 #endif
 
+#include "sensors/sht40/sht40.h"
+#include "sensors/stts22h/stts22h.h"
+
 
 #endif /* DRIVERS_DRIVERS_MANAGER_H_ */

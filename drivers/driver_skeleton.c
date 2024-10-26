@@ -30,6 +30,8 @@
 #include "driver_skeleton.h"
 #include <string.h>
 
+extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
+
 static uint32_t driver_skeleton_start(uint8_t handle)
 {
 	return 0;

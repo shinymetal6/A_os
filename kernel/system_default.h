@@ -106,7 +106,7 @@
 
 #ifdef STM32L431xx
 	#ifdef AX_P2311171_RS
-		#include "../boards/AX_P2311171_RS.h"
+		#include "../boards/SENSORS_L431.h"
 	#endif
 #endif
 
