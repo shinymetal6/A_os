@@ -30,7 +30,7 @@ typedef struct
 	uint8_t				flags;
 	uint8_t				*data;
 	I2C_HandleTypeDef 	*bus;
-	uint16_t 			address;
+	uint16_t 			device_address;
 	uint16_t 			precision;
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;

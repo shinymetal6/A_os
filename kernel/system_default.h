@@ -51,7 +51,7 @@
 	#ifdef	FL_090724_00
 		#include "../boards/FL_090724_00.h"
 	#endif
-#ifdef	NEVOL_2416176_01
+	#ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
 	#endif
 #endif	//#ifdef	STM32H743xx
@@ -72,6 +72,9 @@
 	#endif
 	#ifdef STM32H753ZI_NUCLEO_DHT11
 		#include "../boards/STM32H753ZI_NUCLEO_DHT11.h"
+	#endif
+	#ifdef STM32H753ZI_NUCLEO_UART
+		#include "../boards/STM32H753ZI_NUCLEO_UART.h"
 	#endif
 
 

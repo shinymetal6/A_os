@@ -36,6 +36,7 @@
 #define	MODULES_NUM				32
 #define	TIMER_CALLBACK_ARRAY_SIZE	8
 #define	MAX_DRIVERS			32
+#define	MAX_UARTS_DRIVERS	8
 
 #define DUMMY_XPSR  				0x01000000U
 

@@ -23,6 +23,8 @@
 #ifndef DRIVERS_SENSORS_LIS2DW12_LIS2DW12_H_
 #define DRIVERS_SENSORS_LIS2DW12_LIS2DW12_H_
 
+#ifdef SENSORS_LIS2DW12
+
 #define	LIS2DW12_ADDR			0x32
 #define	LIS2DW12_I2C_TIMEOUT	1000
 #define	IRQ_MODE_ON_WAKEUP		0
@@ -195,28 +197,20 @@ typedef enum  {
   LIS2DW12_SLEEP_ON					= 0x40,
 } WAKE_UP_THS;
 
-
-typedef struct
-{
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				opmode;
-	uint8_t				*data;
-	uint8_t				whoami;
-	I2C_HandleTypeDef 	*bus;
-	uint16_t 			device_address;
-	uint16_t 			address;
-	GPIO_TypeDef	 	*power_port;
-	uint16_t			power_bit;
-	uint8_t				power_active_level;
-}Lis2DW12_Drv_TypeDef;
-/* status */
-#define	LIS2DW12_STARTED			0x80
-#define	LIS2DW12_STOPPED			0x00
-#define LIS2DW12_DRIVER_NOT_OWNED	0xffffffff
-
-extern	uint32_t lis2dw12_allocate_driver(DriverStruct_t *new_struct);
+extern	uint8_t LIS2DW12_GetWhoAmI(void);
+extern	uint8_t LIS2DW12_SetCTRL_2_Reg(void);
+extern	uint8_t LIS2DW12_Init(void);
+extern	uint8_t LIS2DW12_ReadAccRegs(uint8_t *axis_ptr);
+extern	uint8_t LIS2DW12_GetStatusReg(void);
+extern	uint8_t LIS2DW12_GetTempReg(void);
+extern	uint8_t LIS2DW12_GetWakeSource(void);
+extern	uint8_t LIS2DW12_SetCompensation(uint8_t fs);
+extern	uint8_t LIS2DW12_Reset(void);
+extern	uint8_t LIS2DW12_GetFifoSamples(void);
+extern	void LIS2DW12_ConfigureFIFO(uint8_t FIFOMode, uint8_t FIFOThreshold);
+extern	uint8_t LIS2DW12_GetAccData(uint8_t data_index,uint8_t *axis_regs);
 
 
+#endif // #ifdef SENSORS_LIS2DW12
 
 #endif /* DRIVERS_SENSORS_LIS2DW12_LIS2DW12_H_ */

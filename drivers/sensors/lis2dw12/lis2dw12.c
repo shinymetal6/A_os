@@ -22,129 +22,121 @@
 
 #include "main.h"
 #include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-
-#ifdef SENSORS_LIS2DW12
+#include "../../../kernel/scheduler.h"
 
 #include "lis2dw12.h"
 #include <string.h>
 
-static uint8_t	read_lis_reg(uint8_t address)
+extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
+
+
+static uint8_t	read_lis_reg(I2C_HandleTypeDef 	*bus,uint16_t device_address,uint8_t internal_address,uint8_t *pData)
 {
-uint8_t	rreg;
-	hw_i2c_MemGet8(SENSORS_LIS2DW12_I2C_INDEX,LIS2DW12_ADDR,(uint16_t )address,&rreg, 1);
-	return rreg;
+	if ( HAL_I2C_Mem_Read(bus, device_address, internal_address, 1, pData, 1, STTS22H_I2C_TIMEOUT) != 0 )
+		return 255;
+	return pData[0];
 }
 
-static uint8_t	write_lis_reg(uint8_t address,uint8_t data)
+static uint8_t	write_lis_reg(I2C_HandleTypeDef *bus,uint16_t device_address,uint8_t internal_address,uint8_t *pData)
 {
-	return hw_i2c_MemSend8(SENSORS_LIS2DW12_I2C_INDEX,LIS2DW12_ADDR, (uint16_t )address,&data, 1);
+	return 	HAL_I2C_Mem_Write(bus, device_address, internal_address, 1, pData, 1, STTS22H_I2C_TIMEOUT);
+
 }
 
-uint8_t LIS2DW12_GetWhoAmI(void)
+static uint32_t lis2dw12_start(uint8_t handle)
 {
-	read_lis_reg(LIS2DW12_WHO_AM_I);
-	return read_lis_reg(LIS2DW12_WHO_AM_I);
-}
-
-uint8_t LIS2DW12_ReadAccRegs(uint8_t *axis_ptr)
-{
-	return hw_i2c_MemGet8(SENSORS_LIS2DW12_I2C_INDEX,LIS2DW12_ADDR,(uint16_t )LIS2DW12_OUT_X_L,axis_ptr, 6);
-}
-
-uint8_t LIS2DW12_GetStatusReg(void)
-{
-	return read_lis_reg(LIS2DW12_STATUS);
-}
-
-uint8_t LIS2DW12_SetCTRL_2_Reg(void)
-{
-	write_lis_reg(LIS2DW12_CTRL2,0x40);
-	HAL_Delay(1);
-	write_lis_reg(LIS2DW12_CTRL2,0x80);
-	HAL_Delay(1);
-	return write_lis_reg(LIS2DW12_CTRL2,0x14);
-}
-
-uint8_t LIS2DW12_GetWakeSource(void)
-{
-	return read_lis_reg(LIS2DW12_WAKE_UP_SRC);
-}
-
-uint8_t LIS2DW12_GetFifoSamples(void)
-{
-	return read_lis_reg(LIS2DW12_FIFO_SAMPLES) & 0x3f;
-}
-
-uint8_t LIS2DW12_GetFifoSamplesReg(void)
-{
-	return read_lis_reg(LIS2DW12_FIFO_SAMPLES);
-}
-
-void LIS2DW12_ConfigureFIFO(uint8_t FIFOMode, uint8_t FIFOThreshold)
-{
-	write_lis_reg(LIS2DW12_FIFO_CTRL, FIFOMode << 5 | (FIFOThreshold-1) );
-}
-
-uint8_t LIS2DW12_Reset(void)
-{
-uint8_t temp;
-	temp = read_lis_reg(LIS2DW12_CTRL2);
-	write_lis_reg(LIS2DW12_CTRL2, temp | 0x40); // software reset the LIS2DW12
-	return read_lis_reg(LIS2DW12_STATUS);
-}
-
-//https://github.com/kriswiner/LIS2DW12/blob/main/LIS2DW12_Tap_OrientationDetect_Ladybug/LIS2DW12.cpp#L36
-
-uint8_t LIS2DW12_GetTempReg(void)
-{
-	return read_lis_reg(LIS2DW12_OUT_T);
-}
-
-
-uint8_t LIS2DW12_GetAccData(uint8_t data_index,uint8_t *axis_regs)
-{
-uint8_t	i,k;
-	for(i=0,k=data_index*MAG_LEN;i<LIS2DW12_NUM_FIFO_LOCATIONS;i++,k+=MAG_LEN)
+Lis2DW12_Drv_TypeDef	*lis2dw12_Drv;
+	if ( DriverStruct[handle]->process == Asys.current_process)
 	{
-		LIS2DW12_ReadAccRegs(&axis_regs[k]);
+		lis2dw12_Drv = (Lis2DW12_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		lis2dw12_Drv->status = LIS2DW12_STARTED;
+		return HAL_I2C_Master_Transmit(lis2dw12_Drv->bus,lis2dw12_Drv->device_address, (uint8_t *)&lis2dw12_Drv->opmode, 1, SHT40_I2C_TIMEOUT);
 	}
-	return 32;
+	else
+		return LIS2DW12_DRIVER_NOT_OWNED;
 }
 
-uint8_t LIS2DW12_Initialize(uint8_t irq_mode,uint8_t fifo_locations,uint8_t *id,uint8_t *status,uint8_t *ie)
+static uint32_t lis2dw12_stop(uint8_t handle)
 {
-	write_lis_reg( LIS2DW12_CTRL1 , LIS2DW12_LP_MODE_1 | LIS2DW12_MODE_HIGH_PERF | LIS2DW12_ODR_100Hz );
-	write_lis_reg( LIS2DW12_CTRL6, LIS2DW12_BW_FILT_ODR20 | LIS2DW12_FS_16G);
-	write_lis_reg( LIS2DW12_CTRL2 , LIS2DW12_BOOT | LIS2DW12_BDU | LIS2DW12_IF_ADD_INC);
-	write_lis_reg( LIS2DW12_CTRL3 , 0x0);	// pulsed irq
-	if ( irq_mode == IRQ_MODE_ON_WAKEUP )
-		write_lis_reg( LIS2DW12_CTRL4_INT1_PAD_CTRL , LIS2DW12_INT1_WU);
-	else
-		write_lis_reg( LIS2DW12_CTRL4_INT1_PAD_CTRL , LIS2DW12_INT1_FTH);
-
-	write_lis_reg( LIS2DW12_CTRL5_INT2_PAD_CTRL , 0);
-	write_lis_reg( LIS2DW12_WAKE_UP_THS ,  LIS2DW12_SINGLE_DOUBLE_TAP | 16);
-	write_lis_reg( LIS2DW12_WAKE_UP_DUR ,  0x10);
-	write_lis_reg( LIS2DW12_CTRL_REG7, LIS2DW12_DRDY_PULSED | LIS2DW12_INTERRUPTS_ENABLE | LIS2DW12_INT2_ON_INT1);
-
-	LIS2DW12_ConfigureFIFO(LISDW_FIFOMODE_BYPASS, fifo_locations);		// clear fifo
-	LIS2DW12_ConfigureFIFO(LISDW_FIFOMODE_CONTINUOUS, fifo_locations);// restart fifo
-
-	*ie = read_lis_reg(LIS2DW12_CTRL4_INT1_PAD_CTRL);
-	*status = LIS2DW12_GetStatusReg();
 	return 0;
 }
 
-uint8_t	lis_who_am_i,lis_id,lis_status,lis_ie;
-
-uint8_t LIS2DW12_Init(void)
+static uint32_t lis2dw12_get_status(uint8_t handle)
 {
-	LIS2DW12_SetCTRL_2_Reg();
-	LIS2DW12_GetStatusReg();
-	lis_who_am_i = LIS2DW12_GetWhoAmI();
-	return LIS2DW12_Initialize(IRQ_MODE_ON_FTH,LIS2DW12_NUM_FIFO_LOCATIONS,&lis_id,&lis_status,&lis_ie);
+	return 0;
 }
 
-#endif // #ifdef SENSORS_LIS2DW12
+static uint32_t lis2dw12_get_values(uint8_t handle,uint8_t *data,uint8_t datalen)
+{
+Lis2DW12_Drv_TypeDef	*lis2dw12_Drv;
+uint32_t	ret_i2c_code;
+	if ( DriverStruct[handle]->process == Asys.current_process)
+	{
+		lis2dw12_Drv = (Lis2DW12_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		ret_i2c_code =  HAL_I2C_Master_Receive(lis2dw12_Drv->bus,lis2dw12_Drv->device_address, data, datalen, SHT40_I2C_TIMEOUT);
+		if ( ret_i2c_code == 0 )
+			return datalen;
+		return ret_i2c_code;
+	}
+	else
+		return LIS2DW12_DRIVER_NOT_OWNED;
+}
+
+static uint32_t lis2dw12_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+{
+	return 0;
+}
+
+static uint32_t lis2dw12_extended_actions(uint32_t handle,uint32_t *action)
+{
+	return 0;
+}
+
+extern	DriverStruct_t	Lis2DW12_Def_Drv;
+
+uint32_t lis2dw12_deinit(uint8_t handle)
+{
+	return driver_unregister(&Lis2DW12_Def_Drv);
+}
+
+static uint32_t lis2dw12_init(uint8_t handle)
+{
+Lis2DW12_Drv_TypeDef	*lis2dw12_Drv;
+	lis2dw12_Drv = (Lis2DW12_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	lis2dw12_Drv->status = LIS2DW12_STARTED;
+	if ( read_lis_reg(lis2dw12_Drv->bus,lis2dw12_Drv->device_address,LIS2DW12_WHO_AM_I,&lis2dw12_Drv->whoami) == LIS2DW12_ID)
+	{
+		if ( lis2dw12_Drv->power_port != NULL )
+		{
+			if ( lis2dw12_Drv->power_active_level == 1 )
+				  HAL_GPIO_WritePin(lis2dw12_Drv->power_port, lis2dw12_Drv->power_bit, GPIO_PIN_SET);
+			else
+				  HAL_GPIO_WritePin(lis2dw12_Drv->power_port, lis2dw12_Drv->power_bit, GPIO_PIN_RESET);
+		}
+	}
+	return 0;
+}
+
+DriverStruct_t	Lis2DW12_Def_Drv =
+{
+	.init = lis2dw12_init,
+	.deinit = lis2dw12_deinit,
+	.start = lis2dw12_start,
+	.stop = lis2dw12_stop,
+	.extended_action = lis2dw12_extended_actions,
+	.get_status = lis2dw12_get_status,
+	.get_values = lis2dw12_get_values,
+	.set_values = lis2dw12_set_values,
+	.periodic_before_check_timers_callback = NULL,
+	.periodic_after_check_timers_callback = NULL,
+	.driver_name = "lis2dw12",
+};
+
+uint32_t lis2dw12_allocate_driver(DriverStruct_t *new_struct)
+{
+	memcpy(new_struct,&Lis2DW12_Def_Drv,sizeof(Lis2DW12_Def_Drv));
+	return 0;
+}
 

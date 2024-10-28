@@ -95,39 +95,12 @@
 #define	LPS22DF_P_DA_STATUS				0x01
 #define	LPS22DF_T_DA_STATUS				0x02
 
-typedef struct
-{
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				ths_p_l;
-	uint8_t				ths_p_h;
-	uint8_t				ctl_reg1;
-	uint8_t				ctl_reg2;
-	uint8_t				ctl_reg3;
-	uint8_t				ctl_reg4;
-	uint8_t				fifo_ctl;
-	uint8_t				fifo_wtm;
-	uint8_t				*data;
-	uint8_t				whoami;
-	I2C_HandleTypeDef 	*bus;
-	uint16_t 			device_address;
-	uint16_t 			address;
-	GPIO_TypeDef	 	*power_port;
-	uint16_t			power_bit;
-	GPIO_TypeDef	 	*irq_port;
-	uint16_t			irq_bit;
-	uint8_t				power_active_level;
-}Lps22df_Drv_TypeDef;
-/* flags */
-#define	LPS22DF_DRIVER_DEFAULT	0x00
-#define	LPS22DF_USER_CFGREGS	0x80
-/* status */
-#define	LPS22DF_STARTED			0x80
-#define	LPS22DF_STOPPED			0x00
-
-#define LPS22DF_DRIVER_NOT_OWNED	0xffffffff
-
-extern	uint32_t lps22df_allocate_driver(DriverStruct_t *new_struct);
+extern	uint32_t LPS22DF_Init(void);
+extern	uint8_t LPS22DF_GetWhoAmI(void);
+extern	uint8_t LPS22DF_Read_P_Data(uint8_t *pressure_p_ptr);
+extern	uint8_t LPS22DF_Read_T_Data(uint8_t *pressure_t_ptr);
+extern	int32_t LPS22DF_Start_Acquisition(void);
+extern	uint8_t LPS22DF_GetStatus(void);
 
 
 #endif /* DRIVERS_SENSORS_LPS22DF_LPS22DF_H_ */

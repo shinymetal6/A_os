@@ -32,7 +32,8 @@ extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
 
 static uint8_t	read_stts22h_reg(I2C_HandleTypeDef 	*bus,uint16_t device_address,uint8_t internal_address,uint8_t *pData)
 {
-	HAL_I2C_Mem_Read(bus, device_address, internal_address, 1, pData, 1, STTS22H_I2C_TIMEOUT);
+	if ( HAL_I2C_Mem_Read(bus, device_address, internal_address, 1, pData, 1, STTS22H_I2C_TIMEOUT) != 0 )
+		return 255;
 	return pData[0];
 }
 
@@ -44,10 +45,9 @@ static uint8_t	write_stts22h_reg(I2C_HandleTypeDef *bus,uint16_t device_address,
 
 static uint32_t stts22h_start(uint8_t handle)
 {
-Stts22h_Drv_TypeDef	*Stts22h_Drv;
-uint8_t	start_cmd = STTS22H_ONE_SHOT_REG_CTRL;
-	Stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
-	return write_stts22h_reg(Stts22h_Drv->bus,Stts22h_Drv->device_address,STTS22H_CTRL,&start_cmd);
+Stts22h_Drv_TypeDef	*stts22h_Drv;
+	stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	return write_stts22h_reg(stts22h_Drv->bus,stts22h_Drv->device_address,STTS22H_CTRL,&stts22h_Drv->opmode);
 }
 
 static uint32_t stts22h_stop(uint8_t handle)
@@ -62,7 +62,9 @@ static uint32_t stts22h_get_status(uint8_t handle)
 
 static uint32_t stts22h_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
-	return 0;
+Stts22h_Drv_TypeDef	*stts22h_Drv;
+	stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	return HAL_I2C_Mem_Read(stts22h_Drv->bus,stts22h_Drv->device_address, (uint16_t )STTS22H_TEMP_L_OUT, I2C_MEMADD_SIZE_8BIT, values, values_number, STTS22H_I2C_TIMEOUT);
 }
 
 static uint32_t stts22h_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
@@ -84,20 +86,21 @@ uint32_t stts22h_deinit(uint8_t handle)
 
 static uint32_t stts22h_init(uint8_t handle)
 {
-Stts22h_Drv_TypeDef	*Stts22h_Drv;
-	Stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
-	Stts22h_Drv->status = SHT40_STOPPED;
-	if ( Stts22h_Drv->power_port != NULL )
+Stts22h_Drv_TypeDef	*stts22h_Drv;
+	stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	stts22h_Drv->status = STTS22H_STOPPED;
+	if ( stts22h_Drv->power_port != NULL )
 	{
-		if ( Stts22h_Drv->power_active_level == 1 )
-			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_SET);
+		if ( stts22h_Drv->power_active_level == 1 )
+			  HAL_GPIO_WritePin(stts22h_Drv->power_port, stts22h_Drv->power_bit, GPIO_PIN_SET);
 		else
-			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_RESET);
-
+			  HAL_GPIO_WritePin(stts22h_Drv->power_port, stts22h_Drv->power_bit, GPIO_PIN_RESET);
 	}
-	read_stts22h_reg(Stts22h_Drv->bus,Stts22h_Drv->device_address,STTS22H_WHOAMI,&Stts22h_Drv->whoami);
-
-	return 0;
+	if ( read_stts22h_reg(stts22h_Drv->bus,stts22h_Drv->device_address,STTS22H_WHOAMI,&stts22h_Drv->whoami) == STTS22H_ID)
+	{
+		return 0;
+	}
+	return 1;
 }
 
 DriverStruct_t	Stts22h_Def_Drv =

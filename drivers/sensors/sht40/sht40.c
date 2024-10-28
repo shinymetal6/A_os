@@ -34,12 +34,12 @@ extern	DriverStruct_t		*DriverStruct[MAX_DRIVERS];
 
 static uint32_t sht40_start(uint8_t handle)
 {
-Sht40_Drv_TypeDef	*Sht40_Drv;
+Sht40_Drv_TypeDef	*sht40_Drv;
 	if ( DriverStruct[handle]->process == Asys.current_process)
 	{
-		Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
-		Sht40_Drv->status = SHT40_STARTED;
-		return HAL_I2C_Master_Transmit(Sht40_Drv->bus,Sht40_Drv->address, (uint8_t *)&Sht40_Drv->precision, 1, SHT40_I2C_TIMEOUT);
+		sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		sht40_Drv->status = SHT40_STARTED;
+		return HAL_I2C_Master_Transmit(sht40_Drv->bus,sht40_Drv->device_address, (uint8_t *)&sht40_Drv->precision, 1, SHT40_I2C_TIMEOUT);
 	}
 	else
 		return SHT40_DRIVER_NOT_OWNED;
@@ -57,12 +57,12 @@ static uint32_t sht40_get_status(uint8_t handle)
 
 static uint32_t sht40_get_values(uint8_t handle,uint8_t *data,uint8_t datalen)
 {
-Sht40_Drv_TypeDef	*Sht40_Drv;
+Sht40_Drv_TypeDef	*sht40_Drv;
 uint32_t	ret_i2c_code;
 	if ( DriverStruct[handle]->process == Asys.current_process)
 	{
-		Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
-		ret_i2c_code =  HAL_I2C_Master_Receive(Sht40_Drv->bus,Sht40_Drv->address, data, datalen, SHT40_I2C_TIMEOUT);
+		sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		ret_i2c_code =  HAL_I2C_Master_Receive(sht40_Drv->bus,sht40_Drv->device_address, data, datalen, SHT40_I2C_TIMEOUT);
 		if ( ret_i2c_code == 0 )
 			return datalen;
 		return ret_i2c_code;
@@ -90,15 +90,15 @@ uint32_t sht40_deinit(uint8_t handle)
 
 static uint32_t sht40_init(uint8_t handle)
 {
-Sht40_Drv_TypeDef	*Sht40_Drv;
-	Sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
-	Sht40_Drv->status = SHT40_STOPPED;
-	if ( Sht40_Drv->power_port != NULL )
+Sht40_Drv_TypeDef	*sht40_Drv;
+	sht40_Drv = (Sht40_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	sht40_Drv->status = SHT40_STOPPED;
+	if ( sht40_Drv->power_port != NULL )
 	{
-		if ( Sht40_Drv->power_active_level == 1 )
-			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_SET);
+		if ( sht40_Drv->power_active_level == 1 )
+			  HAL_GPIO_WritePin(sht40_Drv->power_port, sht40_Drv->power_bit, GPIO_PIN_SET);
 		else
-			  HAL_GPIO_WritePin(SENSORS_POWER_GPIO_Port, SENSORS_POWER_Pin, GPIO_PIN_RESET);
+			  HAL_GPIO_WritePin(sht40_Drv->power_port, sht40_Drv->power_bit, GPIO_PIN_RESET);
 	}
 	return 0;
 }

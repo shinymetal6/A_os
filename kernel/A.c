@@ -31,14 +31,15 @@
 #include <string.h>
 #include <stdio.h>
 
-SYSTEM_RAM		Asys_t			Asys;
-SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
-SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
-SYSTEM_RAM		HWDevices_t		HWDevices[HWDEVICES_NUM];
-SYSTEM_RAM		Modules_t		Modules[MODULES_NUM];
-SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
-SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
-SYSTEM_RAM		DriverStruct_t	*DriverStruct[MAX_DRIVERS];
+SYSTEM_RAM		Asys_t					Asys;
+SYSTEM_RAM 		PCB_t 					process[MAX_PROCESS];
+SYSTEM_RAM		HWMngr_t				HWMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		HWDevices_t				HWDevices[HWDEVICES_NUM];
+SYSTEM_RAM		Modules_t				Modules[MODULES_NUM];
+SYSTEM_RAM		IrqMngr_t				IrqMngr[PERIPHERAL_NUM];
+SYSTEM_RAM		MEMpool_t				MEMpool[POOL_NUM];
+SYSTEM_RAM		DriverStruct_t			*DriverStruct[MAX_DRIVERS];
+SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
@@ -152,6 +153,7 @@ void A_init_mem(void)
 	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
 	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
 	driver_init();
+	uart_driver_init();
 
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);

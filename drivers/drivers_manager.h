@@ -87,6 +87,7 @@ extern	uint32_t 	driver_scan(void);
 
 #include "sensors/sht40/sht40.h"
 #include "sensors/stts22h/stts22h.h"
+#include "sensors/lps22df/lps22df.h"
 
 
 #endif /* DRIVERS_DRIVERS_MANAGER_H_ */

@@ -25,6 +25,7 @@
 
 #define STTS22H_ID				0xA0U
 #define	STTS22H_ADDR			0x7e
+#define	STTS22H_T_LEN			2
 
 /* registers */
 #define STTS22H_WHOAMI			0x01U
@@ -37,11 +38,13 @@
 #define STTS22H_SOFTWARE_RESET	0x0CU
 
 #define	STTS22H_ONE_SHOT_REG_CTRL	0x01
+#define	STTS22H_CONTINUOUS_REG_CTRL	0x0c
 
 typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t				opmode;
 	uint8_t				*data;
 	uint8_t				whoami;
 	I2C_HandleTypeDef 	*bus;
@@ -49,8 +52,11 @@ typedef struct
 	uint16_t 			address;
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
-	uint16_t			power_active_level;
+	uint8_t				power_active_level;
 }Stts22h_Drv_TypeDef;
+/* status */
+#define	STTS22H_STARTED		0x80
+#define	STTS22H_STOPPED		0x00
 
 #define STTS22H_I2C_TIMEOUT			1000U
 
