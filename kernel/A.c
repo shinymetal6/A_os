@@ -40,6 +40,7 @@ SYSTEM_RAM		IrqMngr_t				IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t				MEMpool[POOL_NUM];
 SYSTEM_RAM		DriverStruct_t			*DriverStruct[MAX_DRIVERS];
 SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+SYSTEM_RAM		GPIO_Irq_DriverStruct_t	*GPIO_Irq_DriverStruct[MAX_GPIO_DRIVERS];
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
@@ -154,6 +155,7 @@ void A_init_mem(void)
 	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
 	driver_init();
 	uart_driver_init();
+	gpio_driver_init();
 
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);

@@ -66,6 +66,7 @@ typedef struct
 	uint8_t		crch;
 	uint8_t		crcl;
 	uint8_t		state;
+	uint8_t 	auto_send_ack;
 	uint8_t		xtimeout;
 	uint32_t	uart_handle;
 	uint32_t	xmodem_wakeup_mask;
@@ -77,8 +78,8 @@ typedef struct
 	uint32_t	received_bytes_count;
 }xmodem_t;
 
-extern	void 		xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count);
-extern	uint8_t 	xmodem_process(uint32_t wakeup, uint8_t auto_send_ack);
+extern	void 		xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count, uint8_t auto_send_ack);
+extern	uint8_t 	xmodem_process(uint32_t wakeup);
 extern	uint32_t 	xmodem_get_rxed_amount(void);
 extern	uint8_t 	xmodem_send_ack(void);
 

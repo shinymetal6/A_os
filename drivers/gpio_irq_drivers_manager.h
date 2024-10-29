@@ -1,0 +1,51 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * gpio_irq_drivers_manager.h
+ *
+ *  Created on: Oct 29, 2024
+ *      Author: fil
+ */
+#ifndef DRIVERS_GPIO_IRQ_DRIVERS_MANAGER_H_
+#define DRIVERS_GPIO_IRQ_DRIVERS_MANAGER_H_
+
+typedef struct
+{
+	uint8_t 	process;
+	uint8_t		status;
+	uint8_t		flags;
+	uint8_t		handle;
+	uint32_t	(*gpio_set)(uint8_t handle, uint8_t level);
+	uint32_t	(*gpio_get)(uint8_t handle);
+	uint32_t	(*gpio_configure)(uint8_t handle, uint8_t configuration);
+	uint32_t	*gpio_driver_private_data;
+	char		gpio_driver_name[32];
+}GPIO_Irq_DriverStruct_t;
+
+extern	uint32_t gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags);
+extern	uint32_t gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver);
+extern	uint32_t gpio_driver_scan(void);
+extern	uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level);
+extern	uint32_t gpio_driver_gpio_get(uint32_t handle);
+extern	uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration);
+extern	uint32_t gpio_driver_init(void);
+
+
+
+
+#include "gpio_irq/gpio_irq.h"
+
+#endif /* DRIVERS_GPIO_IRQ_DRIVERS_MANAGER_H_ */

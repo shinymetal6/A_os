@@ -136,9 +136,9 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
 
-#include "../drivers/gpio_utls/gpio.h"
 #include "../drivers/drivers_manager.h"
 #include "../drivers/uarts_drivers_manager.h"
+#include "../drivers/gpio_irq_drivers_manager.h"
 
 #ifdef XMODEM_ENABLE
 #include "../modules/serial_transfers/xmodem.h"

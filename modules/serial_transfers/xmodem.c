@@ -69,7 +69,7 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 	return 255;
 }
 
-uint8_t xmodem_process(uint32_t wakeup, uint8_t auto_send_ack)
+uint8_t xmodem_process(uint32_t wakeup)
 /*
  * Returns:
  * 0		:	processing
@@ -111,12 +111,12 @@ uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0;
 			//memcpy(xmodem_struct.last_rxbuf,xmodem_struct.rxbuf,XMODEM_LINE_LEN);
 			xmodem_struct.received_bytes_count += XMODEM_LEN;
 			ret_val = X_ACK;
-			if ( auto_send_ack == XMODEM_AUTOSEND_AK )
+			if ( xmodem_struct.auto_send_ack == XMODEM_AUTOSEND_AK )
 				uart_driver_send_buffer(xmodem_struct.uart_handle,&ak_char,1);
 			break;
 		case 1 :
 			ret_val = X_EOT;
-			if ( auto_send_ack == XMODEM_AUTOSEND_AK )
+			if ( xmodem_struct.auto_send_ack == XMODEM_AUTOSEND_AK )
 				uart_driver_send_buffer(xmodem_struct.uart_handle,&ak_char,1);
 			break;
 		default:
@@ -151,7 +151,7 @@ uint32_t xmodem_get_rxed_amount(void)
 	return xmodem_struct.received_bytes_count;
 }
 
-void xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count)
+void xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count,uint8_t auto_send_ack)
 {
 	xmodem_struct.uart_handle = uart_handle;
 	xmodem_struct.xmodem_wakeup_mask |= WAKEUP_FROM_UART3_IRQ;
@@ -160,6 +160,7 @@ void xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint
 	xmodem_struct.xtimeout = 0;
 	xmodem_struct.rxbuf = databuf_ptr;
 	xmodem_struct.received_bytes_count = 0;
+	xmodem_struct.auto_send_ack = auto_send_ack;
 	uart_driver_receive_buffer((uint8_t )uart_handle,xmodem_struct.rxbuf,XMODEM_LINE_LEN);
 }
 

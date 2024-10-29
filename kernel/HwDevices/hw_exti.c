@@ -55,7 +55,7 @@ extern	void RadioOnDioIrq( void );
 #endif
 
 uint32_t	flag_a = 0;
-
+/*
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 #if defined NRF24L01_IRQ_PIN_PORT
@@ -87,3 +87,4 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 #endif
 }
+*/
