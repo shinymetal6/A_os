@@ -23,10 +23,10 @@
 #include "main.h"
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A_exported_functions.h"
-#include "../../../kernel/HwDevices/hw_i2c.h"
 
 
 #ifdef SENSORS_CCS8118
+#include "../../../kernel/HwDevices/hw_i2c.h"
 
 #include "ccs811.h"
 #include "hdc1080.h"

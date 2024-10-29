@@ -162,6 +162,12 @@ uint32_t uart_driver_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uin
 	return DRIVER_REQUEST_FAILED;
 }
 
+uint32_t uart_driver_get_received_number_of_chars(uint8_t handle)
+{
+	if ( UARTS_DriverStruct[handle]->receive_buffer != NULL )
+		return UARTS_DriverStruct[handle]->get_received_number_of_chars(handle);
+	return DRIVER_REQUEST_FAILED;
+}
 
 uint32_t 	uart_driver_init(void)
 {
@@ -174,6 +180,7 @@ uint32_t size;
 	{
 		A_clear32((uint32_t	*)&UARTS_DriverStruct[i],size);
 	}
+	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
 	return drv_ret;
 }
 

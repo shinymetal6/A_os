@@ -255,15 +255,6 @@ void A_MPU_Config(void)
 
 void A_initialize_onchip_peripherals(void)
 {
-#ifdef A_HAS_UARTS
-	A_hw_uart_init();
-#endif
-#ifdef A_HAS_I2C_BUS
-	A_hw_i2c_init();
-#endif
-#ifdef A_HAS_TIMERS
-	A_hw_timers_init();
-#endif
 #ifdef A_HAS_SPI_BUS
 	A_hw_spi_init();
 #endif

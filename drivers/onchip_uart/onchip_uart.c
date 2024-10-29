@@ -74,30 +74,45 @@ uint32_t onchip_uart_deinit(uint8_t handle)
 
 static uint32_t onchip_uart_init(uint8_t handle)
 {
+OnChip_UART_Drv_TypeDef	*uarts_Drv;
+	uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
+	uarts_Drv->timeout_reload_value = uarts_Drv->timeout;
 	return 0;
 }
 
-uint32_t	onchip_uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len)
+static uint32_t	onchip_uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	return  HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
 }
 
-uint32_t	onchip_uart_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint8_t len)
+static uint32_t	onchip_uart_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint8_t len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	return HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
 }
 
-uint32_t	onchip_uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len)
+static uint32_t	onchip_uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
+	uarts_Drv->data = buffer;
 	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
-uint32_t	onchip_uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
+static uint32_t	onchip_uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
 {
-	return 0;
+OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
+	uarts_Drv->sentinel_start = sentinel_start;
+	uarts_Drv->sentinel_end   = sentinel_end;
+	uarts_Drv->data = buffer;
+	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
+}
+
+static uint32_t	onchip_uart_get_received_number_of_chars(uint8_t handle)
+{
+OnChip_UART_Drv_TypeDef	*uarts_Drv;
+	uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
+	return (uint32_t )uarts_Drv->rx_num_chars;
 }
 
 UARTS_DriverStruct_t	OnChip_UART_Drv =
@@ -109,6 +124,7 @@ UARTS_DriverStruct_t	OnChip_UART_Drv =
 	.extended_action = onchip_uart_extended_actions,
 	.get_status = onchip_uart_get_status,
 	.get_values = onchip_uart_get_values,
+	.get_received_number_of_chars = onchip_uart_get_received_number_of_chars,
 	.set_values = onchip_uart_set_values,
 	.send_buffer = onchip_uart_send_buffer,
 	.send_buffer_dma = onchip_uart_send_buffer_dma,
@@ -139,6 +155,10 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	return 255;
 }
 
+/***********************************/
+/****	Interrupt functions 	****/
+/***********************************/
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
@@ -149,7 +169,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	{
 		uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_TX) == UART_WAKEUP_ON_TX)
-			activate_process(UARTS_DriverStruct[handle]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_TX);
+			activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TX);
 	}
 	__enable_irq();
 }
@@ -167,32 +187,36 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 			if ((uarts_Drv->sentinel_start == 0) && ( uarts_Drv->sentinel_end == 0 ))
 			{
 				uarts_Drv->data[uarts_Drv->rx_index] = uarts_Drv->rx_char;
+				uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 				if (( uarts_Drv->flags & UART_WAKEUP_ON_RXCHAR) == UART_WAKEUP_ON_RXCHAR)
-					activate_process(UARTS_DriverStruct[handle]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_RX);
+					activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 				uarts_Drv->rx_index ++;
 				if ( uarts_Drv->rx_index > uarts_Drv->rx_max_len )
 				{
 					uarts_Drv->rx_index = 0;
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
-						activate_process(UARTS_DriverStruct[handle]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_RX);
+						activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 				}
 			}
 			else
 			{
+				uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 				if (( uarts_Drv->rx_char == uarts_Drv->sentinel_start) && ((uarts_Drv->flags & UART_SENTINEL_START_FOUND) != UART_SENTINEL_START_FOUND))
 				{
 					uarts_Drv->flags |= UART_SENTINEL_START_FOUND;
+					uarts_Drv->data[uarts_Drv->rx_index] = uarts_Drv->rx_char;
 					uarts_Drv->rx_index = 1;
 				}
 				if (( uarts_Drv->rx_char == uarts_Drv->sentinel_end) && ((uarts_Drv->flags & UART_SENTINEL_START_FOUND) == UART_SENTINEL_START_FOUND))
 				{
+					uarts_Drv->data[uarts_Drv->rx_index] = uarts_Drv->rx_char;
 					uarts_Drv->flags |= UART_SENTINEL_END_FOUND;
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
 					{
 						uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
 						uarts_Drv->rx_index = 0;
 						uarts_Drv->flags &= ~(UART_SENTINEL_START_FOUND | UART_SENTINEL_END_FOUND);
-						activate_process(UARTS_DriverStruct[handle]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_RX);
+						activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 					}
 				}
 				else
@@ -222,7 +246,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
 		uarts_Drv->uart_error++;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
-			activate_process(UARTS_DriverStruct[handle]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_ERR);
+			activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
 	}
 }
 
@@ -238,14 +262,17 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 			uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[i]->uart_driver_private_data;
 			if ( uarts_Drv->timeout )
 			{
-				uarts_Drv->timeout--;
-				if ( uarts_Drv->timeout == 0 )
+				if ( uarts_Drv->rx_index )
 				{
-					uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
-					uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
-					uarts_Drv->rx_index = 0;
-					if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
-						activate_process(UARTS_DriverStruct[i]->process,1<<uarts_Drv->uart_index,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+					uarts_Drv->timeout--;
+					if ( uarts_Drv->timeout == 0 )
+					{
+						uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
+						uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
+						uarts_Drv->rx_index = 0;
+						if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
+							activate_process(UARTS_DriverStruct[i]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+					}
 				}
 			}
 		}

@@ -34,6 +34,7 @@ typedef struct
 	uint32_t	(*stop)(uint8_t handle);
 	uint32_t	(*get_status)(uint8_t handle);
 	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
+	uint32_t	(*get_received_number_of_chars)(uint8_t handle);
 	uint32_t	(*set_status)(uint8_t handle);
 	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
 	uint32_t	(*send_buffer)(uint8_t handle, uint8_t *buffer,uint8_t len);
@@ -71,6 +72,7 @@ extern	uint32_t 	uart_driver_send_buffer(uint8_t handle, uint8_t *buffer,uint16_
 extern	uint32_t 	uart_driver_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint16_t len);
 extern	uint32_t 	uart_driver_receive_buffer(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len);
 extern	uint32_t 	uart_driver_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end);
+extern	uint32_t 	uart_driver_get_received_number_of_chars(uint8_t handle);
 
 #include "onchip_uart/onchip_uart.h"
 

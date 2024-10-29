@@ -37,7 +37,7 @@ typedef struct
 	uint8_t				sentinel_end;
 	uint32_t			uart_error;
 	UART_HandleTypeDef 	*uart;
-	uint8_t 			uart_index;
+	uint8_t 			wakeup_id;
 }OnChip_UART_Drv_TypeDef;
 /* flags */
 #define	UART_WAKEUP_ON_TX			0x80

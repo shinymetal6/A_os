@@ -30,6 +30,7 @@
 #include "hw_uart.h"
 #include "../kernel_opt.h"
 
+#ifdef OLD_HWMAN
 extern	HWMngr_t		HWMngr[PERIPHERAL_NUM];
 extern	Asys_t			Asys;
 
@@ -115,7 +116,7 @@ ITCM_AREA_CODE uint16_t hw_get_uart_receive_len(uint8_t uart)
 			return HWMngr[uart].rxlen;
 	return 0;
 }
-/*
+
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint32_t	i;
@@ -129,8 +130,7 @@ uint32_t	i;
 	}
 	__enable_irq();
 }
-*/
-/*
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint32_t	i;
@@ -223,9 +223,7 @@ uint32_t	i;
 			HW_Uart[i-HW_UART1].rx_err_cntr++;
 	}
 }
-*/
 
-/*
 void HAL_UART_RxTimeoutCheckCallback(void)
 {
 uint32_t	i;
@@ -262,7 +260,7 @@ uint32_t	i;
 		}
 	}
 }
-*/
+
 #endif
 
 void A_hw_uart_init(void)
@@ -303,3 +301,9 @@ void A_hw_uart_init(void)
 	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
 #endif
 }
+#else
+void A_hw_uart_init(void)
+{
+
+}
+#endif
