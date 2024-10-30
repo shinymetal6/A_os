@@ -42,8 +42,10 @@ typedef struct
 	uint32_t	(*receive_buffer)(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len);
 	uint32_t	(*receive_buffer_sentinel)(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end);
 	uint32_t	(*extended_action)(uint32_t handle,uint32_t *action);
+	/*
 	void 		(*periodic_before_check_timers_callback)(void);
 	void 		(*periodic_after_check_timers_callback)(void);
+	*/
 	uint32_t	*uart_driver_private_data;
 	char		uart_driver_name[32];
 }UARTS_DriverStruct_t;

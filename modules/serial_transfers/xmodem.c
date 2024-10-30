@@ -44,6 +44,8 @@ uint16_t	calc_csum=0,i;
 
 uint8_t xmodem_line_parser(uint8_t *buf)
 {
+	uint8_t	csum;
+
 	if ( buf[0] == X_SOH)
 	{
 		xmodem_struct.data_len = XMODEM_LEN;
@@ -58,8 +60,14 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 				return 1;
 			memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
 			xmodem_struct.data_ptr += xmodem_struct.data_len;
+			/*
 			if ( buf[0] == X_SOH)
 				return xmodem_calc_csum(buf);
+				*/
+			csum = xmodem_calc_csum(buf);
+			if ( csum != 0 )
+				csum = 2;
+			return csum;
 		}
 	}
 	if ( buf[0] == X_EOT)

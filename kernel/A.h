@@ -38,6 +38,7 @@
 #define	MAX_DRIVERS			32
 #define	MAX_UARTS_DRIVERS	8
 #define	MAX_GPIO_DRIVERS	32
+#define	MAX_GPIO_PORTS		12
 
 #define DUMMY_XPSR  				0x01000000U
 

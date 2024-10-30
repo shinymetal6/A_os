@@ -133,15 +133,6 @@ uint32_t driver_extended_action(uint32_t handle,uint32_t *action)
 
 uint32_t 	driver_init(void)
 {
-uint32_t	i,drv_ret=0;
-uint32_t size;
-
-	size = sizeof(DriverStruct_t) / 4;
-
-	for(i=0;i<MAX_DRIVERS;i++)
-	{
-		A_clear32((uint32_t	*)&DriverStruct[i],size);
-	}
-	return drv_ret;
+	return 0;
 }
 

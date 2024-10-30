@@ -42,6 +42,17 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	return 0;
 }
 
+static uint32_t driver_gpio_toggle(uint8_t handle)
+{
+OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
+uint32_t odr;
+
+	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
+	odr = gpio_Drv->GPIO_Port->ODR;
+	gpio_Drv->GPIO_Port->BSRR = ((odr & gpio_Drv->GPIO_Pin) << 16) | (~odr & gpio_Drv->GPIO_Pin);
+	return 0;
+}
+
 static uint32_t driver_gpio_get(uint8_t handle)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
@@ -108,6 +119,7 @@ GPIO_Irq_DriverStruct_t	Gpio_Drv =
 {
 	.gpio_set = driver_gpio_set,
 	.gpio_get = driver_gpio_get,
+	.gpio_toggle = driver_gpio_toggle,
 	.gpio_configure = driver_gpio_configure,
 	.gpio_driver_name = "driver_gpio",
 };

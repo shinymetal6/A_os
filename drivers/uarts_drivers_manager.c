@@ -43,10 +43,13 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 
 		uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[last_uart_used_handle]->uart_driver_private_data;
 		uarts_Drv->flags |= uart_flags;
+		/*
 		if (uart_driver->periodic_before_check_timers_callback != NULL  )
 			set_before_check_timers_callback(uart_driver->periodic_before_check_timers_callback);
 		if (uart_driver->periodic_after_check_timers_callback != NULL  )
 			set_after_check_timers_callback(uart_driver->periodic_after_check_timers_callback);
+		*/
+
 		UARTS_DriverStruct[last_uart_used_handle]->status = DRIVER_STATUS_REQUESTED;
 
 		last_uart_used_handle++;
@@ -171,17 +174,8 @@ uint32_t uart_driver_get_received_number_of_chars(uint8_t handle)
 
 uint32_t 	uart_driver_init(void)
 {
-uint32_t	i,drv_ret=0;
-uint32_t size;
-
-	size = sizeof(UARTS_DriverStruct_t) / 4;
-
-	for(i=0;i<MAX_UARTS_DRIVERS;i++)
-	{
-		A_clear32((uint32_t	*)&UARTS_DriverStruct[i],size);
-	}
 	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
-	return drv_ret;
+	return 0;
 }
 
 
