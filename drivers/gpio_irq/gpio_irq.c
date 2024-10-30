@@ -64,6 +64,7 @@ static uint32_t driver_gpio_configure(uint8_t handle, uint8_t configuration)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
+	gpio_Drv->io_settings = configuration;
 	if ( (configuration & GPIO_HAS_PULLUP) == GPIO_HAS_PULLUP)
 	{
 		gpio_Drv->GPIO_Port->PUPDR |= 1 << (((gpio_Drv->GPIO_Pin+1) * 2)-2);
@@ -123,12 +124,7 @@ GPIO_Irq_DriverStruct_t	Gpio_Drv =
 	.gpio_configure = driver_gpio_configure,
 	.gpio_driver_name = "driver_gpio",
 };
-/*
- * 		if (driver->periodic_before_check_timers_callback != NULL  )
-			set_before_check_timers_callback(driver->periodic_before_check_timers_callback);
-		if (driver->periodic_after_check_timers_callback != NULL  )
-			set_after_check_timers_callback(driver->periodic_after_check_timers_callback);
- */
+
 uint32_t driver_gpio_allocate_driver(GPIO_Irq_DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&Gpio_Drv,sizeof(Gpio_Drv));
@@ -155,8 +151,13 @@ uint8_t handle;
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	handle = find_handle_from_gpio(GPIO_Pin);
 	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
+	if (( gpio_Drv->flags & GPIO_WAKEUP_ON_IRQ) == GPIO_WAKEUP_ON_IRQ)
+	{
+		if ( gpio_Drv->wakeup_id )
+			activate_process(GPIO_Irq_DriverStruct[handle]->process,gpio_Drv->wakeup_id,WAKEUP_FLAGS_EXTI);
+	}
 	if ( gpio_Drv->exti_irq_callback != NULL )
-		return gpio_Drv->exti_irq_callback(GPIO_Pin);
+		gpio_Drv->exti_irq_callback(GPIO_Pin);
 }
 
 

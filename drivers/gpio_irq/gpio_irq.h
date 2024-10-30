@@ -26,14 +26,18 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t				io_settings;
 	GPIO_TypeDef 		*GPIO_Port;
 	uint16_t 			GPIO_Pin;
 	uint8_t 			process;
 	uint32_t 			wakeup_id;
 	void 				(*exti_irq_callback)(uint16_t GPIO_Pin);
 }OnChip_GPIO_Irq_DriverStruct_t;
+/* status */
+/* flags */
+#define	GPIO_WAKEUP_ON_IRQ	0x80
 
-/* flags : watchout speed !!*/
+/* io_settings : watchout speed !!*/
 #define	GPIO_IS_LOWSPEED	0x00
 #define	GPIO_IS_MEDIUMSPEED	0x01
 #define	GPIO_IS_FASTSPEED	0x02

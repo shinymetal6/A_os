@@ -94,9 +94,10 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 		if ( gpio_driver_check_allocation(gpio_Drv->GPIO_Port,gpio_Drv->GPIO_Pin) != 0 )
 			return DRIVER_REQUEST_FAILED;
 
+		gpio_Drv->flags |= flags;
+
 		GPIO_Irq_DriverStruct[last_gpio_used_handle] = driver;
 		GPIO_Irq_DriverStruct[last_gpio_used_handle]->process = get_current_process();
-		GPIO_Irq_DriverStruct[last_gpio_used_handle]->flags |= flags;
 		GPIO_Irq_DriverStruct[last_gpio_used_handle]->gpio_driver_private_data = private_drv_struct;
 
 		gpio_driver_set_allocation(gpio_Drv->GPIO_Port,gpio_Drv->GPIO_Pin);
