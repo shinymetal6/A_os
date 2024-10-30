@@ -25,13 +25,14 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
+#include "../../kernel/kernel_opt.h"
 
 #include "gpio_irq.h"
 #include <string.h>
 
 extern		GPIO_Irq_DriverStruct_t	*GPIO_Irq_DriverStruct[MAX_GPIO_DRIVERS];
 
-static uint32_t driver_gpio_set(uint8_t handle, uint8_t level)
+ITCM_AREA_CODE static uint32_t driver_gpio_set(uint8_t handle, uint8_t level)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
@@ -42,7 +43,7 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	return 0;
 }
 
-static uint32_t driver_gpio_toggle(uint8_t handle)
+ITCM_AREA_CODE static uint32_t driver_gpio_toggle(uint8_t handle)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 uint32_t odr;
@@ -53,14 +54,14 @@ uint32_t odr;
 	return 0;
 }
 
-static uint32_t driver_gpio_get(uint8_t handle)
+ITCM_AREA_CODE static uint32_t driver_gpio_get(uint8_t handle)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
 	return ((gpio_Drv->GPIO_Port->IDR & gpio_Drv->GPIO_Pin) ? 1 : 0);
 }
 
-static uint32_t driver_gpio_configure(uint8_t handle, uint8_t configuration)
+ITCM_AREA_CODE static uint32_t driver_gpio_configure(uint8_t handle, uint8_t configuration)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	gpio_Drv = (OnChip_GPIO_Irq_DriverStruct_t *)GPIO_Irq_DriverStruct[handle]->gpio_driver_private_data;
@@ -125,13 +126,13 @@ GPIO_Irq_DriverStruct_t	Gpio_Drv =
 	.gpio_driver_name = "driver_gpio",
 };
 
-uint32_t driver_gpio_allocate_driver(GPIO_Irq_DriverStruct_t *new_struct)
+ITCM_AREA_CODE uint32_t driver_gpio_allocate_driver(GPIO_Irq_DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&Gpio_Drv,sizeof(Gpio_Drv));
 	return 0;
 }
 
-static uint8_t find_handle_from_gpio(uint16_t GPIO_Pin)
+ITCM_AREA_CODE static uint8_t find_handle_from_gpio(uint16_t GPIO_Pin)
 {
 uint8_t	i;
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
@@ -145,7 +146,7 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	return 255;
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+ITCM_AREA_CODE void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 uint8_t handle;
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;

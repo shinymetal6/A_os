@@ -25,13 +25,15 @@
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "../kernel/scheduler.h"
+#include "../kernel/kernel_opt.h"
+
 #include <string.h>
 #include "uarts_drivers_manager.h"
 
 extern		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 SYSTEM_RAM	uint8_t					last_uart_used_handle=0,uart_driver_request = 0;
 
-uint32_t	uart_driver_register(UARTS_DriverStruct_t *uart_driver,uint32_t *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags)
+ITCM_AREA_CODE uint32_t	uart_driver_register(UARTS_DriverStruct_t *uart_driver,uint32_t *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	if ( UARTS_DriverStruct[last_uart_used_handle] == NULL )
@@ -59,7 +61,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t	uart_driver_unregister(UARTS_DriverStruct_t *uart_driver)
+ITCM_AREA_CODE uint32_t	uart_driver_unregister(const UARTS_DriverStruct_t *uart_driver)
 {
 uint32_t	i;
 	for(i=0;i<MAX_DRIVERS;i++)
@@ -74,9 +76,9 @@ uint32_t	i;
 	return 1;
 }
 
-uint32_t uart_driver_scan(void)
+ITCM_AREA_CODE uint32_t uart_driver_scan(void)
 {
-uint32_t	i,drv_ret;
+uint32_t	i,drv_ret = DRIVER_STATUS_INITIALIZED;
 	if (uart_driver_request )
 	{
 		for(i=0;i<MAX_DRIVERS;i++)
@@ -109,70 +111,70 @@ uint32_t	i,drv_ret;
 	return DRIVER_STATUS_INITIALIZED;
 }
 
-uint32_t uart_driver_start(uint32_t handle)
+ITCM_AREA_CODE uint32_t uart_driver_start(uint32_t handle)
 {
 	if ( UARTS_DriverStruct[handle]->start != NULL )
 		return UARTS_DriverStruct[handle]->start(handle);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t uart_driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
 	if ( UARTS_DriverStruct[handle]->get_values != NULL )
 		return UARTS_DriverStruct[handle]->get_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t uart_driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
 	if ( UARTS_DriverStruct[handle]->set_values != NULL )
 		return UARTS_DriverStruct[handle]->set_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_extended_action(uint32_t handle,uint32_t *action)
+ITCM_AREA_CODE uint32_t uart_driver_extended_action(uint32_t handle,uint32_t *action)
 {
 	if ( UARTS_DriverStruct[handle]->extended_action != NULL )
 		return UARTS_DriverStruct[handle]->extended_action(handle,action);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_send_buffer(uint8_t handle, uint8_t *buffer,uint16_t len)
+ITCM_AREA_CODE uint32_t uart_driver_send_buffer(uint8_t handle, uint8_t *buffer,uint16_t len)
 {
 	if ( UARTS_DriverStruct[handle]->send_buffer != NULL )
 		return UARTS_DriverStruct[handle]->send_buffer(handle,buffer,len);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint16_t len)
+ITCM_AREA_CODE uint32_t uart_driver_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint16_t len)
 {
 	if ( UARTS_DriverStruct[handle]->send_buffer_dma != NULL )
 		return UARTS_DriverStruct[handle]->send_buffer_dma(handle,buffer,len);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_receive_buffer(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len)
+ITCM_AREA_CODE uint32_t uart_driver_receive_buffer(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len)
 {
 	if ( UARTS_DriverStruct[handle]->receive_buffer != NULL )
 		return UARTS_DriverStruct[handle]->receive_buffer(handle,buffer,rx_buf_max_len);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
+ITCM_AREA_CODE uint32_t uart_driver_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
 {
 	if ( UARTS_DriverStruct[handle]->receive_buffer_sentinel != NULL )
 		return UARTS_DriverStruct[handle]->receive_buffer_sentinel(handle,buffer,rx_buf_max_len,sentinel_start,sentinel_end);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t uart_driver_get_received_number_of_chars(uint8_t handle)
+ITCM_AREA_CODE uint32_t uart_driver_get_received_number_of_chars(uint8_t handle)
 {
 	if ( UARTS_DriverStruct[handle]->receive_buffer != NULL )
 		return UARTS_DriverStruct[handle]->get_received_number_of_chars(handle);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t 	uart_driver_init(void)
+ITCM_AREA_CODE uint32_t 	uart_driver_init(void)
 {
 	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
 	return 0;

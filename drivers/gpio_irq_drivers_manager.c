@@ -25,6 +25,8 @@
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "../kernel/scheduler.h"
+#include "../kernel/kernel_opt.h"
+
 #include <string.h>
 #include "gpio_irq_drivers_manager.h"
 
@@ -34,7 +36,7 @@ extern		GPIO_Irq_DriverStruct_t	*GPIO_Irq_DriverStruct[MAX_GPIO_DRIVERS];
 SYSTEM_RAM	uint8_t		last_gpio_used_handle=0,gpio_driver_gpio_request = 0;
 SYSTEM_RAM	GPIO_Irq_DriverPortAllocationStruct_t	GPIO_Irq_DriverPortAllocation[MAX_GPIO_PORTS];
 
-uint8_t gpio_driver_set_allocation(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin)
+ITCM_AREA_CODE uint8_t gpio_driver_allocate_gpio(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin)
 {
 uint8_t		port_index;
 uint32_t	gpio_port = (uint32_t )GPIO_Port;
@@ -51,38 +53,17 @@ uint32_t	gpio_port = (uint32_t )GPIO_Port;
 	case	GPIOI_BASE : port_index=9;break;
 	case	GPIOJ_BASE : port_index=10;break;
 	case	GPIOK_BASE : port_index=11;break;
-	default : return 255;
+	default : return PIN_ALREADY_ALLOCATED;
 	}
-	GPIO_Irq_DriverPortAllocation[port_index].process = Asys.current_process;
+	if (( GPIO_Irq_DriverPortAllocation[port_index].gpiobit & (1 << GPIO_Pin)) == (1 << GPIO_Pin))
+		return PIN_ALREADY_ALLOCATED;
+
+	GPIO_Irq_DriverPortAllocation[port_index].in_use = 1;
 	GPIO_Irq_DriverPortAllocation[port_index].gpiobit |= 1 << GPIO_Pin;
 	return port_index;
 }
 
-uint8_t gpio_driver_check_allocation(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin)
-{
-uint8_t		port_index;
-uint32_t	gpio_port = (uint32_t )GPIO_Port;
-	switch(gpio_port)
-	{
-	case	GPIOA_BASE : port_index=0;break;
-	case	GPIOB_BASE : port_index=1;break;
-	case	GPIOC_BASE : port_index=2;break;
-	case	GPIOD_BASE : port_index=3;break;
-	case	GPIOE_BASE : port_index=4;break;
-	case	GPIOF_BASE : port_index=5;break;
-	case	GPIOG_BASE : port_index=6;break;
-	case	GPIOH_BASE : port_index=8;break;
-	case	GPIOI_BASE : port_index=9;break;
-	case	GPIOJ_BASE : port_index=10;break;
-	case	GPIOK_BASE : port_index=11;break;
-	default : return 255;
-	}
-	if (( GPIO_Irq_DriverPortAllocation[port_index].gpiobit & (1 << GPIO_Pin)) == (1 << GPIO_Pin))
-		return GPIO_Irq_DriverPortAllocation[port_index].process = Asys.current_process;
-	return 0;
-}
-
-uint32_t	gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
+ITCM_AREA_CODE uint32_t	gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
 {
 OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	if ( GPIO_Irq_DriverStruct[last_gpio_used_handle] == NULL )
@@ -91,16 +72,14 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 		if ( gpio_Drv == NULL )
 			return DRIVER_STATUS_FAILED;
 
-		if ( gpio_driver_check_allocation(gpio_Drv->GPIO_Port,gpio_Drv->GPIO_Pin) != 0 )
+		if ( gpio_driver_allocate_gpio(gpio_Drv->GPIO_Port,gpio_Drv->GPIO_Pin) == PIN_ALREADY_ALLOCATED )
 			return DRIVER_REQUEST_FAILED;
-
 		gpio_Drv->flags |= flags;
 
 		GPIO_Irq_DriverStruct[last_gpio_used_handle] = driver;
 		GPIO_Irq_DriverStruct[last_gpio_used_handle]->process = get_current_process();
 		GPIO_Irq_DriverStruct[last_gpio_used_handle]->gpio_driver_private_data = private_drv_struct;
 
-		gpio_driver_set_allocation(gpio_Drv->GPIO_Port,gpio_Drv->GPIO_Pin);
 
 		GPIO_Irq_DriverStruct[last_gpio_used_handle]->status = DRIVER_STATUS_REQUESTED;
 
@@ -111,7 +90,7 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t	gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver)
+ITCM_AREA_CODE uint32_t	gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver)
 {
 uint32_t	i;
 	for(i=0;i<MAX_DRIVERS;i++)
@@ -126,7 +105,7 @@ uint32_t	i;
 	return 1;
 }
 
-uint32_t gpio_driver_scan(void)
+ITCM_AREA_CODE uint32_t gpio_driver_scan(void)
 {
 uint32_t	i;
 	if (gpio_driver_gpio_request )
@@ -147,7 +126,7 @@ uint32_t	i;
 	return DRIVER_STATUS_INITIALIZED;
 }
 
-uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level)
+ITCM_AREA_CODE uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level)
 {
 	if ( handle > MAX_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
@@ -156,7 +135,7 @@ uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t gpio_driver_gpio_toggle(uint32_t handle)
+ITCM_AREA_CODE uint32_t gpio_driver_gpio_toggle(uint32_t handle)
 {
 	if ( handle > MAX_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
@@ -165,7 +144,7 @@ uint32_t gpio_driver_gpio_toggle(uint32_t handle)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t gpio_driver_gpio_get(uint32_t handle)
+ITCM_AREA_CODE uint32_t gpio_driver_gpio_get(uint32_t handle)
 {
 	if ( handle > MAX_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
@@ -174,7 +153,7 @@ uint32_t gpio_driver_gpio_get(uint32_t handle)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration)
+ITCM_AREA_CODE uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration)
 {
 	if ( handle > MAX_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
@@ -183,12 +162,12 @@ uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration)
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t 	gpio_driver_init(void)
+ITCM_AREA_CODE uint32_t gpio_driver_init(void)
 {
 uint32_t	i;
 
 	for(i=0;i<MAX_GPIO_PORTS;i++)
-		GPIO_Irq_DriverPortAllocation[i].process = GPIO_Irq_DriverPortAllocation[i].gpiobit=0;
+		GPIO_Irq_DriverPortAllocation[i].in_use = GPIO_Irq_DriverPortAllocation[i].gpiobit=0;
 	return 0;
 }
 

@@ -25,13 +25,14 @@
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "../kernel/scheduler.h"
+#include "../kernel/kernel_opt.h"
 #include <string.h>
 #include "drivers_manager.h"
 
 extern		DriverStruct_t	*DriverStruct[MAX_DRIVERS];
 SYSTEM_RAM	uint8_t			last_used_handle=0,driver_request = 0;
 
-uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
+ITCM_AREA_CODE uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
 {
 	if ( DriverStruct[last_used_handle] == NULL )
 	{
@@ -53,7 +54,7 @@ uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_struct,uin
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t	driver_unregister(DriverStruct_t *driver)
+ITCM_AREA_CODE uint32_t	driver_unregister(const DriverStruct_t *driver)
 {
 uint32_t	i;
 	for(i=0;i<MAX_DRIVERS;i++)
@@ -68,9 +69,9 @@ uint32_t	i;
 	return 1;
 }
 
-uint32_t driver_scan(void)
+ITCM_AREA_CODE uint32_t driver_scan(void)
 {
-uint32_t	i,drv_ret;
+uint32_t	i,drv_ret = DRIVER_STATUS_INITIALIZED;
 	if (driver_request )
 	{
 		for(i=0;i<MAX_DRIVERS;i++)
@@ -103,35 +104,35 @@ uint32_t	i,drv_ret;
 	return DRIVER_STATUS_INITIALIZED;
 }
 
-uint32_t driver_start(uint32_t handle)
+ITCM_AREA_CODE uint32_t driver_start(uint32_t handle)
 {
 	if ( DriverStruct[handle]->start != NULL )
 		return DriverStruct[handle]->start(handle);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
 	if ( DriverStruct[handle]->get_values != NULL )
 		return DriverStruct[handle]->get_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
 {
 	if ( DriverStruct[handle]->set_values != NULL )
 		return DriverStruct[handle]->set_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t driver_extended_action(uint32_t handle,uint32_t *action)
+ITCM_AREA_CODE uint32_t driver_extended_action(uint32_t handle,uint32_t *action)
 {
 	if ( DriverStruct[handle]->extended_action != NULL )
 		return DriverStruct[handle]->extended_action(handle,action);
 	return DRIVER_REQUEST_FAILED;
 }
 
-uint32_t 	driver_init(void)
+ITCM_AREA_CODE uint32_t 	driver_init(void)
 {
 	return 0;
 }

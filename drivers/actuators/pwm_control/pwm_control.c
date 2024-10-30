@@ -25,8 +25,8 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
+#include "../../../kernel/kernel_opt.h"
 
-#ifdef A_HAS_MOTOR_CNTRL
 #include "pwm_control.h"
 #include <string.h>
 
@@ -69,7 +69,7 @@ static uint32_t pwm_control_extended_actions(uint32_t handle,uint32_t *action)
 {
 Pwm_Control_Drv_TypeDef	*Pwm_Control_Drv = (Pwm_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef		*timer = Pwm_Control_Drv->pwm_timer;
-Pwm_Control_Actions_TypeDef	*action_struct = (Pwm_Control_Actions_TypeDef *)&action;
+Pwm_Control_Actions_TypeDef	*action_struct = (Pwm_Control_Actions_TypeDef *)action;
 
 	switch ( action_struct->action )
 	{
@@ -87,9 +87,11 @@ Pwm_Control_Actions_TypeDef	*action_struct = (Pwm_Control_Actions_TypeDef *)&act
 		break;
 	case	PWM_EA_SET_PWM_DIRECTION:
 		if ( action_struct->pwm_direction )
-			HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port[0],Pwm_Control_Drv->enable_bit[0],GPIO_PIN_SET);
+			Pwm_Control_Drv->enable_port->BSRR = Pwm_Control_Drv->enable_bit;
+			//HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port,Pwm_Control_Drv->enable_bit,GPIO_PIN_SET);
 		else
-			HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port[0],Pwm_Control_Drv->enable_bit[0],GPIO_PIN_RESET);
+			Pwm_Control_Drv->enable_port->BSRR = (uint32_t)Pwm_Control_Drv->enable_bit << 16;
+			//HAL_GPIO_WritePin(Pwm_Control_Drv->enable_port,Pwm_Control_Drv->enable_bit,GPIO_PIN_RESET);
 		break;
 	default:
 		return 1;
@@ -97,7 +99,7 @@ Pwm_Control_Actions_TypeDef	*action_struct = (Pwm_Control_Actions_TypeDef *)&act
 	return 0;
 }
 
-extern	DriverStruct_t	Pwm_Control_Drv_ArduinoShield;
+extern	const DriverStruct_t	Pwm_Control_Drv_ArduinoShield;
 
 uint32_t pwm_control_deinit(uint8_t handle)
 {
@@ -106,10 +108,14 @@ uint32_t pwm_control_deinit(uint8_t handle)
 
 static uint32_t pwm_control_init(uint8_t handle)
 {
+Pwm_Control_Drv_TypeDef	*Pwm_Control_Drv = (Pwm_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
+	if ( gpio_driver_allocate_gpio(Pwm_Control_Drv->enable_port,Pwm_Control_Drv->enable_bit) == PIN_ALREADY_ALLOCATED )
+		return 1;
 	return 0;
 }
 
-DriverStruct_t	Pwm_Control_Drv_ArduinoShield =
+const DriverStruct_t	Pwm_Control_Drv_ArduinoShield =
 {
 	.init = pwm_control_init,
 	.deinit = pwm_control_deinit,
@@ -129,6 +135,4 @@ uint32_t pwm_control_allocate_driver(DriverStruct_t *new_struct)
 	memcpy(new_struct,&Pwm_Control_Drv_ArduinoShield,sizeof(Pwm_Control_Drv_ArduinoShield));
 	return 0;
 }
-
-#endif // #ifdef A_HAS_MOTOR_CNTRL
 

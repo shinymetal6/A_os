@@ -59,7 +59,7 @@ typedef struct
 
 extern	uint32_t 	driver_init(void);
 extern	uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags);
-extern	uint32_t	driver_unregister(DriverStruct_t *driver);
+extern	uint32_t	driver_unregister(const DriverStruct_t *driver);
 extern	uint32_t 	driver_start(uint32_t handle);
 extern	uint32_t 	driver_extended_action(uint32_t handle,uint32_t *action);
 extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number);

@@ -26,6 +26,7 @@
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "../kernel/scheduler.h"
+#include "../kernel/kernel_opt.h"
 
 #include "driver_skeleton.h"
 #include <string.h>

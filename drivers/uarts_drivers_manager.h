@@ -64,7 +64,7 @@ typedef struct
 
 extern	uint32_t 	uart_driver_init(void);
 extern	uint32_t	uart_driver_register(UARTS_DriverStruct_t *uart_driver,uint32_t *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags);
-extern	uint32_t	uart_driver_unregister(UARTS_DriverStruct_t *uart_driver);
+extern	uint32_t	uart_driver_unregister(const UARTS_DriverStruct_t *uart_driver);
 extern	uint32_t 	uart_driver_start(uint32_t handle);
 extern	uint32_t 	uart_driver_extended_action(uint32_t handle,uint32_t *action);
 extern	uint32_t 	uart_driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number);

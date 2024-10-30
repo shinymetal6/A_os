@@ -25,8 +25,8 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
+#include "../../../kernel/kernel_opt.h"
 
-#ifdef DCC_SYSTEM_ENABLE
 #include "dcc.h"
 #include <string.h>
 extern	DriverStruct_t	*DriverStruct[MAX_DRIVERS];
@@ -177,7 +177,8 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
 		{
 			if (( DCC_Control_Drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
-				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
+				DCC_Control_Drv->enable_port->BSRR = DCC_Control_Drv->enable_bit;
+				//GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
 				memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
@@ -190,7 +191,8 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
 			}
 			else
 			{
-				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
+				DCC_Control_Drv->enable_port->BSRR = (uint32_t)DCC_Control_Drv->enable_bit << 16;
+				//GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
 				if (( DCC_Control_Drv->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
 				{
 					if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
@@ -217,7 +219,8 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
 		{
 			if (( DCC_Control_Drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
-				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
+				DCC_Control_Drv->enable_port->BSRR = DCC_Control_Drv->enable_bit;
+				//GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_SET);
 				memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
@@ -230,7 +233,8 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv;
 			}
 			else
 			{
-				GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
+				DCC_Control_Drv->enable_port->BSRR = (uint32_t)DCC_Control_Drv->enable_bit << 16;
+				//GPIO_SetGpioOUT(DCC_Control_Drv->enable_port, DCC_Control_Drv->enable_bit, GPIO_PIN_RESET);
 				if (( DCC_Control_Drv->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
 				{
 					if (( DCC_Control_Drv->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
@@ -414,7 +418,7 @@ static uint32_t dcc_extended_actions(uint32_t handle,uint32_t *action)
 	return 0;
 }
 
-extern	DriverStruct_t	dcc_Drv;
+extern	const DriverStruct_t	dcc_Drv;
 
 uint32_t dcc_deinit(uint8_t handle)
 {
@@ -426,6 +430,9 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStru
 static uint32_t dcc_init(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+
+	if ( gpio_driver_allocate_gpio(DCC_Control_Drv->enable_port,DCC_Control_Drv->enable_bit) == PIN_ALREADY_ALLOCATED )
+		return 1;
 
 	memcpy((uint8_t *)&DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
@@ -457,7 +464,7 @@ DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStru
 	return 0;
 }
 
-DriverStruct_t	DCC_Controller =
+const DriverStruct_t	DCC_Controller =
 {
 	.init = dcc_init,
 	.deinit = dcc_deinit,
@@ -477,5 +484,4 @@ uint32_t dcc_allocate_driver(DriverStruct_t *new_struct)
 	memcpy(new_struct,&DCC_Controller,sizeof(DCC_Controller));
 	return 0;
 }
-#endif // #ifdef DCC_SYSTEM_ENABLE
 

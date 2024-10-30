@@ -31,8 +31,8 @@ typedef struct
 	DMA_HandleTypeDef 	*hdma[2];
 	TIM_HandleTypeDef 	*pwm_timer;
 	uint16_t 			pwm_channel;
-	GPIO_TypeDef	 	*enable_port[1];
-	uint16_t			enable_bit[1];
+	GPIO_TypeDef	 	*enable_port;
+	uint16_t			enable_bit;
 }Pwm_Control_Drv_TypeDef;
 
 /* status */

@@ -100,47 +100,6 @@ typedef struct
 /* flags */
 #define	HWDEV_FLAGS_BUSY			0x80000000
 
-#ifdef A_HAS_UARTS
-#include "HwDevices/hw_uart.h"
-
-#ifdef	A_HAS_UART1
-extern	UART_HandleTypeDef huart1;
-#endif
-#ifdef	A_HAS_UART2
-extern	UART_HandleTypeDef huart2;
-#endif
-#ifdef	A_HAS_UART3
-extern	UART_HandleTypeDef huart3;
-#endif
-#ifdef	A_HAS_UART4
-extern	UART_HandleTypeDef huart4;
-#endif
-#ifdef	A_HAS_UART5
-extern	UART_HandleTypeDef huart5;
-#endif
-#ifdef	A_HAS_UART6
-extern	UART_HandleTypeDef huart6;
-#endif
-#ifdef	A_HAS_UART7
-extern	UART_HandleTypeDef huart7;
-#endif
-#ifdef	A_HAS_UART8
-extern	UART_HandleTypeDef huart8;
-#endif
-typedef struct _HW_Uart_t
-{
-	UART_HandleTypeDef 	*hwuart_handle;
-	uint32_t			hwuart_index;
-	uint8_t				sentinel_start;
-	uint8_t				sentinel_end;
-	uint16_t			timeout;
-	uint16_t			timeout_reload_value;
-	uint8_t				rx_char;
-	uint32_t			rx_err_cntr;
-}HW_Uart_t;
-
-#define	A_MAX_UART		8
-#endif
 
 #ifdef A_HAS_SPI_BUS
 #include "HwDevices/hw_spi.h"

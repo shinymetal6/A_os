@@ -25,14 +25,14 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
+#include "../../../kernel/kernel_opt.h"
 
-#ifdef INTERNAL_ADC_DRIVER
 #include "intadc_driver.h"
 #include <string.h>
 
 extern	DriverStruct_t			*DriverStruct[MAX_DRIVERS];
 
-static uint32_t intadc_start(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_start(uint8_t handle)
 {
 ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef	*timer = Adc_drv->adc_timer;
@@ -41,7 +41,7 @@ TIM_HandleTypeDef	*timer = Adc_drv->adc_timer;
 	return 0;
 }
 
-static uint32_t intadc_stop(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_stop(uint8_t handle)
 {
 ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef	*timer = Adc_drv->adc_timer;
@@ -50,37 +50,37 @@ TIM_HandleTypeDef	*timer = Adc_drv->adc_timer;
 	return 0;
 }
 
-static uint32_t intadc_get_status(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_get_status(uint8_t handle)
 {
 	ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	return (uint32_t )Adc_drv->status;
 }
 
-static uint32_t intadc_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intadc_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t intadc_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intadc_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t intadc_extended_actions(uint32_t handle,uint32_t *action)
+ITCM_AREA_CODE static uint32_t intadc_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
 
 extern	DriverStruct_t	IntADC_Drv;
 
-uint32_t intadc_deinit(uint8_t handle)
+ITCM_AREA_CODE uint32_t intadc_deinit(uint8_t handle)
 {
 	return driver_unregister(&IntADC_Drv);
 }
 
 //uint32_t	pData[8];
 
-static uint32_t intadc_init(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_init(uint8_t handle)
 {
 ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 ADC_HandleTypeDef	*adc = Adc_drv->adc;
@@ -104,13 +104,13 @@ DriverStruct_t	IntADC_Drv =
 	.driver_name = "Internal ADC",
 };
 
-uint32_t intadc_allocate_driver(DriverStruct_t *new_struct)
+ITCM_AREA_CODE uint32_t intadc_allocate_driver(DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&IntADC_Drv,sizeof(IntADC_Drv));
 	return 0;
 }
 
-static uint32_t get_handle_from_adc_dma_channel(ADC_HandleTypeDef *hadc)
+ITCM_AREA_CODE static uint32_t get_handle_from_adc_dma_channel(ADC_HandleTypeDef *hadc)
 {
 uint32_t	i,drv_ret=255;
 	for(i=0;i<MAX_DRIVERS;i++)
@@ -131,7 +131,7 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
-void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+ITCM_AREA_CODE void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
@@ -144,7 +144,7 @@ uint32_t handle;
 	}
 }
 
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+ITCM_AREA_CODE void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
@@ -156,5 +156,3 @@ uint32_t handle;
 			activate_process(DriverStruct[handle]->process,EVENT_ADC1_IRQ,HW_ADC1);
 	}
 }
-
-#endif //#ifdef INTERNAL_ADC_DRIVER

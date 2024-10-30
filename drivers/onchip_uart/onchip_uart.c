@@ -25,13 +25,14 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
+#include "../../kernel/kernel_opt.h"
 
 #include "onchip_uart.h"
 #include <string.h>
 
 extern		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 
-static uint32_t onchip_uart_start(uint8_t handle)
+ITCM_AREA_CODE static uint32_t onchip_uart_start(uint8_t handle)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
@@ -40,39 +41,39 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	return 0;
 }
 
-static uint32_t onchip_uart_stop(uint8_t handle)
+ITCM_AREA_CODE static uint32_t onchip_uart_stop(uint8_t handle)
 {
 	return 0;
 }
 
-static uint32_t onchip_uart_get_status(uint8_t handle)
+ITCM_AREA_CODE static uint32_t onchip_uart_get_status(uint8_t handle)
 {
 	return 0;
 }
 
-static uint32_t onchip_uart_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t onchip_uart_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t onchip_uart_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t onchip_uart_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t onchip_uart_extended_actions(uint32_t handle,uint32_t *action)
+ITCM_AREA_CODE static uint32_t onchip_uart_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
 
-extern	UARTS_DriverStruct_t	OnChip_UART_Drv;
+extern	const UARTS_DriverStruct_t	OnChip_UART_Drv;
 
-uint32_t onchip_uart_deinit(uint8_t handle)
+ITCM_AREA_CODE uint32_t onchip_uart_deinit(uint8_t handle)
 {
 	return uart_driver_unregister(&OnChip_UART_Drv);
 }
 
-static uint32_t onchip_uart_init(uint8_t handle)
+ITCM_AREA_CODE static uint32_t onchip_uart_init(uint8_t handle)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
@@ -80,26 +81,26 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	return 0;
 }
 
-static uint32_t	onchip_uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len)
+ITCM_AREA_CODE static uint32_t	onchip_uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	return  HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
 }
 
-static uint32_t	onchip_uart_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint8_t len)
+ITCM_AREA_CODE static uint32_t	onchip_uart_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint8_t len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	return HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
 }
 
-static uint32_t	onchip_uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len)
+ITCM_AREA_CODE static uint32_t	onchip_uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	uarts_Drv->data = buffer;
 	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
-static uint32_t	onchip_uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
+ITCM_AREA_CODE static uint32_t	onchip_uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	uarts_Drv->sentinel_start = sentinel_start;
@@ -108,14 +109,14 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv = (OnChip_UART_Drv_TypeDef	*)UARTS_DriverStru
 	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
-static uint32_t	onchip_uart_get_received_number_of_chars(uint8_t handle)
+ITCM_AREA_CODE static uint32_t	onchip_uart_get_received_number_of_chars(uint8_t handle)
 {
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[handle]->uart_driver_private_data;
 	return (uint32_t )uarts_Drv->rx_num_chars;
 }
 
-UARTS_DriverStruct_t	OnChip_UART_Drv =
+const UARTS_DriverStruct_t	OnChip_UART_Drv =
 {
 	.init = onchip_uart_init,
 	.deinit = onchip_uart_deinit,
@@ -130,20 +131,16 @@ UARTS_DriverStruct_t	OnChip_UART_Drv =
 	.send_buffer_dma = onchip_uart_send_buffer_dma,
 	.receive_buffer = onchip_uart_receive_buffer,
 	.receive_buffer_sentinel = onchip_uart_receive_buffer_sentinel,
-	/*
-	.periodic_before_check_timers_callback = NULL,
-	.periodic_after_check_timers_callback = NULL,
-	*/
 	.uart_driver_name = "onchip_uart",
 };
 
-uint32_t onchip_uart_allocate_driver(UARTS_DriverStruct_t *new_struct)
+ITCM_AREA_CODE uint32_t onchip_uart_allocate_driver(UARTS_DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&OnChip_UART_Drv,sizeof(OnChip_UART_Drv));
 	return 0;
 }
 
-static uint8_t find_handle_from_uart(UART_HandleTypeDef *huart)
+ITCM_AREA_CODE static uint8_t find_handle_from_uart(UART_HandleTypeDef *huart)
 {
 uint8_t	i;
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
@@ -161,7 +158,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 /****	Interrupt functions 	****/
 /***********************************/
 
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+ITCM_AREA_CODE void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
@@ -176,7 +173,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	__enable_irq();
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+ITCM_AREA_CODE void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
@@ -268,7 +265,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	__enable_irq();
 }
 
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+ITCM_AREA_CODE void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 OnChip_UART_Drv_TypeDef	*uarts_Drv;
@@ -282,7 +279,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 	}
 }
 
-void HAL_UART_RxTimeoutCheckCallback(void)
+ITCM_AREA_CODE void HAL_UART_RxTimeoutCheckCallback(void)
 {
 uint8_t	i;
 OnChip_UART_Drv_TypeDef	*uarts_Drv;

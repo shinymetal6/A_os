@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
+#include "../../../kernel/kernel_opt.h"
 
 #ifdef DHTXX_AM230X_ENABLE
 #include "dhtxx_am230x.h"
@@ -77,7 +78,7 @@ static void dhtxx_am230x_create_bitbytes(Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_
 uint32_t	i,initial,temp;
 
 	initial =  Dhtxx_am230x_Drv->dhtxx_am230x_samples[0];
-	for(i=0;i<DHTXX_AM230X_MAX_SAMPLES_LEN;i++)
+	for(i=0;i<DHTXX_AM230X_MAX_SAMPLES_LEN-1;i++)
 	{
 		temp = Dhtxx_am230x_Drv->dhtxx_am230x_samples[i+1];
 		Dhtxx_am230x_Drv->dhtxx_am230x_samples[i+1] -= initial;
@@ -145,9 +146,41 @@ static uint32_t dhtxx_am230x_init(uint8_t handle_dht)
 {
 Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv;
 Dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef	*)DriverStruct[handle_dht]->driver_private_data;
+
+	if ( gpio_driver_allocate_gpio(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit) == PIN_ALREADY_ALLOCATED )
+		return 1;
+
 	Dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_IDLE;
 	Dhtxx_am230x_Drv->ticks = Dhtxx_am230x_Drv->errors = 0;
 	return 0;
+}
+
+#define	DHT_GPIO_IS_INPUT		0
+#define	DHT_GPIO_IS_ALTERNATE	1
+#define	DHT_GPIO_IS_OUTPUT		2
+#define	DHT_GPIO_IS_ANALOG		3
+
+static void dhtxx_am230x_set_gpio_mode(GPIO_TypeDef	*one_wire_port,uint16_t	one_wire_bit,uint8_t mode,uint8_t value)
+{
+	switch( mode )
+	{
+	case	DHT_GPIO_IS_INPUT 		:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_bit << 1));
+		one_wire_port->PUPDR &= ~(0x03 << (one_wire_bit << 1));
+		break;
+	case	DHT_GPIO_IS_ALTERNATE 	:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_bit << 1));
+		one_wire_port->MODER |= 1 << (((one_wire_bit+1) * 2)-1);
+		break;
+	case	DHT_GPIO_IS_OUTPUT	 	:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_bit << 1));
+		one_wire_port->MODER |= 1 << (((one_wire_bit+1) * 2)-2);
+		break;
+	case	DHT_GPIO_IS_ANALOG	 	:
+		one_wire_port->MODER |= 0x03 << (one_wire_bit << 1);
+		break;
+	default	 	: break;
+	}
 }
 
 static void dhtxx_am230x_worker(void)
@@ -175,7 +208,8 @@ uint32_t 					i,handle_dht;
 				{
 					Dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_START_BIT_SET;
 					Dhtxx_am230x_Drv->ticks = DHTXX_AM230X_START_TICKS;
-					GPIO_SetGpioOUT(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,0);
+					dhtxx_am230x_set_gpio_mode(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_OUTPUT,0);
+					//GPIO_SetGpioOUT(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,0);
 					Dhtxx_am230x_Drv->status |= DHTXX_AM230X_STARTBIT;
 				}
 				break;
@@ -184,7 +218,8 @@ uint32_t 					i,handle_dht;
 				{
 					Dhtxx_am230x_Drv->status &= ~DHTXX_AM230X_STARTBIT;
 					Dhtxx_am230x_Drv->status |= DHTXX_AM230X_ACQRUN;
-					GPIO_SetGpioAlternate(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit);
+					dhtxx_am230x_set_gpio_mode(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_ALTERNATE,0);
+					//GPIO_SetGpioAlternate(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit);
 					Dhtxx_am230x_Drv->samples_number = 0;
 					dht_timer->Instance->CNT = 0;
 					HAL_TIM_IC_Start_DMA(dht_timer,dht_timer_channel, Dhtxx_am230x_Drv->dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
@@ -196,7 +231,8 @@ uint32_t 					i,handle_dht;
 				if ( Dhtxx_am230x_Drv->ticks == 0 )
 				{
 					HAL_TIM_IC_Stop_DMA(dht_timer,dht_timer_channel);
-					GPIO_SetGpioIN(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,1);
+					dhtxx_am230x_set_gpio_mode(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_INPUT,0);
+					//GPIO_SetGpioIN(Dhtxx_am230x_Drv->one_wire_port,Dhtxx_am230x_Drv->one_wire_bit,1);
 					Dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_END;
 				}
 				break;

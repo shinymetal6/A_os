@@ -38,9 +38,11 @@ typedef struct
 
 typedef struct
 {
-	uint8_t 	process;
+	uint8_t 	in_use;
 	uint16_t	gpiobit;
 }GPIO_Irq_DriverPortAllocationStruct_t;
+
+#define	PIN_ALREADY_ALLOCATED	255
 
 extern	uint32_t gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags);
 extern	uint32_t gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver);
@@ -50,6 +52,7 @@ extern	uint32_t gpio_driver_gpio_toggle(uint32_t handle);
 extern	uint32_t gpio_driver_gpio_get(uint32_t handle);
 extern	uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration);
 extern	uint32_t gpio_driver_init(void);
+extern	uint8_t  gpio_driver_allocate_gpio(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin);
 
 #include "gpio_irq/gpio_irq.h"
 

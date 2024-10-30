@@ -25,13 +25,13 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
+#include "../../../kernel/kernel_opt.h"
 
-#ifdef INTERNAL_DAC_DRIVER
 #include "intdac_driver.h"
 #include <string.h>
 
 extern	DriverStruct_t			*DriverStruct[MAX_DRIVERS];
-static uint32_t intdac_start(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intdac_start(uint8_t handle)
 {
 DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef	*timer = Dac_drv->dac_timer;
@@ -40,7 +40,7 @@ TIM_HandleTypeDef	*timer = Dac_drv->dac_timer;
 	return 0;
 }
 
-static uint32_t intdac_stop(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intdac_stop(uint8_t handle)
 {
 DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 TIM_HandleTypeDef	*timer = Dac_drv->dac_timer;
@@ -49,34 +49,35 @@ TIM_HandleTypeDef	*timer = Dac_drv->dac_timer;
 	return 0;
 }
 
-static uint32_t intdac_get_status(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intdac_get_status(uint8_t handle)
 {
 	return 0;
 }
 
-static uint32_t intdac_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intdac_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t intdac_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intdac_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
 {
 	return 0;
 }
 
-static uint32_t intdac_extended_actions(uint8_t handle,uint8_t action,uint32_t action_parameter,uint32_t extension_parameter)
+
+ITCM_AREA_CODE static uint32_t intdac_extended_actions(uint32_t handle,uint32_t *action)
 {
 	return 0;
 }
 
 extern	DriverStruct_t	IntDAC_Drv;
 
-uint32_t intdac_deinit(uint8_t handle)
+ITCM_AREA_CODE uint32_t intdac_deinit(uint8_t handle)
 {
 	return driver_unregister(&IntDAC_Drv);
 }
 
-static uint32_t intdac_init(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intdac_init(uint8_t handle)
 {
 	DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	Dac_drv->status = 0;
@@ -99,13 +100,13 @@ DriverStruct_t	IntDAC_Drv =
 	.driver_name = "Internal DAC",
 };
 
-uint32_t intdac_allocate_driver(DriverStruct_t *new_struct)
+ITCM_AREA_CODE uint32_t intdac_allocate_driver(DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&IntDAC_Drv,sizeof(IntDAC_Drv));
 	return 0;
 }
 
-static uint32_t get_handle_from_dac_dma_channel(DAC_HandleTypeDef *hdac)
+ITCM_AREA_CODE static uint32_t get_handle_from_dac_dma_channel(DAC_HandleTypeDef *hdac)
 {
 uint32_t	i,drv_ret=255;
 	for(i=0;i<MAX_DRIVERS;i++)
@@ -126,7 +127,7 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
-void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+ITCM_AREA_CODE void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
@@ -139,7 +140,7 @@ uint32_t handle;
 	}
 }
 
-void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+ITCM_AREA_CODE void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
@@ -152,4 +153,3 @@ uint32_t handle;
 	}
 }
 
-#endif // #ifdef INTERNAL_DAC_DRIVER
