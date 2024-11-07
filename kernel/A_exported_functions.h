@@ -93,21 +93,6 @@ extern	uint32_t deallocate_hw(uint8_t peripheral);
 extern	uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t config,void (*irq_callback)(void));
 extern	uint8_t get_busdevice_from_device(uint8_t device_peripheral);
 
-/* hwmanager : usb */
-extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
-extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
-extern	uint16_t hw_UsbGetRXLen(void);
-
-/* hwmanager : uart */
-/*
-extern	uint32_t hw_send_uart(uint8_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_send_uart_dma(uint8_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_receive_uart(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel_clear(uint8_t uart);
-extern	void HAL_UART_RxTimeoutCheckCallback(void);
-extern	uint16_t hw_get_uart_receive_len(uint8_t uart);
-*/
 /* module_manager */
 extern	uint32_t allocate_module(uint32_t module,uint8_t config);
 extern	uint32_t deallocate_module(uint32_t module);
@@ -136,39 +121,26 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
-
+/* drivers include */
 #include "../drivers/drivers_manager.h"
 #include "../drivers/uarts_drivers_manager.h"
 #include "../drivers/gpio_irq_drivers_manager.h"
 #include "../drivers/extmem_driver_manager.h"
+#include "../drivers/usb_driver_manager.h"
 
+/* modules include */
 #include "../modules/serial_transfers/xmodem.h"
 #include "../modules/usb_transfer/usb_xmodem.h"
-
-#ifdef INTEL_HEX_DECODER_ENABLE
+#include "../modules/dmx512/dmx512.h"
 #include "../modules/hex_decoders/hex_decoders_common.h"
 #include "../modules/hex_decoders/ihex.h"
-#endif
-
-#ifdef MOTOROLA_HEX_DECODER_ENABLE
 #include "../modules/hex_decoders/hex_decoders_common.h"
 #include "../modules/hex_decoders/s3_hex.h"
-#endif
-
-#ifdef MODBUS_ENABLE
 #include "../modules/modbus/modbus.h"
-#endif
 
 #ifdef WIRELESS_NRF24L01
 #include "../drivers/wireless/nrf24l01/nrf24l01.h"
 #endif
-
-#ifdef CODEC_ENABLED
-	#include "audio.h"
-	#ifdef CODEC_NAU88C22
-		#include "../drivers/codec/nau88c22.h"
-	#endif
-#endif // #ifdef CODEC_ENABLED
 
 #ifdef LCD_096_ENABLED
 	#include "../drivers/lcd_st7735/st7735.h"
@@ -185,10 +157,6 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/external_flash/w25q.h"
 #endif
 
-#ifdef I2CFLASH_ENABLED
-	#include "../drivers/external_flash/i2c_24aaxxx.h"
-#endif // #ifdef I2CFLASH_ENABLED
-
 #ifdef INTERNAL_RTC_ENABLED
 	#include "../drivers/internal_rtc/internal_rtc.h"
 #endif // #ifdef INTERNAL_RTC_ENABLED
@@ -197,9 +165,6 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../modules/audio/effects.h"
 #endif // #ifdef SYNTH_ENGINE_ENABLE
 
-//#ifdef DMX512_ENABLE
-	#include "../modules/dmx512/dmx512.h"
-//#endif // #ifdef DMX512_ENABLE
 
 #ifdef NETWORKING_ENABLED
 #include "../modules/lwip2.2/App/lwip.h"

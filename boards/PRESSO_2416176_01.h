@@ -26,7 +26,7 @@
 
 //#define	NETWORKING_ENABLED		1
 #define	USB_DEVICE_ENABLED		1
-//#define	MODBUS_ENABLE			1
+//#define	LCD_096_ENABLED			1
 #define MQTT_ENABLE				1
 
 #ifdef NETWORKING_ENABLED

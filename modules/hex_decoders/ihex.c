@@ -27,8 +27,6 @@
 #include "../../kernel/scheduler.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef INTEL_HEX_DECODER_ENABLE
-
 #include "ihex.h"
 #include "hex_decoders_common.h"
 #include <string.h>
@@ -123,4 +121,3 @@ uint8_t decoded_len = 255;
 	return decoded_len;
 }
 
-#endif // #ifdef INTEL_HEX_DECODER_ENABLE

@@ -66,6 +66,7 @@ ITCM_AREA_CODE void supervisor(void)
 		driver_scan();
 		uart_driver_scan();
 		extmem_driver_scan();
+		usb_device_driver_scan();
 		schedule();
 	}
 }

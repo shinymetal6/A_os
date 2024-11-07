@@ -42,6 +42,7 @@ SYSTEM_RAM		DriverStruct_t			*DriverStruct[MAX_DRIVERS];
 SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 SYSTEM_RAM		GPIO_Irq_DriverStruct_t	*GPIO_Irq_DriverStruct[MAX_GPIO_DRIVERS];
 SYSTEM_RAM		MemDriverStruct_t		*MemDriverStruct[MAX_MEM_DRIVERS];
+SYSTEM_RAM		USB_DriverStruct_t		*USB_DriverStruct;
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
