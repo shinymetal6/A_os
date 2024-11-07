@@ -23,5 +23,9 @@
 #ifndef KERNEL_HWMANAGER_H_
 #define KERNEL_HWMANAGER_H_
 
+extern	uint32_t allocate_hw(uint8_t peripheral,uint8_t config);
+extern	uint32_t deallocate_hw(uint8_t peripheral);
+extern	uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t config,void (*irq_callback)(void));
+extern	uint8_t get_busdevice_from_device(uint8_t device_peripheral);
 
 #endif /* KERNEL_HWMANAGER_H_ */

@@ -63,5 +63,15 @@ typedef struct _AudioFlagsTypeDef
 #define	NUMBER_OF_AUDIO_SAMPLES			AUDIO_BUF_SIZE
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
 
+extern	uint32_t *InitAudioBuffers(void);
+extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
+extern	void SetEffectMode(void);
+extern	void SetGeneratorMode(void);
+extern	void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start);
+extern	void SetMasterVolume(uint16_t volume);
+extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void InitOscillators(void);
+extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 
 #endif /* KERNEL_AUDIO_H_ */

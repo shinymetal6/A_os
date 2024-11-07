@@ -132,97 +132,6 @@ typedef struct _HW_Spi_t
 #define	A_MAX_SPI			4
 #endif
 
-/*
-#ifdef A_HAS_I2C_BUS
-#include "HwDevices/hw_i2c.h"
-
-#ifdef	A_HAS_I2C1
-extern	I2C_HandleTypeDef 	hi2c1;
-#endif
-#ifdef	A_HAS_I2C2
-extern	I2C_HandleTypeDef 	hi2c2;
-#endif
-
-typedef struct _HW_I2C_t
-{
-	I2C_HandleTypeDef 	*hwi2c_handle;
-	uint32_t			hwi2c_index;
-	uint8_t				hwi2c_flags;
-}HW_I2C_t;
-*/
-/* hwi2c_flags */
-/*
-#define	I2C_IRQ_SET			0x01
-#define	I2C_TXDMA_SET		0x02
-#define	I2C_RXDMA_SET		0x04
-#define	A_MAX_I2C			2
-#endif
-*/
-#ifdef A_HAS_TIMERS
-#include "HwDevices/hw_timers.h"
-
-#ifdef	A_HAS_TIMER1
-extern	TIM_HandleTypeDef htim1;
-#endif
-#ifdef	A_HAS_TIMER2
-extern	TIM_HandleTypeDef htim2;
-#endif
-#ifdef	A_HAS_TIMER3
-extern	TIM_HandleTypeDef htim3;
-#endif
-#ifdef	A_HAS_TIMER4
-extern	TIM_HandleTypeDef htim4;
-#endif
-#ifdef	A_HAS_TIMER5
-extern	TIM_HandleTypeDef htim5;
-#endif
-#ifdef	A_HAS_TIMER6
-extern	TIM_HandleTypeDef htim6;
-#endif
-#ifdef	A_HAS_TIMER7
-extern	TIM_HandleTypeDef htim7;
-#endif
-#ifdef	A_HAS_TIMER8
-extern	TIM_HandleTypeDef htim8;
-#endif
-#ifdef	A_HAS_TIMER9
-extern	TIM_HandleTypeDef htim9;
-#endif
-#ifdef	A_HAS_TIMER10
-extern	TIM_HandleTypeDef htim10;
-#endif
-#ifdef	A_HAS_TIMER11
-extern	TIM_HandleTypeDef htim11;
-#endif
-#ifdef	A_HAS_TIMER12
-extern	TIM_HandleTypeDef htim12;
-#endif
-#ifdef	A_HAS_TIMER13
-extern	TIM_HandleTypeDef htim13;
-#endif
-#ifdef	A_HAS_TIMER14
-extern	TIM_HandleTypeDef htim14;
-#endif
-#ifdef	A_HAS_TIMER15
-extern	TIM_HandleTypeDef htim15;
-#endif
-#ifdef	A_HAS_TIMER16
-extern	TIM_HandleTypeDef htim16;
-#endif
-#ifdef	A_HAS_TIMER17
-extern	TIM_HandleTypeDef htim17;
-#endif
-
-typedef struct _HW_Timers_t
-{
-	TIM_HandleTypeDef 	*hwtimer_handle;
-	uint32_t			hwtimer_index;
-	uint8_t				hwtimer_owner;
-	uint8_t				hwtimer_flags;
-}HW_Timers_t;
-#define	A_MAX_TIMERS		17
-#endif
-
 typedef struct
 {
 	uint8_t 	process;
@@ -327,29 +236,11 @@ typedef struct
 /* flags */
 #define	HWDEV_FLAGS_BUSY			0x80000000
 
+/* weak functions in weak_functions.c */
 extern	void A_PreOS_Init(void);
 extern	void A_Processor_Quirks(void);
 extern	void A_PreScheduler_Init(void);
 extern	void A_IrqPriority_Init(void);
-
-extern	void A_bzero(uint8_t *ptr,uint16_t count);
-extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
-extern	void schedule(void);
-extern	void A_mem_init(void);
-extern	void defrag_mem(void);
-extern	void reset_orphaned_chunks(uint8_t process);
-
-extern	void check_semaphores(void);
-extern	void MX_USB_DEVICE_Init(void);
-extern	uint8_t MX_USB_Device_Init(void);
-extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);
-
-/* Audio */
-extern	void IrqProcessSamples(void);
-extern	void RunOscillator32(void);
-/* Audio END */
-
-
 
 extern	void supervisor(void);
 extern	void supervisor_process1(void);

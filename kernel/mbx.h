@@ -23,6 +23,8 @@
 #ifndef KERNEL_MBX_H_
 #define KERNEL_MBX_H_
 
+extern void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size);
+extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
 
 
 #endif /* KERNEL_MBX_H_ */

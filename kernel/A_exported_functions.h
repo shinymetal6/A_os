@@ -25,38 +25,8 @@
 
 #include "main.h"
 #include "system_default.h"
-
-/* System */
-extern	void wait_event(uint32_t events);
-
-extern	uint8_t get_current_process(void);
-/*
-extern	uint32_t get_activation_flags(void);
-extern	uint32_t get_wakeup_rsn(void);
-*/
-extern	uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags );
-
-extern	void A_TimeDebug_High(void);
-extern	void A_TimeDebug_Low(void);
-
-/* Memory */
-extern	uint8_t *mem_get(uint32_t size );
-extern	uint32_t mem_release(uint8_t *data_ptr);
-
-/* timer */
-extern	void DWT_Delay_us(uint32_t au32_microseconds);
-extern	void task_delay(uint32_t tick_count);
-extern	uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags);
-extern	uint32_t start_timer(uint8_t timer_id);
-extern	uint32_t restart_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags);
-extern	uint32_t stop_timer(uint8_t timer_id);
-extern	uint32_t destroy_timer(uint8_t timer_id);
-extern	uint8_t get_timer_expired(void);
-extern	int32_t A_GetTick(void);
-extern	uint32_t set_before_check_timers_callback(void (*callback)(void));
-extern	uint32_t unset_before_check_timers_callback(void (*callback)(void));
-extern	uint32_t set_after_check_timers_callback(void (*callback)(void));
-extern	uint32_t unset_after_check_timers_callback(void (*callback)(void));
+#include "scheduler.h"
+#include "mem.h"
 
 /* qspi */
 
@@ -86,38 +56,14 @@ extern	void 	A_Error_Handler(char * file, int line);
 #define	TIMERFLAGS_USERMASK			0x0f
 
 #include "system_functions.h"
-
-/* hwmanager */
-extern	uint32_t allocate_hw(uint8_t peripheral,uint8_t config);
-extern	uint32_t deallocate_hw(uint8_t peripheral);
-extern	uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t config,void (*irq_callback)(void));
-extern	uint8_t get_busdevice_from_device(uint8_t device_peripheral);
-
-/* module_manager */
-extern	uint32_t allocate_module(uint32_t module,uint8_t config);
-extern	uint32_t deallocate_module(uint32_t module);
-
-/* mailbox */
-extern void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size);
-extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
+#include "audio.h"
+#include "hwmanager.h"
+#include "mbx.h"
+#include "timer.h"
 
 /* support functions */
 extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
-/* audio */
-
-#include "audio.h"
-
-extern	uint32_t *InitAudioBuffers(void);
-extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
-extern	void SetEffectMode(void);
-extern	void SetGeneratorMode(void);
-extern	void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start);
-extern	void SetMasterVolume(uint16_t volume);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void InitOscillators(void);
-extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 

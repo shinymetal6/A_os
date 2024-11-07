@@ -67,7 +67,9 @@ typedef struct
 extern	void unblock_tasks(void);
 extern	void switch_sp_to_psp(void);
 extern	uint32_t activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags);
-
-
+extern	void wait_event(uint32_t events);
+extern	uint8_t get_current_process(void);
+extern	uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags );
+extern	void schedule(void);
 
 #endif /* KERNEL_SCHEDULER_H_ */

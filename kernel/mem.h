@@ -14,15 +14,18 @@
  * Project : A_os
 */
 /*
- * module_manager.h
+ * mem.h
  *
- *  Created on: Apr 24, 2024
+ *  Created on: Nov 7, 2024
  *      Author: fil
  */
+#ifndef KERNEL_MEM_H_
+#define KERNEL_MEM_H_
 
-#ifndef KERNEL_MODULE_MANAGER_H_
-#define KERNEL_MODULE_MANAGER_H_
+extern	uint8_t *mem_get(uint32_t size );
+extern	uint32_t mem_release(uint8_t *data_ptr);
+extern	void defrag_mem(void);
+extern	void reset_orphaned_chunks(uint8_t process);
 
 
-
-#endif /* KERNEL_MODULE_MANAGER_H_ */
+#endif /* KERNEL_MEM_H_ */
