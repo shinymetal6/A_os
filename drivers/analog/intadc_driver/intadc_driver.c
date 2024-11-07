@@ -25,7 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #include "intadc_driver.h"
 #include <string.h>
@@ -56,12 +56,12 @@ ITCM_AREA_CODE static uint32_t intadc_get_status(uint8_t handle)
 	return (uint32_t )Adc_drv->status;
 }
 
-ITCM_AREA_CODE static uint32_t intadc_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intadc_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t intadc_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intadc_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
@@ -77,8 +77,6 @@ ITCM_AREA_CODE uint32_t intadc_deinit(uint8_t handle)
 {
 	return driver_unregister(&IntADC_Drv);
 }
-
-//uint32_t	pData[8];
 
 ITCM_AREA_CODE static uint32_t intadc_init(uint8_t handle)
 {
@@ -121,7 +119,7 @@ uint32_t	i,drv_ret=255;
 			{
 				if ( DriverStruct[i]->driver_private_data != NULL)
 				{
-					ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[i]->driver_private_data;
+					ADC_Drv_TypeDef	*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[i]->driver_private_data;
 					if ( Adc_drv->adc == hadc )
 						return i;
 				}
@@ -136,7 +134,7 @@ ITCM_AREA_CODE void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
 	{
-		ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		ADC_Drv_TypeDef	*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 		Adc_drv->status |= ADC_STATUS_HALF;
 		Adc_drv->status &= ~ADC_STATUS_FULL;
 		if ( Adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
@@ -149,7 +147,7 @@ ITCM_AREA_CODE void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
 	{
-		ADC_Drv_TypeDef		*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		ADC_Drv_TypeDef	*Adc_drv = (ADC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 		Adc_drv->status |= ADC_STATUS_FULL;
 		Adc_drv->status &= ~ADC_STATUS_HALF;
 		if ( Adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP))

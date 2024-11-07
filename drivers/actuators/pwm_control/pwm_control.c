@@ -55,12 +55,12 @@ Pwm_Control_Drv_TypeDef	*Pwm_Control_Drv = (Pwm_Control_Drv_TypeDef	*)DriverStru
 	return Pwm_Control_Drv->status;
 }
 
-static uint32_t pwm_control_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t pwm_control_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
 
-static uint32_t pwm_control_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t pwm_control_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

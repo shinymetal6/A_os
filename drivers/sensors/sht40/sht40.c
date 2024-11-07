@@ -56,7 +56,7 @@ static uint32_t sht40_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t sht40_get_values(uint8_t handle,uint8_t *data,uint8_t datalen)
+static uint32_t sht40_get_values(uint8_t handle,uint8_t *data,uint16_t datalen)
 {
 Sht40_Drv_TypeDef	*sht40_Drv;
 uint32_t	ret_i2c_code;
@@ -72,7 +72,7 @@ uint32_t	ret_i2c_code;
 		return SHT40_DRIVER_NOT_OWNED;
 }
 
-static uint32_t sht40_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t sht40_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

@@ -25,7 +25,7 @@
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "../kernel/scheduler.h"
-#include "../kernel/kernel_opt.h"
+//#include "../kernel/kernel_opt.h"
 
 #include <string.h>
 #include "gpio_irq_drivers_manager.h"
@@ -35,6 +35,7 @@ extern		GPIO_Irq_DriverStruct_t	*GPIO_Irq_DriverStruct[MAX_GPIO_DRIVERS];
 
 SYSTEM_RAM	uint8_t		last_gpio_used_handle=0,gpio_driver_gpio_request = 0;
 SYSTEM_RAM	GPIO_Irq_DriverPortAllocationStruct_t	GPIO_Irq_DriverPortAllocation[MAX_GPIO_PORTS];
+
 
 ITCM_AREA_CODE uint8_t gpio_driver_allocate_gpio(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin)
 {
@@ -55,12 +56,23 @@ uint32_t	gpio_port = (uint32_t )GPIO_Port;
 	case	GPIOK_BASE : port_index=11;break;
 	default : return PIN_ALREADY_ALLOCATED;
 	}
-	if (( GPIO_Irq_DriverPortAllocation[port_index].gpiobit & (1 << GPIO_Pin)) == (1 << GPIO_Pin))
+	if (( GPIO_Irq_DriverPortAllocation[port_index].gpiobit & GPIO_Pin) == GPIO_Pin)
 		return PIN_ALREADY_ALLOCATED;
 
 	GPIO_Irq_DriverPortAllocation[port_index].in_use = 1;
-	GPIO_Irq_DriverPortAllocation[port_index].gpiobit |= 1 << GPIO_Pin;
+	GPIO_Irq_DriverPortAllocation[port_index].gpiobit |= GPIO_Pin;
 	return port_index;
+}
+
+ITCM_AREA_CODE uint8_t gpio_driver_allocate_multiple_gpio(OnChip_GPIO_Irq_DriverStruct_t *OnChip_GPIO_Irq_DriverStruct,uint16_t num_pin)
+{
+uint32_t i;
+	for(i=0;i<num_pin;i++)
+	{
+		if ( gpio_driver_allocate_gpio(OnChip_GPIO_Irq_DriverStruct[i].GPIO_Port, OnChip_GPIO_Irq_DriverStruct[i].GPIO_Pin) == PIN_ALREADY_ALLOCATED)
+			return num_pin;
+	}
+	return num_pin;
 }
 
 ITCM_AREA_CODE uint32_t	gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags)
@@ -90,10 +102,22 @@ OnChip_GPIO_Irq_DriverStruct_t	*gpio_Drv;
 	return DRIVER_REQUEST_FAILED;
 }
 
+
+ITCM_AREA_CODE uint32_t	gpio_driver_multigpio_register(uint32_t *handle,GPIO_Irq_DriverStruct_t *driver,OnChip_GPIO_Irq_DriverStruct_t *private,uint16_t num_gpio,uint32_t flags)
+{
+uint32_t i;
+	for(i=0;i<num_gpio;i++)
+	{
+		if ( (handle[i] = gpio_driver_register(&driver[i],(uint32_t *)&private[i],flags)) == DRIVER_REQUEST_FAILED )
+			return i;
+	}
+	return 0;
+}
+
 ITCM_AREA_CODE uint32_t	gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver)
 {
 uint32_t	i;
-	for(i=0;i<MAX_DRIVERS;i++)
+	for(i=0;i<MAX_GPIO_DRIVERS;i++)
 	{
 		if ( strcmp(GPIO_Irq_DriverStruct[i]->gpio_driver_name,driver->gpio_driver_name) == 0 )
 		{
@@ -110,7 +134,7 @@ ITCM_AREA_CODE uint32_t gpio_driver_scan(void)
 uint32_t	i;
 	if (gpio_driver_gpio_request )
 	{
-		for(i=0;i<MAX_DRIVERS;i++)
+		for(i=0;i<MAX_GPIO_DRIVERS;i++)
 		{
 			if ( GPIO_Irq_DriverStruct[i] == NULL )
 				return DRIVER_STATUS_INITPEND;
@@ -128,7 +152,7 @@ uint32_t	i;
 
 ITCM_AREA_CODE uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level)
 {
-	if ( handle > MAX_DRIVERS )
+	if ( handle > MAX_GPIO_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
 	if ( GPIO_Irq_DriverStruct[handle]->gpio_set != NULL )
 		return GPIO_Irq_DriverStruct[handle]->gpio_set(handle,level);
@@ -137,7 +161,7 @@ ITCM_AREA_CODE uint32_t gpio_driver_gpio_set(uint32_t handle,uint8_t level)
 
 ITCM_AREA_CODE uint32_t gpio_driver_gpio_toggle(uint32_t handle)
 {
-	if ( handle > MAX_DRIVERS )
+	if ( handle > MAX_GPIO_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
 	if ( GPIO_Irq_DriverStruct[handle]->gpio_toggle != NULL )
 		return GPIO_Irq_DriverStruct[handle]->gpio_toggle(handle);
@@ -146,7 +170,7 @@ ITCM_AREA_CODE uint32_t gpio_driver_gpio_toggle(uint32_t handle)
 
 ITCM_AREA_CODE uint32_t gpio_driver_gpio_get(uint32_t handle)
 {
-	if ( handle > MAX_DRIVERS )
+	if ( handle > MAX_GPIO_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
 	if ( GPIO_Irq_DriverStruct[handle]->gpio_get != NULL )
 		return GPIO_Irq_DriverStruct[handle]->gpio_get(handle);
@@ -155,7 +179,7 @@ ITCM_AREA_CODE uint32_t gpio_driver_gpio_get(uint32_t handle)
 
 ITCM_AREA_CODE uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration)
 {
-	if ( handle > MAX_DRIVERS )
+	if ( handle > MAX_GPIO_DRIVERS )
 		return DRIVER_REQUEST_FAILED;
 	if ( GPIO_Irq_DriverStruct[handle]->gpio_configure != NULL )
 		return GPIO_Irq_DriverStruct[handle]->gpio_configure(handle,configuration);

@@ -28,7 +28,6 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
-	DMA_HandleTypeDef 	*hdma[2];
 	TIM_HandleTypeDef 	*pwm_timer;
 	uint16_t 			pwm_channel;
 	GPIO_TypeDef	 	*enable_port;

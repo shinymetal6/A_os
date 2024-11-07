@@ -23,10 +23,18 @@
 #include "main.h"
 #include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
+#include "main.h"
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/scheduler.h"
+#include "../../kernel/kernel_opt.h"
 
-#ifdef CODEC_NAU88C22
-#include "../../kernel/HwDevices/hw_i2c.h"
 #include "nau88c22.h"
+#include <string.h>
+
+extern	DriverStruct_t			*DriverStruct[MAX_DRIVERS];
+
 Nau88c22_equalizer_t	Nau88c22_equalizer;
 
 uint16_t	nau88c22_shadowregs[NAU88C22_NUM_REGS];
@@ -192,48 +200,41 @@ Nau88c22_t	Nau88c22[] =
 		},
 };
 
-uint8_t Nau88c22_CheckPresent(void)
-{
-	return hw_i2c_check_presence(NAU88C22_I2C_BUS,NAU88C22_ADDR);
-}
-
-void Nau88c22_WriteReg(uint8_t reg_address, uint16_t reg_data)
+static void Nau88c22_WriteReg(I2C_HandleTypeDef	*i2c, uint8_t reg_address, uint16_t reg_data)
 {
 uint8_t i2c_data[2];
 	nau88c22_shadowregs[reg_address] = reg_data;
+
 	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
 	i2c_data[1] = reg_data & 0xff;
-	hw_i2c_MemSend8(NAU88C22_I2C_BUS,NAU88C22_ADDR,i2c_data[0],&i2c_data[1], 1);
+
+	HAL_I2C_Mem_Write(i2c, NAU88C22_I2C_ADDR, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_I2C_TIMEOUT);
 }
 
-uint16_t Nau88c22_ReadReg(uint8_t reg_address)
+static uint32_t codec_nau8822_start(uint8_t handle)
 {
-	return nau88c22_shadowregs[reg_address];
+	return 0;
 }
 
-void Nau88c22_Init(void)
+static uint32_t codec_nau8822_stop(uint8_t handle)
 {
-uint8_t	i = 0;
-	if ( Nau88c22_CheckPresent() == 0)
-	{
-		task_delay(20);
-		Nau88c22_WriteReg(NAU88C22_RESET,  0);	// reset
-		task_delay(20);
-		while(Nau88c22[i].reg_addr != NAU88C22_RESET )
-		{
-			Nau88c22_WriteReg(Nau88c22[i].reg_addr,  Nau88c22[i].reg_data);
-			i++;
-		}
-		task_delay(1);
-		Nau88c22_WriteReg(NAU88C22_POWER_MANAGEMENT_1,  0x002f);
-	}
+	return 0;
 }
 
-void Nau88c22_SetHPVolume(uint8_t volume)
+static uint32_t codec_nau8822_get_status(uint8_t handle)
 {
-uint16_t		reg = 0x100 | (volume & 0x3f);
-	Nau88c22_WriteReg(NAU88C22_LOUT1_HP_CONTROL,  reg);
-	Nau88c22_WriteReg(NAU88C22_ROUT1_HP_CONTROL, reg);
+CodecNAU8822_Drv_TypeDef	*CodecNAU8822_Drv = (CodecNAU8822_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+	return CodecNAU8822_Drv->status;
+}
+
+static uint32_t codec_nau8822_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
+{
+	return 0;
+}
+
+static uint32_t codec_nau8822_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
+{
+	return 0;
 }
 
 uint8_t Nau88c22_SetBand1Equalizer(uint8_t adc_dac,uint8_t band,uint8_t center_frequency,uint8_t gain)
@@ -285,15 +286,105 @@ uint8_t Nau88c22_SetBand5Equalizer(uint8_t band,uint8_t center_frequency,uint8_t
 	return 0;
 }
 
-uint8_t Nau88c22_WriteEqualizer(void)
+uint8_t Nau88c22_WriteEqualizer(I2C_HandleTypeDef *i2c)
 {
-	Nau88c22_WriteReg(NAU88C22_EQ1,  Nau88c22_equalizer.adc_dac_path |      Nau88c22_equalizer.band1_frequency | Nau88c22_equalizer.band1_gain);
-	Nau88c22_WriteReg(NAU88C22_EQ2,  Nau88c22_equalizer.band2_narrow_wide | Nau88c22_equalizer.band2_frequency | Nau88c22_equalizer.band2_gain);
-	Nau88c22_WriteReg(NAU88C22_EQ3,  Nau88c22_equalizer.band3_narrow_wide | Nau88c22_equalizer.band3_frequency | Nau88c22_equalizer.band3_gain);
-	Nau88c22_WriteReg(NAU88C22_EQ4,  Nau88c22_equalizer.band4_narrow_wide | Nau88c22_equalizer.band4_frequency | Nau88c22_equalizer.band4_gain);
-	Nau88c22_WriteReg(NAU88C22_EQ5,                                         Nau88c22_equalizer.band5_frequency | Nau88c22_equalizer.band5_gain);
+	Nau88c22_WriteReg(i2c,NAU88C22_EQ1,  Nau88c22_equalizer.adc_dac_path |      Nau88c22_equalizer.band1_frequency | Nau88c22_equalizer.band1_gain);
+	Nau88c22_WriteReg(i2c,NAU88C22_EQ2,  Nau88c22_equalizer.band2_narrow_wide | Nau88c22_equalizer.band2_frequency | Nau88c22_equalizer.band2_gain);
+	Nau88c22_WriteReg(i2c,NAU88C22_EQ3,  Nau88c22_equalizer.band3_narrow_wide | Nau88c22_equalizer.band3_frequency | Nau88c22_equalizer.band3_gain);
+	Nau88c22_WriteReg(i2c,NAU88C22_EQ4,  Nau88c22_equalizer.band4_narrow_wide | Nau88c22_equalizer.band4_frequency | Nau88c22_equalizer.band4_gain);
+	Nau88c22_WriteReg(i2c,NAU88C22_EQ5,                                         Nau88c22_equalizer.band5_frequency | Nau88c22_equalizer.band5_gain);
 	return 0;
 }
 
-#endif	//#ifdef CODEC_NAU88C22
+void Nau88c22_SetHPVolume(I2C_HandleTypeDef *i2c,uint8_t volume)
+{
+uint16_t		reg = 0x100 | (volume & 0x3f);
+	Nau88c22_WriteReg(i2c,NAU88C22_LOUT1_HP_CONTROL, reg);
+	Nau88c22_WriteReg(i2c,NAU88C22_ROUT1_HP_CONTROL, reg);
+}
+
+
+static uint32_t codec_nau8822_extended_actions(uint32_t handle,uint32_t *action)
+{
+CodecNAU8822_Drv_TypeDef		*CodecNAU8822_Drv = (CodecNAU8822_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+I2C_HandleTypeDef				*i2c = CodecNAU8822_Drv->bus;
+CodecNAU8822__Actions_TypeDef	*action_struct = (CodecNAU8822__Actions_TypeDef *)action;
+
+	switch ( action_struct->action )
+	{
+	case	NAU88C22_SET_BAND1_EQUALIZER	:
+		Nau88c22_SetBand1Equalizer(action_struct->adc_dac_path,action_struct->band,action_struct->frequency,action_struct->gain);
+		break;
+	case	NAU88C22_SET_BAND2_EQUALIZER	:
+		Nau88c22_SetBand2Equalizer(action_struct->narrow_wide,action_struct->band,action_struct->frequency,action_struct->gain);
+		break;
+	case	NAU88C22_SET_BAND3_EQUALIZER	:
+		Nau88c22_SetBand3Equalizer(action_struct->narrow_wide,action_struct->band,action_struct->frequency,action_struct->gain);
+		break;
+	case	NAU88C22_SET_BAND4_EQUALIZER	:
+		Nau88c22_SetBand4Equalizer(action_struct->narrow_wide,action_struct->band,action_struct->frequency,action_struct->gain);
+		break;
+	case	NAU88C22_SET_BAND5_EQUALIZER	:
+		Nau88c22_SetBand5Equalizer(action_struct->band,action_struct->frequency,action_struct->gain);
+		break;
+	case	NAU88C22_WRITE_EQUALIZER	:
+		Nau88c22_WriteEqualizer(i2c);
+		break;
+	case	NAU88C22_SET_HP_VALUE	:
+		Nau88c22_SetHPVolume(i2c,action_struct->volume);
+		break;
+	}
+	return 0;
+}
+
+extern	const DriverStruct_t	Codec_NAU8822_Drv;
+
+uint32_t codec_nau8822_deinit(uint8_t handle)
+{
+	return driver_unregister(&Codec_NAU8822_Drv);
+}
+
+static uint32_t codec_nau8822_init(uint8_t handle)
+{
+CodecNAU8822_Drv_TypeDef	*CodecNAU8822_Drv = (CodecNAU8822_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+I2C_HandleTypeDef			*i2c = CodecNAU8822_Drv->bus;
+uint8_t						i = 0;
+
+	if ( HAL_I2C_IsDeviceReady(i2c, NAU88C22_I2C_ADDR, NAU88C22_I2C_RETRY_CHECK, NAU88C22_I2C_TIMEOUT) != 0 )
+		return 1;
+	Nau88c22_WriteReg(i2c,NAU88C22_RESET,  0);
+	while(Nau88c22[i].reg_addr != NAU88C22_RESET )
+	{
+		Nau88c22_WriteReg(i2c,Nau88c22[i].reg_addr,  Nau88c22[i].reg_data);
+		i++;
+	}
+	task_delay(1);
+	Nau88c22_WriteReg(i2c,NAU88C22_POWER_MANAGEMENT_1,  0x002f);
+
+
+
+//	if ( gpio_driver_allocate_gpio(CodecNAU8822_Drv->enable_port,CodecNAU8822_Drv->enable_bit) == PIN_ALREADY_ALLOCATED )
+	return 0;
+}
+
+const DriverStruct_t	Codec_NAU8822_Drv =
+{
+	.init = codec_nau8822_init,
+	.deinit = codec_nau8822_deinit,
+	.start = codec_nau8822_start,
+	.stop = codec_nau8822_stop,
+	.extended_action = codec_nau8822_extended_actions,
+	.get_status = codec_nau8822_get_status,
+	.get_values = codec_nau8822_get_values,
+	.set_values = codec_nau8822_set_values,
+	.periodic_before_check_timers_callback = NULL,
+	.periodic_after_check_timers_callback = NULL,
+	.driver_name = "codec_nau8822",
+};
+
+uint32_t codec_nau8822_allocate_driver(DriverStruct_t *new_struct)
+{
+	memcpy(new_struct,&Codec_NAU8822_Drv,sizeof(Codec_NAU8822_Drv));
+	return 0;
+}
 

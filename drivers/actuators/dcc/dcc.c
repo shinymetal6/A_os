@@ -385,13 +385,13 @@ static uint32_t dcc_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t dcc_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t dcc_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
 
 
-static uint32_t dcc_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t dcc_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 DCC_Control_Drv_TypeDef	*DCC_Control_Drv = (DCC_Control_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	switch(values_number)

@@ -69,6 +69,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 	#define	A_HAS_UARTS			1
 #endif
 
+/*
 #define	A_HAS_SPI1				1
 //#define	A_HAS_SPI2				1
 //#define	A_HAS_SPI3				1
@@ -106,7 +107,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 				|| (A_HAS_TIMER13) || (A_HAS_TIMER14) || (A_HAS_TIMER15) || (A_HAS_TIMER16)
 	#define	A_HAS_TIMERS				1
 #endif
-
+*/
 // Board configuration
 
 #define	LED_GPIOPORT			LED_GPIO_Port

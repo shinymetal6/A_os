@@ -80,14 +80,14 @@ static uint32_t lps22df_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t lps22df_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t lps22df_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 Lps22df_Drv_TypeDef	*lps22df_Drv;
 	lps22df_Drv = (Lps22df_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	return HAL_I2C_Mem_Read(lps22df_Drv->bus,lps22df_Drv->device_address, (uint16_t )LPS22DF_PRESS_OUT_XL, I2C_MEMADD_SIZE_8BIT, values, values_number, LPS22DF_I2C_TIMEOUT);
 }
 
-static uint32_t lps22df_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t lps22df_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

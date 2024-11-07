@@ -99,6 +99,7 @@ extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 extern	uint16_t hw_UsbGetRXLen(void);
 
 /* hwmanager : uart */
+/*
 extern	uint32_t hw_send_uart(uint8_t uart,uint8_t *ptr,uint16_t len);
 extern	uint32_t hw_send_uart_dma(uint8_t uart,uint8_t *ptr,uint16_t len);
 extern	uint32_t hw_receive_uart(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
@@ -106,7 +107,7 @@ extern	uint32_t hw_receive_uart_sentinel(uint8_t uart,uint8_t *rx_buf,uint16_t r
 extern	uint32_t hw_receive_uart_sentinel_clear(uint8_t uart);
 extern	void HAL_UART_RxTimeoutCheckCallback(void);
 extern	uint16_t hw_get_uart_receive_len(uint8_t uart);
-
+*/
 /* module_manager */
 extern	uint32_t allocate_module(uint32_t module,uint8_t config);
 extern	uint32_t deallocate_module(uint32_t module);
@@ -139,14 +140,10 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #include "../drivers/drivers_manager.h"
 #include "../drivers/uarts_drivers_manager.h"
 #include "../drivers/gpio_irq_drivers_manager.h"
+#include "../drivers/extmem_driver_manager.h"
 
-#ifdef XMODEM_ENABLE
 #include "../modules/serial_transfers/xmodem.h"
-#endif
-
-#ifdef USB_XMODEM_ENABLE
 #include "../modules/usb_transfer/usb_xmodem.h"
-#endif
 
 #ifdef INTEL_HEX_DECODER_ENABLE
 #include "../modules/hex_decoders/hex_decoders_common.h"
@@ -200,9 +197,9 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../modules/audio/effects.h"
 #endif // #ifdef SYNTH_ENGINE_ENABLE
 
-#ifdef DMX512_ENABLE
+//#ifdef DMX512_ENABLE
 	#include "../modules/dmx512/dmx512.h"
-#endif // #ifdef DMX512_ENABLE
+//#endif // #ifdef DMX512_ENABLE
 
 #ifdef NETWORKING_ENABLED
 #include "../modules/lwip2.2/App/lwip.h"

@@ -279,4 +279,5 @@ extern	void 	ST7735_ClearScreen(void);
 //extern	void A_os_7735_SPI_TxCpltCallback(void);
 extern	void A_os_7735_SPI_DMA_TxCpltCallback(void);
 
+
 #endif /* DRIVERS_LCD_ST7735_ST7735_H_ */

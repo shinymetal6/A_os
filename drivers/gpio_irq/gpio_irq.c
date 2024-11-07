@@ -25,7 +25,7 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
-#include "../../kernel/kernel_opt.h"
+//#include "../../kernel/kernel_opt.h"
 
 #include "gpio_irq.h"
 #include <string.h>
@@ -129,6 +129,16 @@ GPIO_Irq_DriverStruct_t	Gpio_Drv =
 ITCM_AREA_CODE uint32_t driver_gpio_allocate_driver(GPIO_Irq_DriverStruct_t *new_struct)
 {
 	memcpy(new_struct,&Gpio_Drv,sizeof(Gpio_Drv));
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t driver_gpio_allocate_multigpio_driver(GPIO_Irq_DriverStruct_t new_struct[] , uint16_t number_of_gpio)
+{
+uint16_t	i;
+	for(i=0;i<number_of_gpio;i++)
+	{
+		memcpy(&new_struct[i],&Gpio_Drv,sizeof(Gpio_Drv));
+	}
 	return 0;
 }
 

@@ -26,22 +26,14 @@
 #define	DMX_LEN	513
 typedef struct
 {
-	/* user compiled */
-	UART_HandleTypeDef		*uart;
-	uint8_t					*DMXbuf;
-	uint16_t				break_len;
-	GPIO_TypeDef	 		*uart_port;
-	uint16_t				uart_bit;
-	uint8_t					flags;
-	/* used by module */
-	GPIO_Irq_DriverStruct_t *GpIoO1;
-	uint32_t				gpio_uart_bit_driver_handle;
-	UARTS_DriverStruct_t 	*dmx_uart;
-	uint32_t				dmx_uart_handle;
-}Dmx_control_TypeDef;
+	uint32_t	uart;
+	uint8_t		DMXbuf[DMX_LEN];
+	uint8_t		state;
+	uint8_t		flag;
+}dmx_t;
 
-extern	uint32_t dmx512_init(Dmx_control_TypeDef *Dmx_control);
-extern	uint32_t dmx512_tx(uint8_t handle);
+extern	void dmx512_init(uint32_t uart);
+extern	void dmx512_start(void);
 
 
 #endif /* MODULES_DMX512_DMX512_H_ */

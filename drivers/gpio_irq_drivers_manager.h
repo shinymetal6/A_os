@@ -44,6 +44,8 @@ typedef struct
 
 #define	PIN_ALREADY_ALLOCATED	255
 
+#include "gpio_irq/gpio_irq.h"
+
 extern	uint32_t gpio_driver_register(GPIO_Irq_DriverStruct_t *driver,uint32_t *private_drv_struct,uint32_t flags);
 extern	uint32_t gpio_driver_unregister(GPIO_Irq_DriverStruct_t *driver);
 extern	uint32_t gpio_driver_scan(void);
@@ -53,7 +55,7 @@ extern	uint32_t gpio_driver_gpio_get(uint32_t handle);
 extern	uint32_t gpio_driver_gpio_configure(uint32_t handle, uint8_t configuration);
 extern	uint32_t gpio_driver_init(void);
 extern	uint8_t  gpio_driver_allocate_gpio(GPIO_TypeDef *GPIO_Port,uint16_t GPIO_Pin);
-
-#include "gpio_irq/gpio_irq.h"
+extern	uint8_t	 gpio_driver_allocate_multiple_gpio(OnChip_GPIO_Irq_DriverStruct_t *OnChip_GPIO_Irq_DriverStruct,uint16_t num_pin);
+extern  uint32_t	gpio_driver_multigpio_register(uint32_t *handle,GPIO_Irq_DriverStruct_t *driver,OnChip_GPIO_Irq_DriverStruct_t *private,uint16_t num_gpio,uint32_t flags);
 
 #endif /* DRIVERS_GPIO_IRQ_DRIVERS_MANAGER_H_ */

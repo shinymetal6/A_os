@@ -25,7 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #include "intdac_driver.h"
 #include <string.h>
@@ -54,12 +54,12 @@ ITCM_AREA_CODE static uint32_t intdac_get_status(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t intdac_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intdac_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t intdac_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE static uint32_t intdac_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
@@ -117,7 +117,7 @@ uint32_t	i,drv_ret=255;
 			{
 				if ( DriverStruct[i]->driver_private_data != NULL)
 				{
-					DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[i]->driver_private_data;
+					DAC_Drv_TypeDef	*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[i]->driver_private_data;
 					if ( Dac_drv->dac == hdac )
 						return i;
 				}
@@ -132,7 +132,7 @@ ITCM_AREA_CODE void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 uint32_t handle;
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
-		DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		DAC_Drv_TypeDef	*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 		Dac_drv->status |= DAC_STATUS_HALF;
 		Dac_drv->status &= ~DAC_STATUS_FULL;
 		if ( Dac_drv->flags & (DAC_FLAGS_HALF_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
@@ -145,7 +145,7 @@ ITCM_AREA_CODE void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 uint32_t handle;
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
-		DAC_Drv_TypeDef		*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
+		DAC_Drv_TypeDef	*Dac_drv = (DAC_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 		Dac_drv->status |= DAC_STATUS_FULL;
 		Dac_drv->status &= ~DAC_STATUS_HALF;
 		if ( Dac_drv->flags & (DAC_FLAGS_FULL_WAKEUP | DAC_FLAGS_ALL_WAKEUP))

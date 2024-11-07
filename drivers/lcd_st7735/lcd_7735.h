@@ -38,7 +38,7 @@ typedef struct
     char line[32];
     uint16_t fore_color;
 	uint16_t bkg_color;
-	uint16_t 	current_brightness;
+	uint16_t current_brightness;
 } Video_t;
 
 #define	ZERO_BRIGHTNESS	0
@@ -65,9 +65,44 @@ typedef struct
 extern	TIM_HandleTypeDef 	htim16;
 #define	BACKLIGHT_TIMER		htim16
 
-extern	void		LcdInit(void);
-extern	uint32_t 	LcdClearScreen(void);
-extern	uint32_t 	LcdSetBrightness(uint16_t brightness);
-extern	uint32_t	Draw_Logo(uint16_t *logo);
+extern	uint32_t lcd_control_096_allocate_driver(DriverStruct_t *new_struct);
+
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	TIM_HandleTypeDef 	*backlight_timer;
+	uint16_t 			backlight_timer_channel;
+	uint16_t 			brightness;
+	SPI_HandleTypeDef 	*spi;
+	GPIO_TypeDef	 	*ss_port;
+	uint16_t			ss_bit;
+	GPIO_TypeDef	 	*dc_port;
+	uint16_t			dc_bit;
+	GPIO_TypeDef	 	*reset_port;
+	uint16_t			reset_bit;
+}Lcd_Control_096_Drv_TypeDef;
+#define	LCD_096_RUNNING	0x80
+
+typedef struct
+{
+	uint8_t				action;
+	char				*string;
+	uint16_t			string_len;
+	FontDef 			font;
+	uint16_t			pos_x;
+	uint16_t			pos_y;
+	uint16_t 			color;
+	uint16_t 			bgcolor;
+}Lcd_Control_096_Actions_TypeDef;
+
+/* extended commands */
+#define	LCD_096_SET_BRIGHTNESS		1
+#define	LCD_096_START_BACKLIGHT		2
+#define	LCD_096_STOP_BACKLIGHT		3
+#define	LCD_096_CLEAR_SCREEN		4
+#define	LCD_096_DRAW_LOGO			5
+#define	LCD_096_WRITE_STRING		6
 
 #endif /* DRIVERS_LCD_ST7735_LCD_7735_H_ */

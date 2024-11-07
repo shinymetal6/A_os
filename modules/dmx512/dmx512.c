@@ -27,52 +27,35 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
-#ifdef DMX512_ENABLE
-
 #include "dmx512.h"
-extern	UART_HandleTypeDef huart3;
 extern	void DWT_Delay_us(uint32_t au32_microseconds);
+extern		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 
-dmx_t	dmx;
-/*
- * moder :
- * 	00 = input
- * 	01 : output
- * 	10 : alternate
- * 	11 : analog
- */
-#define set_pc10_gpio() \
-	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
-	GPIOC->MODER = 1 << 20;\
-	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
-	GPIOA->MODER = 1 << 30;
-
-#define set_pc10_uart() \
-	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
-	GPIOC->MODER = 1 << 21;\
-	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
-	GPIOA->MODER = 1 << 31;
-
-
-
-void dmx512_start(void)
+uint32_t dmx512_tx(uint8_t handle)
 {
-	set_pc10_gpio();
-	DWT_Delay_us(120);
-	set_pc10_uart();
-
-	hw_send_uart_dma(dmx.uart,dmx.DMXbuf,DMX_LEN);
+Dmx_control_TypeDef	*Dmx_control = (Dmx_control_TypeDef	*)UARTS_DriverStruct[handle]->uart_driver_private_data;
+	gpio_driver_gpio_configure(Dmx_control->gpio_uart_bit_driver_handle,GPIO_IS_OUTPUT);
+	DWT_Delay_us(Dmx_control->break_len);
+	gpio_driver_gpio_configure(Dmx_control->gpio_uart_bit_driver_handle,GPIO_IS_ALTERNATE);
+	return uart_driver_send_buffer(Dmx_control->dmx_uart_handle,Dmx_control->DMXbuf,DMX_LEN);
 }
 
-void dmx512_init(uint32_t uart)
+uint32_t dmx512_init(Dmx_control_TypeDef *Dmx_control)
 {
-uint32_t	i;
-uint8_t		k=255;
-	for(i=0,k=255;i<DMX_LEN;i++,k--)
-		dmx.DMXbuf[i] = k;
-	dmx.DMXbuf[0] = 0;
-	dmx.uart = uart;
+
+OnChip_GPIO_Irq_DriverStruct_t	GPIO_DmxUart =
+{
+		.GPIO_Port = Dmx_control->uart_port,
+		.GPIO_Pin = Dmx_control->uart_bit,
+};
+
+	driver_gpio_allocate_driver(Dmx_control->GpIoO1);
+	Dmx_control->gpio_uart_bit_driver_handle = gpio_driver_register(Dmx_control->GpIoO1,(uint32_t *)&GPIO_DmxUart,0);
+	gpio_driver_gpio_set(Dmx_control->gpio_uart_bit_driver_handle,0);
+	onchip_uart_allocate_driver(Dmx_control->dmx_uart);
+	Dmx_control->dmx_uart->uart_driver_private_data = (uint32_t *)Dmx_control;
+	Dmx_control->dmx_uart_handle = uart_driver_register(Dmx_control->dmx_uart,(uint32_t *)Dmx_control,DRIVER_FLAGS_AUTOSTART,Dmx_control->flags);;
+	return Dmx_control->dmx_uart_handle;
 }
 
-#endif // #ifdef DMX512_ENABLE
 

@@ -48,6 +48,7 @@ typedef struct
 #define	UART_SENTINEL_END_FOUND		0x02
 #define	UART_SENTINEL_START_FOUND	0x01
 
+extern	void HAL_UART_RxTimeoutCheckCallback(void);
 extern	uint32_t onchip_uart_allocate_driver(UARTS_DriverStruct_t *new_struct);
 
 #endif /* DRIVERS_DIGITAL_ONCHIP_UART_ONCHIP_UART_H_ */

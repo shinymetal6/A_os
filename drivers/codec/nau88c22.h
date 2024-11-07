@@ -23,6 +23,20 @@
 #ifndef DRIVERS_CODEC_NAU88C22_H_
 #define DRIVERS_CODEC_NAU88C22_H_
 
+#define NAU88C22_I2C_ADDR				(0x1a << 1)
+#define NAU88C22_I2C_TIMEOUT			(1000)
+#define NAU88C22_I2C_RETRY_CHECK		5
+#define	NAU88C22_EXT_FREQ_12_288MHZ		1
+
+/* extended commands */
+#define	NAU88C22_SET_BAND1_EQUALIZER	1
+#define	NAU88C22_SET_BAND2_EQUALIZER	2
+#define	NAU88C22_SET_BAND3_EQUALIZER	3
+#define	NAU88C22_SET_BAND4_EQUALIZER	4
+#define	NAU88C22_SET_BAND5_EQUALIZER	5
+#define	NAU88C22_WRITE_EQUALIZER		6
+#define	NAU88C22_SET_HP_VALUE			7
+
 typedef struct
 {
 	uint8_t		reg_addr;
@@ -102,13 +116,31 @@ typedef struct
 	uint8_t		band5_gain;
 }Nau88c22_equalizer_t;
 
-extern	void Nau88c22_Init(void);
-extern	void Nau88c22_SetHPVolume(uint8_t volume);
-extern	uint8_t Nau88c22_SetBand1Equalizer(uint8_t adc_dac,    uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand2Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand3Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand4Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand5Equalizer(                    uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_WriteEqualizer(void);
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	I2C_HandleTypeDef 	*bus;
+	GPIO_TypeDef	 	*enable_port;
+	uint16_t			enable_bit;
+}CodecNAU8822_Drv_TypeDef;
+
+/* status */
+#define	CODEC_NAU8822__INITIALIZED		0x01
+#define	CODEC_NAU8822_RUNNING			0x80
+
+typedef struct
+{
+	uint8_t		action;
+	uint32_t	volume;
+	uint16_t	adc_dac_path;
+	uint8_t		band;
+	uint8_t		frequency;
+	uint8_t		gain;
+	uint16_t	narrow_wide;
+}CodecNAU8822__Actions_TypeDef;
+
+extern	uint32_t codec_nau8822_allocate_driver(DriverStruct_t *new_struct);
 
 #endif /* DRIVERS_CODEC_NAU88C22_H_ */

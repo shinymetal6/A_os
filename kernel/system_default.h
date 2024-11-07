@@ -54,6 +54,10 @@
 	#ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
 	#endif
+	#ifdef	PRESSO_2416176_01
+		#include "../boards/PRESSO_2416176_01.h"
+	#endif
+
 #endif	//#ifdef	STM32H743xx
 
 
@@ -74,6 +78,9 @@
 		#include "../boards/STM32H753ZI_NUCLEO_DHT11.h"
 	#endif
 	#ifdef STM32H753ZI_NUCLEO_UART
+		#include "../boards/STM32H753ZI_NUCLEO_UART.h"
+	#endif
+	#ifdef STM32H753ZI_NUCLEO_DMX
 		#include "../boards/STM32H753ZI_NUCLEO_UART.h"
 	#endif
 

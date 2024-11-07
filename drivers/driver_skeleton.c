@@ -48,12 +48,12 @@ static uint32_t driver_skeleton_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t driver_skeleton_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t driver_skeleton_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }
 
-static uint32_t driver_skeleton_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t driver_skeleton_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

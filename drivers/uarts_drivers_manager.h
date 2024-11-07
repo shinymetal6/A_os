@@ -33,10 +33,10 @@ typedef struct
 	uint32_t	(*start)(uint8_t handle);
 	uint32_t	(*stop)(uint8_t handle);
 	uint32_t	(*get_status)(uint8_t handle);
-	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
+	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
 	uint32_t	(*get_received_number_of_chars)(uint8_t handle);
 	uint32_t	(*set_status)(uint8_t handle);
-	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
+	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
 	uint32_t	(*send_buffer)(uint8_t handle, uint8_t *buffer,uint8_t len);
 	uint32_t	(*send_buffer_dma)(uint8_t handle, uint8_t *buffer,uint8_t len);
 	uint32_t	(*receive_buffer)(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len);
@@ -67,8 +67,8 @@ extern	uint32_t	uart_driver_register(UARTS_DriverStruct_t *uart_driver,uint32_t 
 extern	uint32_t	uart_driver_unregister(const UARTS_DriverStruct_t *uart_driver);
 extern	uint32_t 	uart_driver_start(uint32_t handle);
 extern	uint32_t 	uart_driver_extended_action(uint32_t handle,uint32_t *action);
-extern	uint32_t 	uart_driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number);
-extern	uint32_t 	uart_driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number);
+extern	uint32_t 	uart_driver_get_values(uint32_t handle,uint8_t *values,uint16_t values_number);
+extern	uint32_t 	uart_driver_set_values(uint32_t handle,uint8_t *values,uint16_t values_number);
 extern	uint32_t 	uart_driver_scan(void);
 extern	uint32_t 	uart_driver_send_buffer(uint8_t handle, uint8_t *buffer,uint16_t len);
 extern	uint32_t 	uart_driver_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint16_t len);

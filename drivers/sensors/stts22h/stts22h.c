@@ -61,14 +61,14 @@ static uint32_t stts22h_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t stts22h_get_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t stts22h_get_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 Stts22h_Drv_TypeDef	*stts22h_Drv;
 	stts22h_Drv = (Stts22h_Drv_TypeDef	*)DriverStruct[handle]->driver_private_data;
 	return HAL_I2C_Mem_Read(stts22h_Drv->bus,stts22h_Drv->device_address, (uint16_t )STTS22H_TEMP_L_OUT, I2C_MEMADD_SIZE_8BIT, values, values_number, STTS22H_I2C_TIMEOUT);
 }
 
-static uint32_t stts22h_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t stts22h_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

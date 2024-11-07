@@ -24,9 +24,7 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/kernel_opt.h"
-
-#ifdef XMODEM_ENABLE
+//#include "../../kernel/kernel_opt.h"
 
 #include "xmodem.h"
 #include <string.h>
@@ -36,16 +34,16 @@ xmodem_t	xmodem_struct;
 
 static uint8_t xmodem_calc_csum(uint8_t *buf)
 {
-uint16_t	calc_csum=0,i;
+uint16_t	i;
+	xmodem_struct.calculated_checksum=0;
+	xmodem_struct.packet_checksum=buf[XMODEM_CS];
 	for(i=0;i<XMODEM_LEN;i++)
-		calc_csum += buf[i+3];
-	return ( calc_csum & 0xff ) - buf[XMODEM_LEN+3];
+		xmodem_struct.calculated_checksum += buf[i+3];
+	return ( xmodem_struct.calculated_checksum & 0xff ) - buf[XMODEM_CS];
 }
 
 uint8_t xmodem_line_parser(uint8_t *buf)
 {
-	uint8_t	csum;
-
 	if ( buf[0] == X_SOH)
 	{
 		xmodem_struct.data_len = XMODEM_LEN;
@@ -60,10 +58,10 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 				return 1;
 			memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
 			xmodem_struct.data_ptr += xmodem_struct.data_len;
-			csum = xmodem_calc_csum(buf);
-			if ( csum )
-				csum = 2;
-			return csum;
+			xmodem_struct.checksum = xmodem_calc_csum(buf);
+			if ( xmodem_struct.checksum )
+				return 2;
+			return 0;
 		}
 	}
 	if ( buf[0] == X_EOT)
@@ -83,7 +81,7 @@ uint8_t xmodem_process(uint32_t wakeup)
  * X_AK		:	line received
  */
 {
-uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0;
+uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val;
 
 	if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 	{
@@ -92,44 +90,49 @@ uint8_t		ak_char=X_ACK, nak_char=X_NAK, ret_val = 0;
 			xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr;
 			xmodem_struct.data_count = 0;
 			uart_driver_send_buffer(xmodem_struct.uart_handle,&nak_char,1);
+			ret_val = 0;
 		}
 		else
 		{
-			xmodem_struct.xtimeout++;
-			if ( xmodem_struct.xtimeout > 5 )
+			xmodem_struct.xtimeout--;
+			if ( xmodem_struct.xtimeout == 0 )
 			{
-				uart_driver_send_buffer(xmodem_struct.uart_handle,&nak_char,1);
-				xmodem_struct.xtimeout = 0;
+				xmodem_struct.xtimeout = XMODEM_TIMEOUT;
 				xmodem_struct.state = XMODEM_SEND_NAK;
 			}
-			else
-				ret_val = X_STX;
 		}
 	}
-	if (( wakeup & (xmodem_struct.xmodem_wakeup_mask)) != 0)
+	else if (( wakeup & (xmodem_struct.xmodem_wakeup_mask)) != 0)
 	{
 		xmodem_struct.state = XMODEM_DATA_PHASE;
+		xmodem_struct.xtimeout = XMODEM_TIMEOUT;
 		switch(xmodem_line_parser(xmodem_struct.rxbuf))
 		{
 		case 0 :
-			//memcpy(xmodem_struct.last_rxbuf,xmodem_struct.rxbuf,XMODEM_LINE_LEN);
 			xmodem_struct.received_bytes_count += XMODEM_LEN;
-			ret_val = X_ACK;
 			if ( xmodem_struct.auto_send_ack == XMODEM_AUTOSEND_AK )
 				uart_driver_send_buffer(xmodem_struct.uart_handle,&ak_char,1);
+			ret_val = X_ACK;
 			break;
 		case 1 :
-			ret_val = X_EOT;
 			if ( xmodem_struct.auto_send_ack == XMODEM_AUTOSEND_AK )
 				uart_driver_send_buffer(xmodem_struct.uart_handle,&ak_char,1);
+			xmodem_struct.state = XMODEM_SEND_NAK;
+			ret_val = X_EOT;
 			break;
 		default:
 			uart_driver_send_buffer(xmodem_struct.uart_handle,&nak_char,1);
-			ret_val = X_NAK;
+			xmodem_struct.num_retries--;
+			if ( xmodem_struct.num_retries == 0 )
+			{
+				xmodem_struct.num_retries = XMODEM_RETRIES;
+				ret_val = X_NAK;
+			}
 			break;
 		}
-		xmodem_struct.xtimeout = 0;
 	}
+	else
+		ret_val = 0;
 	return ret_val;
 }
 
@@ -155,17 +158,16 @@ uint32_t xmodem_get_rxed_amount(void)
 	return xmodem_struct.received_bytes_count;
 }
 
-void xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count,uint8_t auto_send_ack)
+void xmodem_init(uint8_t uart_handle,uint8_t *data_ptr,uint8_t *databuf_ptr,uint32_t max_data_count,uint8_t auto_send_ack,uint32_t wakeup_mask)
 {
 	xmodem_struct.uart_handle = uart_handle;
-	xmodem_struct.xmodem_wakeup_mask |= WAKEUP_FROM_UART3_IRQ;
+	xmodem_struct.xmodem_wakeup_mask = wakeup_mask;
 	xmodem_allocate_area(data_ptr,max_data_count);
 	xmodem_struct.state = XMODEM_SEND_NAK;
-	xmodem_struct.xtimeout = 0;
+	xmodem_struct.xtimeout = XMODEM_TIMEOUT;
 	xmodem_struct.rxbuf = databuf_ptr;
 	xmodem_struct.received_bytes_count = 0;
 	xmodem_struct.auto_send_ack = auto_send_ack;
+	xmodem_struct.num_retries = XMODEM_RETRIES;
 	uart_driver_receive_buffer((uint8_t )uart_handle,xmodem_struct.rxbuf,XMODEM_LINE_LEN);
 }
-
-#endif

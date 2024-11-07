@@ -39,6 +39,7 @@
 #define	MAX_UARTS_DRIVERS	8
 #define	MAX_GPIO_DRIVERS	32
 #define	MAX_GPIO_PORTS		12
+#define	MAX_MEM_DRIVERS		8
 
 #define DUMMY_XPSR  				0x01000000U
 
@@ -131,6 +132,7 @@ typedef struct _HW_Spi_t
 #define	A_MAX_SPI			4
 #endif
 
+/*
 #ifdef A_HAS_I2C_BUS
 #include "HwDevices/hw_i2c.h"
 
@@ -147,13 +149,15 @@ typedef struct _HW_I2C_t
 	uint32_t			hwi2c_index;
 	uint8_t				hwi2c_flags;
 }HW_I2C_t;
+*/
 /* hwi2c_flags */
+/*
 #define	I2C_IRQ_SET			0x01
 #define	I2C_TXDMA_SET		0x02
 #define	I2C_RXDMA_SET		0x04
 #define	A_MAX_I2C			2
 #endif
-
+*/
 #ifdef A_HAS_TIMERS
 #include "HwDevices/hw_timers.h"
 

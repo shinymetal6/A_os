@@ -34,9 +34,9 @@ typedef struct
 	uint32_t	(*start)(uint8_t handle);
 	uint32_t	(*stop)(uint8_t handle);
 	uint32_t	(*get_status)(uint8_t handle);
-	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
+	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
 	uint32_t	(*set_status)(uint8_t handle);
-	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint8_t values_number);
+	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
 	uint32_t	(*extended_action)(uint32_t handle,uint32_t *action);
 	void 		(*periodic_before_check_timers_callback)(void);
 	void 		(*periodic_after_check_timers_callback)(void);
@@ -62,33 +62,18 @@ extern	uint32_t	driver_register(DriverStruct_t *driver,uint32_t *private_drv_str
 extern	uint32_t	driver_unregister(const DriverStruct_t *driver);
 extern	uint32_t 	driver_start(uint32_t handle);
 extern	uint32_t 	driver_extended_action(uint32_t handle,uint32_t *action);
-extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number);
-extern	uint32_t 	driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number);
+extern	uint32_t 	driver_get_values(uint32_t handle,uint8_t *values,uint16_t values_number);
+extern	uint32_t 	driver_set_values(uint32_t handle,uint8_t *values,uint16_t values_number);
 extern	uint32_t 	driver_scan(void);
 
-#ifdef DHTXX_AM230X_ENABLE
 #include "sensors/dhtxx_am230x/dhtxx_am230x.h"
-#endif
-
-#ifdef A_HAS_MOTOR_CNTRL
 #include "actuators/pwm_control/pwm_control.h"
-#endif
-
-#ifdef DCC_SYSTEM_ENABLE
 #include "actuators/dcc/dcc.h"
-#endif
-
-#ifdef INTERNAL_ADC_DRIVER
 #include "analog/intadc_driver/intadc_driver.h"
-#endif
-
-#ifdef INTERNAL_DAC_DRIVER
 #include "analog/intdac_driver/intdac_driver.h"
-#endif
-
 #include "sensors/sht40/sht40.h"
 #include "sensors/stts22h/stts22h.h"
 #include "sensors/lps22df/lps22df.h"
-
+#include "external_flash/i2c_24xx.h"
 
 #endif /* DRIVERS_DRIVERS_MANAGER_H_ */

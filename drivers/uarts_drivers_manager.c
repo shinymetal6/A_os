@@ -118,14 +118,14 @@ ITCM_AREA_CODE uint32_t uart_driver_start(uint32_t handle)
 	return DRIVER_REQUEST_FAILED;
 }
 
-ITCM_AREA_CODE uint32_t uart_driver_get_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t uart_driver_get_values(uint32_t handle,uint8_t *values,uint16_t values_number)
 {
 	if ( UARTS_DriverStruct[handle]->get_values != NULL )
 		return UARTS_DriverStruct[handle]->get_values(handle,values,values_number);
 	return DRIVER_REQUEST_FAILED;
 }
 
-ITCM_AREA_CODE uint32_t uart_driver_set_values(uint32_t handle,uint8_t *values,uint8_t values_number)
+ITCM_AREA_CODE uint32_t uart_driver_set_values(uint32_t handle,uint8_t *values,uint16_t values_number)
 {
 	if ( UARTS_DriverStruct[handle]->set_values != NULL )
 		return UARTS_DriverStruct[handle]->set_values(handle,values,values_number);

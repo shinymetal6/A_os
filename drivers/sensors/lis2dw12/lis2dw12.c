@@ -40,12 +40,12 @@ static uint8_t	read_lis_reg(I2C_HandleTypeDef 	*bus,uint16_t device_address,uint
 	return pData[0];
 }
 
+/*
 static uint8_t	write_lis_reg(I2C_HandleTypeDef *bus,uint16_t device_address,uint8_t internal_address,uint8_t *pData)
 {
 	return 	HAL_I2C_Mem_Write(bus, device_address, internal_address, 1, pData, 1, STTS22H_I2C_TIMEOUT);
-
 }
-
+*/
 static uint32_t lis2dw12_start(uint8_t handle)
 {
 Lis2DW12_Drv_TypeDef	*lis2dw12_Drv;
@@ -69,7 +69,7 @@ static uint32_t lis2dw12_get_status(uint8_t handle)
 	return 0;
 }
 
-static uint32_t lis2dw12_get_values(uint8_t handle,uint8_t *data,uint8_t datalen)
+static uint32_t lis2dw12_get_values(uint8_t handle,uint8_t *data,uint16_t datalen)
 {
 Lis2DW12_Drv_TypeDef	*lis2dw12_Drv;
 uint32_t	ret_i2c_code;
@@ -85,7 +85,7 @@ uint32_t	ret_i2c_code;
 		return LIS2DW12_DRIVER_NOT_OWNED;
 }
 
-static uint32_t lis2dw12_set_values(uint8_t handle,uint8_t *values,uint8_t values_number)
+static uint32_t lis2dw12_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
 	return 0;
 }

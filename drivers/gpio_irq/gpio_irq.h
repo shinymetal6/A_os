@@ -59,6 +59,7 @@ typedef struct
 #define	GPIO_DRV_SPEED_HIGH		0x10
 
 extern	uint32_t driver_gpio_allocate_driver(GPIO_Irq_DriverStruct_t *new_struct);
+extern	uint32_t driver_gpio_allocate_multigpio_driver(GPIO_Irq_DriverStruct_t new_struct[] , uint16_t number_of_gpio);
 
 
 #endif /* DRIVERS_GPIO_GPIO_IRQ_H_ */
