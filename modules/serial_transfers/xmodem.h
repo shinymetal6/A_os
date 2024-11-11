@@ -23,14 +23,15 @@
 #ifndef MODULES_XMODEM_XMODEM_H_
 #define MODULES_XMODEM_XMODEM_H_
 
-#ifdef XMODEM_ENABLE
-
 #define X_SOH	0x01
 #define X_STX 	0x02
 #define X_EOT	0x04
 #define X_ACK	0x06
+#define X_BEL	0x07
+#define X_BS	0x08
 #define X_NAK	0x15
 #define X_CAN	0x18
+#define X_DEL	0x7f
 #define X_C		'C'  /* notify the host we can use CRC16. */
 
 #define IDLE			0
@@ -52,10 +53,11 @@
 
 #define	XMODEM_SEND_NAK			0
 #define	XMODEM_DATA_PHASE		1
-#define	XMODEM_TIMEOUT			500
+#define	XMODEM_TIMEOUT			5
 #define	XMODEM_MAX_EOT_PKTLEN	32
 #define	XMODEM_AUTOSEND_AK		1
 #define	XMODEM_USERSEND_AK		0
+#define	XMODEM_RETRIES			5
 
 typedef struct
 {
@@ -63,27 +65,33 @@ typedef struct
 	uint8_t		addr;
 	uint8_t		addri;
 	uint8_t		cs;
+	uint8_t		checksum;
+	uint8_t		calculated_checksum;
+	uint8_t		packet_checksum;
 	uint8_t		crch;
 	uint8_t		crcl;
 	uint8_t		state;
+	uint8_t 	auto_send_ack;
 	uint8_t		xtimeout;
-	uint32_t	uart;
-	uint8_t		rxbuf[XMODEM_LEN+4];
-	uint8_t		last_rxbuf[XMODEM_LEN+4];
+	uint8_t		num_retries;
+	uint8_t		uart_handle;
+	uint32_t	xmodem_wakeup_mask;
+	uint8_t		*rxbuf;
 	uint8_t		*data_ptr;
 	uint8_t		*requested_data_ptr;
 	uint32_t	requested_data_count;
 	uint32_t	data_count;
 	uint32_t	received_bytes_count;
-	uint32_t	last_received_bytes_count;
+	uint32_t	(*send_function)(uint8_t handle, uint8_t *buffer,uint16_t len);
+
 }xmodem_t;
 
-extern	void 		xmodem_init(uint32_t uart,uint8_t *data_ptr,uint32_t max_data_count);
-extern	uint8_t 	xmodem_process(uint32_t wakeup, uint8_t auto_send_ack);
-extern	uint32_t 	xmodem_get_rxed_amount(void);
-extern	uint8_t 	*xmodem_get_rxed_line(void);
-extern	uint8_t 	xmodem_send_ack(void);
+extern	void 		xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
+extern	void 		xmodem_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count );
 
-#endif // #ifdef XMODEM_ENABLE
+extern	uint8_t 	xmodem_process(uint32_t wakeup);
+extern	uint32_t 	xmodem_get_rxed_amount(void);
+extern	uint8_t 	xmodem_send_ack(void);
+extern	uint8_t 	xmodem_line_parser(uint8_t *buf);
 
 #endif /* MODULES_XMODEM_XMODEM_H_ */

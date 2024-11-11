@@ -136,6 +136,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 
 #include "../drivers/gpio_utls/gpio.h"
+#include "../drivers/onchip_uart/onchip_uart.h"
+#include "../drivers/onchip_uart/uarts_drivers_manager.h"
 
 #ifdef DHTXX_AM230X_ENABLE
 #include "../drivers/sensors/dhtxx_am230x/dhtxx_am230x.h"
@@ -416,10 +418,12 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_UART_RX				0x00000100
 #define	WAKEUP_FLAGS_UART_TX				0x00000200
 #define	WAKEUP_FLAGS_UART_TO				0x00000400
-#define	WAKEUP_FLAGS_SPI_TX					0x00000800
-#define	WAKEUP_FLAGS_SPI_RX					0x00001000
-#define	WAKEUP_FLAGS_HALF_DMA				0x00002000
-#define	WAKEUP_FLAGS_FULL_DMA				0x00004000
+#define	WAKEUP_FLAGS_UART_ERR				0x00000800
+
+#define	WAKEUP_FLAGS_SPI_TX					0x00001000
+#define	WAKEUP_FLAGS_SPI_RX					0x00002000
+#define	WAKEUP_FLAGS_HALF_DMA				0x00004000
+#define	WAKEUP_FLAGS_FULL_DMA				0x00008000
 #define	WAKEUP_FLAGS_SPILCD					0x01000000
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000

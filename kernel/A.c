@@ -38,6 +38,9 @@ SYSTEM_RAM		Modules_t		Modules[MODULES_NUM];
 SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
+/* drivers */
+SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
 VERSIONING	uint8_t	lwip_name[8]	 		= "lwip";
@@ -251,8 +254,10 @@ void A_MPU_Config(void)
 
 void A_initialize_onchip_peripherals(void)
 {
+#ifdef OLD_DRIVERS
 #ifdef A_HAS_UARTS
 	A_hw_uart_init();
+#endif
 #endif
 #ifdef A_HAS_I2C_BUS
 	A_hw_i2c_init();
