@@ -54,7 +54,7 @@ uint16_t	calc_csum=0,i;
 uint8_t xmodem_line_parser(uint8_t *buf)
 {
 	if ( buf[0] == X_EOT)
-		return X_ACK;
+		return X_EOT;
 	if ( buf[0] == X_SOH)
 	{
 		xmodem_struct.data_len = XMODEM_LEN;

@@ -89,7 +89,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 
 //#define	A_HAS_UART1			1
 //#define	A_HAS_UART2			1
-#define	A_HAS_UART3				1
+//#define	A_HAS_UART3				1
 //#define	A_HAS_UART4			1
 //#define	A_HAS_UART5			1
 //#define	A_HAS_UART6			1

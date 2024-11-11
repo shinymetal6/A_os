@@ -241,6 +241,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 				}
 			}
 		}
+		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 		HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 	}
 	__enable_irq();
@@ -257,6 +258,7 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv->uart_error++;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
 			activate_process(UARTS_DriverStruct[handle]->process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
+		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 	}
 }
 

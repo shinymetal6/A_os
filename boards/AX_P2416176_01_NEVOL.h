@@ -137,18 +137,6 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 
-//#define	A_HAS_UART1			1
-#define	A_HAS_UART2			1
-#define	A_HAS_UART3				1
-//#define	A_HAS_UART4			1
-#define	A_HAS_UART5			1
-//#define	A_HAS_UART6			1
-//#define	A_HAS_UART7			1
-//#define	A_HAS_UART8			1
-#if defined(A_HAS_UART1) || defined(A_HAS_UART2) || defined(A_HAS_UART3) || defined(A_HAS_UART4) || defined(A_HAS_UART5) || defined(A_HAS_UART6) || defined(A_HAS_UART7) || defined(A_HAS_UART8)
-	#define	A_HAS_UARTS			1
-#endif
-
 //#define	A_HAS_SPI1				1
 //#define	A_HAS_SPI2				1
 //#define	A_HAS_SPI3				1

@@ -40,6 +40,7 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
 /* drivers */
 SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+SYSTEM_RAM		USB_DriverStruct_t		USB_DriverStruct;
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
@@ -254,6 +255,8 @@ void A_MPU_Config(void)
 
 void A_initialize_onchip_peripherals(void)
 {
+	set_before_check_timers_callback(HAL_UART_RxTimeoutCheckCallback);
+
 #ifdef OLD_DRIVERS
 #ifdef A_HAS_UARTS
 	A_hw_uart_init();

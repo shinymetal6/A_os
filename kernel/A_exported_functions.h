@@ -26,36 +26,14 @@
 #include "main.h"
 #include "system_default.h"
 
-/* System */
-extern	void wait_event(uint32_t events);
-
-extern	uint8_t get_current_process(void);
-/*
-extern	uint32_t get_activation_flags(void);
-extern	uint32_t get_wakeup_rsn(void);
-*/
-extern	uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags );
-
-extern	void A_TimeDebug_High(void);
-extern	void A_TimeDebug_Low(void);
-
 /* Memory */
-extern	uint8_t *mem_get(uint32_t size );
-extern	uint32_t mem_release(uint8_t *data_ptr);
+#include "mem.h"
+
+/* scheduler */
+#include "scheduler.h"
 
 /* timer */
-extern	void DWT_Delay_us(uint32_t au32_microseconds);
-extern	void task_delay(uint32_t tick_count);
-extern	uint32_t create_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags);
-extern	uint32_t start_timer(uint8_t timer_id);
-extern	uint32_t restart_timer(uint8_t timer_id,uint32_t tick_count,uint8_t flags);
-extern	uint32_t stop_timer(uint8_t timer_id);
-extern	uint32_t destroy_timer(uint8_t timer_id);
-extern	uint8_t get_timer_expired(void);
-extern	int32_t A_GetTick(void);
-extern	void set_before_check_timers_callback(void (*callback)(void));
-extern	void set_after_check_timers_callback(void (*callback)(void));
-
+#include "timer.h"
 
 /* qspi */
 
@@ -97,15 +75,6 @@ extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
 extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
 extern	uint16_t hw_UsbGetRXLen(void);
 
-/* hwmanager : uart */
-extern	uint32_t hw_send_uart(uint8_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_send_uart_dma(uint8_t uart,uint8_t *ptr,uint16_t len);
-extern	uint32_t hw_receive_uart(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel(uint8_t uart,uint8_t *rx_buf,uint16_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end,uint16_t timeout);
-extern	uint32_t hw_receive_uart_sentinel_clear(uint8_t uart);
-extern	void HAL_UART_RxTimeoutCheckCallback(void);
-extern	uint16_t hw_get_uart_receive_len(uint8_t uart);
-
 /* module_manager */
 extern	uint32_t allocate_module(uint32_t module,uint8_t config);
 extern	uint32_t deallocate_module(uint32_t module);
@@ -121,16 +90,7 @@ extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
 #include "audio.h"
 
-extern	uint32_t *InitAudioBuffers(void);
-extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
-extern	void SetEffectMode(void);
-extern	void SetGeneratorMode(void);
-extern	void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start);
-extern	void SetMasterVolume(uint16_t volume);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void InitOscillators(void);
-extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
@@ -138,10 +98,9 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #include "../drivers/gpio_utls/gpio.h"
 #include "../drivers/onchip_uart/onchip_uart.h"
 #include "../drivers/onchip_uart/uarts_drivers_manager.h"
+#include "../drivers/onchip_uart/uarts_drivers_manager.h"
+#include "../drivers/USB_Device/usb_device_driver_manager.h"
 
-#ifdef DHTXX_AM230X_ENABLE
-#include "../drivers/sensors/dhtxx_am230x/dhtxx_am230x.h"
-#endif
 #ifdef INTERNAL_ADC_ENABLED
 #include "../drivers/internal_adc/internal_adc.h"
 #endif

@@ -14,22 +14,16 @@
  * Project : A_os
 */
 /*
- * hw_uart.h
+ * mem.h
  *
- *  Created on: Mar 1, 2024
+ *  Created on: Nov 11, 2024
  *      Author: fil
  */
 
-#ifndef KERNEL_HWDEVICES_HW_UART_H_
-#define KERNEL_HWDEVICES_HW_UART_H_
+#ifndef KERNEL_MEM_H_
+#define KERNEL_MEM_H_
 
-#define	HW_UART_OK		0
-#define	HW_UART_ERROR	255
+extern	uint8_t *mem_get(uint32_t size );
+extern	uint32_t mem_release(uint8_t *data_ptr);
 
-#define	NO_SENTINEL	0
-
-extern	void HAL_UART_RxTimeoutCheckCallback(void);
-
-extern	void A_hw_uart_init(void);
-
-#endif /* KERNEL_HWDEVICES_HW_UART_H_ */
+#endif /* KERNEL_MEM_H_ */

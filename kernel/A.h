@@ -26,16 +26,17 @@
 #include "main.h"
 #include "system_default.h"
 
-#define MAX_PROCESS				5
-#define USR_PROCESS_NUMBER		(MAX_PROCESS-1)
-#define MAX_TIMERS				8
-#define MAX_SEMAPHORES			8
-#define MAX_UARTS_DRIVERS		8
+#define MAX_PROCESS					5
+#define USR_PROCESS_NUMBER			(MAX_PROCESS-1)
+#define MAX_TIMERS					8
+#define MAX_SEMAPHORES				8
+#define MAX_UARTS_DRIVERS			8
 
-#define	MAILBOX_NUM				8
-#define	PERIPHERAL_NUM			32
-#define	HWDEVICES_NUM			32
-#define	MODULES_NUM				32
+#define	TIMER_CALLBACK_ARRAY_SIZE	8
+#define	MAILBOX_NUM					8
+#define	PERIPHERAL_NUM				32
+#define	HWDEVICES_NUM				32
+#define	MODULES_NUM					32
 
 #define	DRIVER_STATUS_REQUESTED		0x01
 #define	DRIVER_STATUS_IN_USE		0x02
@@ -45,8 +46,6 @@
 
 #define	DRIVER_STATUS_FAILED		0x40
 #define	DRIVER_REQUEST_FAILED		0x80
-
-
 
 #define DUMMY_XPSR  				0x01000000U
 
@@ -107,48 +106,6 @@ typedef struct
 #define	HWDEV_STATUS_PRC_WAKEUP		0x02
 /* flags */
 #define	HWDEV_FLAGS_BUSY			0x80000000
-
-#ifdef A_HAS_UARTS
-#include "HwDevices/hw_uart.h"
-
-#ifdef	A_HAS_UART1
-extern	UART_HandleTypeDef huart1;
-#endif
-#ifdef	A_HAS_UART2
-extern	UART_HandleTypeDef huart2;
-#endif
-#ifdef	A_HAS_UART3
-extern	UART_HandleTypeDef huart3;
-#endif
-#ifdef	A_HAS_UART4
-extern	UART_HandleTypeDef huart4;
-#endif
-#ifdef	A_HAS_UART5
-extern	UART_HandleTypeDef huart5;
-#endif
-#ifdef	A_HAS_UART6
-extern	UART_HandleTypeDef huart6;
-#endif
-#ifdef	A_HAS_UART7
-extern	UART_HandleTypeDef huart7;
-#endif
-#ifdef	A_HAS_UART8
-extern	UART_HandleTypeDef huart8;
-#endif
-typedef struct _HW_Uart_t
-{
-	UART_HandleTypeDef 	*hwuart_handle;
-	uint32_t			hwuart_index;
-	uint8_t				sentinel_start;
-	uint8_t				sentinel_end;
-	uint16_t			timeout;
-	uint16_t			timeout_reload_value;
-	uint8_t				rx_char;
-	uint32_t			rx_err_cntr;
-}HW_Uart_t;
-
-#define	A_MAX_UART		8
-#endif
 
 #ifdef A_HAS_SPI_BUS
 #include "HwDevices/hw_spi.h"

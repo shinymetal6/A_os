@@ -45,13 +45,6 @@ OnChip_UART_Drv_TypeDef	*uarts_Drv;
 
 		uarts_Drv = (OnChip_UART_Drv_TypeDef *)UARTS_DriverStruct[last_uart_used_handle]->uart_driver_private_data;
 		uarts_Drv->flags |= uart_flags;
-		/*
-		if (uart_driver->periodic_before_check_timers_callback != NULL  )
-			set_before_check_timers_callback(uart_driver->periodic_before_check_timers_callback);
-		if (uart_driver->periodic_after_check_timers_callback != NULL  )
-			set_after_check_timers_callback(uart_driver->periodic_after_check_timers_callback);
-		*/
-
 		UARTS_DriverStruct[last_uart_used_handle]->status = DRIVER_STATUS_REQUESTED;
 
 		last_uart_used_handle++;

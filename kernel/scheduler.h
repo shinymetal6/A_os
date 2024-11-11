@@ -64,9 +64,11 @@ typedef struct
 #define PROCESS_FINISHED_FLAG		0X40
 #define PROCESS_KILLED_STATE		0X80
 
-extern	void unblock_tasks(void);
-extern	void switch_sp_to_psp(void);
-extern	uint32_t activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags);
+extern	void 		switch_sp_to_psp(void);
+extern	uint32_t 	activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags);
+extern	void 		wait_event(uint32_t events);
+extern	uint8_t 	get_current_process(void);
+extern	uint32_t 	get_wakeup_flags(uint32_t *reason, uint32_t *flags );
 
 
 
