@@ -32,6 +32,7 @@
 #define MAX_SEMAPHORES				8
 #define MAX_UARTS_DRIVERS			8
 #define MAX_TIM_DRIVERS				8
+#define MAX_ANALOG_DRIVERS			16
 #define MAX_EXTMEM_DRIVERS			8
 #define MAX_SENSORS					16
 

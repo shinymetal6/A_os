@@ -97,6 +97,7 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 
 #include "../drivers/gpio_utls/gpio.h"
 
+#include "../drivers/analog/analog.h"
 #include "../drivers/uart/uart.h"
 #include "../drivers/timers/timers.h"
 #include "../drivers/sensors/sensors.h"
