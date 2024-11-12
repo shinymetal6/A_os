@@ -41,6 +41,8 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 /* drivers */
 SYSTEM_RAM		UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 SYSTEM_RAM		TIM_DriverStruct_t		TIM_DriverStruct[MAX_TIM_DRIVERS];
+SYSTEM_RAM		Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
+SYSTEM_RAM		ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 
 SYSTEM_RAM		USB_DriverStruct_t		USB_DriverStruct;
 

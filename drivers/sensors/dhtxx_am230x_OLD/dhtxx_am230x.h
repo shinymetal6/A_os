@@ -16,9 +16,10 @@
 /*
  * dhtxx_am230x.h
  *
- *  Created on: Nov 12, 2024
+ *  Created on: Oct 9, 2024
  *      Author: fil
  */
+
 
 #ifndef DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
 #define DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
@@ -54,6 +55,7 @@ typedef struct
 	uint16_t 			dht_timer_channel;
 	GPIO_TypeDef	 	*one_wire_port;
 	uint16_t			one_wire_bit;
+	char				driver_name[32];
 }Dhtxx_am230x_Drv_TypeDef;
 /* status */
 #define	DHTXX_AM230X_STARTBIT	0x01
@@ -61,6 +63,9 @@ typedef struct
 #define	DHTXX_AM230X_VALID		0x08
 #define	DHTXX_AM230X_RUNNING	0x40
 #define	DHTXX_AM230X_ACQDONE	0x80
+
+#define	DHTXX_AM230X_START_TICKS	18
+#define	DHTXX_AM230X_CYCLE_TICKS	6
 
 enum DHTXX_AM230X_STATE_MACHINE {
   DHTXX_AM230X_IDLE,
@@ -70,13 +75,7 @@ enum DHTXX_AM230X_STATE_MACHINE {
   DHTXX_AM230X_END
 };
 
-#define	DHTXX_AM230X_START_TICKS	18
-#define	DHTXX_AM230X_CYCLE_TICKS	6
-
-extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t driver_flags,uint32_t dhtxx_am230x_flags,uint32_t sensor_id);
-extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
-extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
-extern	uint32_t	dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *values);
+extern	uint32_t dhtxx_allocate_driver(DriverStruct_t *new_struct);
 
 
 #endif /* DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_ */

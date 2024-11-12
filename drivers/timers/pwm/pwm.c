@@ -33,7 +33,7 @@
 extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
 extern	uint8_t				last_tim_used_handle,tim_driver_request;
 
- uint32_t pwm_start(uint8_t handle,uint32_t pwm_channel)
+ITCM_AREA_CODE uint32_t pwm_start(uint8_t handle,uint32_t pwm_channel)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
@@ -51,7 +51,7 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
- uint32_t pwm_stop(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_stop(uint8_t handle)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 	if ( HAL_TIM_PWM_Stop(pwm_drv->pwm_timer,pwm_drv->pwm_channel) == 0 )
@@ -59,13 +59,13 @@ Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].t
 	return 0;
 }
 
- uint32_t pwm_get_status(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_get_status(uint8_t handle)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 	return pwm_drv->status;
 }
 
-uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler)
+ITCM_AREA_CODE uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
@@ -73,7 +73,7 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
-uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width,uint32_t pwm_channel)
+ITCM_AREA_CODE uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width,uint32_t pwm_channel)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
@@ -88,7 +88,7 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
-uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction)
+ITCM_AREA_CODE uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
 	if ( pwm_drv->enable_port != NULL )
@@ -104,7 +104,7 @@ Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].t
 		return 1;
 }
 
- uint32_t pwm_init(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_init(uint8_t handle)
 {
 	return 0;
 }
