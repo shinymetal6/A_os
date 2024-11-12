@@ -33,6 +33,35 @@
 extern		Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
 extern		uint8_t					last_sensor_used_handle,sensor_driver_request;
 
+#define	DHT_GPIO_IS_INPUT		0
+#define	DHT_GPIO_IS_ALTERNATE	1
+#define	DHT_GPIO_IS_OUTPUT		2
+#define	DHT_GPIO_IS_ANALOG		3
+
+static void dhtxx_am230x_set_gpio_mode(GPIO_TypeDef	*one_wire_port,uint16_t	one_wire_bit,uint8_t mode,uint8_t value)
+{
+uint32_t	one_wire_32 = (uint32_t )one_wire_bit;
+	switch( mode )
+	{
+	case	DHT_GPIO_IS_INPUT 		:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
+		one_wire_port->PUPDR &= ~(0x03 << (one_wire_32 << 1));
+		break;
+	case	DHT_GPIO_IS_ALTERNATE 	:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
+		one_wire_port->MODER |= 1 << (((one_wire_32+1) * 2)-1);
+		break;
+	case	DHT_GPIO_IS_OUTPUT	 	:
+		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
+		one_wire_port->MODER |= 1 << (((one_wire_32+1) * 2)-2);
+		break;
+	case	DHT_GPIO_IS_ANALOG	 	:
+		one_wire_port->MODER |= 0x03 << (one_wire_32 << 1);
+		break;
+	default	 	: break;
+	}
+}
+
 ITCM_AREA_CODE static void dhtxx_am230x_create_bitbytes(Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv)
 {
 uint32_t	i,initial,temp;
@@ -138,7 +167,7 @@ uint32_t 					i,handle_dht;
 				{
 					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_START_BIT_SET;
 					dhtxx_am230x_Drv->ticks = DHTXX_AM230X_START_TICKS;
-					//dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_OUTPUT,0);
+					dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_OUTPUT,0);
 					dhtxx_am230x_Drv->status |= DHTXX_AM230X_STARTBIT;
 				}
 				break;
@@ -147,8 +176,7 @@ uint32_t 					i,handle_dht;
 				{
 					dhtxx_am230x_Drv->status &= ~DHTXX_AM230X_STARTBIT;
 					dhtxx_am230x_Drv->status |= DHTXX_AM230X_ACQRUN;
-					//dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_ALTERNATE,0);
-					dhtxx_am230x_Drv->samples_number = 0;
+					dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_ALTERNATE,0);					dhtxx_am230x_Drv->samples_number = 0;
 					dht_timer->Instance->CNT = 0;
 					HAL_TIM_IC_Start_DMA(dht_timer,dht_timer_channel, dhtxx_am230x_Drv->dhtxx_am230x_samples, DHTXX_AM230X_MAX_SAMPLES_LEN);
 					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_WAIT_FOR_TIM_END;
@@ -159,8 +187,7 @@ uint32_t 					i,handle_dht;
 				if ( dhtxx_am230x_Drv->ticks == 0 )
 				{
 					HAL_TIM_IC_Stop_DMA(dht_timer,dht_timer_channel);
-					//dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_INPUT,0);
-					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_END;
+					dhtxx_am230x_set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,DHT_GPIO_IS_INPUT,0);					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_END;
 				}
 				break;
 			case	DHTXX_AM230X_END:
@@ -240,5 +267,23 @@ Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 		}
 	}
 	return DRIVER_REQUEST_FAILED;
+}
+
+/*********** Interrupt *********/
+
+
+ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
+uint32_t handle_dht,i;
+	for(i=0;i<MAX_DHT11_DEVICES;i++)
+	{
+		handle_dht = get_handle_from_dht_workers(i);
+		if ( handle_dht != 255)
+		{
+			dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+			dhtxx_am230x_Drv->status = DHTXX_AM230X_ACQDONE;
+		}
+	}
 }
 
