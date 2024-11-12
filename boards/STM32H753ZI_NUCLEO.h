@@ -58,7 +58,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define	BUTTON_GPIOBIT			B1_Pin
 
 #define	NETWORKING_ENABLED		1
-#define	USB_DEVICE_ENABLED		1
+//#define	USB_DEVICE_ENABLED		1
 #define	XMODEM_ENABLE			1
 //#define	MODBUS_ENABLE			1
 #define MQTT_ENABLE				1

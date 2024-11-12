@@ -39,7 +39,9 @@ SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
 /* drivers */
-SYSTEM_RAM		UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+SYSTEM_RAM		UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+SYSTEM_RAM		TIM_DriverStruct_t		TIM_DriverStruct[MAX_TIM_DRIVERS];
+
 SYSTEM_RAM		USB_DriverStruct_t		USB_DriverStruct;
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";

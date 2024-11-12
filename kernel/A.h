@@ -31,6 +31,7 @@
 #define MAX_TIMERS					8
 #define MAX_SEMAPHORES				8
 #define MAX_UARTS_DRIVERS			8
+#define MAX_TIM_DRIVERS				8
 
 #define	TIMER_CALLBACK_ARRAY_SIZE	8
 #define	MAILBOX_NUM					8
