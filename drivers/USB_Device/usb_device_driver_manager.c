@@ -30,38 +30,32 @@
 #include "usb_device_driver_manager.h"
 
 extern		USB_DriverStruct_t	USB_DriverStruct;
-SYSTEM_RAM	uint8_t			usb_driver_request = 0;
+SYSTEM_RAM	uint8_t				usb_driver_request = 0;
 
-ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_DriverStruct_t *driver)
+ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data)
 {
-	USB_DriverStruct.process = get_current_process();
-	USB_DriverStruct.status = DRIVER_STATUS_REQUESTED;
-	usb_driver_request++;
-	return 0;
-}
-
-ITCM_AREA_CODE uint32_t usb_device_driver_scan(void)
-{
-	if (usb_driver_request )
+	if ( USB_DriverStruct.process == 0 )
 	{
-		if (( USB_DriverStruct.status & DRIVER_STATUS_REQUESTED) ==  DRIVER_STATUS_REQUESTED)
-		{
-			USB_DriverStruct.status = DRIVER_STATUS_IN_USE;
-			usb_driver_request --;
-		}
+		USB_DriverStruct.process = get_current_process();
+		USB_DriverStruct.status = DRIVER_STATUS_REQUESTED;
+		USB_DriverStruct.usb_driver_private_data = usb_driver_private_data;
+		usb_driver_request = 1;
+		return 0;
 	}
-	return DRIVER_STATUS_INITIALIZED;
+	return DRIVER_REQUEST_FAILED;
 }
 
 ITCM_AREA_CODE uint32_t usb_device_driver_set_rx_buffer(uint8_t handle,uint8_t *rx_buf)
 {
-	USB_DriverStruct.rx_buf = rx_buf;
+USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
+	usb_Drv->data = rx_buf;
 	return 0;
 }
 
-ITCM_AREA_CODE uint16_t usb_device_driver_get_rx_len(uint8_t handle)
+ITCM_AREA_CODE uint16_t usb_get_rx_len(uint8_t handle)
 {
-	return USB_DriverStruct.rx_buf_len;
+USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
+	return usb_Drv->rx_num_chars;
 }
 
 #ifdef	STM32U575xx
@@ -70,7 +64,7 @@ extern	uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
 extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 #endif
 
-ITCM_AREA_CODE uint32_t usb_device_driver_send(uint8_t handle,uint8_t* ptr, uint16_t len)
+ITCM_AREA_CODE uint32_t usb_send(uint8_t handle,uint8_t* ptr, uint16_t len)
 {
 #ifdef	STM32U575xx
 	return (uint32_t )CDC_Transmit_HS(ptr, len);
@@ -84,13 +78,26 @@ ITCM_AREA_CODE uint32_t usb_device_driver_send(uint8_t handle,uint8_t* ptr, uint
 uint32_t usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
 {
 uint32_t	i;
-	if ( USB_DriverStruct.rx_buf == NULL )
+USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
+	if ( usb_Drv->data == NULL )
 		return 0;
-	USB_DriverStruct.rx_buf_len = Len;
+	if ( Len == 1 )
+	{
+		usb_Drv->rx_num_chars = Len;
+		usb_Drv->data_index = 0;;
+		activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
+	}
 	for(i=0;i<Len;i++)
-		USB_DriverStruct.rx_buf[i] = Buf[i];
-	//USB_DriverStruct.rx_buf[USB_DriverStruct.rx_buf_len] = 0;
-	activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
+	{
+		usb_Drv->data[usb_Drv->data_index] = Buf[i];
+		usb_Drv->data_index++;
+		if ( usb_Drv->data_index >= usb_Drv->requested_len)
+		{
+			usb_Drv->rx_num_chars = usb_Drv->data_index;
+			usb_Drv->data_index = 0;;
+			activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
+		}
+	}
 	return	Len;
 }
 

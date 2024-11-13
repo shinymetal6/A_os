@@ -61,7 +61,7 @@ typedef struct
 #define	UART_DRIVER_REQUEST_FAILED	0xffffffff
 /* config */
 #define	UART_USE_DMA_TX				0x80
-
+#define	UART_USE_DMA_RX				0x40
 
 typedef struct
 {
@@ -73,14 +73,13 @@ typedef struct
 }UARTS_DriverStruct_t;
 
 extern  uint32_t 	uart_init(uint8_t handle);
-extern  uint32_t 	uart_start(uint8_t handle);
 extern  uint32_t 	uart_get_status(uint8_t handle);
 extern  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint8_t len);
 extern  uint32_t	uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len);
-extern  uint32_t	uart_send_buffer_dma(uint8_t handle, uint8_t *buffer,uint8_t len);
-extern  uint32_t	uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len);
-extern  uint32_t	uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end);
+extern  uint32_t	uart_start_receive(uint8_t handle);
 extern  uint32_t	uart_get_rxlen(uint8_t handle);
+extern  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len);
+extern  uint32_t	uart_set_sentinel(uint8_t handle, uint8_t sentinel_start, uint8_t sentinel_end);
 extern 	uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags);
 extern 	void 		HAL_UART_RxTimeoutCheckCallback(void);
 

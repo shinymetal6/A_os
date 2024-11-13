@@ -41,15 +41,6 @@ UART_Drv_TypeDef	*uarts_Drv;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t uart_start(uint8_t handle)
-{
-UART_Drv_TypeDef	*uarts_Drv;
-	uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].uart_driver_private_data;
-	HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
-
-	return 0;
-}
-
 ITCM_AREA_CODE  uint32_t uart_get_status(uint8_t handle)
 {
 	return 0;
@@ -64,19 +55,9 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uar
 		return  HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
 }
 
-ITCM_AREA_CODE  uint32_t	uart_receive_buffer(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len)
+ITCM_AREA_CODE  uint32_t	uart_start_receive(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uart_driver_private_data;
-	uarts_Drv->data = buffer;
-	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
-}
-
-ITCM_AREA_CODE  uint32_t	uart_receive_buffer_sentinel(uint8_t handle, uint8_t *buffer,uint8_t rx_buf_max_len,uint8_t sentinel_start, uint8_t sentinel_end)
-{
-UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uart_driver_private_data;
-	uarts_Drv->sentinel_start = sentinel_start;
-	uarts_Drv->sentinel_end   = sentinel_end;
-	uarts_Drv->data = buffer;
 	return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
@@ -85,6 +66,24 @@ ITCM_AREA_CODE  uint32_t	uart_get_rxlen(uint8_t handle)
 UART_Drv_TypeDef	*uarts_Drv;
 	uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].uart_driver_private_data;
 	return (uint32_t )uarts_Drv->rx_num_chars;
+}
+
+ITCM_AREA_CODE  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len)
+{
+UART_Drv_TypeDef	*uarts_Drv;
+	uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].uart_driver_private_data;
+	uarts_Drv->rx_max_len = rx_max_len;
+	return 0;
+}
+
+ITCM_AREA_CODE  uint32_t	uart_set_sentinel(uint8_t handle, uint8_t sentinel_start, uint8_t sentinel_end)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uart_driver_private_data;
+	if ( sentinel_start)
+		uarts_Drv->sentinel_start = sentinel_start;
+	if ( sentinel_end)
+		uarts_Drv->sentinel_end   = sentinel_end;
+	return 0;
 }
 
 ITCM_AREA_CODE uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags)

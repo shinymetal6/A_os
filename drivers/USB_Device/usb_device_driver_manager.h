@@ -23,38 +23,35 @@
 #define DRIVERS_USB_DRIVER_MANAGER_H_
 
 #define		USB_DRIVER_RX_SIZE		64
+#define		USB_DRIVER_TX_SIZE		64
+
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	uint16_t			rx_num_chars;
+	uint16_t			requested_len;
+	uint16_t			data_index;
+	uint8_t				*data;
+	uint32_t 			wakeup_id;
+}USB_Drv_TypeDef;
 
 typedef struct
 {
 	uint8_t 	process;
 	uint8_t		status;
 	uint8_t		flags;
-	uint8_t		handle;
-	uint32_t	(*init)(uint8_t handle);
-	uint32_t	(*deinit)(uint8_t handle);
-	uint32_t	(*start)(uint8_t handle);
-	uint32_t	(*stop)(uint8_t handle);
-	uint32_t	(*get_status)(uint8_t handle);
-	uint32_t	(*get_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
-	uint32_t	(*set_status)(uint8_t handle);
-	uint32_t	(*set_values)(uint8_t handle, uint8_t *values,uint16_t values_number);
-	uint32_t	(*extended_action)(uint32_t handle,uint32_t *action);
-	void 		(*periodic_before_check_timers_callback)(void);
-	void 		(*periodic_after_check_timers_callback)(void);
-	uint8_t		*driver_private_data;
-	uint8_t		*rx_buf;
-	uint16_t	rx_buf_len;
-
+	USB_Drv_TypeDef		*usb_driver_private_data;
 }USB_DriverStruct_t;
+
 
 extern	void MX_USB_DEVICE_Init(void);
 extern	uint8_t MX_USB_Device_Init(void);
 
 
-extern	uint32_t	usb_device_driver_register(USB_DriverStruct_t *driver);
-extern	uint32_t 	usb_device_driver_scan(void);
+extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data);
 extern	uint32_t 	usb_device_driver_set_rx_buffer(uint8_t handle,uint8_t *rx_buf);
-extern 	uint16_t 	usb_device_driver_get_rx_len(uint8_t handle);
-extern	uint32_t 	usb_device_driver_send(uint8_t handle,uint8_t* ptr, uint16_t len);
+extern 	uint16_t 	usb_get_rx_len(uint8_t handle);
+extern	uint32_t 	usb_send(uint8_t handle,uint8_t* ptr, uint16_t len);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */
