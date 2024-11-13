@@ -139,11 +139,11 @@ DCC_Drv_Pkt_TypeDef	DCC_CutOutExtendedPkt =
 	.long_packet_end_bit = DCC_CTF_0,
 	.endpacket_long = DCC_CTF_1
 };
-
+/*
 DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
-
+*/
 ITCM_AREA_CODE uint32_t driver_get_handle_from_dcc_dma_channel(uint32_t *handle_ch0 , uint32_t *handle_ch1)
 {
 uint32_t	i,drv_ret=0;
@@ -187,11 +187,17 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 
 	dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]->XferCpltCallback 		= dcc_TIM_DMADelayPulseCplt;
 	dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]->XferHalfCpltCallback 	= dcc_TIM_DMADelayPulseHalfCplt;
-
+/*
     if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]   , (uint32_t )&DCC_Pkt[0],    (uint32_t)&dcc_driver_data->dcc_timer->Instance->PSC,sizeof(DCC_Pkt)/2) != HAL_OK)
       return 1;
 
     if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_cutout_index], (uint32_t )&DCC_Cutout_Pkt[0], (uint32_t)&dcc_driver_data->dcc_timer->Instance->CCR4,sizeof(DCC_Cutout_Pkt)/2) != HAL_OK)
+      return 1;
+      */
+    if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]   , (uint32_t )&dcc_driver_data->DCC_Pkt[0],    (uint32_t)&dcc_driver_data->dcc_timer->Instance->PSC,sizeof(dcc_driver_data->DCC_Pkt)/2) != HAL_OK)
+      return 1;
+
+    if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_cutout_index], (uint32_t )&dcc_driver_data->DCC_Cutout_Pkt[0], (uint32_t)&dcc_driver_data->dcc_timer->Instance->CCR4,sizeof(dcc_driver_data->DCC_Cutout_Pkt[0])/2) != HAL_OK)
       return 1;
     dcc_driver_data->dcc_timer->Instance->DIER = dcc_driver_data->dma_dcc_value | dcc_driver_data->dma_cutout_value;
 	return 0;
@@ -213,12 +219,12 @@ ITCM_AREA_CODE void compile_reset_packet(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
 
-	memcpy((uint8_t *)&DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-	memcpy((uint8_t *)&DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 	dcc_driver_data->status &= ~DCC_PACKET_EXTENDED;
-	encode_byte((uint16_t *)&DCC_WorkPkt.address,0);
-	encode_byte((uint16_t *)&DCC_WorkPkt.instruction,0);
-	encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,0);
+	encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.address,0);
+	encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.instruction,0);
+	encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.detection_short,0);
 }
 
 ITCM_AREA_CODE uint8_t one_byte_commands(uint8_t handle,char cmd)
@@ -250,11 +256,11 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 	if ( cmd == 'T' )
 	{
 		ecc = address ^ data;
-		memcpy((uint8_t *)&DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-		memcpy((uint8_t *)&DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-		encode_byte((uint16_t *)&DCC_WorkPkt.address,address);
-		encode_byte((uint16_t *)&DCC_WorkPkt.instruction,data);
-		encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,ecc);
+		memcpy((uint8_t *)&dcc_driver_data->DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+		memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.address,address);
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.instruction,data);
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.detection_short,ecc);
 		dcc_driver_data->status &= ~DCC_PACKET_EXTENDED;
 		return 0;
 	}
@@ -269,12 +275,12 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 	if ( cmd == 'T' )
 	{
 		ecc = address ^ datal ^ datah;
-		memcpy((uint8_t *)&DCC_WorkPkt,(uint8_t *)&DCC_ExtendedIdle_Pkt,sizeof(DCC_ExtendedIdle_Pkt));
-		memcpy((uint8_t *)&DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
-		encode_byte((uint16_t *)&DCC_WorkPkt.address,address);
-		encode_byte((uint16_t *)&DCC_WorkPkt.instruction,datal);
-		encode_byte((uint16_t *)&DCC_WorkPkt.detection_short,datah);
-		encode_byte((uint16_t *)&DCC_WorkPkt.detection_long,ecc);
+		memcpy((uint8_t *)&dcc_driver_data->DCC_WorkPkt,(uint8_t *)&DCC_ExtendedIdle_Pkt,sizeof(DCC_ExtendedIdle_Pkt));
+		memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.address,address);
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.instruction,datal);
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.detection_short,datah);
+		encode_byte((uint16_t *)&dcc_driver_data->DCC_WorkPkt.detection_long,ecc);
 		dcc_driver_data->status |= ~DCC_PACKET_EXTENDED;
 		return 0;
 	}
@@ -336,10 +342,10 @@ ITCM_AREA_CODE uint32_t dcc_init(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
 
-	memcpy((uint8_t *)&DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-	memcpy((uint8_t *)&DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
-	memcpy((uint8_t *)&DCC_Cutout_Pkt[0],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
-	memcpy((uint8_t *)&DCC_Cutout_Pkt[1],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[0],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+	memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[1],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 	dcc_driver_data->status = DCC_INITIALIZED;
 	dcc_driver_data->handle = handle;
 
@@ -401,11 +407,11 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			{
 				dcc_driver_data->enable_port->BSRR = dcc_driver_data->enable_bit;
 				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_SET);
-				memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
+				memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[SECOND_HALF],(uint8_t *)&dcc_driver_data->DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-					memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
 				else
-					memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 				if ( dcc_driver_data->repetition_counter )
 					dcc_driver_data->repetition_counter--;
 				else
@@ -419,10 +425,10 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 				{
 					if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					{
-						memcpy((uint8_t *)&DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+						memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 						dcc_driver_data->status &= ~DCC_PACKET_EXTENDED;
 					}
-					memcpy((uint8_t *)&DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[SECOND_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 					dcc_driver_data->status &= ~DCC_PACKET_INPROGRESS;
 				}
 			}
@@ -443,11 +449,11 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			{
 				dcc_driver_data->enable_port->BSRR = dcc_driver_data->enable_bit;
 				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_SET);
-				memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
+				memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[FIRST_HALF],(uint8_t *)&dcc_driver_data->DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
-					memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
 				else
-					memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 				if ( dcc_driver_data->repetition_counter )
 					dcc_driver_data->repetition_counter--;
 				else
@@ -461,10 +467,10 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 				{
 					if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					{
-						memcpy((uint8_t *)&DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
+						memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
 						dcc_driver_data->status &= ~DCC_PACKET_EXTENDED;
 					}
-					memcpy((uint8_t *)&DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
+					memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[FIRST_HALF],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 					dcc_driver_data->status &= ~DCC_PACKET_INPROGRESS;
 				}
 			}

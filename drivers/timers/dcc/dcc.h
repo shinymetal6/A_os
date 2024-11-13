@@ -49,22 +49,25 @@ typedef struct {
 
 typedef struct
 {
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint8_t				repetition;
-	uint8_t				repetition_counter;
-	uint32_t			dma_dcc_value;
-	uint32_t			dma_cutout_value;
-	uint32_t			dma_dcc_index;
-	uint32_t			dma_cutout_index;
-	TIM_HandleTypeDef 	*dcc_timer;
-	DMA_HandleTypeDef 	*hdma[2];
-	uint32_t			timer_180phase_dcc_channel;
-	uint32_t			timer_dcc_channel;
-	uint32_t			timer_cutout_channel;
-	GPIO_TypeDef	 	*enable_port;
-	uint16_t			enable_bit;
+	uint8_t					status;
+	uint8_t					flags;
+	uint8_t					handle;
+	uint8_t					repetition;
+	uint8_t					repetition_counter;
+	uint32_t				dma_dcc_value;
+	uint32_t				dma_cutout_value;
+	uint32_t				dma_dcc_index;
+	uint32_t				dma_cutout_index;
+	TIM_HandleTypeDef 		*dcc_timer;
+	DMA_HandleTypeDef 		*hdma[2];
+	uint32_t				timer_180phase_dcc_channel;
+	uint32_t				timer_dcc_channel;
+	uint32_t				timer_cutout_channel;
+	GPIO_TypeDef	 		*enable_port;
+	uint16_t				enable_bit;
+	DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
+	DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
+	DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
 }DCC_Control_Drv_TypeDef;
 
 /* status */
