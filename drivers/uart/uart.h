@@ -28,7 +28,6 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				config;
 	uint8_t				rx_char;
 	uint16_t			rx_index;
 	uint16_t			rx_max_len;
@@ -38,6 +37,7 @@ typedef struct
 	uint16_t			timeout_reload_value;
 	uint8_t				sentinel_start;
 	uint8_t				sentinel_end;
+	uint8_t				sentinel_flags;
 	uint32_t			uart_error;
 	UART_HandleTypeDef 	*uart;
 	uint32_t 			wakeup_id;
@@ -56,8 +56,11 @@ typedef struct
 #define	UART_WAKEUP_ON_RXFULL		0x20
 #define	UART_WAKEUP_ON_TIMEOUT		0x10
 #define	UART_WAKEUP_ON_ERRORS		0x08
+
+/* sentinel_flags */
 #define	UART_SENTINEL_END_FOUND		0x02
 #define	UART_SENTINEL_START_FOUND	0x01
+
 #define	UART_DRIVER_REQUEST_FAILED	0xffffffff
 /* config */
 #define	UART_USE_DMA_TX				0x80
@@ -80,7 +83,7 @@ extern  uint32_t	uart_start_receive(uint8_t handle);
 extern  uint32_t	uart_get_rxlen(uint8_t handle);
 extern  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len);
 extern  uint32_t	uart_set_sentinel(uint8_t handle, uint8_t sentinel_start, uint8_t sentinel_end);
-extern 	uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data,uint32_t driver_flags,uint32_t uart_flags);
+extern 	uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data);
 extern 	void 		HAL_UART_RxTimeoutCheckCallback(void);
 
 #endif /* DRIVERS_UART_UART_H_ */
