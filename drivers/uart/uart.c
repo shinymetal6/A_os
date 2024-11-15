@@ -30,7 +30,7 @@
 #include "uart.h"
 #include <string.h>
 
-extern		UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
+SYSTEM_RAM	UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 SYSTEM_RAM	uint8_t					last_uart_used_handle=0,uart_driver_request = 0;
 
 ITCM_AREA_CODE  uint32_t uart_init(uint8_t handle)
@@ -99,6 +99,12 @@ UART_Drv_TypeDef	*uarts_Drv;
 
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[last_uart_used_handle].uart_driver_private_data;
 		uarts_Drv->timeout_reload_value = uarts_Drv->timeout;
+		if ( uarts_Drv->uart->hdmarx == NULL )
+		{
+			/* disable dma if they are not configured in hw */
+			uarts_Drv->flags &= ~(UART_USE_DMA_TX | UART_USE_DMA_RX);
+		}
+
 		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_REQUESTED;
 
 		last_uart_used_handle++;
@@ -266,7 +272,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 	}
 }
 
-ITCM_AREA_CODE void HAL_UART_RxTimeoutCheckCallback(void)
+ITCM_AREA_CODE void UART_Driver_RxTimeoutCheckCallback(void)
 {
 uint8_t	i;
 UART_Drv_TypeDef	*uarts_Drv;

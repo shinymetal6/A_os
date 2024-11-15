@@ -29,6 +29,8 @@ extern "C" {
 
 #include "main.h"
 #include "../../../../../kernel/system_default.h"
+#ifdef	STM32H743xx
+
 #ifdef	USB_MIDI
 
 #include  "../../Core/usbd_ioreq.h"
@@ -158,5 +160,6 @@ uint8_t USBD_MIDI_ReceivePacket(USBD_HandleTypeDef *pdev);
 }
 #endif
 
+#endif // #ifdef	STM32H743xx
 
 #endif /* DRIVERS_USB_STM32H743_CLASS_MIDI_USBD_MIDI_H_ */

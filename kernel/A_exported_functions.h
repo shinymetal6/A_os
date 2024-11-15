@@ -386,7 +386,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000
 #define	WAKEUP_FLAGS_EXTI					0x08000000
-#define	WAKEUP_FLAGS_MBX					0x40000000
+#define	WAKEUP_FLAGS_MBX					0x10000000
+#define	WAKEUP_FLAGS_HW_USB_RX_TO			0x40000000
 #define	WAKEUP_FLAGS_HW_USB_RX_COMPLETE		0x80000000
 
 #define	HW_TIMERS_TIMER1					0

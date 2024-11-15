@@ -33,6 +33,8 @@ typedef struct
 	uint16_t			requested_len;
 	uint16_t			data_index;
 	uint8_t				*data;
+	uint16_t			timeout;
+	uint16_t			timeout_reload_value;
 	uint32_t 			wakeup_id;
 }USB_Drv_TypeDef;
 
@@ -53,5 +55,6 @@ extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_d
 extern	uint32_t 	usb_device_driver_set_rx_buffer(uint8_t handle,uint8_t *rx_buf);
 extern 	uint16_t 	usb_get_rx_len(uint8_t handle);
 extern	uint32_t 	usb_send(uint8_t handle,uint8_t* ptr, uint16_t len);
+extern	void 		USB_Driver_RxTimeoutCheckCallback(void);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */
