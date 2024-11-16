@@ -41,6 +41,7 @@ uint32_t	one_wire_32 = (uint32_t )one_wire_bit;
 	case	GPIO_IS_OUTPUT	 	:
 		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
 		one_wire_port->MODER |= 1 << (((one_wire_32+1) * 2)-2);
+		one_wire_port->BSRR = (value != GPIO_PIN_RESET) ? one_wire_bit : (uint32_t)one_wire_bit << (16U);
 		break;
 	case	GPIO_IS_ANALOG	 	:
 		one_wire_port->MODER |= 0x03 << (one_wire_32 << 1);
