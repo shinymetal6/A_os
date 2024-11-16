@@ -14,15 +14,21 @@
  * Project : A_os
 */
 /*
- * module_manager.h
+ * drivers.h
  *
- *  Created on: Apr 24, 2024
+ *  Created on: Nov 16, 2024
  *      Author: fil
  */
 
-#ifndef KERNEL_MODULE_MANAGER_H_
-#define KERNEL_MODULE_MANAGER_H_
+#ifndef DRIVERS_DRIVERS_H_
+#define DRIVERS_DRIVERS_H_
 
+#include "gpio/gpio.h"
+#include "analog/analog.h"
+#include "uart/uart.h"
+#include "timers/timers.h"
+#include "sensors/sensors.h"
+#include "USB_Device/usb_device_driver_manager.h"
+#include "external_flash/external_flash.h"
 
-
-#endif /* KERNEL_MODULE_MANAGER_H_ */
+#endif /* DRIVERS_DRIVERS_H_ */

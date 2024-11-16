@@ -21,15 +21,15 @@
  */
 
 #include "main.h"
-#include "A.h"
-#include "system_default.h"
-#include "A_exported_functions.h"
-#include "kernel_opt.h"
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+//#include "../../kernel/kernel_opt.h"
 
 #ifdef CODEC_ENABLED
 #ifdef CODEC_NAU88C22
 #include "audio.h"
-#include "../modules/audio/effects.h"
+#include "algo/effects.h"
 
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 

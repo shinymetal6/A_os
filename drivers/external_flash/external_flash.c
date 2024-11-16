@@ -26,4 +26,5 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
-SYSTEM_RAM	uint8_t			last_extflash_used_handle=0,extflash_driver_request = 0;
+SYSTEM_RAM	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
+SYSTEM_RAM	uint8_t					last_extflash_used_handle=0,extflash_driver_request = 0;

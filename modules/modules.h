@@ -14,17 +14,21 @@
  * Project : A_os
 */
 /*
- * sensors.c
+ * modules.h
  *
- *  Created on: Nov 12, 2024
+ *  Created on: Nov 16, 2024
  *      Author: fil
  */
 
-#include "main.h"
-#include "../../kernel/system_default.h"
-#include "../../kernel/A.h"
-#include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
+#ifndef MODULES_MODULES_H_
+#define MODULES_MODULES_H_
 
-SYSTEM_RAM	Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
-SYSTEM_RAM	uint8_t					last_sensor_used_handle=0,sensor_driver_request = 0;
+#include "serial_transfers/xmodem.h"
+#include "hex_decoders/hex_decoders_common.h"
+#include "hex_decoders/ihex.h"
+#include "hex_decoders/hex_decoders_common.h"
+#include "hex_decoders/s3_hex.h"
+#include "modbus/modbus.h"
+#include "audio/audio.h"
+
+#endif /* MODULES_MODULES_H_ */

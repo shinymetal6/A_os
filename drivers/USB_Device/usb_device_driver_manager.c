@@ -29,7 +29,7 @@
 #include <string.h>
 #include "usb_device_driver_manager.h"
 
-extern		USB_DriverStruct_t	USB_DriverStruct;
+SYSTEM_RAM	USB_DriverStruct_t	USB_DriverStruct;
 SYSTEM_RAM	uint8_t				usb_driver_request = 0;
 
 ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data)

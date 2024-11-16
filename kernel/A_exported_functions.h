@@ -86,56 +86,13 @@ extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
 /* support functions */
 extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
 
-/* audio */
-
-#include "audio.h"
-
 
 /* svc ops */
 extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
+#include "../drivers/drivers.h"
+#include "../modules/modules.h"
 
-#include "../drivers/gpio/gpio.h"
-#include "../drivers/analog/analog.h"
-#include "../drivers/uart/uart.h"
-#include "../drivers/timers/timers.h"
-#include "../drivers/sensors/sensors.h"
-#include "../drivers/USB_Device/usb_device_driver_manager.h"
-#include "../drivers/external_flash/external_flash.h"
-
-#ifdef INTERNAL_ADC_ENABLED
-#include "../drivers/internal_adc/internal_adc.h"
-#endif
-
-#ifdef INTERNAL_DAC_ENABLED
-#include "../drivers/internal_dac/internal_dac.h"
-#endif
-
-#ifdef XMODEM_ENABLE
-#include "../modules/serial_transfers/xmodem.h"
-#endif
-
-#ifdef USB_XMODEM_ENABLE
-#include "../modules/usb_transfer/usb_xmodem.h"
-#endif
-
-#ifdef INTEL_HEX_DECODER_ENABLE
-#include "../modules/hex_decoders/hex_decoders_common.h"
-#include "../modules/hex_decoders/ihex.h"
-#endif
-
-#ifdef MOTOROLA_HEX_DECODER_ENABLE
-#include "../modules/hex_decoders/hex_decoders_common.h"
-#include "../modules/hex_decoders/s3_hex.h"
-#endif
-
-#ifdef MODBUS_ENABLE
-#include "../modules/modbus/modbus.h"
-#endif
-
-#ifdef WIRELESS_NRF24L01
-#include "../drivers/wireless/nrf24l01/nrf24l01.h"
-#endif
 
 #ifdef CODEC_ENABLED
 	#include "audio.h"
