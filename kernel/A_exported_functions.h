@@ -343,32 +343,8 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 #define	WAKEUP_FLAGS_EXTI_D0				0x02000000
 #define	WAKEUP_FLAGS_EXTI_D1				0x04000000
 #define	WAKEUP_FLAGS_EXTI					0x08000000
-#define	WAKEUP_FLAGS_MBX					0x40000000
+#define	WAKEUP_FLAGS_MBX					0x20000000
+#define	WAKEUP_FLAGS_HW_USB_RX_TO			0x40000000
 #define	WAKEUP_FLAGS_HW_USB_RX_COMPLETE		0x80000000
-
-#define	HW_TIMERS_TIMER1					0
-#define	HW_TIMERS_TIMER2					1
-#define	HW_TIMERS_TIMER3					2
-#define	HW_TIMERS_TIMER4					3
-#define	HW_TIMERS_TIMER5					4
-#define	HW_TIMERS_TIMER6					5
-#define	HW_TIMERS_TIMER7					6
-#define	HW_TIMERS_TIMER8					7
-#define	HW_TIMERS_TIMER9					8
-#define	HW_TIMERS_TIMER10					9
-#define	HW_TIMERS_TIMER11					10
-#define	HW_TIMERS_TIMER12					11
-#define	HW_TIMERS_TIMER13					12
-#define	HW_TIMERS_TIMER14					13
-#define	HW_TIMERS_TIMER15					14
-#define	HW_TIMERS_TIMER16					15
-#define	HW_TIMERS_TIMER17					16
-
-
-#define	MODULE_IDX_MQTT						0
-
-//#define	MODULE_MQTT							(1 << MODULE_IDX_MQTT )
-#define	MODULE_MQTT_RXFLAG					0x00000001
-#define	MODULE_MQTT_TXFLAG					0x00000002
 
 #endif /* KERNEL_A_EXPORTED_FUNCTIONS_H_ */

@@ -33,6 +33,8 @@ typedef struct
 	uint16_t			requested_len;
 	uint16_t			data_index;
 	uint8_t				*data;
+	uint16_t			timeout;
+	uint16_t			timeout_reload_value;
 	uint32_t 			wakeup_id;
 }USB_Drv_TypeDef;
 

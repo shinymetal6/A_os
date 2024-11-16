@@ -39,10 +39,10 @@ ITCM_AREA_CODE uint32_t i2c_24xx_get_status(uint8_t handle)
 
 ITCM_AREA_CODE uint32_t i2c_24xx_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
 {
-i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
-	i2c_24xx_Drv = (i2c_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].extflash_driver_private_data;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	i2c_24xx_Drv->status = 0;
-	if (( i2c_24xx_Drv->flags & USE_READ_DMA ) == USE_READ_DMA)
+	if (( i2c_24xx_Drv->flags & I2C_USES_READ_DMA ) == I2C_USES_READ_DMA)
 		return HAL_I2C_Mem_Read_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1);
 	else
 		return HAL_I2C_Mem_Read(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1, I2C_24XX_TIMEOUT);
@@ -50,22 +50,22 @@ i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 
 ITCM_AREA_CODE uint32_t i2c_24xx_read_config(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
 {
-i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
-	i2c_24xx_Drv = (i2c_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].extflash_driver_private_data;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	return HAL_I2C_Mem_Read(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address | 0x10, address, i2c_24xx_Drv->device_address_size, data, data_len, I2C_24XX_TIMEOUT);
 }
 
 ITCM_AREA_CODE uint32_t i2c_24xx_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
 {
-i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
-	i2c_24xx_Drv = (i2c_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].extflash_driver_private_data;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	return HAL_I2C_Mem_Write(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1, I2C_24XX_TIMEOUT);
 }
 
 ITCM_AREA_CODE uint32_t i2c_24xx_init(uint8_t handle)
 {
-i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
-	i2c_24xx_Drv = (i2c_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].extflash_driver_private_data;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	i2c_24xx_Drv->status = I2C_24XX_STOPPED;
 	if ( i2c_24xx_Drv->power_port != NULL )
 	{
@@ -77,17 +77,26 @@ i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	i2c_24xx_register(i2c_24xx_Drv_TypeDef *extflash_driver_private_data,uint32_t driver_flags,uint32_t extflash_flags)
+ITCM_AREA_CODE uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *driver_private_data)
 {
-Pwm_Control_TypeDef	*extflash_driver_data;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	if ( ExtFlashDriverStruct[last_extflash_used_handle].process == 0 )
 	{
 		ExtFlashDriverStruct[last_extflash_used_handle].process = get_current_process();
-		ExtFlashDriverStruct[last_extflash_used_handle].flags |= driver_flags;
-		ExtFlashDriverStruct[last_extflash_used_handle].extflash_driver_private_data = (uint32_t *)extflash_driver_private_data;
+		ExtFlashDriverStruct[last_extflash_used_handle].driver_private_data = (uint32_t *)driver_private_data;
 
-		extflash_driver_data = (Pwm_Control_TypeDef *)ExtFlashDriverStruct[last_extflash_used_handle].extflash_driver_private_data;
-		extflash_driver_data->flags |= extflash_flags;
+		i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[last_extflash_used_handle].driver_private_data;
+		if ( i2c_24xx_Drv->bus->hdmarx == NULL )
+		{
+			/* disable dma if they are not configured in hw */
+			i2c_24xx_Drv->flags &= ~I2C_USES_READ_DMA;
+		}
+		if ( i2c_24xx_Drv->bus->hdmatx == NULL )
+		{
+			/* disable dma if they are not configured in hw */
+			i2c_24xx_Drv->flags &= ~I2C_USES_WRITE_DMA;
+		}
+
 		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_REQUESTED;
 
 		last_extflash_used_handle++;
@@ -102,10 +111,10 @@ Pwm_Control_TypeDef	*extflash_driver_data;
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
 uint32_t	i;
-i2c_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	for(i=0;i<MAX_SENSORS;i++)
 	{
-		i2c_24xx_Drv = (i2c_24xx_Drv_TypeDef *)ExtFlashDriverStruct[i].extflash_driver_private_data;
+		i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[i].driver_private_data;
 		if ( i2c_24xx_Drv->bus == hi2c )
 		{
 			i2c_24xx_Drv->status = READ_DMA_COMPLETE;

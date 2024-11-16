@@ -29,7 +29,7 @@ typedef struct
 	uint8_t		status;
 	uint8_t		flags;
 	uint8_t		handle;
-	uint32_t	*extflash_driver_private_data;
+	uint32_t	*driver_private_data;
 }ExtFlash_DriverStruct_t;
 
 #include "I2C/i2c_24xx.h"

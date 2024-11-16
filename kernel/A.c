@@ -32,20 +32,8 @@
 
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
-//SYSTEM_RAM		HWMngr_t		HWMngr[PERIPHERAL_NUM];
-//SYSTEM_RAM		HWDevices_t		HWDevices[HWDEVICES_NUM];
-//SYSTEM_RAM		Modules_t		Modules[MODULES_NUM];
-//SYSTEM_RAM		IrqMngr_t		IrqMngr[PERIPHERAL_NUM];
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 
-/* drivers */
-//SYSTEM_RAM		UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
-//SYSTEM_RAM		TIM_DriverStruct_t		TIM_DriverStruct[MAX_TIM_DRIVERS];
-//SYSTEM_RAM		ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
-//SYSTEM_RAM		Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
-//SYSTEM_RAM		ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
-
-//SYSTEM_RAM		USB_DriverStruct_t		USB_DriverStruct;
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
@@ -54,18 +42,6 @@ VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
 
 AOS_FLASH_END	uint8_t	aos_end[32]	 			= "A_os End Code";
 
-#ifdef A_HAS_UARTS
-SYSTEM_RAM		HW_Uart_t		HW_Uart[A_MAX_UART];
-#endif
-#ifdef A_HAS_SPI_BUS
-SYSTEM_RAM		HW_Spi_t		HW_Spi[A_MAX_SPI];
-#endif
-#ifdef A_HAS_I2C_BUS
-SYSTEM_RAM		HW_I2C_t		HW_I2C[A_MAX_I2C];
-#endif
-#ifdef A_HAS_TIMERS
-SYSTEM_RAM		HW_Timers_t		HW_Timers[A_MAX_TIMERS];
-#endif
 
 #ifdef CUSTOM_RAM
 CUSTOM_RAM		uint32_t		CustomRamStart;
@@ -180,21 +156,6 @@ void A_IrqPriority_Init(void)
 	//The lower the number, the higher the priority,
 	HAL_NVIC_SetPriority(PendSV_IRQn,  PendSV_PRIORITY, 0);		/* Make PendSV_IRQn lower priority */
 	HAL_NVIC_SetPriority(SysTick_IRQn, SysTick_PRIORITY, 0);	/* Make SysTick_IRQn higher priority than PendSV_IRQn */
-#ifdef A_HAS_UART3
-	HAL_NVIC_SetPriority(USART3_IRQn,  SysTick_PRIORITY+1, 0);	/* Make USART3_IRQn  lower priority than SysTick_IRQn */
-#endif
-#ifdef ENCODER_ENABLED
-	HAL_NVIC_SetPriority(EXTI0_IRQn, Exti0_PRIORITY, 0);		/* Make EXTI0_IRQn higher priority than SysTick_IRQn and lower than PendSV_IRQn */
-	HAL_NVIC_SetPriority(EXTI1_IRQn, Exti1_PRIORITY, 0);		/* Make EXTI1_IRQn higher priority than SysTick_IRQn and lower than PendSV_IRQn */
-	HAL_NVIC_SetPriority(EXTI2_IRQn, Exti2_PRIORITY, 0);		/* Make EXTI2_IRQn higher priority than SysTick_IRQn and lower than PendSV_IRQn */
-#endif //#ifdef ENCODER_ENABLED
-
-#ifdef	CODEC_ENABLED
-#ifdef	CODEC_NAU88C22
-	HAL_NVIC_SetPriority(DMA1_Stream2_IRQn, I2STX_PRIORITY, 0); /* Make DMA1_Stream2_IRQn middle priority */
-	HAL_NVIC_SetPriority(DMA1_Stream3_IRQn, I2SRX_PRIORITY, 0); /* Make DMA1_Stream3_IRQn middle priority */
-#endif //#ifdef CODEC_NAU88C22
-#endif //#ifdef CODEC_ENABLED
 }
 
 void DWT_Delay_us(uint32_t au32_microseconds)
@@ -260,11 +221,6 @@ void A_MPU_Config(void)
 
 void A_initialize_onchip_peripherals(void)
 {
-
-#ifdef A_HAS_SPI_BUS
-	A_hw_spi_init();
-#endif
-
 #ifdef CODEC_ENABLED
 	#ifdef CODEC_NAU88C22
 	Nau88c22_Init();

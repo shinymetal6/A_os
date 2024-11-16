@@ -49,7 +49,7 @@ ITCM_AREA_CODE  uint32_t uart_get_status(uint8_t handle)
 ITCM_AREA_CODE  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint8_t len)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uart_driver_private_data;
-	if ( (uarts_Drv->flags & UART_USE_DMA_TX) == UART_USE_DMA_TX )
+	if ( (uarts_Drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
 		return HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
 	else
 		return  HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
@@ -58,7 +58,7 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uar
 ITCM_AREA_CODE  uint32_t	uart_start_receive(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].uart_driver_private_data;
-	if ( (uarts_Drv->flags & UART_USE_DMA_RX) == UART_USE_DMA_RX )
+	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 		return HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 	else
 		return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
@@ -104,12 +104,12 @@ UART_Drv_TypeDef	*uarts_Drv;
 		if ( uarts_Drv->uart->hdmarx == NULL )
 		{
 			/* disable dma if they are not configured in hw */
-			uarts_Drv->flags &= ~UART_USE_DMA_RX;
+			uarts_Drv->flags &= ~UART_USES_DMA_RX;
 		}
 		if ( uarts_Drv->uart->hdmatx == NULL )
 		{
 			/* disable dma if they are not configured in hw */
-			uarts_Drv->flags &= ~UART_USE_DMA_TX;
+			uarts_Drv->flags &= ~UART_USES_DMA_TX;
 		}
 
 		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_REQUESTED;
@@ -164,7 +164,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 	if ( (handle = find_handle_from_uart(huart)) != 255)
 	{
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].uart_driver_private_data;
-		if ( (uarts_Drv->flags & UART_USE_DMA_RX) == UART_USE_DMA_RX )
+		if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 		{
 			uarts_Drv->rx_num_chars = ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len;
@@ -291,7 +291,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 		{
 			uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[i].uart_driver_private_data;
 
-			if ( (uarts_Drv->flags & UART_USE_DMA_RX) == UART_USE_DMA_RX )
+			if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 			{
 				if ( uarts_Drv->timeout )
 				{

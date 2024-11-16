@@ -38,15 +38,15 @@ typedef struct
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
-}i2c_24xx_Drv_TypeDef;
+}I2C_24xx_Drv_TypeDef;
 
 /* status */
 #define	READ_DMA_COMPLETE	0x80
 /* flags */
-#define	USE_READ_DMA		0x80
-#define	USE_WRITE_DMA		0x40
+#define	I2C_USES_WRITE_DMA		0x80
+#define	I2C_USES_READ_DMA		0x40
 
-extern uint32_t	i2c_24xx_register(i2c_24xx_Drv_TypeDef *extflash_driver_private_data,uint32_t driver_flags,uint32_t timer_flags);
+extern uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *driver_private_data);
 extern uint32_t i2c_24xx_get_status(uint8_t handle);
 extern uint32_t i2c_24xx_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 extern uint32_t i2c_24xx_read_config(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
