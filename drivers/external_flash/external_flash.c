@@ -28,3 +28,25 @@
 
 SYSTEM_RAM	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 SYSTEM_RAM	uint8_t					last_extflash_used_handle=0,extflash_driver_request = 0;
+
+uint32_t extflash_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
+{
+	return ExtFlashDriverStruct[handle].read(handle,address,data,data_len);
+}
+
+uint32_t extflash_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
+{
+	return ExtFlashDriverStruct[handle].write(handle,address,data,data_len);
+}
+
+uint32_t extflash_erase_blocks(uint8_t handle, uint32_t start_block,uint32_t number_of_blocks)
+{
+	return ExtFlashDriverStruct[handle].erase_blocks(handle,start_block,number_of_blocks);
+}
+
+uint32_t extflash_erase_chip(uint8_t handle)
+{
+	return ExtFlashDriverStruct[handle].erase_chip(handle);
+}
+
+

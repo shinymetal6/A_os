@@ -1,14 +1,14 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
@@ -16,60 +16,55 @@
 /*
  * dmx512.c
  *
- *  Created on: Mar 23, 2024
+ *  Created on: Nov 18, 2024
  *      Author: fil
  */
-
 
 #include "main.h"
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
+//#include "../../kernel/kernel_opt.h"
 
 #include "dmx512.h"
-extern	UART_HandleTypeDef huart3;
-extern	void DWT_Delay_us(uint32_t au32_microseconds);
+#include <string.h>
 
-dmx_t	dmx;
-/*
- * moder :
- * 	00 = input
- * 	01 : output
- * 	10 : alternate
- * 	11 : analog
- */
-#define set_pc10_gpio() \
-	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
-	GPIOC->MODER = 1 << 20;\
-	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
-	GPIOA->MODER = 1 << 30;
-
-#define set_pc10_uart() \
-	GPIOC->MODER &= ~(1 << 20 | 1 << 21);\
-	GPIOC->MODER = 1 << 21;\
-	GPIOA->MODER &= ~(1 << 30 | 1 << 31);\
-	GPIOA->MODER = 1 << 31;
+extern	UARTS_DriverStruct_t	UARTS_DriverStruct[MAX_UARTS_DRIVERS];
 
 
-
-void dmx512_start(void)
+ITCM_AREA_CODE uint32_t	dmx512_register(DMX512_Drv_TypeDef *driver_private_data)
 {
-	set_pc10_gpio();
-	DWT_Delay_us(120);
-	set_pc10_uart();
-
-	hw_send_uart_dma(dmx.uart,dmx.DMXbuf,DMX_LEN);
+	if ( driver_private_data->uart == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( driver_private_data->tx_port == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( driver_private_data->wakeup_id == 0 )
+		return DRIVER_REQUEST_FAILED;
+	if ( driver_private_data->break_length == 0 )
+		return DRIVER_REQUEST_FAILED;
+	return uart_register((UART_Drv_TypeDef *)driver_private_data);
 }
 
-void dmx512_init(uint32_t uart)
+ITCM_AREA_CODE  uint32_t dmx512_set_break_length(uint8_t handle, uint32_t break_length)
 {
-uint32_t	i;
-uint8_t		k=255;
-	for(i=0,k=255;i<DMX_LEN;i++,k--)
-		dmx.DMXbuf[i] = k;
-	dmx.DMXbuf[0] = 0;
-	dmx.uart = uart;
+DMX512_Drv_TypeDef	*dmx512_Drv = (DMX512_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+
+	if ( dmx512_Drv->uart != NULL )
+	{
+		dmx512_Drv->break_length = break_length;
+		return 0;
+	}
+	return 1;
 }
 
-
+ITCM_AREA_CODE void dmx512_send(uint8_t handle, uint8_t *buffer, uint16_t buffer_len)
+{
+DMX512_Drv_TypeDef	*dmx512_Drv = (DMX512_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+	__disable_irq();
+	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,GPIO_IS_OUTPUT,0);
+	DWT_Delay_us(dmx512_Drv->break_length);
+	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,GPIO_IS_ALTERNATE,0);
+	uart_send(handle,buffer,buffer_len);
+	__enable_irq();
+}

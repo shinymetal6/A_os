@@ -40,6 +40,11 @@ typedef struct
 	uint8_t				sentinel_flags;
 	uint32_t			uart_error;
 	UART_HandleTypeDef 	*uart;
+	GPIO_TypeDef	 	*tx_port;
+	uint16_t			tx_bit;
+	GPIO_TypeDef	 	*rx_port;
+	uint16_t			rx_bit;
+	uint32_t			param0;
 	uint32_t 			wakeup_id;
 }UART_Drv_TypeDef;
 /* status */
@@ -88,13 +93,12 @@ typedef struct
 	uint8_t		status;
 	uint8_t		flags;
 	uint8_t		handle;
-	UART_Drv_TypeDef	*uart_driver_private_data;
+	UART_Drv_TypeDef	*driver_private_data;
 }UARTS_DriverStruct_t;
 
 extern  uint32_t 	uart_init(uint8_t handle);
 extern  uint32_t 	uart_get_status(uint8_t handle);
-extern  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint8_t len);
-extern  uint32_t	uart_send_buffer(uint8_t handle, uint8_t *buffer,uint8_t len);
+extern  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint16_t len);
 extern  uint32_t	uart_start_receive(uint8_t handle);
 extern  uint32_t	uart_get_rxlen(uint8_t handle);
 extern  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len);

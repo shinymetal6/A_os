@@ -256,7 +256,6 @@ typedef struct
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
 	uint32_t	system_flags;
-	uint32_t 	qspi_size;
 	uint8_t		general_flags;
 	uint8_t		current_process;
 	uint8_t		failed_process;
@@ -267,8 +266,10 @@ typedef struct
 	uint8_t		process_bus_fault[MAX_PROCESS];
 	uint8_t		process_mem_manage_fault[MAX_PROCESS];
 	uint8_t		process_usage_fault[MAX_PROCESS];
-	uint8_t		qspi_status;
-	uint8_t		qspi_id;
+
+	//	uint32_t 	qspi_size;
+//	uint8_t		qspi_status;
+	//uint8_t		qspi_id;
 	char		version[40];
 } Asys_t;
 

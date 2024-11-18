@@ -30,8 +30,21 @@ typedef struct
 	uint8_t		flags;
 	uint8_t		handle;
 	uint32_t	*driver_private_data;
+	uint32_t	(*read)  (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
+	uint32_t	(*write) (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
+	uint32_t	(*erase_blocks) (uint8_t handle, uint32_t start_block, uint32_t number_of_blocks);
+	uint32_t	(*erase_chip) (uint8_t handle);
 }ExtFlash_DriverStruct_t;
 
 #include "I2C/i2c_24xx.h"
+#include "QSPI/w25qxx.h"
+
+extern	uint32_t extflash_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
+extern	uint32_t extflash_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
+extern	uint32_t extflash_erase_blocks(uint8_t handle, uint32_t start_block,uint32_t number_of_blocks);
+extern	uint32_t extflash_erase_chip(uint8_t handle);
+
+
+
 
 #endif /* DRIVERS_EXTERNAL_FLASH_EXTERNAL_FLASH_H_ */
