@@ -26,5 +26,5 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
-SYSTEM_RAM	Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
+SYSTEM_RAM	Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_I2C_DEVICES];
 SYSTEM_RAM	uint8_t					last_sensor_used_handle=0,sensor_driver_request = 0;

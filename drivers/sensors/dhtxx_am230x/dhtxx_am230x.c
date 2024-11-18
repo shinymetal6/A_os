@@ -30,7 +30,7 @@
 #include "dhtxx_am230x.h"
 #include <string.h>
 
-extern		Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_SENSORS];
+extern		Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_I2C_DEVICES];
 extern		uint8_t					last_sensor_used_handle,sensor_driver_request;
 
 ITCM_AREA_CODE static void dhtxx_am230x_create_bitbytes(Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv)
@@ -105,7 +105,7 @@ uint8_t		byte_val,byte_mask;
 ITCM_AREA_CODE static uint32_t get_handle_from_dht_workers(uint32_t device_index)
 {
 uint32_t	i,drv_ret=255;
-	for(i=0;i<MAX_SENSORS;i++)
+	for(i=0;i<MAX_I2C_DEVICES;i++)
 	{
 		if ( Sensors_DriverStruct[i].sensor_id == device_index )
 			return i;

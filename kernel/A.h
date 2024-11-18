@@ -34,7 +34,8 @@
 #define MAX_TIM_DRIVERS				8
 #define MAX_ANALOG_DRIVERS			16
 #define MAX_EXTMEM_DRIVERS			8
-#define MAX_SENSORS					16
+//#define MAX_SENSORS					16
+#define MAX_I2C_DEVICES				16
 
 #define	TIMER_CALLBACK_ARRAY_SIZE	8
 #define	MAILBOX_NUM					8

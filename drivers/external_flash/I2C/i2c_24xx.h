@@ -38,10 +38,16 @@ typedef struct
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
+	uint32_t 			wakeup_id;
 }I2C_24xx_Drv_TypeDef;
 
 /* status */
-#define	READ_DMA_COMPLETE	0x80
+#define	READ_DMA_COMPLETE		0x80
+#define	READ_COMPLETE			0x08
+#define	WRITE_DMA_COMPLETE		0x40
+#define	WRITE_COMPLETE			0x04
+#define	I2C_WAKEUP_ON_READ		0x02
+#define	I2C_WAKEUP_ON_WRITE		0x01
 /* flags */
 #define	I2C_USES_WRITE_DMA		0x80
 #define	I2C_USES_READ_DMA		0x40
