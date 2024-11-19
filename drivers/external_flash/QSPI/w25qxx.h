@@ -38,9 +38,10 @@ typedef struct
 	uint32_t 			BlockSize;    	   	/*!< Size of the block */
 }W25Qxx_Drv_TypeDef;
 /* status */
-#define	QSPI_READ_DMA_COMPLETE		0x80
-#define	QSPI_WRITE_DMA_COMPLETE		0x40
-#define	QSPI_WEL					0x20
+#define	QSPI_ERROR					0x80
+#define	QSPI_READ_DMA_COMPLETE		0x40
+#define	QSPI_WRITE_DMA_COMPLETE		0x20
+#define	QSPI_WEL					0x10
 #define	QSPI_READ_COMPLETE			0x08
 #define	QSPI_WRITE_COMPLETE			0x04
 #define	QSPI_WAKEUP_ON_READ			0x02

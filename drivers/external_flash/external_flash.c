@@ -49,4 +49,19 @@ uint32_t extflash_erase_chip(uint8_t handle)
 	return ExtFlashDriverStruct[handle].erase_chip(handle);
 }
 
+uint32_t extflash_get_status(uint8_t handle)
+{
+	return ExtFlashDriverStruct[handle].get_status(handle);
+}
+
+uint32_t extflash_get_flags(uint8_t handle)
+{
+	return ExtFlashDriverStruct[handle].get_flags(handle);
+}
+
+uint32_t extflash_set_flags(uint8_t handle, uint32_t flags)
+{
+	return ExtFlashDriverStruct[handle].set_flags(handle,flags);
+}
+
 

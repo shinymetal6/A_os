@@ -106,20 +106,14 @@ ITCM_AREA_CODE uint32_t w25qxx_read(uint8_t handle, uint32_t address,uint8_t *da
 W25Qxx_Drv_TypeDef	*w25qxx_Drv;
 QSPI_CommandTypeDef com;
 uint32_t			Instruction,AddressSize;
-uint8_t				ret_val,tout=0;
 
 	w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	w25qxx_Drv->status = 0;
 
 	if (data_len > 256 || data_len == 0)
-		return W25Q_PARAM_ERR;
-
-	while (w25qxx_IsBusy(w25qxx_Drv) == W25Q_BUSY)
 	{
-		task_delay(1);
-		tout++;
-		if ( tout > 20 )
-			return W25Q_SPI_ERR;
+		w25qxx_Drv->status |= QSPI_ERROR;
+		return W25Q_PARAM_ERR;
 	}
 
 	#if MEM_FLASH_SIZE > 128U
@@ -131,22 +125,31 @@ uint8_t				ret_val,tout=0;
 	#endif
 		set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_4_LINES, AddressSize, data_len, QSPI_DATA_4_LINES);
 		com.DummyCycles = 6;
-		ret_val = W25Q_SPI_ERR;
-		if (HAL_QSPI_Command(w25qxx_Drv->qspi_bus, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) == HAL_OK)
+		if (HAL_QSPI_Command(w25qxx_Drv->qspi_bus, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 		{
-			if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
+			w25qxx_Drv->status |= QSPI_ERROR;
+			return W25Q_SPI_ERR;
+		}
+		if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
+		{
+			w25qxx_Drv->status &= ~QSPI_READ_DMA_COMPLETE;
+			if ( HAL_QSPI_Receive_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK )
 			{
-				w25qxx_Drv->status &= ~QSPI_READ_DMA_COMPLETE;
-				return HAL_QSPI_Receive_DMA(w25qxx_Drv->qspi_bus, data);
+				w25qxx_Drv->status |= QSPI_ERROR;
+				return W25Q_SPI_ERR;
 			}
-			else
+		}
+		else
+		{
+			w25qxx_Drv->status &= ~QSPI_READ_COMPLETE;
+			if ( HAL_QSPI_Receive_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK )
 			{
-				w25qxx_Drv->status &= ~QSPI_READ_COMPLETE;
-				return HAL_QSPI_Receive_IT(w25qxx_Drv->qspi_bus, data);
+				w25qxx_Drv->status |= QSPI_ERROR;
+				return W25Q_SPI_ERR;
 			}
 		}
 		com.DummyCycles = 0;
-		return ret_val;
+		return 0;
 }
 
 ITCM_AREA_CODE uint32_t w25qxx_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
@@ -178,12 +181,17 @@ uint8_t				state;
 	#endif
 
 		set_com(&com, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, AddressSize, data_len, QSPI_DATA_4_LINES);
-		if (HAL_QSPI_Command(w25qxx_Drv->qspi_bus, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE)
-				!= HAL_OK)
+		if (HAL_QSPI_Command(w25qxx_Drv->qspi_bus, &com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+		{
+			w25qxx_Drv->status |= QSPI_ERROR;
 			return W25Q_SPI_ERR;
+		}
 
 		if (HAL_QSPI_Transmit(w25qxx_Drv->qspi_bus, data, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+		{
+			w25qxx_Drv->status |= QSPI_ERROR;
 			return W25Q_SPI_ERR;
+		}
 
 		w25qxx_Drv->status &= ~QSPI_WRITE_COMPLETE;
 		while (w25qxx_IsBusy(w25qxx_Drv) == W25Q_BUSY)
