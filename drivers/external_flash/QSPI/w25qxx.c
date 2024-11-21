@@ -20,7 +20,6 @@
  *      Author: fil
  */
 
-
 #include "main.h"
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"

@@ -31,6 +31,8 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+//#define	 QSPI_ENABLED	1
+
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))

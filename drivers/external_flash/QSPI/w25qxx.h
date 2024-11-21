@@ -27,7 +27,6 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				*data;
 	QSPI_HandleTypeDef 	*qspi_bus;
 	uint32_t 			wakeup_id;
 	uint32_t 			timeout;

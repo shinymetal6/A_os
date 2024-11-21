@@ -25,13 +25,12 @@
 #define	I2C_24XX_STOPPED	0
 #define	I2C_24XX_ADDRESS	0xa0
 #define	I2C_24XX_PAGESIZE	256
-#define	I2C_24XX_TIMEOUT	20
+#define	I2C_24XX_TIMEOUT	200
 
 typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				*data;
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
 	uint8_t 			device_address_size;
@@ -43,21 +42,19 @@ typedef struct
 }I2C_24xx_Drv_TypeDef;
 
 /* status */
-#define	I2C_BUSY					0x08
-#define	I2C_READ_COMPLETE			0x04
-#define	I2C_WRITE_COMPLETE			0x02
-#define	I2C_ERROR					0x01
+#define	I2C_STATUS_DEVICE_ERROR				0x80
+#define	I2C_STATUS_ERROR					0x40
+#define	I2C_STATUS_DEVICE_BUSY				0x20
+#define	I2C_STATUS_BUSY						0x08
+#define	I2C_STATUS_READY					0x04
+#define	I2C_STATUS_READ_COMPLETE			0x02
+#define	I2C_STATUS_WRITE_COMPLETE			0x01
 /* flags */
-#define	I2C_USES_WRITE_DMA			0x80
-#define	I2C_USES_READ_DMA			0x40
-#define	I2C_WAKEUP_ON_READ			0x20
-#define	I2C_WAKEUP_ON_WRITE			0x10
+#define	I2C_FLAGS_USES_WRITE_DMA			0x08
+#define	I2C_FLAGS_USES_READ_DMA				0x04
+#define	I2C_FLAGS_WAKEUP_ON_READ			0x02
+#define	I2C_FLAGS_WAKEUP_ON_WRITE			0x01
 
 extern uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *driver_private_data);
-extern uint32_t i2c_24xx_get_status(uint8_t handle);
-extern uint32_t i2c_24xx_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
-extern uint32_t i2c_24xx_read_config(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
-extern uint32_t i2c_24xx_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
-extern uint32_t i2c_24xx_init(uint8_t handle);
 
 #endif /* DRIVERS_EXTERNAL_FLASH_I2C_24XX_H_ */

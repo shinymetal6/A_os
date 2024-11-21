@@ -42,7 +42,6 @@ typedef struct
 
 #include "I2C/i2c_24xx.h"
 
-#define	 QSPI_ENABLED	1
 #ifdef QSPI_ENABLED
 #include "QSPI/w25qxx.h"
 #endif
