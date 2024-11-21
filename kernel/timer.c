@@ -117,9 +117,13 @@ uint32_t	ret_val;
 	return ret_val;
 }
 
+uint32_t	imem;
 ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 {
+uint32_t	i = 5;
+
 	__disable_irq();
+	imem=i;
 	if(Asys.current_process)
 	{
 		process[Asys.current_process].delay_value = Asys.g_tick_count + tick_count;

@@ -23,9 +23,9 @@
 #define DRIVERS_EXTERNAL_FLASH_I2C_24XX_H_
 
 #define	I2C_24XX_STOPPED	0
-#define	I2C_24XX_TIMEOUT	1000
 #define	I2C_24XX_ADDRESS	0xa0
 #define	I2C_24XX_PAGESIZE	256
+#define	I2C_24XX_TIMEOUT	20
 
 typedef struct
 {
@@ -39,13 +39,13 @@ typedef struct
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
 	uint32_t 			wakeup_id;
+	uint32_t 			timeout;
 }I2C_24xx_Drv_TypeDef;
 
 /* status */
-#define	I2C_READ_DMA_COMPLETE		0x80
-#define	I2C_WRITE_DMA_COMPLETE		0x40
-#define	I2C_READ_COMPLETE			0x20
-#define	I2C_WRITE_COMPLETE			0x10
+#define	I2C_BUSY					0x08
+#define	I2C_READ_COMPLETE			0x04
+#define	I2C_WRITE_COMPLETE			0x02
 #define	I2C_ERROR					0x01
 /* flags */
 #define	I2C_USES_WRITE_DMA			0x80

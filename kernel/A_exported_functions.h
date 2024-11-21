@@ -110,40 +110,11 @@ extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32
 	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
 #endif // #ifdef LCD_2I8_ENABLED
 
-#ifdef ADC_ENABLED
-	#include "../drivers/internal_adc/internal_adc.h"
-#endif // #ifdef ADC_ENABLED
-
-#ifdef QSPI_ENABLED
-	#include "HwDevices/hw_qspi.h"
-	#include "../drivers/external_flash/qspi.h"
-	#include "../drivers/external_flash/w25q.h"
-#endif
-
-
-#ifdef INTERNAL_ADC_ENABLED
-	#include "../drivers/internal_adc/internal_adc.h"
-#endif // #ifdef INTERNAL_ADC_ENABLED
-
-#ifdef INTERNAL_DAC_ENABLED
-	#include "../drivers/internal_dac/internal_dac.h"
-#endif // #ifdef INTERNAL_DAC_ENABLED
 
 #ifdef INTERNAL_RTC_ENABLED
 	#include "../drivers/internal_rtc/internal_rtc.h"
 #endif // #ifdef INTERNAL_RTC_ENABLED
 
-#ifdef DDC_SYSTEM_ENABLE
-	#include "../modules/dcc/dcc.h"
-#endif // #ifdef DDC_SYSTEM_ENABLE
-
-#ifdef SYNTH_ENGINE_ENABLE
-	#include "../modules/audio/effects.h"
-#endif // #ifdef SYNTH_ENGINE_ENABLE
-
-#ifdef DMX512_ENABLE
-	#include "../modules/dmx512/dmx512.h"
-#endif // #ifdef DMX512_ENABLE
 
 #ifdef NETWORKING_ENABLED
 #include "../modules/lwip2.2/App/lwip.h"

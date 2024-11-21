@@ -42,7 +42,10 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_p
 		USB_DriverStruct.status = DRIVER_STATUS_REQUESTED;
 		USB_DriverStruct.usb_driver_private_data = usb_driver_private_data;
 		USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
-		usb_Drv->timeout_reload_value = usb_Drv->timeout;
+		if ( usb_Drv->requested_len )
+			usb_Drv->timeout_reload_value = usb_Drv->timeout;
+		else
+			usb_Drv->timeout_reload_value = usb_Drv->timeout;
 		usb_driver_request = 1;
 		set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback);
 		return 0;
@@ -106,16 +109,26 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	if ( usb_Drv->data == NULL )
 		return 0;
 	usb_Drv->timeout = usb_Drv->timeout_reload_value;
-	for(i=0;i<Len;i++)
+	if ( usb_Drv->requested_len )
 	{
-		usb_Drv->data[usb_Drv->data_index] = Buf[i];
-		usb_Drv->data_index++;
-		if ( usb_Drv->data_index >= usb_Drv->requested_len)
+		for(i=0;i<Len;i++)
 		{
-			usb_Drv->rx_num_chars = usb_Drv->data_index;
-			usb_Drv->data_index = 0;
-			activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
+			usb_Drv->data[usb_Drv->data_index] = Buf[i];
+			usb_Drv->data_index++;
+			if ( usb_Drv->data_index >= usb_Drv->requested_len)
+			{
+				usb_Drv->rx_num_chars = usb_Drv->data_index;
+				usb_Drv->data_index = 0;
+				activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
+			}
 		}
+	}
+	else
+	{
+		for(i=0;i<Len;i++)
+			usb_Drv->data[usb_Drv->data_index] = Buf[i];
+		usb_Drv->rx_num_chars = Len;
+		activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
 	}
 	return	Len;
 }

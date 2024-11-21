@@ -14,26 +14,26 @@
  * Project : A_os
 */
 /*
- * w25q_defs.h
+ * w25qxx_defs.h
  *
- *  Created on: Nov 18, 2024
+ *  Created on: Nov 21, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_EXTERNAL_FLASH_QSPI_W25Q_DEFS_H_
-#define DRIVERS_EXTERNAL_FLASH_QSPI_W25Q_DEFS_H_
+#ifndef DRIVERS_EXTERNAL_FLASH_QSPI_W25QXX_DEFS_H_
+#define DRIVERS_EXTERNAL_FLASH_QSPI_W25QXX_DEFS_H_
 
 // Memory settings
 // Mem size in M-bit
-#define MEM_FLASH_SIZE 		128U 				// 128 MB-bit
-#define MEM_FLASH_SIZE_FULL	((128U*1024U*1024U)/8)	// 16 MBytes
-#define MEM_BLOCK_SIZE 		64U					// 64 KB: 256 pages
-#define MEM_SBLOCK_SIZE 	32U					// 32 KB: 128 pages
-#define MEM_SECTOR_SIZE 	4U					// 4 KB : 16 pages
-#define MEM_PAGE_SIZE  		256U				// 256 byte : 1 page
-#define BLOCK_COUNT 		(MEM_FLASH_SIZE * 2)// 512 blocks
-#define SECTOR_COUNT 		(BLOCK_COUNT * 16)  // 8192 sectors
-#define PAGE_COUNT 			(SECTOR_COUNT * 16)	// 131'072 pages
+#define W25Q_MEM_FLASH_SIZE 		128U 				// 128 MB-bit
+#define W25Q_MEM_FLASH_SIZE_FULL	((128U*1024U*1024U)/8)	// 16 MBytes
+#define W25Q_MEM_BLOCK_SIZE 		64U					// 64 KB: 256 pages
+#define W25Q_MEM_SBLOCK_SIZE 		32U					// 32 KB: 128 pages
+#define W25Q_MEM_SECTOR_SIZE 		4U					// 4 KB : 16 pages
+#define W25Q_MEM_PAGE_SIZE  		256U				// 256 byte : 1 page
+#define W25Q_BLOCK_COUNT 			(W25Q_MEM_FLASH_SIZE * 2)// 512 blocks
+#define W25Q_SECTOR_COUNT 			(W25Q_BLOCK_COUNT * 16)  // 8192 sectors
+#define W25Q_PAGE_COUNT 			(W25Q_SECTOR_COUNT * 16)	// 131'072 pages
 
 #define	W25Q_OK 			0  	/* Chip OK - Execution fine */
 #define	W25Q_BUSY 			1	/* Chip busy */
@@ -102,6 +102,14 @@
 #define W25Q_RESET 0x99U					///< make software reset
 
 #define	W25Q_NO_PROTECTION_MASK				0x1c
+#define	W25Q_SR_READY_MASK					0x01
+#define	W25Q_READ_TIMEOUT					20
+#define	W25Q_WRITE_TIMEOUT					1000
+#define	W25Q_ERASEBLOCKS_TIMEOUT			5000
+#define	W25Q_ERASECHIP_TIMEOUT				35000
+#define	W25Q_DUMMY_0						0
+#define	W25Q_DUMMY_6						6
 
 
-#endif /* DRIVERS_EXTERNAL_FLASH_QSPI_W25Q_DEFS_H_ */
+
+#endif /* DRIVERS_EXTERNAL_FLASH_QSPI_W25QXX_DEFS_H_ */
