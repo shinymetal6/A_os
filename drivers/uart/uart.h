@@ -73,8 +73,8 @@ typedef struct
 #else
 
 /* flags */
-#define	UART_USES_DMA_TX				0x80
-#define	UART_USES_DMA_RX				0x40
+#define	UART_USES_DMA_TX			0x80
+#define	UART_USES_DMA_RX			0x40
 #define	UART_WAKEUP_ON_TX			0x20
 #define	UART_WAKEUP_ON_RXCHAR		0x10
 #define	UART_WAKEUP_ON_RXFULL		0x08

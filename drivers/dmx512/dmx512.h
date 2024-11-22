@@ -31,7 +31,6 @@ typedef struct
 	uint16_t			rx_index;
 	uint16_t			rx_max_len;
 	uint16_t			rx_num_chars;
-	uint8_t				*data;
 	uint16_t			timeout;
 	uint16_t			timeout_reload_value;
 	uint8_t				sentinel_start;

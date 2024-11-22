@@ -25,6 +25,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
+#ifdef I2C_ENABLED
 
 #include "i2c_24xx.h"
 #include <string.h>
@@ -293,3 +294,4 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	}
 }
 
+#endif // #ifdef I2C_ENABLED

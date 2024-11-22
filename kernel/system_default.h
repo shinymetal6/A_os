@@ -46,7 +46,7 @@
 		#include "../boards/Vb1xx_00.h"
 	#endif
 	#ifdef	MEMBRANE_2412172_00
-		#include "../boards/MEMBRANE_2412172_00.h"
+		#include "../boards/AX_P2412172_00_MembraneConcentrator.h"
 	#endif
 	#ifdef	FL_090724_00
 		#include "../boards/FL_090724_00.h"

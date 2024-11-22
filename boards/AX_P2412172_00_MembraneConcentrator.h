@@ -1,27 +1,27 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
 */
 /*
- * AX_P2416176_01_NEVOL.h
+ * AX_P2412172_00_MembraneConcentrator.h
  *
- *  Created on: May 23, 2024
+ *  Created on: Nov 21, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_AX_P2416176_01_NEVOL_H_
-#define BOARDS_AX_P2416176_01_NEVOL_H_
+#ifndef BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
+#define BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 
 #include "memdef_common.h"
 
@@ -31,8 +31,8 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
-//#define	 QSPI_ENABLED	1
-#define	 I2C_ENABLED	1
+#define	 QSPI_ENABLED	1
+//#define	 I2C_ENABLED	1
 
 #define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
@@ -53,9 +53,9 @@
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"NEVOL-2416176-01"
-#define	MACHINE_NAME		"Nevol"
+#define	BOARD_NAME			"Concentrator-2412172_00"
+#define	MACHINE_NAME		"Membrane"
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_AX_P2416176_01_NEVOL_H_ */
+#endif /* BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_ */

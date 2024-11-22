@@ -26,6 +26,8 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 //#include "../../kernel/kernel_opt.h"
+#ifdef USB_DEVICE_ENABLED
+
 #include <string.h>
 #include "usb_device_driver_manager.h"
 
@@ -133,6 +135,7 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	return	Len;
 }
 
+#endif // #ifdef USB_DEVICE_ENABLED
 
 
 

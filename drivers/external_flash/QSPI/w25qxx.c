@@ -26,6 +26,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
+#ifdef QSPI_ENABLED
 
 #include "w25qxx.h"
 #include "w25qxx_defs.h"
@@ -475,3 +476,4 @@ W25Qxx_Drv_TypeDef	*w25qxx_Drv;
 	}
 	__enable_irq();
 }
+#endif // #ifdef QSPI_ENABLED
