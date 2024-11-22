@@ -25,14 +25,28 @@
 
 typedef struct
 {
-	uint8_t 	process;
-	uint8_t		status;
-	uint8_t		flags;
-	uint8_t		handle;
-	uint32_t	*analog_driver_private_data;
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	uint32_t			*analog_driver_private_data;
+	uint32_t			(*adc_start)  (uint8_t handle);
+	uint32_t			(*adc_stop)  (uint8_t handle);
+	uint32_t			(*adc_get_status) (uint8_t handle);
+	uint32_t			(*adc_init) (uint8_t handle);
+	uint32_t			(*dac_start)  (uint8_t handle);
+	uint32_t			(*dac_stop)  (uint8_t handle);
+	uint32_t			(*dac_get_status) (uint8_t handle);
+	uint32_t			(*dac_init) (uint8_t handle);
+	uint32_t			(*codec_start)  (uint8_t handle);
+	uint32_t			(*codec_stop)  (uint8_t handle);
+	uint32_t			(*codec_get_status) (uint8_t handle);
+	uint32_t			(*codec_init) (uint8_t handle);
+	uint32_t			(*codec_internal_ops) (uint8_t handle,uint8_t command,uint32_t param0,uint32_t param1,uint32_t param2,uint32_t param3);
 }ANALOG_DriverStruct_t;
 
 #include "intadc_driver/intadc_driver.h"
 #include "intdac_driver/intdac_driver.h"
+#include "codec/nau88c22.h"
 
 #endif /* DRIVERS_ANALOG_ANALOG_H_ */

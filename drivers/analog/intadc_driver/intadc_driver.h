@@ -44,10 +44,12 @@ typedef struct
 #define		ADC_FLAGS_FULL_WAKEUP	0x40
 #define		ADC_FLAGS_ALL_WAKEUP	0x80
 
+/*
 extern uint32_t intadc_init(uint8_t handle);
 extern uint32_t intadc_start(uint8_t handle);
 extern uint32_t intadc_stop(uint8_t handle);
 extern uint32_t intadc_get_status(uint8_t handle);
-extern uint32_t	intadc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags,uint32_t adc_flags);
+*/
+extern uint32_t	adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
 
 #endif /* DRIVERS_INTADC_DRIVER_INTADC_DRIVER_H_ */

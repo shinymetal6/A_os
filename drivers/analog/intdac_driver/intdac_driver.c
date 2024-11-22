@@ -33,7 +33,7 @@
 extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t							last_analog_used_handle,analog_driver_request;
 
-ITCM_AREA_CODE  uint32_t intdac_start(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t intdac_start(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
@@ -42,7 +42,7 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t intdac_stop(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t intdac_stop(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
@@ -51,7 +51,7 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t intdac_init(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t intdac_init(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 	dac_drv->status = 0;
@@ -59,7 +59,14 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analo
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	intdac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags,uint32_t adc_flags)
+ITCM_AREA_CODE  static uint32_t intdac_get_status(uint8_t handle)
+{
+DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+	return dac_drv->status;
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t	dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
 {
 DAC_Drv_TypeDef	*dac_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
@@ -69,9 +76,16 @@ DAC_Drv_TypeDef	*dac_drv;
 		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
 
 		dac_drv = (DAC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
-		dac_drv->flags |= adc_flags;
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		if ( dac_drv->dac == NULL)
+			return DRIVER_REQUEST_FAILED;
+		if ( dac_drv->dac_timer == NULL)
+			return DRIVER_REQUEST_FAILED;
 
+		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_start = intdac_start;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_stop = intdac_stop;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_get_status = intdac_get_status;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_init = intdac_init;
 		last_analog_used_handle++;
 		analog_driver_request++;
 		return last_analog_used_handle-1;

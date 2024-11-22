@@ -48,9 +48,12 @@ typedef struct
 #define		DAC_FLAGS_FULL_WAKEUP	0x40
 #define		DAC_FLAGS_ALL_WAKEUP	0x80
 
+/*
 extern uint32_t intdac_init(uint8_t handle);
 extern uint32_t intdac_start(uint8_t handle);
 extern uint32_t intdac_stop(uint8_t handle);
 extern uint32_t intdac_get_status(uint8_t handle);
+*/
+extern ITCM_AREA_CODE uint32_t	dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
 
 #endif /* DRIVERS_ANALOG_INTDAC_DRIVER_INTDAC_DRIVER_H_ */

@@ -33,7 +33,7 @@
 extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t							last_analog_used_handle,analog_driver_request;
 
-ITCM_AREA_CODE uint32_t intadc_start(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_start(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
@@ -42,7 +42,7 @@ TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t intadc_stop(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_stop(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
@@ -51,13 +51,13 @@ TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t intadc_get_status(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_get_status(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 	return (uint32_t )adc_drv->status;
 }
 
-ITCM_AREA_CODE uint32_t intadc_init(uint8_t handle)
+ITCM_AREA_CODE static uint32_t intadc_init(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 ADC_HandleTypeDef	*adc = adc_drv->adc;
@@ -66,7 +66,7 @@ ADC_HandleTypeDef	*adc = adc_drv->adc;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	intadc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags,uint32_t adc_flags)
+ITCM_AREA_CODE uint32_t	adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
 {
 ADC_Drv_TypeDef	*adc_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
@@ -76,8 +76,15 @@ ADC_Drv_TypeDef	*adc_drv;
 		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
 
 		adc_drv = (ADC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
-		adc_drv->flags |= adc_flags;
+		if ( adc_drv->adc == NULL)
+			return DRIVER_REQUEST_FAILED;
+		if ( adc_drv->adc_timer == NULL)
+			return DRIVER_REQUEST_FAILED;
 		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ANALOG_DriverStruct[last_analog_used_handle].adc_start = intadc_start;
+		ANALOG_DriverStruct[last_analog_used_handle].adc_stop = intadc_stop;
+		ANALOG_DriverStruct[last_analog_used_handle].adc_get_status = intadc_get_status;
+		ANALOG_DriverStruct[last_analog_used_handle].adc_init = intadc_init;
 
 		last_analog_used_handle++;
 		analog_driver_request++;

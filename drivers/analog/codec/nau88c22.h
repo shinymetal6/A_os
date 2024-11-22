@@ -11,17 +11,44 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : bb1xx_743_00 
+ * Project : A_os
 */
 /*
  * nau88c22.h
  *
- *  Created on: Jan 4, 2024
+ *  Created on: Nov 22, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_CODEC_NAU88C22_H_
-#define DRIVERS_CODEC_NAU88C22_H_
+#ifndef DRIVERS_ANALOG_CODEC_NAU88C22_H_
+#define DRIVERS_ANALOG_CODEC_NAU88C22_H_
+
+#define NAU88C22_I2C_TIMEOUT			100
+#define NAU88C22_NUM_REGS				79
+
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	I2C_HandleTypeDef 	*bus;
+	uint16_t 			device_address;
+	uint32_t 			wakeup_id;
+	uint8_t				master_volume;
+	uint16_t			adc_dac_path;
+	uint8_t				band1_frequency;
+	uint8_t				band1_gain;
+	uint16_t			band2_narrow_wide;
+	uint8_t				band2_frequency;
+	uint8_t				band2_gain;
+	uint16_t			band3_narrow_wide;
+	uint8_t				band3_frequency;
+	uint8_t				band3_gain;
+	uint16_t			band4_narrow_wide;
+	uint8_t				band4_frequency;
+	uint8_t				band4_gain;
+	uint8_t				band5_frequency;
+	uint8_t				band5_gain;
+}Nau88C22_Drv_TypeDef;
 
 typedef struct
 {
@@ -84,31 +111,15 @@ typedef struct
 
 #define NAU88C22_NUM_REGS					79
 
-typedef struct
-{
-	uint16_t	adc_dac_path;
-	uint8_t		band1_frequency;
-	uint8_t		band1_gain;
-	uint16_t	band2_narrow_wide;
-	uint8_t		band2_frequency;
-	uint8_t		band2_gain;
-	uint16_t	band3_narrow_wide;
-	uint8_t		band3_frequency;
-	uint8_t		band3_gain;
-	uint16_t	band4_narrow_wide;
-	uint8_t		band4_frequency;
-	uint8_t		band4_gain;
-	uint8_t		band5_frequency;
-	uint8_t		band5_gain;
-}Nau88c22_equalizer_t;
+#define NAU88C22_INTOP_SET_BAND1EQ			0x01
+#define NAU88C22_INTOP_SET_BAND2EQ			0x02
+#define NAU88C22_INTOP_SET_BAND3EQ			0x03
+#define NAU88C22_INTOP_SET_BAND4EQ			0x04
+#define NAU88C22_INTOP_SET_BAND5EQ			0x05
+#define NAU88C22_INTOP_WRITE_EQ				0x06
+#define NAU88C22_INTOP_SET_VOLUME			0x07
+#define NAU88C22_INTOP_READ_REG				0x08
 
-extern	void Nau88c22_Init(void);
-extern	void Nau88c22_SetHPVolume(uint8_t volume);
-extern	uint8_t Nau88c22_SetBand1Equalizer(uint8_t adc_dac,    uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand2Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand3Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand4Equalizer(uint8_t narrow_wide,uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_SetBand5Equalizer(                    uint8_t band,uint8_t center_frequency,uint8_t gain);
-extern	uint8_t Nau88c22_WriteEqualizer(void);
+extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
 
-#endif /* DRIVERS_CODEC_NAU88C22_H_ */
+#endif /* DRIVERS_ANALOG_CODEC_NAU88C22_H_ */
