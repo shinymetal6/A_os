@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * AX_P2412172_00_MembraneConcentrator.h
+ * VB_10x_00.h
  *
- *  Created on: Nov 21, 2024
+ *  Created on: Nov 22, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
-#define BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
+#ifndef BOARDS_VB_10X_00_H_
+#define BOARDS_VB_10X_00_H_
 
 #include "memdef_common.h"
 
@@ -31,10 +31,15 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
-#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
-#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
-#define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  	__attribute__ ((aligned (32)))
+#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (32)))
+#define AUDIOBUFS_RAM		__attribute__((section(".audiobufs")))  	__attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) 	__attribute__ ((aligned (32)))
+#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   	__attribute__ ((aligned (32)))
+#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
+#define D2_BUFFER			__attribute__((section(".d2ram"))) 		 	__attribute__ ((aligned (32)))
+
+#define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 	__attribute__ ((aligned (32))) const
 
 /* Clock */
 #define TICK_HZ 				1000U
@@ -50,9 +55,9 @@
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"Concentrator-2412172_00"
-#define	MACHINE_NAME		"Membrane"
+#define	BOARD_NAME			"VB1ox_00"
+#define	MACHINE_NAME		"BB"
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_ */
+#endif /* BOARDS_VB_10X_00_H_ */

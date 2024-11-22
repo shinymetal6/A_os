@@ -1,22 +1,22 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
 */
 /*
- * intdac_driver.c
+ * int_dac_driver.c
  *
- *  Created on: Oct 23, 2024
+ *  Created on: Nov 22, 2024
  *      Author: fil
  */
 
@@ -27,13 +27,12 @@
 #include "../../../kernel/scheduler.h"
 #include "../../../kernel/kernel_opt.h"
 
-#include "intdac_driver.h"
-#include <string.h>
+#include "int_dac_driver.h"
 
 extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t							last_analog_used_handle,analog_driver_request;
 
-ITCM_AREA_CODE  static uint32_t intdac_start(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t int_dac_start(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
@@ -42,7 +41,7 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE  static uint32_t intdac_stop(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t int_dac_stop(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
@@ -51,7 +50,7 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE  static uint32_t intdac_init(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t int_dac_init(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 	dac_drv->status = 0;
@@ -59,7 +58,7 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analo
 	return 0;
 }
 
-ITCM_AREA_CODE  static uint32_t intdac_get_status(uint8_t handle)
+ITCM_AREA_CODE  static uint32_t int_dac_get_status(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 	return dac_drv->status;
@@ -82,10 +81,10 @@ DAC_Drv_TypeDef	*dac_drv;
 			return DRIVER_REQUEST_FAILED;
 
 		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
-		ANALOG_DriverStruct[last_analog_used_handle].dac_start = intdac_start;
-		ANALOG_DriverStruct[last_analog_used_handle].dac_stop = intdac_stop;
-		ANALOG_DriverStruct[last_analog_used_handle].dac_get_status = intdac_get_status;
-		ANALOG_DriverStruct[last_analog_used_handle].dac_init = intdac_init;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_start = int_dac_start;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_stop = int_dac_stop;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_get_status = int_dac_get_status;
+		ANALOG_DriverStruct[last_analog_used_handle].dac_init = int_dac_init;
 		last_analog_used_handle++;
 		analog_driver_request++;
 		return last_analog_used_handle-1;
@@ -138,4 +137,5 @@ uint32_t handle;
 			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
 	}
 }
+
 

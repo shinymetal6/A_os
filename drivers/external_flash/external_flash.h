@@ -40,11 +40,11 @@ typedef struct
 	uint32_t	(*set_flags) (uint8_t handle, uint32_t flags);
 }ExtFlash_DriverStruct_t;
 
-#ifdef I2C_ENABLED
+#ifdef STM32H7xx_HAL_I2C_H
 #include "I2C/i2c_24xx.h"
 #endif
 
-#ifdef QSPI_ENABLED
+#ifdef STM32H7xx_HAL_QSPI_H
 #include "QSPI/w25qxx.h"
 #endif
 

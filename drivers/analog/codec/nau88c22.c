@@ -32,8 +32,6 @@
 extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t							last_analog_used_handle,analog_driver_request;
 
-SYSTEM_RAM	uint16_t	nau88c22_shadowregs[NAU88C22_NUM_REGS];
-
 const Nau88c22_t	Nau88c22[] =
 {
 		{
@@ -205,7 +203,6 @@ ITCM_AREA_CODE static uint8_t Nau88c22_CheckPresent(I2C_HandleTypeDef *bus,uint1
 ITCM_AREA_CODE static void Nau88c22_WriteReg(I2C_HandleTypeDef *bus,uint16_t device_address,uint8_t reg_address, uint16_t reg_data)
 {
 uint8_t i2c_data[2];
-	nau88c22_shadowregs[reg_address] = reg_data;
 	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
 	i2c_data[1] = reg_data & 0xff;
 	HAL_I2C_Mem_Write(bus, device_address, reg_address, 2, i2c_data, 2, NAU88C22_I2C_TIMEOUT);
@@ -238,6 +235,7 @@ uint8_t	i = 0;
 		task_delay(20);
 		while(Nau88c22[i].reg_addr != NAU88C22_RESET )
 		{
+			codec_drv->shadowregs[Nau88c22[i].reg_addr] = Nau88c22[i].reg_data;
 			Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,Nau88c22[i].reg_addr,  Nau88c22[i].reg_data);
 			i++;
 		}
@@ -312,12 +310,13 @@ uint8_t 	gain				= (uint8_t  )param3;
 	case	NAU88C22_INTOP_SET_VOLUME:
 		/* here adc_dac_narrow_wide used as volume */
 		uint16_t		reg = 0x100 | (adc_dac_narrow_wide & 0x3f);
-			Nau88c22_WriteReg(bus , device_address,NAU88C22_LOUT1_HP_CONTROL,  reg);
-			Nau88c22_WriteReg(bus , device_address,NAU88C22_ROUT1_HP_CONTROL, reg);
+		codec_drv->master_volume = reg;
+		Nau88c22_WriteReg(bus , device_address,NAU88C22_LOUT1_HP_CONTROL,  reg);
+		Nau88c22_WriteReg(bus , device_address,NAU88C22_ROUT1_HP_CONTROL, reg);
 		break;
 	case	NAU88C22_INTOP_READ_REG:
 		/* here adc_dac_narrow_wide used as read reg index */
-		return nau88c22_shadowregs[adc_dac_narrow_wide];
+		return codec_drv->shadowregs[adc_dac_narrow_wide];
 		break;
 	}
 	return 0;

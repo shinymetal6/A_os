@@ -32,7 +32,7 @@
 #define MAX_SEMAPHORES				8
 #define MAX_UARTS_DRIVERS			8
 #define MAX_TIM_DRIVERS				8
-#define MAX_ANALOG_DRIVERS			16
+#define MAX_ANALOG_DRIVERS			8
 #define MAX_EXTMEM_DRIVERS			8
 //#define MAX_SENSORS					16
 #define MAX_I2C_DEVICES				16
@@ -351,13 +351,6 @@ extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);
 extern	uint8_t MX_USB_Device_Init(void);
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);
-
-/* Audio */
-extern	void IrqProcessSamples(void);
-extern	void RunOscillator32(void);
-/* Audio END */
-
-
 
 extern	void supervisor(void);
 extern	void supervisor_process1(void);

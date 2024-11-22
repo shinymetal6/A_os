@@ -48,6 +48,7 @@ typedef struct
 	uint8_t				band4_gain;
 	uint8_t				band5_frequency;
 	uint8_t				band5_gain;
+	uint16_t			shadowregs[NAU88C22_NUM_REGS];
 }Nau88C22_Drv_TypeDef;
 
 typedef struct

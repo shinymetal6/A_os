@@ -1,0 +1,82 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * noise.c
+ *
+ *  Created on: Nov 22, 2024
+ *      Author: fil
+ */
+
+#include "main.h"
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+//#include "../../../kernel/kernel_opt.h"
+
+#include "oscillators.h"
+#include "oscillator_core.h"
+#include "noise.h"
+#include "../audio.h"
+#include "../effects.h"
+
+#ifdef STM32H7xx_HAL_RNG_H
+extern	RNG_HandleTypeDef hrng;
+#endif
+
+ITCM_AREA_CODE void Do_Noise(int16_t* inputData, int16_t* outputData)
+{
+uint32_t	i;
+uint32_t random_number;
+	if ( (BlockEffect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+	{
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i+=2)
+		{
+	#ifdef	STM32H7xx_HAL_RNG_H
+			HAL_RNG_GenerateRandomNumber(&hrng, &random_number);
+			outputData[i] =  (random_number>>16) & 0xffff;
+			outputData[i+1] =  random_number & 0xffff;
+	#else
+			noise_buffer_gen[i] =  (rand()>>16) & 0xffff;
+			noise_buffer_gen[i+1] =  rand() & 0xffff;
+	#endif
+		}
+	}
+	else
+	{
+		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			outputData[i] = inputData[i];
+	}
+}
+
+void Noise_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
+{
+	BlockEffect[NOISE_EFFECT_ID].num_params = 0;
+	sprintf(BlockEffect[NOISE_EFFECT_ID].effect_name,"Noise");
+	BlockEffect[NOISE_EFFECT_ID].apply_effect =  Do_Noise;
+	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+}
+
+void Noise_enable(void)
+{
+	BlockEffect[NOISE_EFFECT_ID].effect_status |= EFFECT_ENABLED;
+}
+
+void Noise_disable(void)
+{
+	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
+}
+
+

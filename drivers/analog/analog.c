@@ -29,6 +29,8 @@
 SYSTEM_RAM	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 SYSTEM_RAM	uint8_t					last_analog_used_handle=0,analog_driver_request = 0;
 
+#ifdef STM32H7xx_HAL_ADC_H
+
 uint32_t adc_start(uint8_t handle)
 {
 	if ( ANALOG_DriverStruct[handle].adc_start != NULL )
@@ -56,6 +58,9 @@ uint32_t adc_init(uint8_t handle)
 		return ANALOG_DriverStruct[handle].adc_init(handle);
 	return 1;
 }
+#endif
+
+#ifdef STM32H7xx_HAL_DAC_H
 
 uint32_t dac_start(uint8_t handle)
 {
@@ -84,6 +89,8 @@ uint32_t dac_init(uint8_t handle)
 		return ANALOG_DriverStruct[handle].dac_init(handle);
 	return 1;
 }
+
+#endif
 
 uint32_t codec_start(uint8_t handle)
 {

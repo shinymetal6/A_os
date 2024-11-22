@@ -16,12 +16,12 @@
 /*
  * audio.h
  *
- *  Created on: Jan 8, 2024
+ *  Created on: Nov 22, 2024
  *      Author: fil
  */
 
-#ifndef KERNEL_AUDIO_H_
-#define KERNEL_AUDIO_H_
+#ifndef MODULES_AUDIO_AUDIO_H_
+#define MODULES_AUDIO_AUDIO_H_
 
 typedef struct
 {
@@ -57,11 +57,14 @@ typedef struct _AudioFlagsTypeDef
 #define	CONTROL_SYSTICK_FLAG		0x40
 #define	CONTROL_MIDIRX_FLAG			0x80
 
-#define	AUDIO_LEFT_CH		0
-#define	AUDIO_RIGHT_CH		1
+#define	AUDIO_LEFT_CH					0
+#define	AUDIO_RIGHT_CH					1
+
+#define AUDIO_BUF_SIZE 					1024
 
 #define	NUMBER_OF_AUDIO_SAMPLES			AUDIO_BUF_SIZE
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
+#define SAMPLE_FREQUENCY 				44100
 
 extern	uint32_t *InitAudioBuffers(void);
 extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
@@ -74,4 +77,5 @@ extern	void InitOscillators(void);
 extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 
-#endif /* KERNEL_AUDIO_H_ */
+
+#endif /* MODULES_AUDIO_AUDIO_H_ */

@@ -16,7 +16,7 @@
 /*
  * audio.c
  *
- *  Created on: Jan 8, 2024
+ *  Created on: Nov 22, 2024
  *      Author: fil
  */
 
@@ -25,9 +25,9 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
+#ifdef STM32H7xx_HAL_I2S_H
 
-#ifdef CODEC_ENABLED
-#ifdef CODEC_NAU88C22
+
 #include "audio.h"
 #include "algo/effects.h"
 
@@ -39,28 +39,18 @@ extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 AUDIO_FAST_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-extern	ControlAdcDef	ControlAdc;
-
 #define	OSCILLATORS	1
 
 uint8_t StartAudioBuffers(int16_t *audio_in_buffer,int16_t *audio_out_buffer)
 {
-#ifdef CODEC_NAU88C22
-	if ( allocate_hw(HW_I2S2,0) == HW_I2S2)
+	if ( HAL_I2SEx_TransmitReceive_DMA(&hi2s2, (uint16_t*)audio_out_buffer, (uint16_t*)audio_in_buffer,AUDIO_BUF_SIZE*2) != HAL_OK)
 	{
-		if ( HAL_I2SEx_TransmitReceive_DMA(&NAU88C22_I2S, (uint16_t*)audio_out_buffer, (uint16_t*)audio_in_buffer,AUDIO_BUF_SIZE*2) != HAL_OK)
-		{
-			deallocate_hw(HW_I2S2);
-			return 1;
-		}
-		audio_out = (WaveLR_t *)audio_out_buffer;
-		audio_in  = (WaveLR_t *)audio_in_buffer;
+		return 1;
 	}
-	return 0;
-#endif
-	return 1;
+	audio_out = (WaveLR_t *)audio_out_buffer;
+	audio_in  = (WaveLR_t *)audio_in_buffer;
 }
-
+/*
 ITCM_AREA_CODE void get_limits(uint16_t *start,uint16_t *end)
 {
 	if (( AudioFlags.audio_flags & AUDIO_HALFBUFOUT_FLAG ) == AUDIO_HALFBUFOUT_FLAG)
@@ -115,7 +105,8 @@ uint16_t	start,end,i,pipe_nr;
     HAL_GPIO_WritePin(DEBUG_FLAG_GPIO_Port, DEBUG_FLAG_Pin, GPIO_PIN_RESET);
 #endif
 }
-
+*/
+/*
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 	AudioFlags.audio_flags |= (AUDIO_HALFBUFOUT_FLAG | AUDIO_OUT_READY_FLAG);
@@ -131,6 +122,7 @@ ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
 	AudioFlags.audio_flags |= AUDIO_IN_READY_FLAG;
 	IrqProcessSamples();
 }
+*/
 
 void SetEffectMode(void)
 {
@@ -150,6 +142,6 @@ void SetMasterVolume(uint16_t volume)
 		AudioFlags.master_volume = 1.0F;
 }
 
-#endif // #ifdef CODEC_NAU88C22
-#endif // #ifdef CODEC_ENABLED
+#endif
+
 
