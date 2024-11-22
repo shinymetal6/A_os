@@ -177,23 +177,15 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 
 	if ( HAL_TIM_PWM_Start(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_dcc_channel) )
 		return 1;
-#ifdef DCC_TIMER_DUAL_PHASE
-	if ( HAL_TIMEx_PWMN_Start(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_180phase_dcc_channel) )
-		return 1;
-#endif
+	if ((dcc_driver_data->flags & DCC_TIMER_DUAL_PHASE ) == DCC_TIMER_DUAL_PHASE)
+		if ( HAL_TIMEx_PWMN_Start(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_180phase_dcc_channel) )
+			return 1;
 
 	if ( HAL_TIM_PWM_Start(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_cutout_channel) )
 		return 1;
 
 	dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]->XferCpltCallback 		= dcc_TIM_DMADelayPulseCplt;
 	dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]->XferHalfCpltCallback 	= dcc_TIM_DMADelayPulseHalfCplt;
-/*
-    if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]   , (uint32_t )&DCC_Pkt[0],    (uint32_t)&dcc_driver_data->dcc_timer->Instance->PSC,sizeof(DCC_Pkt)/2) != HAL_OK)
-      return 1;
-
-    if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_cutout_index], (uint32_t )&DCC_Cutout_Pkt[0], (uint32_t)&dcc_driver_data->dcc_timer->Instance->CCR4,sizeof(DCC_Cutout_Pkt)/2) != HAL_OK)
-      return 1;
-      */
     if (HAL_DMA_Start_IT(dcc_driver_data->dcc_timer->hdma[dcc_driver_data->dma_dcc_index]   , (uint32_t )&dcc_driver_data->DCC_Pkt[0],    (uint32_t)&dcc_driver_data->dcc_timer->Instance->PSC,sizeof(dcc_driver_data->DCC_Pkt)/2) != HAL_OK)
       return 1;
 
@@ -297,9 +289,8 @@ ITCM_AREA_CODE uint32_t dcc_stop(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
 	HAL_TIM_PWM_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_dcc_channel);
-#ifdef DCC_TIMER_DUAL_PHASE
-	HAL_TIMEx_PWMN_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_180phase_dcc_channel);
-#endif
+	if ((dcc_driver_data->flags & DCC_TIMER_DUAL_PHASE ) == DCC_TIMER_DUAL_PHASE)
+		HAL_TIMEx_PWMN_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_180phase_dcc_channel);
 	HAL_TIM_PWM_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_cutout_channel);
 	return 0;
 }
@@ -406,7 +397,6 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			if (( dcc_driver_data->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
 				dcc_driver_data->enable_port->BSRR = dcc_driver_data->enable_bit;
-				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_SET);
 				memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[SECOND_HALF],(uint8_t *)&dcc_driver_data->DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[SECOND_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
@@ -420,7 +410,6 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			else
 			{
 				dcc_driver_data->enable_port->BSRR = (uint32_t)dcc_driver_data->enable_bit << 16;
-				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_RESET);
 				if (( dcc_driver_data->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
 				{
 					if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
@@ -448,7 +437,6 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			if (( dcc_driver_data->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
 			{
 				dcc_driver_data->enable_port->BSRR = dcc_driver_data->enable_bit;
-				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_SET);
 				memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[FIRST_HALF],(uint8_t *)&dcc_driver_data->DCC_WorkPkt,sizeof(DCC_StandardIdle_Pkt));
 				if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)
 					memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt[FIRST_HALF],(uint8_t *)&DCC_CutOutExtendedPkt,sizeof(DCC_CutOutExtendedPkt));
@@ -462,7 +450,6 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 			else
 			{
 				dcc_driver_data->enable_port->BSRR = (uint32_t)dcc_driver_data->enable_bit << 16;
-				//GPIO_SetGpioOUT(dcc_driver_data->enable_port, dcc_driver_data->enable_bit, GPIO_PIN_RESET);
 				if (( dcc_driver_data->status & DCC_PACKET_INPROGRESS ) == DCC_PACKET_INPROGRESS)
 				{
 					if (( dcc_driver_data->status & DCC_PACKET_EXTENDED ) == DCC_PACKET_EXTENDED)

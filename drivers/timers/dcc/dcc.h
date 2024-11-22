@@ -78,6 +78,8 @@ typedef struct
 #define	DCC_PACKET_EXTENDED		0x40
 #define	DCC_PACKET_PENDING		0x80
 
+/* flags */
+#define	DCC_TIMER_DUAL_PHASE	0x01
 
 #define	FIRST_HALF		0
 #define	SECOND_HALF		1
