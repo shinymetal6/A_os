@@ -61,7 +61,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 //#define	MODBUS_ENABLE			1
 //#define SENSORS_CCS8118			1
 //#define MQTT_ENABLE				1
-#define	POWERSAVING_ENABLED			1
+//#define	POWERSAVING_ENABLED			1
 #define	INTEL_HEX_DECODER_ENABLE	1
 //#define	MOTOROLA_HEX_DECODER_ENABLE	1
 

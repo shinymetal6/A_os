@@ -82,9 +82,11 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 {
 	__disable_irq();
 	process[Asys.current_process].wait_event = events;
-	process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
-	if ( process[Asys.current_process].wakeup_rsn == 0 )
+	if ( (process[Asys.current_process].wakeup_rsn & events ) == 0 )
+	{
+		process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
 		schedule();
+	}
 	else
 		__enable_irq();
 }

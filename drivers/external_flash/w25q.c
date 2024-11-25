@@ -368,7 +368,8 @@ uint8_t				state;
 	AddressSize = QSPI_ADDRESS_32_BITS;
 #else
 	Address = BlockNumber * MEM_SBLOCK_SIZE * 1024U;
-	Instruction = W25Q_32KB_BLOCK_ERASE;	 // Command
+	/* Luigi 22/11/24 was Instruction = W25Q_32KB_BLOCK_ERASE;	*/
+	Instruction = W25Q_64KB_BLOCK_ERASE;	 // Command
 	AddressSize = QSPI_ADDRESS_24_BITS;
 #endif
 

@@ -25,7 +25,6 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
-#define	DHT11_ENABLE	1
 #ifdef DHT11_ENABLE
 #include "dht11_drv.h"
 
