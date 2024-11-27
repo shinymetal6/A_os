@@ -14,27 +14,21 @@
  * Project : A_os
 */
 /*
- * fonts_7735.h
+ * spi.c
  *
- *  Created on: Jan 3, 2024
+ *  Created on: Nov 23, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ST7735_FONTS_H_
-#define DRIVERS_LCD_ST7735_FONTS_H_
+#include "main.h"
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/scheduler.h"
+//#include "../../../kernel/kernel_opt.h"
 
-#include <stdint.h>
+#include "spi.h"
+#include <string.h>
 
-typedef struct {
-    const uint8_t width;
-    const uint8_t height;
-    const uint16_t *data;
-} FontDef;
-
-
-extern  FontDef Font_7x10;
-extern 	FontDef Font_7x11;
-extern  FontDef Font_11x18;
-extern 	FontDef Font_16x26;
-
-#endif /* DRIVERS_LCD_ST7735_FONTS_H_ */
+SYSTEM_RAM	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
+SYSTEM_RAM	uint8_t				last_spi_used_handle,spi_driver_request;

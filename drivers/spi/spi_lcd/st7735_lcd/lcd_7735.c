@@ -14,29 +14,30 @@
  * Project : A_os
 */
 /*
- * st7735.c
+ * lcd_7735.c
  *
- *  Created on: Jan 3, 2024
+ *  Created on: Nov 23, 2024
  *      Author: fil
  */
 
+
 #include "main.h"
-#include "../../kernel/system_default.h"
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
+#include "lcd_7735.h"
 
-#ifdef	LCD_096_ENABLED
-
-#include "../../kernel/A.h"
-#include "../../kernel/A_exported_functions.h"
-#include "../../kernel/hwmanager.h"
-#include "../../kernel/kernel_opt.h"
-#include "st7735.h"
-
-//extern	HWMngr_t	HWMngr[PERIPHERAL_NUM];
-extern	HWDevices_t		HWDevices[HWDEVICES_NUM];
-
-extern	void task_delay(uint32_t tick_count);
+#ifdef STM32H7xx_HAL_SPI_H
 
 FRAME_BUFFER 	uint16_t	rect[ST7735_WIDTH*ST7735_HEIGHT];
+GPIO_TypeDef	*ST7735_cs_port;
+uint16_t		ST7735_cs_bit;
+GPIO_TypeDef	*ST7735_reset_port;
+uint16_t		ST7735_reset_bit;
+uint16_t		ST7735_reset_time;
+GPIO_TypeDef	*ST7735_dc_port;
+uint16_t		ST7735_dc_bit;
+SPI_HandleTypeDef 	*spi_port;
 
 // based on Adafruit ST7735 library for Arduino
 __attribute__((section(".table"))) const uint8_t
@@ -119,34 +120,34 @@ __attribute__((section(".table"))) const uint8_t
 
 static void ST7735_Select()
 {
-    HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(ST7735_cs_port, ST7735_cs_bit, GPIO_PIN_RESET);
 }
 
 void ST7735_Unselect() {
-    HAL_GPIO_WritePin(ST7735_CS_GPIO_Port, ST7735_CS_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ST7735_cs_port, ST7735_cs_bit, GPIO_PIN_SET);
 }
 
-static void ST7735_Reset()
+void ST7735_Reset(void)
 {
 uint8_t this_cmd[8] = {0,0,0,0,0x01,0,0,0};
-    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_RESET);
-    HAL_Delay(50);
-    HAL_GPIO_WritePin(ST7735_RES_GPIO_Port, ST7735_RES_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ST7735_reset_port, ST7735_reset_bit, GPIO_PIN_RESET);
+    task_delay(50);
+    HAL_GPIO_WritePin(ST7735_reset_port, ST7735_reset_bit, GPIO_PIN_SET);
     ST7735_Select();
-    HAL_SPI_Transmit(&ST7735_SPI_PORT, this_cmd, 8, ST7735_SPI_TIMEOUT);
+    HAL_SPI_Transmit(spi_port, this_cmd, 8, ST7735_SPI_TIMEOUT);
     ST7735_Unselect();
 }
 
 static void ST7735_WriteCommand(uint8_t cmd)
 {
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(&ST7735_SPI_PORT, &cmd, sizeof(cmd), ST7735_SPI_TIMEOUT);
+    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_RESET);
+    HAL_SPI_Transmit(spi_port, &cmd, sizeof(cmd), ST7735_SPI_TIMEOUT);
 }
 
 static void ST7735_WriteData(uint8_t* buff, size_t buff_size)
 {
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
-    HAL_SPI_Transmit(&ST7735_SPI_PORT, buff, buff_size, ST7735_SPI_TIMEOUT);
+    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
+    HAL_SPI_Transmit(spi_port, buff, buff_size, ST7735_SPI_TIMEOUT);
 }
 
 /* Rewritten to maintain alignment on smaller arm cores */
@@ -161,7 +162,7 @@ uint8_t numCommands, numArgs,i;
         ST7735_WriteCommand(*addr++);
         numArgs = *addr++;
         if ( numArgs == 0x80)
-        	HAL_Delay(*addr++);
+        	task_delay(*addr++);
         else
         {
         	for(i=0;i<numArgs;i++)
@@ -188,7 +189,7 @@ static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t 
     ST7735_WriteCommand(ST7735_RAMWR);
 }
 
-void ST7735_Init()
+void ST7735_Init(void)
 {
 uint32_t i;
 	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT;i++)
@@ -203,8 +204,6 @@ uint32_t i;
 
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT))
         return;
 
@@ -225,8 +224,6 @@ int16_t dx, dy;
 int16_t err;
 int16_t ystep;
 
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
 	if (steep)
 	{
 		sw = x0; x0=y0;y0=sw;
@@ -300,9 +297,6 @@ uint32_t i, b, j;
 
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
-
     ST7735_Select();
 
     while(*str)
@@ -332,33 +326,30 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
     ST7735_Unselect();
 }
 
-void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
-    if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
-    if((x + w - 1) > ST7735_WIDTH) return;
-    if((y + h - 1) > ST7735_HEIGHT) return;
+    if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return 1;
+    if((x + w - 1) > ST7735_WIDTH) return 1;
+    if((y + h - 1) > ST7735_HEIGHT) return 1;
 
     ST7735_Select();
     ST7735_SetAddressWindow(x, y, x+w-1, y+h-1);
 
     uint8_t data[] = { color >> 8, color & 0xFF };
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
     for(y = h; y > 0; y--)
     {
         for(x = w; x > 0; x--)
         {
-            HAL_SPI_Transmit(&ST7735_SPI_PORT, data, sizeof(data), ST7735_SPI_TIMEOUT);
+            HAL_SPI_Transmit(spi_port, data, sizeof(data), ST7735_SPI_TIMEOUT);
         }
     }
     ST7735_Unselect();
+    return 0;
 }
 
 void ST7735_FillScreen(uint16_t color)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
 	ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
@@ -371,15 +362,14 @@ void A_os_7735_SPI_DMA_TxCpltCallback(void)
 
 void ST7735_ClearScreen(void)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
+
 #ifdef SPILCD_USES_DMA
 	ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
-    HAL_GPIO_WritePin(ST7735_DC_GPIO_Port, ST7735_DC_Pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
     HWDevices[HWDEV_SPILCD].flags |= HWDEV_FLAGS_BUSY;
     /* rect already filled with black ... */
-    HAL_SPI_Transmit_DMA(&ST7735_SPI_PORT, (uint8_t *)rect, ST7735_WIDTH*ST7735_HEIGHT*2);
+    HAL_SPI_Transmit_DMA(spi_port, (uint8_t *)rect, ST7735_WIDTH*ST7735_HEIGHT*2);
     while((HWDevices[HWDEV_SPILCD].flags & HWDEV_FLAGS_BUSY) == HWDEV_FLAGS_BUSY)
     	task_delay(1);
     ST7735_Unselect();
@@ -390,8 +380,6 @@ void ST7735_ClearScreen(void)
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
     if((x + w - 1) > ST7735_WIDTH) return;
     if((y + h - 1) > ST7735_HEIGHT) return;
@@ -404,8 +392,6 @@ void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint
 
 void ST7735_DrawLogo(const uint16_t* data)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
     ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
     ST7735_WriteData((uint8_t*)data, ST7735_WIDTH*ST7735_HEIGHT*2);
@@ -415,8 +401,6 @@ void ST7735_DrawLogo(const uint16_t* data)
 
 void ST7735_InvertColors(bool invert)
 {
-	if ( HWDevices[HWDEV_SPILCD].process != Asys.current_process )
-		return;
     ST7735_Select();
     ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);
     ST7735_Unselect();
@@ -432,4 +416,5 @@ uint8_t ST7735_GetFontWidth(FontDef font)
 	return font.width;
 }
 
-#endif // #ifdef	LCD_096_ENABLED
+#endif // #ifdef STM32H7xx_HAL_SPI_H
+

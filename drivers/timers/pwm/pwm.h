@@ -33,7 +33,7 @@ typedef struct
 	GPIO_TypeDef	 	*enable_port;
 	uint16_t			enable_bit;
 	uint32_t 			prescaler;
-	uint32_t 			pulse_width;
+	uint32_t 			pulse_width[6];
 	uint8_t 			pwm_direction;
 }Pwm_Control_TypeDef;
 
@@ -43,11 +43,11 @@ typedef struct
 
 extern	uint32_t pwm_init(uint8_t handle);
 extern	uint32_t pwm_start(uint8_t handle,uint32_t pwm_channel);
-extern	uint32_t pwm_stop(uint8_t handle);
+extern	uint32_t pwm_stop(uint8_t handle,uint32_t pwm_channel);
 extern	uint32_t pwm_get_status(uint8_t handle);
 extern	uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler);
-extern	uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width,uint32_t pwm_channel);
+extern	uint32_t pwm_set_width(uint8_t handle,uint32_t pwm_channel,uint32_t pulse_width);
 extern	uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction);
-extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data,uint32_t driver_flags,uint32_t timer_flags);
+extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data,uint32_t driver_flags);
 
 #endif /* DRIVERS_TIMERS_PWM_PWM_H_ */

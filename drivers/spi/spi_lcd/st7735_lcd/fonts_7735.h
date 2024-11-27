@@ -14,27 +14,25 @@
  * Project : A_os
 */
 /*
- * fonts_ili9341.h
+ * fonts_7735.h
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 23, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_
-#define DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_
-
-#include <stdint.h>
+#ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_
+#define DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_
 
 typedef struct {
     const uint8_t width;
-    uint8_t height;
+    const uint8_t height;
     const uint16_t *data;
-} ili9341_FontDef;
+} FontDef;
 
 
-extern ili9341_FontDef ili9341_Font_7x10;
-extern ili9341_FontDef ili9341_Font_11x18;
-extern ili9341_FontDef ili9341_Font_16x26;
+extern  FontDef Font_7x10;
+extern 	FontDef Font_7x11;
+extern  FontDef Font_11x18;
+extern 	FontDef Font_16x26;
 
-
-#endif /* DRIVERS_LCD_ILI9341_FONTS_ILI9341_H_ */
+#endif /* DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_ */

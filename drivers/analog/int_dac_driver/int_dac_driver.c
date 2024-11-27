@@ -65,7 +65,7 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analo
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
 {
 DAC_Drv_TypeDef	*dac_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )

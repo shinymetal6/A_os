@@ -25,7 +25,8 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
-#ifdef I2C_ENABLED
+
+#ifdef STM32H7xx_HAL_I2C_H
 
 #include "i2c_24xx.h"
 #include <string.h>
@@ -104,12 +105,44 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_read(uint8_t handle, uint32_t address,ui
 {
 I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 uint32_t ret_val;
+uint32_t p_data_len;
 
 	i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 	if (( i2c_24xx_Drv->status & I2C_STATUS_BUSY ) == I2C_STATUS_BUSY )
 		return i2c_24xx_seterror(i2c_24xx_Drv);
 	i2c_24xx_Drv->status |= I2C_STATUS_BUSY;
 
+	if ( (address & 0xff ) != 0 )
+	{
+		if ( ((address & 0xff ) + data_len) <=  I2C_24XX_PAGESIZE)
+		{
+			i2c_24xx_Drv->status &= ~I2C_STATUS_READ_COMPLETE;
+			if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_READ_DMA ) == I2C_FLAGS_USES_READ_DMA)
+				ret_val =  HAL_I2C_Mem_Read_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1);
+			else
+				ret_val =  HAL_I2C_Mem_Read_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1);
+			if ( ret_val )
+				return i2c_24xx_seterror(i2c_24xx_Drv);
+			data_len = 0;
+		}
+		else
+		{
+			p_data_len = I2C_24XX_PAGESIZE - (address & 0xff );
+			i2c_24xx_Drv->status &= ~I2C_STATUS_READ_COMPLETE;
+			if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_READ_DMA ) == I2C_FLAGS_USES_READ_DMA)
+				ret_val =  HAL_I2C_Mem_Read_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, p_data_len-1);
+			else
+				ret_val =  HAL_I2C_Mem_Read_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, p_data_len-1);
+			if ( ret_val )
+				return i2c_24xx_seterror(i2c_24xx_Drv);
+			data_len -= p_data_len;
+			address &= 0xffffff00;
+			address += 0x100;
+			data += p_data_len;
+		}
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_READ_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+	}
 	while(data_len > I2C_24XX_PAGESIZE)
 	{
 		i2c_24xx_Drv->status &= ~I2C_STATUS_READ_COMPLETE;
@@ -137,6 +170,11 @@ uint32_t ret_val;
 		if ( ret_val )
 			return i2c_24xx_seterror(i2c_24xx_Drv);
 	}
+
+	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAIT_ON_READ_COMPLETE ) == I2C_FLAGS_WAIT_ON_READ_COMPLETE)
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_READ_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
 	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAKEUP_ON_READ) == I2C_FLAGS_WAKEUP_ON_READ)
 		activate_process(ExtFlashDriverStruct[handle].process,i2c_24xx_Drv->wakeup_id,WAKEUP_FLAGS_I2C_RX);
 	i2c_24xx_Drv->status &= ~I2C_STATUS_BUSY;
@@ -189,6 +227,10 @@ uint32_t ret_val;
 		if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
 			return i2c_24xx_seterror(i2c_24xx_Drv);
 	}
+	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAIT_ON_WRITE_COMPLETE ) == I2C_FLAGS_WAIT_ON_WRITE_COMPLETE)
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
 	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAKEUP_ON_WRITE) == I2C_FLAGS_WAKEUP_ON_WRITE)
 		activate_process(ExtFlashDriverStruct[handle].process,i2c_24xx_Drv->wakeup_id,WAKEUP_FLAGS_I2C_TX);
 	i2c_24xx_Drv->status &= ~I2C_STATUS_BUSY;
@@ -213,8 +255,28 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_eraseblocks(uint8_t handle, uint32_t sta
 {
 	return 0;
 }
+
 ITCM_AREA_CODE static uint32_t i2c_24xx_erasechip(uint8_t handle)
 {
+	return 0;
+}
+
+ITCM_AREA_CODE static uint32_t i2c_24xx_reset(uint8_t handle)
+{
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
+uint8_t	i;
+	if ( i2c_24xx_Drv->i2c_scl_port != NULL )
+	{
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,GPIO_IS_OUTPUT,0);
+		for(i=0;i<9;i++)
+		{
+			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_SET);
+			  DWT_Delay_us(10);
+			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_RESET);
+			  DWT_Delay_us(10);
+		}
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,GPIO_IS_ALTERNATE,0);
+	}
 	return 0;
 }
 
@@ -246,6 +308,7 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 			/* disable dma if they are not configured in hw */
 			i2c_24xx_Drv->flags &= ~I2C_FLAGS_USES_WRITE_DMA;
 		}
+		i2c_24xx_reset(last_extflash_used_handle);
 		if ( HAL_I2C_IsDeviceReady(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, 5,I2C_24XX_TIMEOUT) == 0 )
 			i2c_24xx_Drv->status = I2C_STATUS_READY;
 		i2c_24xx_init(last_extflash_used_handle);
@@ -294,4 +357,5 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	}
 }
 
-#endif // #ifdef I2C_ENABLED
+#endif // #ifdef STM32H7xx_HAL_I2C_H
+

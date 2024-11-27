@@ -66,7 +66,7 @@ ADC_HandleTypeDef	*adc = adc_drv->adc;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
 {
 ADC_Drv_TypeDef	*adc_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )

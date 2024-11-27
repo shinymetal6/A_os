@@ -76,6 +76,7 @@ extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velo
 extern	void InitOscillators(void);
 extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void RunOscillator32(void);
 
 
 #endif /* MODULES_AUDIO_AUDIO_H_ */

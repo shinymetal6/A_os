@@ -14,20 +14,21 @@
  * Project : A_os
 */
 /*
- * st7735.h
+ * lcd_7735.h
  *
- *  Created on: Jan 3, 2024
+ *  Created on: Nov 23, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ST7735_ST7735_H_
-#define DRIVERS_LCD_ST7735_ST7735_H_
+#ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
+#define DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
 
 #include "fonts_7735.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
 #define DELAY 0x80
+
 
 #define ST7735_MADCTL_MY  0x80
 #define ST7735_MADCTL_MX  0x40
@@ -261,13 +262,21 @@ extern SPI_HandleTypeDef ST7735_SPI_PORT;
 #define ST7735_GREY    0x38e7
 #define ST7735_COLOR565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | ((b & 0xF8) >> 3))
 
+#define	ST7735_SPI_TIMEOUT	10
+#define	ZERO_BRIGHTNESS	0
+#define	LOW_BRIGHTNESS	30
+#define	HALF_BRIGHTNESS	500
+#define	FULL_BRIGHTNESS	1000
+
 // call before initializing any SPI devices
 void ST7735_Unselect();
 
-void ST7735_Init(void);
+extern	void ST7735_Init(void);
+extern	void ST7735_Reset(void);
+
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
-void ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 void ST7735_FillScreen(uint16_t color);
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
 void ST7735_InvertColors(bool invert);
@@ -276,6 +285,7 @@ uint8_t ST7735_GetFontWidth(FontDef font);
 void ST7735_DrawLogo(const uint16_t* data);
 void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
 extern	void 	ST7735_ClearScreen(void);
-extern	void A_os_7735_SPI_TxCpltCallback(void);
+extern	void 	A_os_7735_SPI_TxCpltCallback(void);
 
-#endif /* DRIVERS_LCD_ST7735_ST7735_H_ */
+
+#endif /* DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_ */

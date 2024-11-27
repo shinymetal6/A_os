@@ -49,6 +49,7 @@ uint8_t StartAudioBuffers(int16_t *audio_in_buffer,int16_t *audio_out_buffer)
 	}
 	audio_out = (WaveLR_t *)audio_out_buffer;
 	audio_in  = (WaveLR_t *)audio_in_buffer;
+	return 0;
 }
 /*
 ITCM_AREA_CODE void get_limits(uint16_t *start,uint16_t *end)

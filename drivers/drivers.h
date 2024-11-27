@@ -31,5 +31,6 @@
 #include "sensors/sensors.h"
 #include "USB_Device/usb_device_driver_manager.h"
 #include "external_flash/external_flash.h"
+#include "spi/spi.h"
 
 #endif /* DRIVERS_DRIVERS_H_ */

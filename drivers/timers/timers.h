@@ -29,7 +29,7 @@ typedef struct
 	uint8_t		status;
 	uint8_t		flags;
 	uint8_t		handle;
-	uint32_t	*tim_driver_private_data;
+	uint32_t	*private_data;
 }TIM_DriverStruct_t;
 
 #include "dcc/dcc.h"

@@ -58,10 +58,11 @@ typedef struct
 #endif
 
 #ifdef STM32H7xx_HAL_I2S_H
-#include "int_i2s_driver/int_i2s_driver.h"
-#endif
-
-#include "codec/nau88c22.h"
+	#include "int_i2s_driver/int_i2s_driver.h"
+	#ifdef STM32H7xx_HAL_I2C_H
+		#include "codec/nau88c22.h"
+	#endif // #ifdef STM32H7xx_HAL_I2C_H
+#endif // #ifdef STM32H7xx_HAL_I2S_H
 
 extern	uint32_t adc_start(uint8_t handle);
 extern	uint32_t adc_stop(uint8_t handle);

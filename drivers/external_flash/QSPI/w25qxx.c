@@ -26,7 +26,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
-#ifdef QSPI_ENABLED
+#ifdef STM32H7xx_HAL_QSPI_H
 
 #include "w25qxx.h"
 #include "w25qxx_defs.h"
@@ -150,15 +150,61 @@ ITCM_AREA_CODE static uint8_t w25qxx_WaitIfFlashBusy(W25Qxx_Drv_TypeDef *w25qxx_
 	return 0;
 }
 
+ITCM_AREA_CODE static uint32_t w25qxx_read_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv, uint8_t *data)
+{
+	if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
+	{
+		if ( HAL_QSPI_Receive_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK )
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+	else
+	{
+		if ( HAL_QSPI_Receive_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK )
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+	if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_READ_COMPLETE, W25Q_READ_TIMEOUT) )
+		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_READ_TIMEOUT) )
+		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+	return 0;
+}
+
 ITCM_AREA_CODE static uint32_t w25qxx_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
 {
 W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 uint32_t			Instruction;
+uint32_t 			p_data_len;
 
 	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
 		return 1;
 	w25qxx_Drv->status = QSPI_BUSY;
 	Instruction = w25qxx_Drv->FlashSize > 128U ? W25Q_FAST_READ_QUAD_IO_4B : W25Q_FAST_READ_QUAD_IO;
+
+	if ( (address & 0xff ) != 0 )
+	{
+		if ( ((address & 0xff ) + data_len) <=  W25Q_MEM_PAGE_SIZE)
+		{
+			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_4_LINES, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_6) )
+				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+			if ( w25qxx_read_cycle(w25qxx_Drv,data) )
+				return 1;
+			data_len = 0;
+		}
+		else
+		{
+			p_data_len = W25Q_MEM_PAGE_SIZE - (address & 0xff );
+			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_4_LINES, p_data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_6) )
+				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+			if ( w25qxx_read_cycle(w25qxx_Drv,data) )
+				return 1;
+			data_len -= p_data_len;
+			address &= 0xffffff00;
+			address += 0x100;
+			data += p_data_len;
+
+		}
+	}
 
 	while ( data_len  > W25Q_MEM_PAGE_SIZE)
 	{
@@ -168,19 +214,8 @@ uint32_t			Instruction;
 		if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_4_LINES, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_6) )
 			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-		if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
-		{
-			if ( HAL_QSPI_Receive_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-		}
-		else
-		{
-			if ( HAL_QSPI_Receive_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-		}
-
-		if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_READ_COMPLETE, W25Q_READ_TIMEOUT) )
-			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+		if ( w25qxx_read_cycle(w25qxx_Drv,data) )
+			return 1;
 
 		data_len -= W25Q_MEM_PAGE_SIZE;
 		address += W25Q_MEM_PAGE_SIZE;
@@ -194,19 +229,8 @@ uint32_t			Instruction;
 		if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_4_LINES, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_6) )
 			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-		if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
-		{
-			if ( HAL_QSPI_Receive_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-		}
-		else
-		{
-			if ( HAL_QSPI_Receive_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-		}
-
-		if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_READ_COMPLETE, W25Q_READ_TIMEOUT) )
-			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+		if ( w25qxx_read_cycle(w25qxx_Drv,data) )
+			return 1;
 	}
 
 	w25qxx_Drv->status &= ~QSPI_BUSY;
@@ -234,10 +258,32 @@ uint32_t	Instruction;
 	return 0;
 }
 
+ITCM_AREA_CODE static uint32_t w25qxx_write_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv, uint8_t *data)
+{
+	if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
+	{
+		if (HAL_QSPI_Transmit_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+	else
+	{
+		if (HAL_QSPI_Transmit_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+
+	if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_WRITE_COMPLETE,W25Q_WRITE_TIMEOUT) )
+		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+	if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_WRITE_TIMEOUT) )
+		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	return 0;
+}
+
 ITCM_AREA_CODE static uint32_t w25qxx_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
 {
 W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].driver_private_data;
 uint32_t			Instruction;
+uint32_t 			p_data_len;
 
 		if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
 			return 1;
@@ -247,33 +293,44 @@ uint32_t			Instruction;
 		Instruction = w25qxx_Drv->FlashSize > 128U ? W25Q_PAGE_PROGRAM_QUAD_INP_4B : W25Q_PAGE_PROGRAM_QUAD_INP;
 
 		w25qxx_Drv->status &= ~QSPI_WRITE_COMPLETE;
-		while ( data_len  > W25Q_MEM_PAGE_SIZE)
+
+		if (w25qxx_WriteEnable(w25qxx_Drv,1) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+		if ( (address & 0xff ) != 0 )
 		{
-			if (w25qxx_WriteEnable(w25qxx_Drv,1) != W25Q_OK)
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
-			if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
+			if ( ((address & 0xff ) + data_len) <=  W25Q_MEM_PAGE_SIZE)
 			{
-				if (HAL_QSPI_Transmit_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK)
+				if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
 					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+				if ( w25qxx_write_cycle(w25qxx_Drv, data))
+					return 1;
+				data_len = 0;
 			}
 			else
 			{
-				if (HAL_QSPI_Transmit_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK)
+				p_data_len = W25Q_MEM_PAGE_SIZE - (address & 0xff );
+
+				if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, p_data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
 					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+				if ( w25qxx_write_cycle(w25qxx_Drv, data))
+					return 1;
+
+				data_len -= p_data_len;
+				address &= 0xffffff00;
+				address += 0x100;
+				data += p_data_len;
 			}
+		}
 
-			if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_WRITE_COMPLETE,W25Q_WRITE_TIMEOUT) )
+		while ( data_len  > W25Q_MEM_PAGE_SIZE)
+		{
+			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
 				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-			if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_WRITE_TIMEOUT) )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
-			if (w25qxx_WriteEnable(w25qxx_Drv,0) != W25Q_OK)
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+			if ( w25qxx_write_cycle(w25qxx_Drv, data))
+				return 1;
 
 			data_len -= W25Q_MEM_PAGE_SIZE;
 			address += W25Q_MEM_PAGE_SIZE;
@@ -281,32 +338,15 @@ uint32_t			Instruction;
 		}
 		if ( data_len )
 		{
-			if (w25qxx_WriteEnable(w25qxx_Drv,1) != W25Q_OK)
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
 			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
 				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-			if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
-			{
-				if (HAL_QSPI_Transmit_DMA(w25qxx_Drv->qspi_bus, data) != HAL_OK)
-					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-			}
-			else
-			{
-				if (HAL_QSPI_Transmit_IT(w25qxx_Drv->qspi_bus, data) != HAL_OK)
-					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-			}
-
-			if ( w25qxx_WaitForDriverFlag(w25qxx_Drv,QSPI_WRITE_COMPLETE,W25Q_WRITE_TIMEOUT) )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
-			if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_WRITE_TIMEOUT) )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
-			if (w25qxx_WriteEnable(w25qxx_Drv,0) != W25Q_OK)
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+			if ( w25qxx_write_cycle(w25qxx_Drv, data))
+				return 1;
 		}
+
+		if (w25qxx_WriteEnable(w25qxx_Drv,0) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
 		w25qxx_Drv->status &= ~QSPI_BUSY;
 		return 0;

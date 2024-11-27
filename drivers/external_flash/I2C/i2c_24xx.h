@@ -32,8 +32,11 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	I2C_HandleTypeDef 	*bus;
+	GPIO_TypeDef	 	*i2c_scl_port;
+	uint16_t			i2c_scl_bit;
 	uint16_t 			device_address;
 	uint8_t 			device_address_size;
+	uint32_t 			device_size;
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
@@ -50,6 +53,8 @@ typedef struct
 #define	I2C_STATUS_READ_COMPLETE			0x02
 #define	I2C_STATUS_WRITE_COMPLETE			0x01
 /* flags */
+#define	I2C_FLAGS_WAIT_ON_WRITE_COMPLETE	0x80
+#define	I2C_FLAGS_WAIT_ON_READ_COMPLETE		0x40
 #define	I2C_FLAGS_USES_WRITE_DMA			0x08
 #define	I2C_FLAGS_USES_READ_DMA				0x04
 #define	I2C_FLAGS_WAKEUP_ON_READ			0x02

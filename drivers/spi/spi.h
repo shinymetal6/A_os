@@ -14,15 +14,27 @@
  * Project : A_os
 */
 /*
- * touch_calibrate_ili9341.h
+ * spi.h
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 23, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
-#define DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
+#ifndef DRIVERS_SPI_SPI_LCD_H_
+#define DRIVERS_SPI_SPI_LCD_H_
 
-void ILI9341_calibrate_touch(void);
+typedef struct
+{
+	uint8_t 	process;
+	uint8_t		status;
+	uint8_t		flags;
+	uint8_t		handle;
+	uint32_t	*driver_private_data;
+}SPI_DriverStruct_t;
 
-#endif /* DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_ */
+#ifdef STM32H7xx_HAL_SPI_H
+#include "spi_lcd/spi_lcd.h"
+#endif
+
+
+#endif /* DRIVERS_SPI_LCD_SPI_LCD_H_ */

@@ -152,7 +152,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	{
 		if ( TIM_DriverStruct[i].process != 0 )
 		{
-			dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[i].tim_driver_private_data;
+			dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[i].private_data;
 			if ( dcc_driver_data->hdma[0] != NULL)
 			{
 				*handle_ch0 = i;
@@ -170,7 +170,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 
 ITCM_AREA_CODE uint8_t dcc_TIM_PWM_Start_DMA(uint8_t handle)
 {
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;
 
 	if ( dcc_driver_data == NULL )
 		return 1;
@@ -209,7 +209,7 @@ uint8_t i,mask=0x80;
 
 ITCM_AREA_CODE void compile_reset_packet(uint8_t handle)
 {
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 
 	memcpy((uint8_t *)&dcc_driver_data->DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&dcc_driver_data->DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
@@ -222,7 +222,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 ITCM_AREA_CODE uint8_t one_byte_commands(uint8_t handle,char cmd)
 {
 uint8_t	ret_val = 0;
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 
 	switch ( cmd)
 	{
@@ -243,7 +243,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 ITCM_AREA_CODE uint8_t four_bytes_commands(uint8_t handle,char cmd,uint16_t track,uint16_t address,uint16_t data)
 {
 uint8_t ecc;
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 
 	if ( cmd == 'T' )
 	{
@@ -262,7 +262,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 ITCM_AREA_CODE uint8_t five_bytes_commands(uint8_t handle,char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah)
 {
 uint8_t ecc;
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 
 	if ( cmd == 'T' )
 	{
@@ -287,7 +287,7 @@ ITCM_AREA_CODE uint32_t dcc_start(uint8_t handle)
 
 ITCM_AREA_CODE uint32_t dcc_stop(uint8_t handle)
 {
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 	HAL_TIM_PWM_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_dcc_channel);
 	if ((dcc_driver_data->flags & DCC_TIMER_DUAL_PHASE ) == DCC_TIMER_DUAL_PHASE)
 		HAL_TIMEx_PWMN_Stop_DMA(dcc_driver_data->dcc_timer, dcc_driver_data[handle].timer_180phase_dcc_channel);
@@ -308,7 +308,7 @@ ITCM_AREA_CODE uint32_t dcc_get_values(uint8_t handle,uint8_t *values,uint16_t v
 
 ITCM_AREA_CODE uint32_t dcc_set_values(uint8_t handle,uint8_t *values,uint16_t values_number)
 {
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 	switch(values_number)
 	{
 	case 1:
@@ -331,7 +331,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 
 ITCM_AREA_CODE uint32_t dcc_init(uint8_t handle)
 {
-DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].tim_driver_private_data;;
+DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;;
 
 	memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&dcc_driver_data->DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
@@ -363,16 +363,16 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	dcc_register(DCC_Control_Drv_TypeDef *tim_driver_private_data,uint32_t driver_flags,uint32_t timer_flags)
+ITCM_AREA_CODE uint32_t	dcc_register(DCC_Control_Drv_TypeDef *private_data,uint32_t driver_flags,uint32_t timer_flags)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
 	{
 		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
 		TIM_DriverStruct[last_tim_used_handle].flags |= driver_flags;
-		TIM_DriverStruct[last_tim_used_handle].tim_driver_private_data = (uint32_t *)tim_driver_private_data;
+		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
 
-		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].tim_driver_private_data;
+		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
 		dcc_driver_data->flags |= timer_flags;
 		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_REQUESTED;
 
@@ -391,7 +391,7 @@ uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	if ( driver_get_handle_from_dcc_dma_channel(&handle_dcc,&handle_cutout) )
 	{
-		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle_dcc].tim_driver_private_data;
+		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle_dcc].private_data;
 		if ( hdma == dcc_driver_data->hdma[0] )
 		{
 			if (( dcc_driver_data->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
@@ -431,7 +431,7 @@ uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	if ( driver_get_handle_from_dcc_dma_channel(&handle_dcc,&handle_cutout) )
 	{
-		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle_dcc].tim_driver_private_data;
+		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle_dcc].private_data;
 		if ( hdma == dcc_driver_data->hdma[1] )
 		{
 			if (( dcc_driver_data->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
