@@ -24,7 +24,11 @@
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-//#include "../../../kernel/kernel_opt.h"
+//#include "../../kernel/kernel_opt.h"
+
+#ifdef STM32H7xx_HAL_I2S_H
+#include "../audio.h"
+#include "../effects.h"
 
 #include "oscillators.h"
 #include "oscillator_core.h"
@@ -80,3 +84,4 @@ void Noise_disable(void)
 }
 
 
+#endif // #ifdef STM32H7xx_HAL_I2S_H

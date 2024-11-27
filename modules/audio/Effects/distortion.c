@@ -20,14 +20,16 @@
  *      Author: fil
  */
 #include "main.h"
-#include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+//#include "../../kernel/kernel_opt.h"
 
-#ifdef SYNTH_ENGINE_ENABLE
+#ifdef STM32H7xx_HAL_I2S_H
+#include "../audio.h"
+#include "../effects.h"
+#include "distortion.h"
 
-#include "../../kernel/audio.h"				/* for audio parameters */
-#include "../../kernel/kernel_opt.h"
-
-#include "effects.h"
 
 AUDIO_FAST_RAM	DistortionTypeDef	DistortionData;
 

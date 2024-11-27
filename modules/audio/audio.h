@@ -66,6 +66,33 @@ typedef struct _AudioFlagsTypeDef
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
 #define SAMPLE_FREQUENCY 				44100
 
+#include 	"effects.h"
+
+#include 	"Effects/arm_math.h"
+
+#include	"Effects/adsr.h"
+#include	"Effects/biquad_s.h"
+#include	"Effects/distortion.h"
+#include	"Effects/echo.h"
+#include	"Effects/flanger.h"
+#include	"Effects/fft.h"
+#include	"Effects/iir.h"
+#include	"Effects/moog_filters.h"
+#include	"Effects/passthrough.h"
+#include	"Effects/phaser.h"
+#include	"Effects/pitch_shift.h"
+#include	"Effects/reverb.h"
+#include	"Effects/tremolo.h"
+#include	"Effects/vca.h"
+#include	"Effects/vca_s.h"
+#include	"Effects/vibrato.h"
+#include	"Effects/wah.h"
+
+#include	"Generators/noise.h"
+#include	"Generators/oscillator_core.h"
+#include	"Generators/oscillators.h"
+
+
 extern	uint32_t *InitAudioBuffers(void);
 extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
 extern	void SetEffectMode(void);

@@ -20,14 +20,17 @@
  *      Author: fil
  */
 #include "main.h"
-#include "../../kernel/system_default.h"	/* for BOARD_NAME variable only */
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+//#include "../../kernel/kernel_opt.h"
 
-#ifdef SYNTH_ENGINE_ENABLE
+#ifdef STM32H7xx_HAL_I2S_H
+#include "../audio.h"
+#include "../effects.h"
+#include "fft.h"
+#include "arm_math.h"
 
-#include "../../kernel/audio.h"				/* for audio parameters */
-#include "../../kernel/kernel_opt.h"
-
-#include "effects.h"
 
 AUDIO_FAST_RAM	arm_biquad_casd_df1_inst_f32 fft_iirsettings;
 AUDIO_FAST_RAM	arm_rfft_fast_instance_f32 instance;

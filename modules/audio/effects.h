@@ -86,28 +86,8 @@ typedef struct _EffectsOrderTypeDef
 
 #include 	<stdio.h>
 #include 	<string.h>
-/*
-#include 	"arm_math.h"
 
-#include	"adsr.h"
-#include	"biquad_s.h"
-#include	"distortion.h"
-#include	"echo.h"
-#include	"flanger.h"
-#include	"fft.h"
-#include	"iir.h"
-#include	"moog_filters.h"
-#include	"noise.h"
-#include	"passthrough.h"
-#include	"phaser.h"
-#include	"pitch_shift.h"
-#include	"reverb.h"
-#include	"tremolo.h"
-#include	"vca.h"
-#include	"vca_s.h"
-#include	"vibrato.h"
-#include	"wah.h"
-*/
+
 extern	BlockEffectsTypeDef			BlockEffect[MAX_BLOCK_EFFECTS];
 extern	SingleSampleEffectsTypeDef	SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
 

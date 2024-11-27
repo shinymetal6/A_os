@@ -29,7 +29,7 @@
 
 
 #include "audio.h"
-#include "algo/effects.h"
+#include "effects.h"
 
 DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
 

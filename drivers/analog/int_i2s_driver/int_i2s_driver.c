@@ -30,7 +30,7 @@
 #ifdef STM32H7xx_HAL_I2S_H
 
 #include "int_i2s_driver.h"
-#include "../../../modules/audio/algo/effects.h"
+#include "../../../modules/audio/audio.h"
 
 extern	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t					last_analog_used_handle,analog_driver_request;
