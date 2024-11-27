@@ -23,6 +23,8 @@
 #ifndef MODULES_AUDIO_AUDIO_H_
 #define MODULES_AUDIO_AUDIO_H_
 
+#ifdef STM32H7xx_HAL_I2S_H
+
 typedef struct
 {
 	int16_t		channel[2];
@@ -105,5 +107,6 @@ extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t vel
 extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
 extern	void RunOscillator32(void);
 
+#endif // #ifdef STM32H7xx_HAL_I2S_H
 
 #endif /* MODULES_AUDIO_AUDIO_H_ */

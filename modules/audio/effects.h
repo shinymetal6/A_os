@@ -23,6 +23,8 @@
 #ifndef MODULES_AUDIO_EFFECTS_H_
 #define MODULES_AUDIO_EFFECTS_H_
 
+#ifdef STM32H7xx_HAL_I2S_H
+
 #define	MAX_PARAMS					8
 #define	MAX_SINGLESAMPLE_EFFECTS	8
 
@@ -99,5 +101,7 @@ extern	void InsertBlockEffect(void (*do_effect),uint8_t position,uint8_t enabled
 extern	void RemoveBlockEffect(void (*do_effect),uint8_t position);
 
 extern	void InsertSingleSampleEffect(void 	(*do_effect),uint8_t position);
+
+#endif // #ifdef STM32H7xx_HAL_I2S_H
 
 #endif /* MODULES_AUDIO_EFFECTS_H_ */
