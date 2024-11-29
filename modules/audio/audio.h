@@ -23,7 +23,6 @@
 #ifndef MODULES_AUDIO_AUDIO_H_
 #define MODULES_AUDIO_AUDIO_H_
 
-#ifdef STM32H7xx_HAL_I2S_H
 
 typedef struct
 {
@@ -50,32 +49,40 @@ typedef struct _AudioFlagsTypeDef
 #define	CONTROL_OSC_FROM_CV			0x01
 #define	CONTROL_OSC_FROM_MIDI		0x02
 */
-#define	CONTROL_OSC_VCF_DLY			0x01
-#define	CONTROL_FM					0x02
-#define	CONTROL_VCA					0x04
-#define	CONTROL_ROLLBACK2ADSR		0x08
-#define	CONTROL_ADC_FLAG			0x10
-#define	CONTROL_TICK_FLAG			0x20
-#define	CONTROL_SYSTICK_FLAG		0x40
-#define	CONTROL_MIDIRX_FLAG			0x80
+#define	CONTROL_OSC_VCF_DLY				0x01
+#define	CONTROL_FM						0x02
+#define	CONTROL_VCA						0x04
+#define	CONTROL_ROLLBACK2ADSR			0x08
+#define	CONTROL_ADC_FLAG				0x10
+#define	CONTROL_TICK_FLAG				0x20
+#define	CONTROL_SYSTICK_FLAG			0x40
+#define	CONTROL_MIDIRX_FLAG				0x80
 
 #define	AUDIO_LEFT_CH					0
 #define	AUDIO_RIGHT_CH					1
 
-#define AUDIO_BUF_SIZE 					1024
+#define AUDIO_BUF_SIZE 					256
 
 #define	NUMBER_OF_AUDIO_SAMPLES			AUDIO_BUF_SIZE
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
 #define SAMPLE_FREQUENCY 				44100
 
+#define	OSCILLATORS						1
+
 #include 	"effects.h"
 
-#include 	"Effects/arm_math.h"
+#if defined(STM32H7xx_HAL_I2S_H) || defined(STM32H7xx_HAL_DAC_H)
+#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
+#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  	__attribute__ ((aligned (32)))
+#define	AUDIO_GENERATORS_ENABLED	1
+#endif
 
+#if defined(ARM_MATH_CM7) || defined (ARM_MATH_CM4) || defined (ARM_MATH_CM3) || defined (ARM_MATH_CM0) || defined (ARM_MATH_CM0PLUS)
+
+#include 	"Effects/arm_math.h"
 #include	"Effects/adsr.h"
 #include	"Effects/biquad_s.h"
 #include	"Effects/distortion.h"
-#include	"Effects/echo.h"
 #include	"Effects/flanger.h"
 #include	"Effects/fft.h"
 #include	"Effects/iir.h"
@@ -85,28 +92,28 @@ typedef struct _AudioFlagsTypeDef
 #include	"Effects/pitch_shift.h"
 #include	"Effects/reverb.h"
 #include	"Effects/tremolo.h"
-#include	"Effects/vca.h"
 #include	"Effects/vca_s.h"
 #include	"Effects/vibrato.h"
 #include	"Effects/wah.h"
+#endif
+
+#include	"Effects/vca.h"
+#include	"Effects/echo.h"
+#include	"Effects/dummy.h"
 
 #include	"Generators/noise.h"
 #include	"Generators/oscillator_core.h"
 #include	"Generators/oscillators.h"
 
+extern	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern	int16_t		pipe_out[HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern	int16_t		pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+
 
 extern	uint32_t *InitAudioBuffers(void);
-extern	uint8_t StartAudioBuffers(int16_t* audio_in_buffer,int16_t* audio_out_buffer);
+extern	uint8_t StartAudioBuffers(uint8_t handle,int16_t* audio_in_buffer,int16_t* audio_out_buffer);
 extern	void SetEffectMode(void);
 extern	void SetGeneratorMode(void);
-extern	void Vca( WaveLR_t *buffer_out,WaveLR_t *buffer_in,uint16_t	start);
 extern	void SetMasterVolume(uint16_t volume);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void InitOscillators(void);
-extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void RunOscillator32(void);
-
-#endif // #ifdef STM32H7xx_HAL_I2S_H
 
 #endif /* MODULES_AUDIO_AUDIO_H_ */

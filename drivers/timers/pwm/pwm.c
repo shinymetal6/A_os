@@ -124,7 +124,7 @@ ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *private_data,uint32_t 
 		Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
 		if ( pwm_drv->pwm_timer == NULL )
 			return DRIVER_REQUEST_FAILED;
-		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_REQUESTED;
+		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
 
 		last_tim_used_handle++;
 		tim_driver_request++;

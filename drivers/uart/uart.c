@@ -112,7 +112,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 			uarts_Drv->flags &= ~UART_USES_DMA_TX;
 		}
 
-		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_REQUESTED;
+		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_IN_USE;
 		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback);
 
 		last_uart_used_handle++;

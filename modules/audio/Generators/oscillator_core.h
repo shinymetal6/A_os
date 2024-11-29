@@ -23,12 +23,13 @@
 #ifndef MODULES_AUDIO_GENERATORS_OSCILLATOR_CORE_H_
 #define MODULES_AUDIO_GENERATORS_OSCILLATOR_CORE_H_
 
-#define	NUMOSCILLATORS	64
+#define	NUMOSCILLATORS	4
 typedef struct _OscillatorsTypeDef
 {
 	uint32_t 				oscillator_age;
 	uint8_t 				state;
 	uint8_t 				midi_note;
+	uint8_t 				velocity;
 	uint8_t 				waveform;
 	int16_t					*wave;
 	uint16_t 				current_phase;

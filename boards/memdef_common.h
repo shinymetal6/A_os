@@ -26,6 +26,8 @@
 /* Memories */
 
 // memory pool defines
+//#define POOL_ENABLE				1
+#ifdef POOL_ENABLE
 extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_START			    (uint32_t )(&_mempool_start)
 #define	POOL_END			    (uint32_t )(&_mempool_end)
@@ -33,7 +35,7 @@ extern	uint8_t					*_mempool_start,*_mempool_end;
 #define	POOL_SIZE			    (POOL_END - POOL_START)
 // POOL_NUM must be a constant value to compile
 #define	POOL_NUM			    32
-#define POOL_ENABLE				1
+#endif
 
 // system defines
 extern	uint8_t					*_osSysRam_start,*_osSysRam_end;

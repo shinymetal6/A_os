@@ -27,10 +27,10 @@
 #include "../../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_I2S_H
 #include "../audio.h"
 #include "../effects.h"
 
+#ifdef AUDIO_GENERATORS_ENABLED
 
 #include "oscillators.h"
 #include "oscillator_core.h"
@@ -39,6 +39,7 @@
 extern OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
 extern	float	delta_k_phase;
 
+#ifdef STM32H7xx_HAL_I2S_H
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
 {
 		0,402,803,1205,1605,2005,2403,2800,3196,3589,3980,4369,4755,5139,5519,5896,
@@ -58,14 +59,36 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t 
 		-11584,-11296,-11002,-10700,-10393,-10079,-9759,-9433,-9101,-8764,-8422,-8075,-7722,-7365,-7004,-6639,
 		-6269,-5896,-5519,-5139,-4755,-4369,-3980,-3589,-3196,-2800,-2403,-2005,-1605,-1205,-803,-402,
 };
+#endif
+#ifdef STM32H7xx_HAL_DAC_H
+__attribute__((section(".table"))) __attribute__ ((aligned (32))) const uint16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
+{
+		0x800, 0x832, 0x864, 0x896, 0x8c8, 0x8fa, 0x92c, 0x95e, 0x98f, 0x9c0, 0x9f1, 0xa22, 0xa52, 0xa82, 0xab1, 0xae0,
+		0xb0f, 0xb3d, 0xb6b, 0xb98, 0xbc5, 0xbf1, 0xc1c, 0xc47, 0xc71, 0xc9a, 0xcc3, 0xceb, 0xd12, 0xd39, 0xd5f, 0xd83,
+		0xda7, 0xdca, 0xded, 0xe0e, 0xe2e, 0xe4e, 0xe6c, 0xe8a, 0xea6, 0xec1, 0xedc, 0xef5, 0xf0d, 0xf24, 0xf3a, 0xf4f,
+		0xf63, 0xf76, 0xf87, 0xf98, 0xfa7, 0xfb5, 0xfc2, 0xfcd, 0xfd8, 0xfe1, 0xfe9, 0xff0, 0xff5, 0xff9, 0xffd, 0xffe,
+		0xfff, 0xffe, 0xffd, 0xff9, 0xff5, 0xff0, 0xfe9, 0xfe1, 0xfd8, 0xfcd, 0xfc2, 0xfb5, 0xfa7, 0xf98, 0xf87, 0xf76,
+		0xf63, 0xf4f, 0xf3a, 0xf24, 0xf0d, 0xef5, 0xedc, 0xec1, 0xea6, 0xe8a, 0xe6c, 0xe4e, 0xe2e, 0xe0e, 0xded, 0xdca,
+		0xda7, 0xd83, 0xd5f, 0xd39, 0xd12, 0xceb, 0xcc3, 0xc9a, 0xc71, 0xc47, 0xc1c, 0xbf1, 0xbc5, 0xb98, 0xb6b, 0xb3d,
+		0xb0f, 0xae0, 0xab1, 0xa82, 0xa52, 0xa22, 0x9f1, 0x9c0, 0x98f, 0x95e, 0x92c, 0x8fa, 0x8c8, 0x896, 0x864, 0x832,
+		0x800, 0x7cd, 0x79b, 0x769, 0x737, 0x705, 0x6d3, 0x6a1, 0x670, 0x63f, 0x60e, 0x5dd, 0x5ad, 0x57d, 0x54e, 0x51f,
+		0x4f0, 0x4c2, 0x494, 0x467, 0x43a, 0x40e, 0x3e3, 0x3b8, 0x38e, 0x365, 0x33c, 0x314, 0x2ed, 0x2c6, 0x2a0, 0x27c,
+		0x258, 0x235, 0x212, 0x1f1, 0x1d1, 0x1b1, 0x193, 0x175, 0x159, 0x13e, 0x123, 0x10a, 0xf2, 0xdb, 0xc5, 0xb0,
+		0x9c, 0x89, 0x78, 0x67, 0x58, 0x4a, 0x3d, 0x32, 0x27, 0x1e, 0x16, 0xf, 0xa, 0x6, 0x2, 0x1,
+		0x0, 0x1, 0x2, 0x6, 0xa, 0xf, 0x16, 0x1e, 0x27, 0x32, 0x3d, 0x4a, 0x58, 0x67, 0x78, 0x89,
+		0x9c, 0xb0, 0xc5, 0xdb, 0xf2, 0x10a, 0x123, 0x13e, 0x159, 0x175, 0x193, 0x1b1, 0x1d1, 0x1f1, 0x212, 0x235,
+		0x258, 0x27c, 0x2a0, 0x2c6, 0x2ed, 0x314, 0x33c, 0x365, 0x38e, 0x3b8, 0x3e3, 0x40e, 0x43a, 0x467, 0x494, 0x4c2,
+		0x4f0, 0x51f, 0x54e, 0x57d, 0x5ad, 0x5dd, 0x60e, 0x63f, 0x670, 0x6a1, 0x6d3, 0x705, 0x737, 0x769, 0x79b, 0x7cd,
+};
+#endif
 
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int32_t		osc_buffer_gen[HALF_NUMBER_OF_AUDIO_SAMPLES];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t 	osc_sine_tab[WAVETABLE_SIZE];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_square_tab[WAVETABLE_SIZE];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_tri_tab[WAVETABLE_SIZE];
-AUDIO_FAST_RAM	__attribute__ ((aligned (16)))	int16_t		osc_noise_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	int32_t		osc_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	int32_t		osc_buffer_gen[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	int16_t 	osc_sine_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	int16_t		osc_square_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	int16_t		osc_tri_tab[WAVETABLE_SIZE];
+AUDIO_FAST_RAM	int16_t		osc_noise_tab[WAVETABLE_SIZE];
 
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[MIDI_NOTES] =
 {
@@ -78,8 +101,8 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		11.562,
 		12.250,
 		12.978,
-		13.750, /* # 1 */
-		14.568,
+		13.750,
+		14.568, /* 10 */
 		15.434,
 		16.352,
 		17.324,
@@ -89,8 +112,8 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		21.826,
 		23.124,
 		24.499,
-		25.956,
-		27.500, /* # 2 */
+		25.956, /* 20 */
+		27.500,
 		29.135,
 		30.867,
 		32.703,
@@ -99,37 +122,37 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		38.890,
 		41.203,
 		43.653,
-		46.249,
+		46.249, /* 30 */
 		48.999,
 		51.913,
-		55.000, /* # 3 */
+		55.000,
 		58.270,
 		61.735,
 		65.406,
 		69.295,
 		73.416,
 		77.781,
-		82.406,
+		82.406, /* 40 */
 		87.307,
 		92.499,
 		97.998,
 		103.82,
-		110.00, /* # 4 */
+		110.00,
 		116.54,
 		123.47,
 		130.81,
 		138.59,
-		146.83,
+		146.83, /* 50 */
 		155.56,
 		164.81,
 		174.61,
 		184.99,
 		195.99,
 		207.65,
-		220.00, /* # 5 */
+		220.00,
 		233.08,
 		246.94,
-		261.63,
+		261.63, /* 60 */
 		277.18,
 		293.66,
 		311.13,
@@ -138,8 +161,8 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		369.99,
 		391.99,
 		415.31,
-		440.00, /* # 6 */
-		466.16,
+		440.00,
+		466.16, /* 70 */
 		489.88,
 		523.25,
 		554.37,
@@ -149,8 +172,8 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		698.46,
 		739.99,
 		783.99,
-		830.61,
-		880.00, /* # 7 */
+		830.61, /* 80 */
+		880.00,
 		932.32,
 		987.77,
 		1046.5,
@@ -159,44 +182,44 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		1244.5,
 		1318.5,
 		1396.9,
-		1480.0,
+		1480.0, /* 90 */
 		1568.0,
 		1661.2,
-		1760.0, /* # 8 */
+		1760.0,
 		1864.7,
 		1975.5,
 		2093.0,
 		2217.5,
 		2349.3,
 		2489.0,
-		2637.0,
+		2637.0, /* 100 */
 		2793.8,
 		2960.0,
 		3136.0,
 		3322.4,
-		3520.0, /* # 9 */
+		3520.0,
 		3729.3,
 		3951.1,
 		4186.0,
 		4434.9,
-		4698.6,
+		4698.6, /* 110 */
 		4978.0,
 		5274.0,
 		5587.7,
 		5919.9,
 		6271.9,
 		6644.9,
-		7040.0, /* # 10 */
+		7040.0,
 		7458.6,
 		7902.1,
-		8372.0,
+		8372.0, /* 120 */
 		8869.8,
 		9397.3,
 		9956.1,
 		10548.1,
 		11175.3,
 		11839.8,
-		12543.9
+		12543.9 /* 127 */
 };
 float	midi_freq[MIDI_NOTES];
 
@@ -230,27 +253,12 @@ uint8_t		angle,osc_number;
 				if ((Oscillator[osc_number].state & OSCILLATOR_ON ) != OSCILLATOR_ON )
 					osc_buffer_gen[i] = 0;
 				// zero crossing end
-
 				osc_buffer[i] += (int32_t )( (float )osc_buffer_gen[i] * Oscillator[osc_number].volume);
-				/*
-				if ( Oscillator[osc_number].midi_note != INVALID_MIDI_NOTE)
-				{
-					if (( AudioFlags.oscillator_flags & OSC_TUNE_PENDING ) == OSC_TUNE_PENDING)
-					{
-						float	freq;
-						float	delta_phase;
-						freq = midi_freq[Oscillator[osc_number].midi_note] + Oscillator[osc_number].detune;
-						delta_phase = (float )WAVETABLE_SIZE / ((float )SAMPLE_FREQUENCY / freq);
-						Oscillator[osc_number].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
-					}
-				}
-				*/
 			}
 		}
 	}
-	//AudioFlags.oscillator_flags &= ~OSC_TUNE_PENDING;
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		oscout_buffer[i] = osc_buffer[i] >> (VOICES / 4);
+		oscout_buffer[i] = osc_buffer[i] >> (VOICES / 2);
 }
 
 ITCM_AREA_CODE	void ChangeOscillatorWavePhase(uint16_t	osc_number ,uint8_t waveform )
@@ -311,4 +319,5 @@ int16_t		tri_delta = MIN_SINEVAL;
 	}
 }
 
-#endif // #ifdef STM32H7xx_HAL_I2S_H
+#endif // #ifdef AUDIO_GENERATORS_ENABLED
+

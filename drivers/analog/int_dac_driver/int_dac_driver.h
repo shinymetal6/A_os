@@ -30,7 +30,7 @@ typedef struct
 	uint8_t				handle;
 	DAC_HandleTypeDef 	*dac;
 	TIM_HandleTypeDef 	*dac_timer;
-	uint16_t 			*dac_buffer;
+	int16_t 			*dac_buffer;
 	uint16_t 			channel;
 	uint16_t 			len;
 	uint16_t 			alignment;
@@ -42,10 +42,10 @@ typedef struct
 #define		DAC_STATUS_DATA_READY	0x40
 #define		DAC_STATUS_RUNNING		0x80
 /* flags */
-#define		DAC_FLAGS_HALF_WAKEUP	0x20
-#define		DAC_FLAGS_FULL_WAKEUP	0x40
-#define		DAC_FLAGS_ALL_WAKEUP	0x80
-
+#define		DAC_FLAGS_HALF_WAKEUP		0x20
+#define		DAC_FLAGS_FULL_WAKEUP		0x40
+#define		DAC_FLAGS_ALL_WAKEUP		0x80
+#define		DAC_FLAGS_USE_AUDIOMODULE	0x01
 extern ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
 
 #endif /* DRIVERS_ANALOG_INT_DAC_DRIVER_INT_DAC_DRIVER_H_ */

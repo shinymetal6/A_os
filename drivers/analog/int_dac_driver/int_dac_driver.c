@@ -25,7 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #include "int_dac_driver.h"
 
@@ -80,7 +80,7 @@ DAC_Drv_TypeDef	*dac_drv;
 		if ( dac_drv->dac_timer == NULL)
 			return DRIVER_REQUEST_FAILED;
 
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
 		ANALOG_DriverStruct[last_analog_used_handle].dac_start = int_dac_start;
 		ANALOG_DriverStruct[last_analog_used_handle].dac_stop = int_dac_stop;
 		ANALOG_DriverStruct[last_analog_used_handle].dac_get_status = int_dac_get_status;
@@ -115,27 +115,51 @@ uint32_t	i,drv_ret=255;
 ITCM_AREA_CODE void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
+uint32_t i;
+	__disable_irq();
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 		dac_drv->status |= DAC_STATUS_HALF;
 		dac_drv->status &= ~DAC_STATUS_FULL;
+		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
+		{
+			RunOscillator32();
+			/*
+			for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+				dac_drv->dac_buffer[i] = oscout_buffer[i];
+				*/
+			effects_apply(dac_drv->status & DAC_STATUS_FULL);
+		}
 		if ( dac_drv->flags & (DAC_FLAGS_HALF_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
 			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
 	}
+	__enable_irq();
 }
 
 ITCM_AREA_CODE void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
+uint32_t i,j;
+	__disable_irq();
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 		dac_drv->status |= DAC_STATUS_FULL;
 		dac_drv->status &= ~DAC_STATUS_HALF;
+		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
+		{
+			RunOscillator32();
+			/*
+			for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
+				dac_drv->dac_buffer[i] = oscout_buffer[j];
+				*/
+			effects_apply(dac_drv->status & DAC_STATUS_FULL);
+		}
 		if ( dac_drv->flags & (DAC_FLAGS_FULL_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
 			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
 	}
+	__enable_irq();
 }
 
 

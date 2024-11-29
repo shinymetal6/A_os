@@ -25,124 +25,49 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
-#ifdef STM32H7xx_HAL_I2S_H
-
 
 #include "audio.h"
 #include "effects.h"
 
-DMA_NOCACHE_RAM	WaveLR_t	*audio_out, *audio_in;
+#ifdef AUDIO_GENERATORS_ENABLED
 
-AUDIO_FAST_RAM	__attribute__ ((aligned (16))) AudioFlagsTypeDef	AudioFlags;
+DMA_NOCACHE_RAM	WaveLR_t			*audio_out, *audio_in;
+AUDIO_FAST_RAM	int16_t				pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM	int16_t				pipe_out[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 extern int16_t	oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-AUDIO_FAST_RAM	int16_t		pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 
-#define	OSCILLATORS	1
-
-uint8_t StartAudioBuffers(int16_t *audio_in_buffer,int16_t *audio_out_buffer)
+uint8_t StartAudioBuffers(uint8_t handle,int16_t *audio_in_buffer,int16_t *audio_out_buffer)
 {
+
+#if defined(STM32H7xx_HAL_I2S_H) || defined(STM32H7xx_HAL_DAC_H)
+
+#ifdef STM32H7xx_HAL_I2S_H
 	if ( HAL_I2SEx_TransmitReceive_DMA(&hi2s2, (uint16_t*)audio_out_buffer, (uint16_t*)audio_in_buffer,AUDIO_BUF_SIZE*2) != HAL_OK)
-	{
 		return 1;
-	}
 	audio_out = (WaveLR_t *)audio_out_buffer;
 	audio_in  = (WaveLR_t *)audio_in_buffer;
+#else
+#ifdef STM32H7xx_HAL_DAC_H
+DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
+	dac_drv->status = 0;
+	if ( HAL_DAC_Start_DMA(dac_drv->dac, dac_drv->channel, (uint32_t *)dac_drv->dac_buffer, dac_drv->len,dac_drv->alignment)!= HAL_OK )
+		return 1;
+	if ( HAL_TIM_Base_Start(timer) == 0)
+		return 0;
+	return 1;
+#endif
+#endif
 	return 0;
-}
-/*
-ITCM_AREA_CODE void get_limits(uint16_t *start,uint16_t *end)
-{
-	if (( AudioFlags.audio_flags & AUDIO_HALFBUFOUT_FLAG ) == AUDIO_HALFBUFOUT_FLAG)
-	{
-		*start=0;
-		*end = HALF_NUMBER_OF_AUDIO_SAMPLES;
-	}
-	else
-	{
-		*start=HALF_NUMBER_OF_AUDIO_SAMPLES;
-		*end = NUMBER_OF_AUDIO_SAMPLES;
-	}
-}
-
-extern	void do_fft(int16_t *inputData, int16_t *outputData);
-uint16_t	pipe_used;
-ITCM_AREA_CODE void IrqProcessSamples(void)
-{
-uint16_t	start,end,i,pipe_nr;
-#if defined DEBUG_FLAG_GPIO_Port
-	HAL_GPIO_WritePin(DEBUG_FLAG_GPIO_Port, DEBUG_FLAG_Pin, GPIO_PIN_SET);
-#endif
-	get_limits(&start,&end);
-	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
-	{
-		RunOscillator32();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			pipe[0][i] = oscout_buffer[i];
-
-		pipe_nr = BlockEffectsSequencer();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe[pipe_nr][i];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe[pipe_nr][i];
-		}
-	}
-	else
-	{
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			pipe[0][i] = audio_in[i+start].channel[AUDIO_LEFT_CH];
-		}
-		get_limits(&start,&end);
-		pipe_nr = BlockEffectsSequencer();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe[pipe_nr][i];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe[pipe_nr][i];
-		}
-	}
-#if defined DEBUG_FLAG_GPIO_Port
-    HAL_GPIO_WritePin(DEBUG_FLAG_GPIO_Port, DEBUG_FLAG_Pin, GPIO_PIN_RESET);
+#else
+	return 1;
 #endif
 }
-*/
-/*
-ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
-{
-	AudioFlags.audio_flags |= (AUDIO_HALFBUFOUT_FLAG | AUDIO_OUT_READY_FLAG);
-	AudioFlags.audio_flags |= (AUDIO_HALFBUFIN_FLAG | AUDIO_IN_READY_FLAG);
-	IrqProcessSamples();
-}
 
-ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
-{
-	AudioFlags.audio_flags &= ~AUDIO_HALFBUFOUT_FLAG;
-	AudioFlags.audio_flags |= AUDIO_OUT_READY_FLAG;
-	AudioFlags.audio_flags &= ~AUDIO_HALFBUFIN_FLAG;
-	AudioFlags.audio_flags |= AUDIO_IN_READY_FLAG;
-	IrqProcessSamples();
-}
-*/
+#endif // #ifdef AUDIO_GENERATORS_ENABLED
 
-void SetEffectMode(void)
-{
-	AudioFlags.audio_flags &= ~AUDIO_GENERATE_FLAG;
-}
-
-void SetGeneratorMode(void)
-{
-	AudioFlags.audio_flags |= AUDIO_GENERATE_FLAG;
-}
-
-void SetMasterVolume(uint16_t volume)
-{
-	if ( volume < 100 )
-		AudioFlags.master_volume = (float )volume / 100.0F;
-	else
-		AudioFlags.master_volume = 1.0F;
-}
-
-#endif
 
 

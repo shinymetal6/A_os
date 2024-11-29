@@ -26,9 +26,10 @@
 #include "../../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_I2S_H
 #include "../audio.h"
 #include "../effects.h"
+
+#ifdef AUDIO_GENERATORS_ENABLED
 
 #include "oscillators.h"
 #include "oscillator_core.h"
@@ -72,7 +73,7 @@ uint32_t		oldest_osc=0;
 	return osc_ret;
 }
 
-ITCM_AREA_CODE	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity)
+ITCM_AREA_CODE	void DisableOscillator( uint16_t midi_note , uint8_t velocity)
 {
 uint8_t	osc_number;
 	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
@@ -98,7 +99,7 @@ uint8_t	osc_number;
 extern	float	midi_freq[128];
 float delta_phase_k =  (float )WAVETABLE_SIZE / (float )SAMPLE_FREQUENCY;
 
-ITCM_AREA_CODE	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity)
+ITCM_AREA_CODE	void EnableOscillator(uint16_t midi_note , uint8_t velocity)
 {
 float	delta_phase;
 float	freq;
@@ -114,20 +115,13 @@ uint32_t	osc_number,i;
 
 		Oscillator[osc_number+i].current_phase = 0;
 		Oscillator[osc_number+i].midi_note = midi_note;
+		Oscillator[osc_number+i].velocity = velocity;
 		Oscillator[osc_number+i].state = OSCILLATOR_ON;
 		Oscillator[osc_number+i].oscillator_age = 0;
 		Oscillator[osc_number+i].volume = ((float )OscillatorsFlags.osc_volume[i] / 10.0F);
 		/* TEST */
-		Oscillator[osc_number+i].volume = ((float )1);
+		Oscillator[osc_number+i].volume = ((float )0.5F);
 		/* TEST END */
-
-		switch(OscillatorsFlags.osc_waves[i])
-		{
-		case	TRIANGLE 	: Oscillator[osc_number+i].waveform = TRIANGLE; break;
-		case	SQUARE 		: Oscillator[osc_number+i].waveform = SQUARE; break;
-		case	NOISE 		: Oscillator[osc_number+i].waveform = NOISE; break;
-		default 			: Oscillator[osc_number+i].waveform = SINE; break;
-		}
 	}
 }
 
@@ -154,4 +148,5 @@ uint16_t	osc_number;
 	InitOscillatorsTables();
 }
 
-#endif
+#endif // #ifdef AUDIO_GENERATORS_ENABLED
+

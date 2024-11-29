@@ -14,37 +14,28 @@
  * Project : A_os
 */
 /*
- * wah.h
+ * dummy.c
  *
- *  Created on: Feb 22, 2024
+ *  Created on: Nov 29, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_WAH_H_
-#define MODULES_AUDIO_WAH_H_
 
-typedef struct _WahTypeDef
+#include "main.h"
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+//#include "../../kernel/kernel_opt.h"
+
+#include "../audio.h"
+#include "../effects.h"
+#include "dummy.h"
+
+ITCM_AREA_CODE void Do_Dummy(int16_t *inputData, int16_t *outputData, uint8_t index)
 {
-	/*
-	int 	WtrP;
-	float 	Rd_P;
-	float 	Shift;
-	float 	CrossFade;
-	float 	a0, a1, a2, b1, b2, hp_in_z1, hp_in_z2, hp_out_z1, hp_out_z2;
-	*/
-	float bp_a0, bp_a1, bp_a2, bp_b0, bp_b1, bp_b2;
+uint32_t	i;
+//DUMMY_Effect_TypeDef	*DUMMY_Effect = (DUMMY_Effect_TypeDef *)Effects[index].private_data;
 
-	float bp_x1, bp_x2, bp_y1, bp_y2;
-
-	float currentCenterFrequency;
-	float qFactor;
-
-
-} WahTypeDef;
-
-extern	void Wah_init(uint32_t CenterFrequency,uint32_t Rate,uint32_t Depth);
-extern	void Wah_enable(void);
-extern	void Wah_disable(void);
-extern	void Do_Wah(int16_t* inputData, int16_t* outputData);
-
-#endif /* MODULES_AUDIO_WAH_H_ */
+	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		outputData[i] = inputData[i];
+}

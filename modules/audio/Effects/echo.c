@@ -16,7 +16,7 @@
 /*
  * echo.c
  *
- *  Created on: Feb 22, 2024
+ *  Created on: Nov 29, 2024
  *      Author: fil
  */
 #include "main.h"
@@ -25,66 +25,32 @@
 #include "../../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_I2S_H
 #include "../audio.h"
 #include "../effects.h"
+#include "echo.h"
 
-
-ITCM_AREA_CODE void Do_Echo(int16_t* inputData, int16_t* outputData)
+ITCM_AREA_CODE void Do_Echo(int16_t *inputData, int16_t *outputData, uint8_t index)
 {
-uint16_t	i;
-	float feedbackGain = BlockEffect[ECHO_EFFECT_ID].parameter[0];
-	uint16_t delaySamples = (uint16_t ) BlockEffect[ECHO_EFFECT_ID].parameter[1];
-	if ( (BlockEffect[ECHO_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+uint32_t	i;
+Echo_Effect_TypeDef	*echo_Effect = (Echo_Effect_TypeDef *)Effects[index].private_data;
+
+	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
-		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		if (( echo_Effect->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
 		{
 			// current sample
-			int16_t sample =  (int16_t)outputData[i];
-
+			int16_t curSample =  outputData[i];
 			// previous sample
-			int16_t prevSample = (int16_t)outputData[(i + NUMBER_OF_AUDIO_SAMPLES - delaySamples) % NUMBER_OF_AUDIO_SAMPLES];
+			int16_t prevSample = (int16_t)outputData[(i + NUMBER_OF_AUDIO_SAMPLES - echo_Effect->delaySamples) % NUMBER_OF_AUDIO_SAMPLES];
 
 			// apply feedback gain
-			prevSample *= feedbackGain;
+			//prevSample *= echo_Effect->feedbackGain;
 
 			// mix samples together
-			outputData[i] = (uint16_t) (sample + prevSample);
+			outputData[i] = (uint16_t) (curSample/2 + prevSample/2);
 		}
-	}
-	else
-	{
-		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		else
 			outputData[i] = inputData[i];
 	}
 }
 
-void Echo_init(uint32_t Feedback,uint32_t Delay)
-{
-/*
-"Feedback[%]", 5.0f, 0.0f,  100.0f}; // 5 to 100 %
-"Delay[ms]   ",  50.0f, 0.0f,  1000.0f}; // 0 to 15ms
-*/
-
-	BlockEffect[ECHO_EFFECT_ID].parameter[0] = (float )Feedback / 100.0F;
-	BlockEffect[ECHO_EFFECT_ID].parameter[1] = (float )Delay * (float )SAMPLE_FREQUENCY / 1000.0F;
-	BlockEffect[ECHO_EFFECT_ID].num_params = 2;
-	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_name,"Echo");
-	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_param[0],"Feedback");
-	sprintf(BlockEffect[ECHO_EFFECT_ID].effect_param[1],"Delay[ms]");
-	BlockEffect[ECHO_EFFECT_ID].apply_effect =  Do_Echo;
-	BlockEffect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-}
-
-
-void Echo_enable(void)
-{
-	BlockEffect[ECHO_EFFECT_ID].effect_status |= EFFECT_ENABLED;
-}
-
-void Echo_disable(void)
-{
-	BlockEffect[ECHO_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-}
-
-#endif

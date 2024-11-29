@@ -80,7 +80,7 @@ ADC_Drv_TypeDef	*adc_drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( adc_drv->adc_timer == NULL)
 			return DRIVER_REQUEST_FAILED;
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
 		ANALOG_DriverStruct[last_analog_used_handle].adc_start = int_adc_start;
 		ANALOG_DriverStruct[last_analog_used_handle].adc_stop = int_adc_stop;
 		ANALOG_DriverStruct[last_analog_used_handle].adc_get_status = int_adc_get_status;

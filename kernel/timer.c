@@ -200,9 +200,9 @@ uint32_t	i;
 			if ( after_check_timers_callback_array[i] != NULL )
 				after_check_timers_callback_array[i]();
 		}
-
-		//pend the pendsv exception
-		schedule();
+		if ( Asys.started_processes >= MAX_PROCESS_MASK )
+			//pend the pendsv exception after all processes started
+			schedule();
 	}
 	else
 	{

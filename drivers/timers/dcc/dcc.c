@@ -374,7 +374,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 
 		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
 		dcc_driver_data->flags |= timer_flags;
-		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_REQUESTED;
+		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
 
 		last_tim_used_handle++;
 		tim_driver_request++;

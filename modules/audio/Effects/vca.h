@@ -23,11 +23,15 @@
 #ifndef MODULES_AUDIO_VCA_H_
 #define MODULES_AUDIO_VCA_H_
 
-extern	void Vca_init(uint8_t Volume);
-extern	void Vca_enable(void);
-extern	void Vca_disable(void);
-extern	void Do_Vca(int16_t* inputData, int16_t* outputData);
-extern	void Vca_setMasterVolume(uint8_t Volume);
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	float	 			volume;
+}VCA_Effect_TypeDef;
+/* flags */
+
+extern	void Do_Vca(int16_t* inputData, int16_t* outputData,uint8_t effect_index);
 
 
 #endif /* MODULES_AUDIO_VCA_H_ */

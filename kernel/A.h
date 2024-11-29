@@ -27,6 +27,7 @@
 #include "system_default.h"
 
 #define MAX_PROCESS					5
+#define MAX_PROCESS_MASK			0x1e
 #define USR_PROCESS_NUMBER			(MAX_PROCESS-1)
 #define MAX_TIMERS					8
 #define MAX_SEMAPHORES				8
@@ -44,11 +45,13 @@
 #define	HWDEVICES_NUM				32
 #define	MODULES_NUM					32
 
+/*
 #define	DRIVER_STATUS_REQUESTED		0x01
 #define	DRIVER_STATUS_IN_USE		0x02
 #define	DRIVER_STATUS_INITIALIZED	0x04
 #define	DRIVER_STATUS_INITPEND		0x08
 #define	DRIVER_FLAGS_AUTOSTART		0x10
+*/
 
 #define	DRIVER_STATUS_FAILED		0x40
 #define	DRIVER_REQUEST_FAILED		0x80
@@ -267,6 +270,7 @@ typedef struct
 	uint8_t		process_bus_fault[MAX_PROCESS];
 	uint8_t		process_mem_manage_fault[MAX_PROCESS];
 	uint8_t		process_usage_fault[MAX_PROCESS];
+	uint8_t		started_processes;
 
 	//	uint32_t 	qspi_size;
 //	uint8_t		qspi_status;

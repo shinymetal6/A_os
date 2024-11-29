@@ -43,7 +43,9 @@ extern	RNG_HandleTypeDef hrng;
 ITCM_AREA_CODE void Do_Noise(int16_t* inputData, int16_t* outputData)
 {
 uint32_t	i;
+#ifdef STM32H7xx_HAL_RNG_H
 uint32_t random_number;
+#endif
 	if ( (BlockEffect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
 	{
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i+=2)
@@ -53,8 +55,8 @@ uint32_t random_number;
 			outputData[i] =  (random_number>>16) & 0xffff;
 			outputData[i+1] =  random_number & 0xffff;
 	#else
-			noise_buffer_gen[i] =  (rand()>>16) & 0xffff;
-			noise_buffer_gen[i+1] =  rand() & 0xffff;
+			outputData[i] =  (rand()>>16) & 0xffff;
+			outputData[i+1] =  rand() & 0xffff;
 	#endif
 		}
 	}

@@ -23,6 +23,8 @@
 #ifndef DRIVERS_DRIVERS_H_
 #define DRIVERS_DRIVERS_H_
 
+#define	DRIVER_STATUS_IN_USE		0x02
+
 #include "gpio/gpio.h"
 #include "analog/analog.h"
 #include "uart/uart.h"

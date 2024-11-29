@@ -14,30 +14,22 @@
  * Project : A_os
 */
 /*
- * fft.h
+ * dummy.h
  *
- *  Created on: Feb 24, 2024
+ *  Created on: Nov 29, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_FFT_H_
-#define MODULES_AUDIO_FFT_H_
+#ifndef MODULES_AUDIO_EFFECTS_DUMMY_H_
+#define MODULES_AUDIO_EFFECTS_DUMMY_H_
 
-typedef struct _FftTypeDef
+typedef struct
 {
-	uint8_t 	window_type;
-} FftTypeDef;
+	uint8_t				status;
+	uint8_t				flags;
+}DUMMY_Effect_TypeDef;
+/* flags */
 
-#define	FFT_WINDOW_NONE		0
-#define	FFT_WINDOW_HAMMING	1
-#define	FFT_WINDOW_HANNING	2
-#define	FFT_WINDOW_BLACKMAN	3
+extern	void Do_Dummy(int16_t* inputData, int16_t* outputData,uint8_t effect_index);
 
-extern	float	float_fftmag_outbuf[HALF_NUMBER_OF_AUDIO_SAMPLES/2];
-
-extern	void Fft_init(uint8_t WindowType);
-extern	void Fft_enable(void);
-extern	void Fft_disable(void);
-extern	void Do_Fft(int16_t* inputData, int16_t* outputData);
-
-#endif /* MODULES_AUDIO_FFT_H_ */
+#endif /* MODULES_AUDIO_EFFECTS_DUMMY_H_ */

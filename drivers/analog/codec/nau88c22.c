@@ -334,7 +334,7 @@ Nau88C22_Drv_TypeDef	*codec_drv;
 		codec_drv = (Nau88C22_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
 		if ( codec_drv->bus == NULL)
 			return DRIVER_REQUEST_FAILED;
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
 		ANALOG_DriverStruct[last_analog_used_handle].codec_start = nau88c22_start;
 		ANALOG_DriverStruct[last_analog_used_handle].codec_stop = nau88c22_stop;
 		ANALOG_DriverStruct[last_analog_used_handle].codec_get_status = nau88c22_get_status;

@@ -44,8 +44,8 @@ typedef struct _OscillatorsFlagsTypeDef
 
 
 extern	void InitOscillators(void);
-extern	void EnableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
-extern	void DisableOscillator(uint16_t channel, uint16_t midi_note , uint8_t velocity);
+extern	void EnableOscillator( uint16_t midi_note , uint8_t velocity);
+extern	void DisableOscillator(uint16_t midi_note , uint8_t velocity);
 
 
 

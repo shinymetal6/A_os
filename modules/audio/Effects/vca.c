@@ -25,44 +25,21 @@
 #include "../../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_I2S_H
 #include "../audio.h"
 #include "../effects.h"
+#include "vca.h"
 
-ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData)
+ITCM_AREA_CODE void Do_Vca(int16_t *inputData, int16_t *outputData, uint8_t index)
 {
 uint32_t	i;
+VCA_Effect_TypeDef	*VCA_Effect = (VCA_Effect_TypeDef *)Effects[index].private_data;
+
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
-		if ( (BlockEffect[VCA_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
-				outputData[i] = (int16_t )((float )inputData[i] * BlockEffect[VCA_EFFECT_ID].parameter[0]);
+		if (( VCA_Effect->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
+				outputData[i] = (int16_t )((float )inputData[i] * VCA_Effect->volume);
 		else
 				outputData[i] = inputData[i];
 	}
 }
 
-void Vca_setMasterVolume(uint8_t Volume)
-{
-	BlockEffect[VCA_EFFECT_ID].parameter[0] = (Volume <= 100) ? (float )Volume / 100.0F : 1.0F;
-}
-
-void Vca_init(uint8_t Volume)
-{
-	BlockEffect[VCA_EFFECT_ID].parameter[0] = (float )Volume / 100.0F;
-	BlockEffect[VCA_EFFECT_ID].num_params = 1;
-	sprintf(BlockEffect[VCA_EFFECT_ID].effect_name,"Vca");
-	sprintf(BlockEffect[VCA_EFFECT_ID].effect_param[0],"Volume");
-	BlockEffect[VCA_EFFECT_ID].apply_effect =  Do_Vca;
-	BlockEffect[VCA_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-}
-
-void Vca_enable(void)
-{
-	BlockEffect[VCA_EFFECT_ID].effect_status |= EFFECT_ENABLED;
-}
-
-void Vca_disable(void)
-{
-	BlockEffect[VCA_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-}
-#endif //#ifdef SYNTH_ENGINE_ENABLE

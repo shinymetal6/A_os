@@ -32,8 +32,9 @@
 
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
+#ifdef POOL_ENABLE
 SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
-
+#endif
 
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;

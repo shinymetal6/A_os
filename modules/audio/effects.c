@@ -25,108 +25,86 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
-#ifdef STM32H7xx_HAL_I2S_H
+#ifdef AUDIO_GENERATORS_ENABLED
 
+#include "audio.h"
 #include "effects.h"
 
-AUDIO_FAST_RAM	BlockEffectsTypeDef					BlockEffect[MAX_BLOCK_EFFECTS];
-AUDIO_FAST_RAM	SingleSampleEffectsTypeDef			SingleSampleEffect[MAX_SINGLESAMPLE_EFFECTS];
+Effects_TypeDef		Effects[MAX_EFFECTS];
+uint8_t				active_effects_number = 0;
 
-AUDIO_FAST_RAM	static BlockEffectsTypeDef			*first_block_effect_ptr;
-AUDIO_FAST_RAM int16_t								pipe_index,single_sample_index, single_sample_counter;
-
-AUDIO_FAST_RAM	EffectsOrderTypeDef					EffectsOrder;
-
-extern	int16_t	pipe[MAX_BLOCK_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
-
-uint16_t BlockEffectsSequencer(void)
+uint32_t effect_insert(void (*do_effect),uint32_t *private_data)
 {
-uint16_t 	i,k,block_effect_index;
-
-	pipe_index = 0;
-	for(i=0;i<MAX_BLOCK_EFFECTS;i++)
+uint8_t i;
+	__disable_irq();
+	for(i=0;i<MAX_EFFECTS;i++)
 	{
-		block_effect_index = EffectsOrder.effect_order[i];
-		if ( block_effect_index == EFFECT_ORDER_NOT_USED )
-			return pipe_index;
-		if ( BlockEffect[block_effect_index].apply_effect != NULL )
+		if (Effects[i].effect == NULL )
 		{
-			if ((BlockEffect[block_effect_index].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+			Effects[i].private_data = private_data;
+			Effects[i].effect_index = i;
+			Effects[i].effect = do_effect;
+			Effects[i].pipe_out = pipe[i];
+			if ( i == 0 )
+				Effects[i].pipe_in = oscout_buffer;
+			else
+				Effects[i].pipe_in = pipe[i-1];
+			active_effects_number++;
+			__enable_irq();
+			return i;
+		}
+	}
+	__enable_irq();
+	return EFFECT_NOSPACELEFT;
+}
+
+uint32_t effects_start(int16_t *dac_buffer)
+{
+uint8_t i;
+	for(i=0;i<MAX_EFFECTS;i++)
+	{
+		if (Effects[i].effect == NULL )
+		{
+			if ( i == 0 )
 			{
-				BlockEffect[block_effect_index].apply_effect(pipe[pipe_index], pipe[pipe_index+1]);
+				Effects[i].pipe_in = oscout_buffer;
+				Effects[i].pipe_out = dac_buffer;
+			}
+			else
+				Effects[i-1].pipe_out = dac_buffer;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+void effects_apply(uint8_t full_flag)
+{
+uint32_t	i,j,k;
+
+	for(k=0;k<MAX_EFFECTS;k++)
+	{
+		if (Effects[k].effect != NULL )
+		{
+			Effects[k].effect(Effects[k].pipe_in,Effects[k].pipe_out,k);
+		}
+		else
+		{
+		 	if (full_flag == 0)
+			{
+				for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+					Effects[k].pipe_out[i] = Effects[k].pipe_in[i];
 			}
 			else
 			{
-				for(k=0;k<HALF_NUMBER_OF_AUDIO_SAMPLES;k++)
-					pipe[pipe_index+1][k] = pipe[pipe_index][k];
+				for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
+					Effects[k].pipe_out[i] = Effects[k].pipe_in[j];
 			}
-			pipe_index++;
+		 	return;
 		}
 	}
-	return pipe_index-1;
-}
-
-uint8_t FindBlockEffect(void 	(*do_effect))
-{
-uint8_t i;
-	for(i=0;i<MAX_BLOCK_EFFECTS;i++)
-	{
-		if ( BlockEffect[i].apply_effect == do_effect)
-			return i;
-	}
-	return EFFECT_ORDER_NOT_USED;
-}
-
-void InsertBlockEffect(void (*do_effect),uint8_t position,uint8_t enabled)
-{
-	EffectsOrder.effect_order[position] = FindBlockEffect(do_effect);
-	BlockEffect[position].current_order = position;
-	BlockEffect[position].effect_status = enabled;
-}
-
-void RemoveBlockEffect(void (*do_effect),uint8_t position)
-{
-uint8_t i, iposition = EffectsOrder.effect_order[position];
-	if ( BlockEffect[iposition].apply_effect == do_effect)
-	{
-		if ( EffectsOrder.effect_order[position+1] != EFFECT_ORDER_NOT_USED)
-		{
-			for(i=position+1;i<MAX_BLOCK_EFFECTS;i++)
-				EffectsOrder.effect_order[i-1] = EffectsOrder.effect_order[i];
-		}
-		else
-			EffectsOrder.effect_order[position] = EFFECT_ORDER_NOT_USED;
-	}
 }
 
 
-void InitBlockEffectsSequencer(void)
-{
-uint16_t 	i;
-BlockEffectsTypeDef	*effect = first_block_effect_ptr;
-
-	first_block_effect_ptr = &BlockEffect[0];
-	effect = first_block_effect_ptr;
-	effect->pre_effect = NULL;
-	for(i=1;i<MAX_BLOCK_EFFECTS;i++)
-	{
-		effect->nxt_effect = (uint8_t *)&BlockEffect[i+1];
-		bzero(effect->effect_name, sizeof(effect->effect_name));
-		bzero(effect->effect_param, sizeof(effect->effect_param));
-		bzero(effect->parameter, sizeof(effect->parameter));
-		effect->num_params = effect->effect_status = 0;
-		effect->pre_effect = (uint8_t *)&BlockEffect[i];
-		effect->current_order = 0;
-		effect ++;
-		EffectsOrder.effect_order[i] = EFFECT_ORDER_NOT_USED;
-	}
-}
-
-void InitEffectsSequencer(void)
-{
-	InitBlockEffectsSequencer();
-	pipe_index = single_sample_index = single_sample_counter = 0;
-}
-
-#endif // #ifdef STM32H7xx_HAL_I2S_H
+#endif // #ifdef AUDIO_GENERATORS_ENABLED
 

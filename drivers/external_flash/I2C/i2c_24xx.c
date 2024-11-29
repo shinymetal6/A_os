@@ -312,7 +312,7 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 		if ( HAL_I2C_IsDeviceReady(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, 5,I2C_24XX_TIMEOUT) == 0 )
 			i2c_24xx_Drv->status = I2C_STATUS_READY;
 		i2c_24xx_init(last_extflash_used_handle);
-		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_IN_USE;
 		last_extflash_used_handle++;
 		return last_extflash_used_handle-1;
 	}

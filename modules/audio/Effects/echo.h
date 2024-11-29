@@ -16,16 +16,23 @@
 /*
  * echo.h
  *
- *  Created on: Feb 22, 2024
+ *  Created on: Nov 29, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_ECHO_H_
-#define MODULES_AUDIO_ECHO_H_
+#ifndef MODULES_AUDIO_EFFECTS_ECHO_H_
+#define MODULES_AUDIO_EFFECTS_ECHO_H_
 
-extern	void Echo_init(uint32_t Feedback,uint32_t Delay);
-extern	void Echo_enable(void);
-extern	void Echo_disable(void);
-extern	void Do_Echo(int16_t* inputData, int16_t* outputData);
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	float	 			feedbackGain;
+	uint16_t 			delaySamples;
 
-#endif /* MODULES_AUDIO_ECHO_H_ */
+}Echo_Effect_TypeDef;
+/* flags */
+
+extern	ITCM_AREA_CODE void Do_Echo(int16_t *inputData, int16_t *outputData, uint8_t index);
+
+#endif /* MODULES_AUDIO_EFFECTS_ECHO_H_ */
