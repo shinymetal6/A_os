@@ -31,11 +31,11 @@
 #include "../effects.h"
 #include "dummy.h"
 
-ITCM_AREA_CODE void Do_Dummy(int16_t *inputData, int16_t *outputData, uint8_t index)
+ITCM_AREA_CODE void Do_Dummy(int16_t *in, int16_t *out, uint8_t index)
 {
 uint32_t	i;
 //DUMMY_Effect_TypeDef	*DUMMY_Effect = (DUMMY_Effect_TypeDef *)Effects[index].private_data;
 
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		outputData[i] = inputData[i];
+		out[i] = in[i];
 }

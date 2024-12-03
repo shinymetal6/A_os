@@ -24,7 +24,7 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-//#include "../../kernel/kernel_opt.h"
+#include "../../kernel/kernel_opt.h"
 #ifdef AUDIO_GENERATORS_ENABLED
 
 #include "audio.h"
@@ -33,7 +33,7 @@
 Effects_TypeDef		Effects[MAX_EFFECTS];
 uint8_t				active_effects_number = 0;
 
-uint32_t effect_insert(void (*do_effect),uint32_t *private_data)
+uint32_t effect_insert(void (*do_effect),uint32_t *private_data,int16_t *dac_buffer)
 {
 uint8_t i;
 	__disable_irq();
@@ -44,11 +44,15 @@ uint8_t i;
 			Effects[i].private_data = private_data;
 			Effects[i].effect_index = i;
 			Effects[i].effect = do_effect;
+
 			Effects[i].pipe_out = pipe[i];
 			if ( i == 0 )
 				Effects[i].pipe_in = oscout_buffer;
 			else
+			{
+				Effects[i-1].pipe_out = pipe[i-1];
 				Effects[i].pipe_in = pipe[i-1];
+			}
 			active_effects_number++;
 			__enable_irq();
 			return i;
@@ -58,50 +62,29 @@ uint8_t i;
 	return EFFECT_NOSPACELEFT;
 }
 
-uint32_t effects_start(int16_t *dac_buffer)
+void effects_apply(uint8_t full_flag,int16_t *dac_buffer)
 {
-uint8_t i;
+uint32_t	i,j,last_effect;
+
 	for(i=0;i<MAX_EFFECTS;i++)
 	{
-		if (Effects[i].effect == NULL )
+		if (Effects[i].effect != NULL )
 		{
-			if ( i == 0 )
-			{
-				Effects[i].pipe_in = oscout_buffer;
-				Effects[i].pipe_out = dac_buffer;
-			}
-			else
-				Effects[i-1].pipe_out = dac_buffer;
-			return 0;
-		}
-	}
-	return 1;
-}
-
-void effects_apply(uint8_t full_flag)
-{
-uint32_t	i,j,k;
-
-	for(k=0;k<MAX_EFFECTS;k++)
-	{
-		if (Effects[k].effect != NULL )
-		{
-			Effects[k].effect(Effects[k].pipe_in,Effects[k].pipe_out,k);
+			Effects[i].effect(Effects[i].pipe_in,Effects[i].pipe_out,i);
+	 		last_effect = i;
 		}
 		else
-		{
-		 	if (full_flag == 0)
-			{
-				for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-					Effects[k].pipe_out[i] = Effects[k].pipe_in[i];
-			}
-			else
-			{
-				for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
-					Effects[k].pipe_out[i] = Effects[k].pipe_in[j];
-			}
-		 	return;
-		}
+			break;
+	}
+	if ( full_flag == 0 )
+	{
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			dac_buffer[i] = pipe[last_effect][i];
+	}
+	else
+	{
+		for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
+			dac_buffer[i] = pipe[last_effect][j];
 	}
 }
 

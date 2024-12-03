@@ -40,9 +40,8 @@ typedef struct
 
 extern	Effects_TypeDef		Effects[MAX_EFFECTS];
 
-extern	uint32_t effect_insert(void (*do_effect),uint32_t *private_data);
-extern	uint32_t effects_start(int16_t *dac_buffer);
-extern	void effects_apply(uint8_t full_flag);
+extern	uint32_t effect_insert(void (*do_effect),uint32_t *private_data,int16_t *dac_buffer);
+extern	void effects_apply(uint8_t full_flag,int16_t *dac_buffer);
 
 
 #endif /* MODULES_AUDIO_EFFECTS_H_ */
