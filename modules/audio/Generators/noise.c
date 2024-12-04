@@ -33,56 +33,37 @@
 #include "oscillators.h"
 #include "oscillator_core.h"
 #include "noise.h"
-#include "../audio.h"
-#include "../effects.h"
 
 #ifdef STM32H7xx_HAL_RNG_H
 extern	RNG_HandleTypeDef hrng;
 #endif
 
-ITCM_AREA_CODE void Do_Noise(int16_t* inputData, int16_t* outputData)
+ITCM_AREA_CODE void Do_Noise(int16_t *in, int16_t *out, uint8_t index)
 {
 uint32_t	i;
 #ifdef STM32H7xx_HAL_RNG_H
 uint32_t random_number;
 #endif
-	if ( (BlockEffect[FLANGER_EFFECT_ID].effect_status & EFFECT_ENABLED) == EFFECT_ENABLED )
+NOISE_Gen_TypeDef	*NOISE_Gen = (NOISE_Gen_TypeDef *)Effects[index].private_data;
+
+	if (( NOISE_Gen->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
 	{
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i+=2)
 		{
 	#ifdef	STM32H7xx_HAL_RNG_H
 			HAL_RNG_GenerateRandomNumber(&hrng, &random_number);
-			outputData[i] =  (random_number>>16) & 0xffff;
-			outputData[i+1] =  random_number & 0xffff;
+			out[i] =  (random_number>>16) & 0xffff;
+			out[i+1] =  random_number & 0xffff;
 	#else
-			outputData[i] =  (rand()>>16) & 0xffff;
-			outputData[i+1] =  rand() & 0xffff;
+			out[i] =  (rand()>>16) & 0xffff;
+			out[i+1] =  rand() & 0xffff;
 	#endif
 		}
 	}
 	else
-	{
-		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			outputData[i] = inputData[i];
-	}
-}
+		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+			out[i] = in[i];
 
-void Noise_init(uint32_t Rate,uint32_t Depth, uint32_t Delay)
-{
-	BlockEffect[NOISE_EFFECT_ID].num_params = 0;
-	sprintf(BlockEffect[NOISE_EFFECT_ID].effect_name,"Noise");
-	BlockEffect[NOISE_EFFECT_ID].apply_effect =  Do_Noise;
-	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
-}
-
-void Noise_enable(void)
-{
-	BlockEffect[NOISE_EFFECT_ID].effect_status |= EFFECT_ENABLED;
-}
-
-void Noise_disable(void)
-{
-	BlockEffect[NOISE_EFFECT_ID].effect_status &= ~EFFECT_ENABLED;
 }
 
 

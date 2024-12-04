@@ -14,21 +14,16 @@
  * Project : A_os
 */
 /*
- * noise.h
+ * svc.h
  *
- *  Created on: Nov 22, 2024
+ *  Created on: Dec 4, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_GENERATORS_NOISE_H_
-#define MODULES_AUDIO_GENERATORS_NOISE_H_
+#ifndef KERNEL_SVC_H_
+#define KERNEL_SVC_H_
 
-typedef struct
-{
-	uint8_t				status;
-	uint8_t				flags;
-}NOISE_Gen_TypeDef;
+extern int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
 
 
-
-#endif /* MODULES_AUDIO_GENERATORS_NOISE_H_ */
+#endif /* KERNEL_SVC_H_ */

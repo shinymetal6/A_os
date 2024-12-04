@@ -61,12 +61,14 @@ typedef struct _AudioFlagsTypeDef
 #define	AUDIO_LEFT_CH					0
 #define	AUDIO_RIGHT_CH					1
 
-#define AUDIO_BUF_SIZE 					256
+//#define AUDIO_BUF_SIZE 					256
 
-#define	NUMBER_OF_AUDIO_SAMPLES			AUDIO_BUF_SIZE
+#define	NUMBER_OF_AUDIO_SAMPLES			256
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
 #define SAMPLE_FREQUENCY 				44100
-
+#define I2S_AUDIO_BUF_SIZE 				(NUMBER_OF_AUDIO_SAMPLES*2)
+#define	AUDIO_IS_MONO					0
+#define	AUDIO_IS_STEREO					1
 #define	OSCILLATORS						1
 
 #include 	"effects.h"
@@ -77,8 +79,8 @@ typedef struct _AudioFlagsTypeDef
 #define	AUDIO_GENERATORS_ENABLED	1
 #endif
 
+/*
 #if defined(ARM_MATH_CM7) || defined (ARM_MATH_CM4) || defined (ARM_MATH_CM3) || defined (ARM_MATH_CM0) || defined (ARM_MATH_CM0PLUS)
-
 #include 	"Effects/arm_math.h"
 #include	"Effects/adsr.h"
 #include	"Effects/biquad_s.h"
@@ -96,7 +98,7 @@ typedef struct _AudioFlagsTypeDef
 #include	"Effects/vibrato.h"
 #include	"Effects/wah.h"
 #endif
-
+*/
 #include	"Effects/vca.h"
 #include	"Effects/echo.h"
 #include	"Effects/dummy.h"
@@ -109,11 +111,5 @@ extern	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 extern	int16_t		pipe_out[HALF_NUMBER_OF_AUDIO_SAMPLES];
 extern	int16_t		pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-
-extern	uint32_t *InitAudioBuffers(void);
-extern	uint8_t StartAudioBuffers(uint8_t handle,int16_t* audio_in_buffer,int16_t* audio_out_buffer);
-extern	void SetEffectMode(void);
-extern	void SetGeneratorMode(void);
-extern	void SetMasterVolume(uint16_t volume);
 
 #endif /* MODULES_AUDIO_AUDIO_H_ */

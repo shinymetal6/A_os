@@ -92,6 +92,24 @@ uint32_t dac_init(uint8_t handle)
 
 #endif
 
+#ifdef STM32H7xx_HAL_I2S_H
+
+uint32_t i2s_start(uint8_t handle)
+{
+	if ( ANALOG_DriverStruct[handle].i2s_start != NULL )
+		return ANALOG_DriverStruct[handle].i2s_start(handle);
+	return 1;
+}
+
+uint32_t i2s_init(uint8_t handle)
+{
+	if ( ANALOG_DriverStruct[handle].i2s_init != NULL )
+		return ANALOG_DriverStruct[handle].i2s_init(handle);
+	return 1;
+}
+
+#endif
+
 uint32_t codec_start(uint8_t handle)
 {
 	if ( ANALOG_DriverStruct[handle].codec_start != NULL )

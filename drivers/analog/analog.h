@@ -72,6 +72,8 @@ extern	uint32_t dac_start(uint8_t handle);
 extern	uint32_t dac_stop(uint8_t handle);
 extern	uint32_t dac_get_status(uint8_t handle);
 extern	uint32_t dac_init(uint8_t handle);
+extern	uint32_t i2s_init(uint8_t handle);
+extern	uint32_t i2s_start(uint8_t handle);
 extern	uint32_t codec_start(uint8_t handle);
 extern	uint32_t codec_stop(uint8_t handle);
 extern	uint32_t codec_get_status(uint8_t handle);

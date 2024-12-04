@@ -230,7 +230,7 @@ Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 		{
 			dhtxx_am230x_Drv->flags |= dhtxx_am230x_flags;
 			Sensors_DriverStruct[last_sensor_used_handle].sensor_id = sensor_id;
-			Sensors_DriverStruct[last_sensor_used_handle].status = DRIVER_STATUS_REQUESTED;
+			Sensors_DriverStruct[last_sensor_used_handle].status = DRIVER_STATUS_IN_USE;
 
 			last_sensor_used_handle++;
 			sensor_driver_request++;

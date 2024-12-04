@@ -31,10 +31,21 @@ typedef struct
 	I2S_HandleTypeDef 	*i2s;
 	uint8_t 			audio_flags;
 	uint8_t 			control_flags;
+	uint32_t 			wakeup_id;
 	float				master_volume;
-	int16_t 			*audio_in_buffer;
-	int16_t 			*audio_out_buffer;
+	int16_t 			*adc_buffer;
+	int16_t 			*dac_buffer;
 }I2S_Drv_TypeDef;
+
+/* status */
+#define		I2S_STATUS_HALF			0x01
+#define		I2S_STATUS_FULL			0x02
+#define		I2S_STATUS_STEREO		0x20
+#define		I2S_STATUS_DATA_READY	0x40
+#define		I2S_STATUS_RUNNING		0x80
+/* flags */
+#define		I2S_FLAGS_HALF_WAKEUP		0x20
+#define		I2S_FLAGS_FULL_WAKEUP		0x40
 
 extern 	I2S_HandleTypeDef hi2s2;
 extern	uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);

@@ -144,27 +144,7 @@ ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rs
 	}
 	return 0;
 }
-/*
-ITCM_AREA_CODE uint32_t get_wakeup_rsn(void)
-{
-uint32_t wakeup_rsn;
-	__disable_irq();
-	wakeup_rsn = process[Asys.current_process].wakeup_rsn;
-	process[Asys.current_process].wakeup_rsn = 0;
-	__enable_irq();
-	return wakeup_rsn;
-}
 
-ITCM_AREA_CODE uint32_t get_activation_flags(void)
-{
-uint32_t activation_flag;
-	__disable_irq();
-	activation_flag = process[Asys.current_process].wakeup_flags;
-	process[Asys.current_process].wakeup_flags = 0;
-	__enable_irq();
-	return activation_flag;
-}
-*/
 ITCM_AREA_CODE uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags )
 {
 	__disable_irq();

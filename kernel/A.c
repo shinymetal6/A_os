@@ -43,12 +43,6 @@ VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
 
 AOS_FLASH_END	uint8_t	aos_end[32]	 			= "A_os End Code";
 
-
-#ifdef CUSTOM_RAM
-CUSTOM_RAM		uint32_t		CustomRamStart;
-CUSTOM_RAM_END	uint32_t		CustomRamEnd;
-#endif
-
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 
 #ifdef	NETWORKING_ENABLED
@@ -222,23 +216,12 @@ void A_MPU_Config(void)
 
 void A_initialize_onchip_peripherals(void)
 {
-#ifdef CODEC_ENABLED
-	#ifdef CODEC_NAU88C22
-	Nau88c22_Init();
-	#endif
-#endif
-#ifdef LCD_ENABLED
-	LcdInit();
-#endif
 #ifdef USB_DEVICE_ENABLED
 #ifdef	STM32U575xx
 	HAL_Delay(1000);
 #endif
 	MX_USB_Device_Init();
 #endif // #ifdef USB_ENABLED
-#ifdef INTERNAL_RTC_ENABLED
-	A_RTC_init();
-#endif
 }
 
 

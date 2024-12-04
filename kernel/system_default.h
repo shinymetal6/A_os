@@ -137,11 +137,6 @@
 
 /* common for all processors */
 
-
-#define SYSTEM_RAM				__attribute__((section(".osSysRamStart"))) __attribute__ ((aligned (32)))
-#define POOL_RAM				__attribute__((section(".osMemPoolStart"))) __attribute__ ((aligned (32)))
-#define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
-#define AOS_FLASH_END			__attribute__((section(".aos_flash_end"))) __attribute__ ((aligned (32))) const
 //#define	VERSIONING
 // interrupts priorities
 #define	PendSV_PRIORITY			15
@@ -150,6 +145,6 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"v2024.12.00-rc8"
+#define	A_OS_VERSION			"v2024.12.00-rc10"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

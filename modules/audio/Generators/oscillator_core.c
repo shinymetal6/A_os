@@ -59,7 +59,7 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const int16_t 
 		-11584,-11296,-11002,-10700,-10393,-10079,-9759,-9433,-9101,-8764,-8422,-8075,-7722,-7365,-7004,-6639,
 		-6269,-5896,-5519,-5139,-4755,-4369,-3980,-3589,-3196,-2800,-2403,-2005,-1605,-1205,-803,-402,
 };
-#endif
+#else
 #ifdef STM32H7xx_HAL_DAC_H
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const uint16_t rom_osc_sine_tab[WAVETABLE_SIZE] =
 {
@@ -80,6 +80,7 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const uint16_t
 		0x258, 0x27c, 0x2a0, 0x2c6, 0x2ed, 0x314, 0x33c, 0x365, 0x38e, 0x3b8, 0x3e3, 0x40e, 0x43a, 0x467, 0x494, 0x4c2,
 		0x4f0, 0x51f, 0x54e, 0x57d, 0x5ad, 0x5dd, 0x60e, 0x63f, 0x670, 0x6a1, 0x6d3, 0x705, 0x737, 0x769, 0x79b, 0x7cd,
 };
+#endif
 #endif
 
 AUDIO_FAST_RAM	int32_t		osc_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
@@ -297,7 +298,7 @@ int16_t		tri_delta = MIN_SINEVAL;
 		osc_sine_tab[i] = rom_osc_sine_tab[i];
 		// 2.2 square
 		osc_square_tab[i] = MAX_SINEVAL;
-		if ( i < AUDIO_BUF_SIZE/2 )
+		if ( i < NUMBER_OF_AUDIO_SAMPLES/2 )
 			osc_square_tab[i] = MIN_SINEVAL;
 		// 2.3 triangle
 		osc_tri_tab[i] = tri_delta;

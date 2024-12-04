@@ -31,15 +31,10 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
-#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  	__attribute__ ((aligned (32)))
-#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (32)))
-#define AUDIOBUFS_RAM		__attribute__((section(".audiobufs")))  	__attribute__ ((aligned (32)))
-#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) 	__attribute__ ((aligned (32)))
-#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   	__attribute__ ((aligned (32)))
-#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
-#define D2_BUFFER			__attribute__((section(".d2ram"))) 		 	__attribute__ ((aligned (32)))
-
-#define FLASH_DATA_TABLE	__attribute__((section(".table"))) 		 	__attribute__ ((aligned (32))) const
+#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
+#define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+#define PRESSO_PROGRAM		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
 
 /* Clock */
 #define TICK_HZ 				1000U
@@ -49,7 +44,6 @@
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12
 #define	ASSIGNED				1
-
 
 #define	DFU_BOOT_ENTRY			0x1FF09800
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE

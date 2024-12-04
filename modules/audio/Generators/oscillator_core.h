@@ -54,7 +54,7 @@ typedef struct _OscillatorsTypeDef
 
 #define	DAC_BIT							16
 #define	DAC_RESOLUTION					(1<<DAC_BIT)
-#define	WAVETABLE_SIZE					AUDIO_BUF_SIZE
+#define	WAVETABLE_SIZE					NUMBER_OF_AUDIO_SAMPLES
 
 #define	MIDI_NOTES						128
 

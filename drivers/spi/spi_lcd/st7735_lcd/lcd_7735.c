@@ -29,7 +29,7 @@
 
 #ifdef STM32H7xx_HAL_SPI_H
 
-FRAME_BUFFER 	uint16_t	rect[ST7735_WIDTH*ST7735_HEIGHT];
+uint16_t		rect[ST7735_WIDTH*ST7735_HEIGHT];
 GPIO_TypeDef	*ST7735_cs_port;
 uint16_t		ST7735_cs_bit;
 GPIO_TypeDef	*ST7735_reset_port;

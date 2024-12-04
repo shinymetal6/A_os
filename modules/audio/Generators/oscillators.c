@@ -73,7 +73,7 @@ uint32_t		oldest_osc=0;
 	return osc_ret;
 }
 
-ITCM_AREA_CODE	void DisableOscillator( uint16_t midi_note , uint8_t velocity)
+ITCM_AREA_CODE	void NoteOFF( uint16_t midi_note , uint8_t velocity)
 {
 uint8_t	osc_number;
 	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
@@ -81,7 +81,6 @@ uint8_t	osc_number;
 		if (( Oscillator[osc_number].midi_note == midi_note ) && ((Oscillator[osc_number].state & OSCILLATOR_ON ) == OSCILLATOR_ON ))
 		{
 			Oscillator[osc_number].state |= OSCILLATOR_GO_OFF;
-			//Oscillator[osc_number].state &= ~OSCILLATOR_ON;
 		}
 	}
 }
@@ -99,7 +98,7 @@ uint8_t	osc_number;
 extern	float	midi_freq[128];
 float delta_phase_k =  (float )WAVETABLE_SIZE / (float )SAMPLE_FREQUENCY;
 
-ITCM_AREA_CODE	void EnableOscillator(uint16_t midi_note , uint8_t velocity)
+ITCM_AREA_CODE	void NoteON(uint16_t midi_note , uint8_t velocity)
 {
 float	delta_phase;
 float	freq;
@@ -110,7 +109,7 @@ uint32_t	osc_number,i;
 	{
 		Oscillator[osc_number].midi_note = midi_note;
 		freq = midi_freq[Oscillator[osc_number].midi_note] + Oscillator[osc_number].detune;
-		delta_phase = (float )WAVETABLE_SIZE / ((float )(SAMPLE_FREQUENCY*(AUDIO_BUF_SIZE / 256)) / freq);
+		delta_phase = (float )WAVETABLE_SIZE / ((float )(SAMPLE_FREQUENCY*(NUMBER_OF_AUDIO_SAMPLES / 256)) / freq);
 		Oscillator[osc_number+i].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
 
 		Oscillator[osc_number+i].current_phase = 0;

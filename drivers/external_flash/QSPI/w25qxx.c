@@ -459,7 +459,7 @@ uint8_t id = 0;
 		w25qxx_Drv->com.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
 		w25qxx_Drv->com.DummyCycles = W25Q_DUMMY_0;
 
-		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_REQUESTED;
+		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_IN_USE;
 
 		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
 		w25qxx_Drv->qspi_status_reg &= ~W25Q_NO_PROTECTION_MASK;

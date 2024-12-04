@@ -37,9 +37,8 @@ extern	uint8_t					last_analog_used_handle,analog_driver_request;
 
 extern int16_t					oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-extern	WaveLR_t				*audio_out, *audio_in;
 extern	AudioFlagsTypeDef		AudioFlags;
-extern	int16_t					pipe[MAX_BLOCK_EFFECTS+MAX_SINGLESAMPLE_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern	int16_t					pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 ITCM_AREA_CODE  static uint32_t int_i2s_init(uint8_t handle)
 {
@@ -49,11 +48,7 @@ ITCM_AREA_CODE  static uint32_t int_i2s_init(uint8_t handle)
 ITCM_AREA_CODE  static uint32_t int_i2s_start(uint8_t handle)
 {
 I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
-	if ( HAL_I2SEx_TransmitReceive_DMA(i2s_drv->i2s, (uint16_t*)i2s_drv->audio_out_buffer, (uint16_t*)i2s_drv->audio_in_buffer,AUDIO_BUF_SIZE*2))
-		return 1;
-	audio_out = (WaveLR_t *)i2s_drv->audio_out_buffer;
-	audio_in  = (WaveLR_t *)i2s_drv->audio_in_buffer;
-	return 0;
+	return HAL_I2SEx_TransmitReceive_DMA(i2s_drv->i2s, (uint16_t*)i2s_drv->dac_buffer, (uint16_t*)i2s_drv->adc_buffer,I2S_AUDIO_BUF_SIZE);
 }
 
 ITCM_AREA_CODE  static uint32_t int_i2s_stop(uint8_t handle)
@@ -77,9 +72,12 @@ I2S_Drv_TypeDef	*i2s_drv;
 
 		i2s_drv = (I2S_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
 
-		if ( ( i2s_drv->i2s == NULL ) || ( i2s_drv->audio_in_buffer == NULL ) || ( i2s_drv->audio_out_buffer == NULL ))
+		if ( ( i2s_drv->i2s == NULL ) || ( i2s_drv->adc_buffer == NULL ) || ( i2s_drv->dac_buffer == NULL ))
 				return DRIVER_REQUEST_FAILED;
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_REQUESTED;
+		if ( i2s_drv->wakeup_id == 0 )
+			return DRIVER_REQUEST_FAILED;
+
+		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
 		ANALOG_DriverStruct[last_analog_used_handle].i2s_start = int_i2s_start;
 		ANALOG_DriverStruct[last_analog_used_handle].i2s_stop = int_i2s_stop;
 		ANALOG_DriverStruct[last_analog_used_handle].i2s_get_status = int_i2s_get_status;
@@ -111,63 +109,22 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
-ITCM_AREA_CODE static void get_limits(uint16_t *start,uint16_t *end)
-{
-	if (( AudioFlags.audio_flags & AUDIO_HALFBUFOUT_FLAG ) == AUDIO_HALFBUFOUT_FLAG)
-	{
-		*start=0;
-		*end = HALF_NUMBER_OF_AUDIO_SAMPLES;
-	}
-	else
-	{
-		*start=HALF_NUMBER_OF_AUDIO_SAMPLES;
-		*end = NUMBER_OF_AUDIO_SAMPLES;
-	}
-}
-
-ITCM_AREA_CODE static void IrqProcessSamples(void)
-{
-uint16_t	start,end,i,pipe_nr;
-	get_limits(&start,&end);
-	if ((AudioFlags.audio_flags & AUDIO_GENERATE_FLAG ) == AUDIO_GENERATE_FLAG)
-	{
-		RunOscillator32();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			pipe[0][i] = oscout_buffer[i];
-
-		pipe_nr = BlockEffectsSequencer();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe[pipe_nr][i];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe[pipe_nr][i];
-		}
-	}
-	else
-	{
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			pipe[0][i] = audio_in[i+start].channel[AUDIO_LEFT_CH];
-		}
-		get_limits(&start,&end);
-		pipe_nr = BlockEffectsSequencer();
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		{
-			audio_out[i+start].channel[AUDIO_LEFT_CH]  = pipe[pipe_nr][i];
-			audio_out[i+start].channel[AUDIO_RIGHT_CH] = pipe[pipe_nr][i];
-		}
-	}
-}
-
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
 		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
-		i2s_drv->audio_flags |= (AUDIO_HALFBUFOUT_FLAG | AUDIO_OUT_READY_FLAG);
-		i2s_drv->audio_flags |= (AUDIO_HALFBUFIN_FLAG  | AUDIO_IN_READY_FLAG );
+		i2s_drv->status |= (I2S_STATUS_HALF | I2S_STATUS_DATA_READY);
+		i2s_drv->status |= I2S_STATUS_HALF;
+		i2s_drv->status &= ~I2S_STATUS_FULL;
+
+		RunOscillator32();
+		effects_apply(i2s_drv->status & I2S_STATUS_FULL,AUDIO_IS_STEREO,i2s_drv->dac_buffer);
+
+		if ( i2s_drv->flags & I2S_FLAGS_HALF_WAKEUP)
+			activate_process(ANALOG_DriverStruct[handle].process,i2s_drv->wakeup_id,i2s_drv->wakeup_id);
 	}
-	IrqProcessSamples();
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
@@ -176,10 +133,16 @@ uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
 		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
-		i2s_drv->audio_flags &= ~( AUDIO_HALFBUFOUT_FLAG | AUDIO_HALFBUFIN_FLAG);
-		i2s_drv->audio_flags |= (AUDIO_OUT_READY_FLAG |AUDIO_IN_READY_FLAG );
+		i2s_drv->status |= (I2S_STATUS_FULL | I2S_STATUS_DATA_READY);
+		i2s_drv->status |= I2S_STATUS_FULL;
+		i2s_drv->status &= ~I2S_STATUS_HALF;
+
+		RunOscillator32();
+		effects_apply(i2s_drv->status & I2S_STATUS_FULL,AUDIO_IS_STEREO,i2s_drv->dac_buffer);
+
+		if ( i2s_drv->flags & I2S_FLAGS_FULL_WAKEUP)
+			activate_process(ANALOG_DriverStruct[handle].process,i2s_drv->wakeup_id,i2s_drv->wakeup_id);
 	}
-	IrqProcessSamples();
 }
 
 #endif // #ifdef STM32H7xx_HAL_I2S_H

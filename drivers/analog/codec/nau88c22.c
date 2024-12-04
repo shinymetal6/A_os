@@ -132,7 +132,7 @@ const Nau88c22_t	Nau88c22[] =
 			NAU88C22_OUT1_MIXER_CONTROL,
 			0x0001	// Right DAC connected to RMIX
 		},
-#ifdef EXT_FREQ_12MHZ
+#ifdef NAU88C22_EXT_FREQ_12MHZ
 		/* 12 MHz ext clock */
 		/*
 			R = 98.304/12.000 = 8.192 --> 0x3126E9
@@ -162,7 +162,7 @@ const Nau88c22_t	Nau88c22[] =
 			0	// struct_terminator
 		},
 #endif
-#ifdef EXT_FREQ_12_288MHZ
+#ifdef NAU88C22_EXT_FREQ_12_288MHZ
 		/* 12.288 MHz ext clock */
 		/*
 			R = 98.304/12.288 = 8 --> 0
@@ -224,7 +224,7 @@ Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[ha
 	return codec_drv->status;
 }
 
-ITCM_AREA_CODE static uint32_t nau88c22_init(uint8_t handle)
+ITCM_AREA_CODE uint32_t nau88c22_init(uint8_t handle)
 {
 Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 uint8_t	i = 0;

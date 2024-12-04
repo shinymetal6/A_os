@@ -39,6 +39,7 @@ typedef struct
 /* status */
 #define		DAC_STATUS_HALF			0x01
 #define		DAC_STATUS_FULL			0x02
+#define		DAC_STATUS_STEREO		0x20
 #define		DAC_STATUS_DATA_READY	0x40
 #define		DAC_STATUS_RUNNING		0x80
 /* flags */

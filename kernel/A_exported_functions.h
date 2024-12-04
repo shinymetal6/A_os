@@ -26,23 +26,29 @@
 #include "main.h"
 #include "system_default.h"
 
-/* Memory */
 #include "mem.h"
-
-/* scheduler */
 #include "scheduler.h"
-
-/* timer */
 #include "timer.h"
 
-/* qspi */
+#include "system_functions.h"
+#include "mbx.h"
+#include "svc.h"
 
-/* flash */
-extern	uint32_t get_flash_storage_ptr(void);
-extern 	uint32_t get_flash_size(void);
+#include "../drivers/drivers.h"
+#include "../modules/modules.h"
+#include "dfu_manager.h"
+#include "flash_updater/flash_updater_common.h"
 
-/* compatibility */
-extern	void 	A_Error_Handler(char * file, int line);
+#ifdef NETWORKING_ENABLED
+#include "../modules/lwip2.2/App/lwip.h"
+#ifdef MQTT_ENABLE
+	#include "../modules/mqtt_client/mqtt_client.h"
+#endif // #ifdef MQTT_ENABLE
+#ifdef WIFI_ESP01S
+	#include "../modules/WiFi/esp01_s.h"
+#endif // 	#ifdef WIFI_ESP01S
+#endif // #ifdef NETWORKING_ENABLED
+
 
 /* timer id */
 #define	TIMER_ID_0		0x01
@@ -61,73 +67,6 @@ extern	void 	A_Error_Handler(char * file, int line);
 #define	TIMERFLAGS_IN_USE			0x80
 #define	TIMERFLAGS_DISABLED			0x00
 #define	TIMERFLAGS_USERMASK			0x0f
-
-#include "system_functions.h"
-
-/* hwmanager */
-extern	uint32_t allocate_hw(uint8_t peripheral,uint8_t config);
-extern	uint32_t deallocate_hw(uint8_t peripheral);
-extern	uint32_t allocate_hw_with_irq_callback(uint8_t bus_peripheral,uint8_t device_peripheral,uint8_t config,void (*irq_callback)(void));
-extern	uint8_t get_busdevice_from_device(uint8_t device_peripheral);
-
-/* hwmanager : usb */
-extern	uint32_t hw_set_usb_rx_buffer(uint8_t *rx_buf);
-extern	uint32_t hw_send_usb(uint8_t* ptr, uint16_t len);
-extern	uint16_t hw_UsbGetRXLen(void);
-
-/* module_manager */
-extern	uint32_t allocate_module(uint32_t module,uint8_t config);
-extern	uint32_t deallocate_module(uint32_t module);
-
-/* mailbox */
-extern void mbx_send(uint8_t process_number,uint8_t mailbox_number,uint8_t *mbx_ptr,uint32_t mbx_size);
-extern	uint32_t mbx_receive(uint8_t mailbox_number,uint8_t *buf_ptr);
-
-/* support functions */
-extern	uint32_t A_bit_index_to_num(uint32_t bit_index );
-
-
-/* svc ops */
-extern	int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
-
-#include "../drivers/drivers.h"
-#include "../modules/modules.h"
-
-
-#ifdef CODEC_ENABLED
-	#include "audio.h"
-	#ifdef CODEC_NAU88C22
-		#include "../drivers/codec/nau88c22.h"
-	#endif
-#endif // #ifdef CODEC_ENABLED
-
-#ifdef LCD_096_ENABLED
-	#include "../drivers/lcd_st7735/st7735.h"
-	#include "../drivers/lcd_st7735/lcd_7735.h"
-#endif // #ifdef LCD_096_ENABLED
-
-#ifdef LCD_2I8_ENABLED
-	#include "../drivers/lcd_ili9341/lcd_ili9341.h"
-#endif // #ifdef LCD_2I8_ENABLED
-
-
-#ifdef INTERNAL_RTC_ENABLED
-	#include "../drivers/internal_rtc/internal_rtc.h"
-#endif // #ifdef INTERNAL_RTC_ENABLED
-
-
-#ifdef NETWORKING_ENABLED
-#include "../modules/lwip2.2/App/lwip.h"
-#ifdef MQTT_ENABLE
-	#include "../modules/mqtt_client/mqtt_client.h"
-#endif // #ifdef MQTT_ENABLE
-#ifdef WIFI_ESP01S
-	#include "../modules/WiFi/esp01_s.h"
-#endif // 	#ifdef WIFI_ESP01S
-#endif // #ifdef NETWORKING_ENABLED
-
-#include "dfu_manager.h"
-#include "flash_updater/flash_updater_common.h"
 
 /* devices , maximum index is 31 */
 #define	HWDEV_SPILCD				0

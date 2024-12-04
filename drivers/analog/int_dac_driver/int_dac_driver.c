@@ -116,7 +116,6 @@ ITCM_AREA_CODE void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
 	__disable_irq();
-	HAL_GPIO_WritePin(BT_EN_GPIO_Port, BT_EN_Pin, GPIO_PIN_SET);
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
@@ -125,12 +124,11 @@ uint32_t handle;
 		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
 		{
 			RunOscillator32();
-			effects_apply(dac_drv->status & DAC_STATUS_FULL,dac_drv->dac_buffer);
+			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
 		}
 		if ( dac_drv->flags & (DAC_FLAGS_HALF_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
 			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
 	}
-	HAL_GPIO_WritePin(BT_EN_GPIO_Port, BT_EN_Pin, GPIO_PIN_RESET);
 	__enable_irq();
 }
 
@@ -138,7 +136,6 @@ ITCM_AREA_CODE void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
 	__disable_irq();
-	HAL_GPIO_WritePin(BT_EN_GPIO_Port, BT_EN_Pin, GPIO_PIN_SET);
 	if ( (handle = get_handle_from_dac_dma_channel(hdac)) != 255 )
 	{
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
@@ -147,12 +144,11 @@ uint32_t handle;
 		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
 		{
 			RunOscillator32();
-			effects_apply(dac_drv->status & DAC_STATUS_FULL,dac_drv->dac_buffer);
+			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
 		}
 		if ( dac_drv->flags & (DAC_FLAGS_FULL_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
 			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
 	}
-	HAL_GPIO_WritePin(BT_EN_GPIO_Port, BT_EN_Pin, GPIO_PIN_RESET);
 	__enable_irq();
 }
 

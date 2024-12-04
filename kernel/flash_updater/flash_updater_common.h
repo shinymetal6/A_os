@@ -36,5 +36,7 @@ extern void flash_update(uint8_t *flash_data,uint32_t size);
 extern void flash_update(uint8_t *flash_data,uint32_t size);
 #endif
 
+extern	uint32_t get_flash_storage_ptr(void);
+extern 	uint32_t get_flash_size(void);
 
 #endif /* KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_ */

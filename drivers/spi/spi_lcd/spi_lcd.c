@@ -121,7 +121,7 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 		if ( spi_lcd_Drv->dc_port == NULL )
 			return DRIVER_REQUEST_FAILED;
 
-		SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_REQUESTED;
+		SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_IN_USE;
 		last_spi_used_handle++;
 		return last_spi_used_handle-1;
 	}

@@ -24,7 +24,7 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/kernel_opt.h"
+//#include "../../kernel/kernel_opt.h"
 #ifdef AUDIO_GENERATORS_ENABLED
 
 #include "audio.h"
@@ -62,9 +62,9 @@ uint8_t i;
 	return EFFECT_NOSPACELEFT;
 }
 
-void effects_apply(uint8_t full_flag,int16_t *dac_buffer)
+void effects_apply(uint8_t full,uint8_t stereo,int16_t *dac_buffer)
 {
-uint32_t	i,j,last_effect;
+uint32_t	i,j,last_effect=0;
 
 	for(i=0;i<MAX_EFFECTS;i++)
 	{
@@ -76,15 +76,31 @@ uint32_t	i,j,last_effect;
 		else
 			break;
 	}
-	if ( full_flag == 0 )
+	if ( full == 0 )
 	{
-		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			dac_buffer[i] = pipe[last_effect][i];
+		if ( stereo )
+		{
+			for(i=HALF_NUMBER_OF_AUDIO_SAMPLES*2,j=0;i<NUMBER_OF_AUDIO_SAMPLES*2;i+=2,j++)
+				dac_buffer[i] = dac_buffer[i+1] = pipe[last_effect][j];
+		}
+		else
+		{
+			for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
+				dac_buffer[i] = pipe[last_effect][j];
+		}
 	}
 	else
 	{
-		for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
-			dac_buffer[i] = pipe[last_effect][j];
+		if ( stereo )
+		{
+			for(i=0,j=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES*2;i+=2,j++)
+				dac_buffer[i] = dac_buffer[i+1] = pipe[last_effect][j];
+		}
+		else
+		{
+			for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+				dac_buffer[i] = pipe[last_effect][i];
+		}
 	}
 }
 
