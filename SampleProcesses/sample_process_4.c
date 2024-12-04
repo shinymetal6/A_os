@@ -14,15 +14,21 @@
  * Project : A_os
 */
 /*
- * AX_P2412172_00_MembraneConcentrator.h
+ * sample_process_4.c
  *
- *  Created on: Nov 21, 2024
+ *  Created on: Dec 4, 2024
  *      Author: fil
  */
 
-#ifndef BOARDS_OLD_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
-#define BOARDS_OLD_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 
+#include "main.h"
+#include "A_os_includes.h"
+#ifdef SAMPLE_PROCESSES_ENABLED
+#include "sample_processes_includes.h"
 
+void sample_process_4(uint32_t process_id)
+{
+	wait_event(HW_SLEEP_FOREVER);
+}
+#endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
-#endif /* BOARDS_OLD_AX_P2412172_00_MEMBRANECONCENTRATOR_H_ */

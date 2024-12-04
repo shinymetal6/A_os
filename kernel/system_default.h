@@ -27,29 +27,11 @@
 	#ifdef STM32H743ZI2_NUCLEO
 		#include "../boards/STM32H743ZI2_NUCLEO.h"
 	#endif
-	#ifdef	FY_201023_00
-		#include "../boards/FY_201023_00.h"
-	#endif
-	#ifdef	FY_201023_01
-		#include "../boards/FY_201023_01.h"
-	#endif
-	#ifdef	FY_201023_01_LOWPOWER
-		#include "../boards/FY_201023_01_LOWPOWER.h"
-	#endif
-	#ifdef	BB2xx_743
-		#include "../boards/BB2xx_743.h"
-	#endif
-	#ifdef	VB1xx
-		#include "../boards/VB1xx.h"
-	#endif
 	#ifdef	VB_10x
 		#include "../boards/VB_10x_00.h"
 	#endif
 	#ifdef	MEMBRANE_2412172_00
 		#include "../boards/AX_P2412172_00_MembraneConcentrator.h"
-	#endif
-	#ifdef	FL_090724_00
-		#include "../boards/FL_090724_00.h"
 	#endif
 #ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
@@ -63,81 +45,12 @@
 	#endif
 #endif
 
-#ifdef	STM32H563xx
-	#ifdef STM32H563ZI2_NUCLEO
-		#include "../boards/STM32H563ZI_NUCLEO.h"
-	#endif
-#endif
-
-#ifdef	STM32U575xx
-	#ifdef AX_P2212157_CONC
-		#include "../boards/AX_P2212157_CONC.h"
-	#endif
-	#ifdef STM32U575ZIT_NUCLEO
-		#include "../boards/STM32U575ZITXQ_NUCLEO.h"
-	#endif
-	#ifdef STM32U575ZIT_NUCLEO_DCC
-		#include "../boards/STM32U575ZITXQ_NUCLEO_DCC.h"
-	#endif
-	#ifdef STM32U575ZIT_NUCLEO_DMX
-		#include "../boards/STM32U575ZITXQ_NUCLEO_DMX.h"
-	#endif
-#endif
-
-#ifdef STM32F746xx
-	#ifdef STM32F746_GDISCO
-		#include "../boards/STM32F746G_DISCO.h"
-	#endif
-#endif
-
-#ifdef STM32L431xx
-	#ifdef AX_P2311171_RS
-		#include "../boards/AX_P2311171_RS.h"
-	#endif
-#endif
-
-#ifdef STM32F446xx
-	#ifdef STM32F446RE_NUCLEO
-		#include "../boards/STM32F446RE_NUCLEO.h"
-	#endif
-#endif
-
-#ifdef STM32L152xE
-	#ifdef STM32L152RE_NUCLEO
-		#include "../boards/STM32L152RE_NUCLEO.h"
-	#endif
-#endif
-
-
-#ifdef STM32G491xx
-	#ifdef STM32G491RE_NUCLEO
-		#include "../boards/STM32G491RE_NUCLEO.h"
-	#endif
-	#ifdef NEVOL_2416176_00
-		#include "../boards/AX_P2416176_00_NEVOL.h"
-	#endif
-	#ifdef MEMBRANE_WS_2412171_00
-		#include "../boards/MEMBRANE_WS_2412171_00.h"
-	#endif
-	#ifdef MEMBRANE_TEMP_2412171_00
-		#include "../boards/MEMBRANE_TEMP_2412171_00.h"
-	#endif
-#endif
-
-#ifdef STM32WL55xx
-	#ifdef CORE_CM4
-		#include "../boards/STM32WL55xx_CM4.h"
-	#endif
-#endif
-
-
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif
 
 /* common for all processors */
 
-//#define	VERSIONING
 // interrupts priorities
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12
