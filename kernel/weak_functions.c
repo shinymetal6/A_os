@@ -62,6 +62,11 @@ __weak void MX_USB_HOST_Process(void)
 
 }
 
+__weak void MX_FATFS_Init(void)
+{
+
+}
+
 __weak extern	uint8_t CDC_Receive_Callback(uint8_t* Buf, uint16_t Len)
 {
 	return 0;

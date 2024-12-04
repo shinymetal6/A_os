@@ -24,7 +24,7 @@
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #include "../audio.h"
 #include "../effects.h"
@@ -34,38 +34,37 @@
 #include "oscillators.h"
 #include "oscillator_core.h"
 
-AUDIO_FAST_RAM					OscillatorsFlagsTypeDef			OscillatorsFlags;
 extern	AudioFlagsTypeDef		AudioFlags;
 
 AUDIO_FAST_RAM	__attribute__ ((aligned (16))) OscillatorsTypeDef	Oscillator[NUMOSCILLATORS];
 
 ITCM_AREA_CODE	uint32_t FindOscillatorByMidiNote(uint8_t midi_note)
 {
-uint32_t	osc_number;
-	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
-		if ( Oscillator[osc_number].midi_note == midi_note )
-			return osc_number;
+uint32_t	i;
+	for(i=0;i<NUMOSCILLATORS;i++)
+		if ( Oscillator[i].midi_note == midi_note )
+			return i;
 	return NUMOSCILLATORS+1;
 }
 
 ITCM_AREA_CODE	uint32_t FindFreeOscillator(void)
 {
-uint32_t		osc_number;
+uint32_t		i;
 uint8_t			osc_ret = 0;
 uint32_t		oldest_osc=0;
 
-	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number+=VOICES)
+	for(i=0;i<NUMOSCILLATORS;i+=VOICES)
 	{
-		if ( (Oscillator[osc_number].state & OSCILLATOR_ON ) != OSCILLATOR_ON )
+		if ( (Oscillator[i].state & OSCILLATOR_ON ) != OSCILLATOR_ON )
 		{
-			return osc_number;
+			return i;
 		}
 		else
 		{
-			if ( Oscillator[osc_number].oscillator_age > oldest_osc )
+			if ( Oscillator[i].oscillator_age > oldest_osc )
 			{
-				oldest_osc = Oscillator[osc_number].oscillator_age;
-				osc_ret = osc_number;
+				oldest_osc = Oscillator[i].oscillator_age;
+				osc_ret = i;
 			}
 		}
 	}
@@ -75,28 +74,29 @@ uint32_t		oldest_osc=0;
 
 ITCM_AREA_CODE	void NoteOFF( uint16_t midi_note , uint8_t velocity)
 {
-uint8_t	osc_number;
-	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
+uint8_t	i;
+	for(i=0;i<NUMOSCILLATORS;i++)
 	{
-		if (( Oscillator[osc_number].midi_note == midi_note ) && ((Oscillator[osc_number].state & OSCILLATOR_ON ) == OSCILLATOR_ON ))
+		if (( Oscillator[i].midi_note == midi_note ) && ((Oscillator[i].state & OSCILLATOR_ON ) == OSCILLATOR_ON ))
 		{
-			Oscillator[osc_number].state |= OSCILLATOR_GO_OFF;
+			Oscillator[i].state |= OSCILLATOR_GO_OFF;
 		}
 	}
 }
 
 ITCM_AREA_CODE	void DisableAllOscillator(void)
 {
-uint8_t	osc_number;
-	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
+uint8_t	i;
+	for(i=0;i<NUMOSCILLATORS;i++)
 	{
-		//Oscillator[osc_number].state |= OSCILLATOR_GO_OFF;
-		Oscillator[osc_number].state &= ~OSCILLATOR_ON;
+		//Oscillator[i].state |= OSCILLATOR_GO_OFF;
+		Oscillator[i].state &= ~OSCILLATOR_ON;
 	}
 }
 
 extern	float	midi_freq[128];
-float delta_phase_k =  (float )WAVETABLE_SIZE / (float )SAMPLE_FREQUENCY;
+//float delta_phase_k =  (float )WAVETABLE_SIZE / (float )SAMPLE_FREQUENCY;
+extern	uint32_t 				sample_frequency;
 
 ITCM_AREA_CODE	void NoteON(uint16_t midi_note , uint8_t velocity)
 {
@@ -109,40 +109,33 @@ uint32_t	osc_number,i;
 	{
 		Oscillator[osc_number].midi_note = midi_note;
 		freq = midi_freq[Oscillator[osc_number].midi_note] + Oscillator[osc_number].detune;
-		delta_phase = (float )WAVETABLE_SIZE / ((float )(SAMPLE_FREQUENCY*(NUMBER_OF_AUDIO_SAMPLES / 256)) / freq);
+		delta_phase = (float )WAVETABLE_SIZE / ((float )sample_frequency / freq);
 		Oscillator[osc_number+i].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
-
 		Oscillator[osc_number+i].current_phase = 0;
 		Oscillator[osc_number+i].midi_note = midi_note;
 		Oscillator[osc_number+i].velocity = velocity;
 		Oscillator[osc_number+i].state = OSCILLATOR_ON;
 		Oscillator[osc_number+i].oscillator_age = 0;
-		Oscillator[osc_number+i].volume = ((float )OscillatorsFlags.osc_volume[i] / 10.0F);
-		/* TEST */
-		Oscillator[osc_number+i].volume = ((float )0.5F);
-		/* TEST END */
+		Oscillator[osc_number+i].volume = ((float )1.0F);
 	}
 }
 
 void InitOscillators(void)
 {
-float	freq,delta_phase;
-uint16_t	osc_number;
+uint16_t	i;
 
-	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
+	sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
+	for(i=0;i<NUMOSCILLATORS;i++)
 	{
-		Oscillator[osc_number].current_phase = 0.0f;
-		Oscillator[osc_number].detune = 0.0f;
-		Oscillator[osc_number].state &= ~OSCILLATOR_ON;
-		Oscillator[osc_number].waveform = SINE;
-		Oscillator[osc_number].midi_note = INVALID_MIDI_NOTE;
-		Oscillator[osc_number].duty = 50*DUTY_SCALE;
-		Oscillator[osc_number].volume = 1.0F;
-		freq = midi_freq[69] + Oscillator[osc_number].detune;
-		delta_phase = (float )WAVETABLE_SIZE / ((float )SAMPLE_FREQUENCY / freq);
-		Oscillator[osc_number].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
-		Oscillator[osc_number].delta_phase = 0;
-		Oscillator[osc_number].state = 0;
+		Oscillator[i].current_phase = 0.0f;
+		Oscillator[i].detune = 0.0f;
+		Oscillator[i].state &= ~OSCILLATOR_ON;
+		Oscillator[i].waveform = SINE;
+		Oscillator[i].midi_note = INVALID_MIDI_NOTE;
+		Oscillator[i].duty = 50*DUTY_SCALE;
+		Oscillator[i].volume = 1.0F;
+		Oscillator[i].delta_phase = 0;
+		Oscillator[i].state = 0;
 	}
 	InitOscillatorsTables();
 }
@@ -156,6 +149,19 @@ uint8_t	i;
 			return i;
 	}
 	return 255;
+}
+
+float Midi2Freq(uint8_t midi_note )
+{
+	if ( midi_note < MIDI_NOTES)
+		return midi_freq[midi_note];
+	return 0;
+}
+
+void SetSampleFrequency(uint32_t new_sample_frequency)
+{
+	sample_frequency = new_sample_frequency;
+
 }
 #endif // #ifdef AUDIO_GENERATORS_ENABLED
 

@@ -157,10 +157,6 @@ const Nau88c22_t	Nau88c22[] =
 			NAU88C22_PLL_K3,
 			0x0e9	//
 		},
-		{
-			NAU88C22_RESET,
-			0	// struct_terminator
-		},
 #endif
 #ifdef NAU88C22_EXT_FREQ_12_288MHZ
 		/* 12.288 MHz ext clock */
@@ -189,7 +185,7 @@ const Nau88c22_t	Nau88c22[] =
 		},
 #endif
 		{
-			NAU88C22_RESET,
+			NAU88C22_LAST_ELEMENT,
 			0	// struct_terminator
 		},
 };
@@ -200,12 +196,12 @@ ITCM_AREA_CODE static uint8_t Nau88c22_CheckPresent(I2C_HandleTypeDef *bus,uint1
 
 }
 
-ITCM_AREA_CODE static void Nau88c22_WriteReg(I2C_HandleTypeDef *bus,uint16_t device_address,uint8_t reg_address, uint16_t reg_data)
+ITCM_AREA_CODE static uint32_t Nau88c22_WriteReg(I2C_HandleTypeDef *bus,uint16_t device_address,uint8_t reg_address, uint16_t reg_data)
 {
 uint8_t i2c_data[2];
 	i2c_data[0] = (reg_address << 1) | ((reg_data & 0x100 )>> 8);
 	i2c_data[1] = reg_data & 0xff;
-	HAL_I2C_Mem_Write(bus, device_address, reg_address, 2, i2c_data, 2, NAU88C22_I2C_TIMEOUT);
+	return HAL_I2C_Mem_Write(bus, device_address, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_I2C_TIMEOUT);
 }
 
 ITCM_AREA_CODE static uint32_t nau88c22_start(uint8_t handle)
@@ -230,17 +226,18 @@ Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[ha
 uint8_t	i = 0;
 	if ( Nau88c22_CheckPresent(codec_drv->bus , codec_drv->device_address) == 0)
 	{
-		task_delay(20);
-		Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,NAU88C22_RESET,  0);	// reset
-		task_delay(20);
-		while(Nau88c22[i].reg_addr != NAU88C22_RESET )
+		if ( Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,NAU88C22_RESET,  0) )		// reset
+				return 1;
+		while(Nau88c22[i].reg_addr != NAU88C22_LAST_ELEMENT )
 		{
 			codec_drv->shadowregs[Nau88c22[i].reg_addr] = Nau88c22[i].reg_data;
-			Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,Nau88c22[i].reg_addr,  Nau88c22[i].reg_data);
+			if ( Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,Nau88c22[i].reg_addr,  Nau88c22[i].reg_data) )
+				return 1;
 			i++;
 		}
 		task_delay(1);
-		Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,NAU88C22_POWER_MANAGEMENT_1,  0x002f);
+		if ( Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,NAU88C22_POWER_MANAGEMENT_1,  0x002f) )
+			return 1;
 	}
 	return 0;
 }

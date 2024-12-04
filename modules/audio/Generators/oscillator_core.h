@@ -45,26 +45,17 @@ typedef struct _OscillatorsTypeDef
 #define	OSCILLATOR_GO_ON				0x04
 
 #define	INT_PRECISION					256
-#define	INT_PRECISION_SHIFT				(INT_PRECISION >> 5)
 #define	MAX_DETUNE_PERCENT_F			2.0f
 #define	SINE							0
 #define	TRIANGLE						1
 #define	SQUARE							2
 #define	NOISE							3
 
-#define	DAC_BIT							16
-#define	DAC_RESOLUTION					(1<<DAC_BIT)
 #define	WAVETABLE_SIZE					NUMBER_OF_AUDIO_SAMPLES
 
 #define	MIDI_NOTES						128
 
 #define	VOICES							2
-
-/*
-#define	OSC_OFF							0
-#define	OSC_GO_OFF						1
-#define	OSC_ON							2
-*/
 
 #define	DUTY_SCALE	(256.0F/100.0F)
 
