@@ -24,6 +24,7 @@
 #include "A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
+#ifdef 	LD1_GPIO_Port
 
 #define	xmodem_data_area	0x30001000
 #define	xmodem_data_len		0x2ffff
@@ -101,5 +102,12 @@ uint32_t	wakeup,flags;
 		}
 	}
 }
+#else
+void sample_process_1_xmodem(uint32_t process_id)
+{
+	wait_event(HW_SLEEP_FOREVER);
+}
+#endif // #ifdef 	LD1_GPIO_Port
+
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 

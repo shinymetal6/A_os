@@ -25,7 +25,7 @@
 
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-
+#ifdef 	LD3_GPIO_Port
 #define	DHT11_SENSOR_ID	0xdeadbeef
 extern	TIM_HandleTypeDef htim2;
 
@@ -82,5 +82,12 @@ uint32_t	wakeup,flags;
 		}
 	}
 }
+#else
+void sample_process_1_Dhtxx_am230x(uint32_t process_id)
+{
+	wait_event(HW_SLEEP_FOREVER);
+}
+#endif // #ifdef 	LD3_GPIO_Port
+
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
