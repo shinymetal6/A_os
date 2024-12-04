@@ -37,7 +37,7 @@ uint16_t		ST7735_reset_bit;
 uint16_t		ST7735_reset_time;
 GPIO_TypeDef	*ST7735_dc_port;
 uint16_t		ST7735_dc_bit;
-SPI_HandleTypeDef 	*spi_port;
+SPI_HandleTypeDef 	*ST7735_spi_port;
 
 // based on Adafruit ST7735 library for Arduino
 __attribute__((section(".table"))) const uint8_t
@@ -134,20 +134,20 @@ uint8_t this_cmd[8] = {0,0,0,0,0x01,0,0,0};
     task_delay(50);
     HAL_GPIO_WritePin(ST7735_reset_port, ST7735_reset_bit, GPIO_PIN_SET);
     ST7735_Select();
-    HAL_SPI_Transmit(spi_port, this_cmd, 8, ST7735_SPI_TIMEOUT);
+    HAL_SPI_Transmit(ST7735_spi_port, this_cmd, 8, ST7735_SPI_TIMEOUT);
     ST7735_Unselect();
 }
 
 static void ST7735_WriteCommand(uint8_t cmd)
 {
     HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(spi_port, &cmd, sizeof(cmd), ST7735_SPI_TIMEOUT);
+    HAL_SPI_Transmit(ST7735_spi_port, &cmd, sizeof(cmd), ST7735_SPI_TIMEOUT);
 }
 
 static void ST7735_WriteData(uint8_t* buff, size_t buff_size)
 {
     HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
-    HAL_SPI_Transmit(spi_port, buff, buff_size, ST7735_SPI_TIMEOUT);
+    HAL_SPI_Transmit(ST7735_spi_port, buff, buff_size, ST7735_SPI_TIMEOUT);
 }
 
 /* Rewritten to maintain alignment on smaller arm cores */
@@ -341,7 +341,7 @@ uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ui
     {
         for(x = w; x > 0; x--)
         {
-            HAL_SPI_Transmit(spi_port, data, sizeof(data), ST7735_SPI_TIMEOUT);
+            HAL_SPI_Transmit(ST7735_spi_port, data, sizeof(data), ST7735_SPI_TIMEOUT);
         }
     }
     ST7735_Unselect();
@@ -350,32 +350,18 @@ uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ui
 
 void ST7735_FillScreen(uint16_t color)
 {
+uint32_t	i;
+	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT;i++)
+		rect[i] = color;
 	ST7735_FillRectangle(0, 0, ST7735_WIDTH, ST7735_HEIGHT, color);
 }
 
-#ifdef SPILCD_USES_DMA
-void A_os_7735_SPI_DMA_TxCpltCallback(void)
-{
-		HWDevices[HWDEV_SPILCD].flags &= ~HWDEV_FLAGS_BUSY;
-}
-#endif
-
 void ST7735_ClearScreen(void)
 {
-
-#ifdef SPILCD_USES_DMA
-	ST7735_Select();
-    ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
-    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
-    HWDevices[HWDEV_SPILCD].flags |= HWDEV_FLAGS_BUSY;
-    /* rect already filled with black ... */
-    HAL_SPI_Transmit_DMA(spi_port, (uint8_t *)rect, ST7735_WIDTH*ST7735_HEIGHT*2);
-    while((HWDevices[HWDEV_SPILCD].flags & HWDEV_FLAGS_BUSY) == HWDEV_FLAGS_BUSY)
-    	task_delay(1);
-    ST7735_Unselect();
-#else
+uint32_t	i;
+	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT;i++)
+		rect[i] = ST7735_BLACK;
 	ST7735_FillScreen(ST7735_BLACK);
-#endif
 }
 
 void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)

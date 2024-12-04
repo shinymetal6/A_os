@@ -42,19 +42,13 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	spi_lcd_clear_screen(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+ITCM_AREA_CODE uint32_t	spi_lcd_clear_screen(uint8_t handle)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	spi_lcd_Drv->lcd_clear_screen();
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	spi_lcd_init(uint8_t handle)
-{
-SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
-	spi_lcd_Drv->lcd_init();
-	return 0;
-}
 
 ITCM_AREA_CODE uint32_t	spi_lcd_reset(uint8_t handle)
 {
@@ -68,20 +62,35 @@ ITCM_AREA_CODE uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightnes
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	if ( brightness <= FULL_BRIGHTNESS)
 	{
-		spi_lcd_Drv->backlight_timer->Instance->CCR1 = brightness;
 		spi_lcd_Drv->current_brightness = brightness;
+		switch(spi_lcd_Drv->backlight_timer_channel)
+		{
+		case	TIM_CHANNEL_1	:	spi_lcd_Drv->backlight_timer->Instance->CCR1 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_2	:	spi_lcd_Drv->backlight_timer->Instance->CCR2 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_3	:	spi_lcd_Drv->backlight_timer->Instance->CCR3 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_4	:	spi_lcd_Drv->backlight_timer->Instance->CCR4 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_5	:	spi_lcd_Drv->backlight_timer->Instance->CCR5 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_6	:	spi_lcd_Drv->backlight_timer->Instance->CCR6 = spi_lcd_Drv->current_brightness; break;
+		default : return 1;
+		}
+		HAL_TIM_PWM_Start(spi_lcd_Drv->backlight_timer,spi_lcd_Drv->backlight_timer_channel);
 	}
 	return 0;
 }
 
+ITCM_AREA_CODE uint32_t	spi_lcd_init(uint8_t handle)
+{
+SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
+	spi_lcd_Drv->lcd_init();
+	spi_lcd_set_brightness(handle,spi_lcd_Drv->current_brightness);
+	return 0;
+}
 
-ITCM_AREA_CODE uint32_t	spi_lcd_register(I2C_24xx_Drv_TypeDef *driver_private_data)
+ITCM_AREA_CODE uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *driver_private_data)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 	if ( SPI_DriverStruct[last_spi_used_handle].process == 0 )
 	{
-		if ( driver_private_data->wakeup_id == 0 )
-			return DRIVER_REQUEST_FAILED;
 		SPI_DriverStruct[last_spi_used_handle].process = get_current_process();
 		SPI_DriverStruct[last_spi_used_handle].driver_private_data = (uint32_t *)driver_private_data;
 
@@ -92,10 +101,11 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 		case LCD_IS_7735 :
 			ST7735_cs_port = spi_lcd_Drv->cs_port;
 			ST7735_cs_bit = spi_lcd_Drv->cs_bit;
-			ST7735_reset_port = spi_lcd_Drv->cs_port;
-			ST7735_reset_bit = spi_lcd_Drv->cs_bit;
-			ST7735_dc_port = spi_lcd_Drv->cs_port;
-			ST7735_dc_bit = spi_lcd_Drv->cs_bit;
+			ST7735_reset_port = spi_lcd_Drv->reset_port;
+			ST7735_reset_bit = spi_lcd_Drv->reset_bit;
+			ST7735_dc_port = spi_lcd_Drv->dc_port;
+			ST7735_dc_bit = spi_lcd_Drv->dc_bit;
+			ST7735_spi_port = spi_lcd_Drv->bus;
 			if ( spi_lcd_Drv->reset_time == 0 )
 				spi_lcd_Drv->reset_time = DEFAULT_RESET_TIME;
 			ST7735_reset_time = spi_lcd_Drv->reset_time;

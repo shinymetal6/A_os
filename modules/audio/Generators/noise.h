@@ -27,8 +27,12 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+	float				noise_weight;
 }NOISE_Gen_TypeDef;
+/* flags */
+#define	NOISE_ADD	0x01
 
+extern void Do_Noise(int16_t *in, int16_t *out, uint8_t index);
 
 
 #endif /* MODULES_AUDIO_GENERATORS_NOISE_H_ */

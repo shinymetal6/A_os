@@ -46,7 +46,6 @@ typedef struct _OscillatorsFlagsTypeDef
 extern	void InitOscillators(void);
 extern	void NoteON( uint16_t midi_note , uint8_t velocity);
 extern	void NoteOFF(uint16_t midi_note , uint8_t velocity);
-
-
+extern	uint8_t Freq2Midi(float freq );
 
 #endif /* MODULES_AUDIO_GENERATORS_OSCILLATORS_H_ */

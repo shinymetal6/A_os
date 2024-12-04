@@ -147,5 +147,15 @@ uint16_t	osc_number;
 	InitOscillatorsTables();
 }
 
+uint8_t Freq2Midi(float freq )
+{
+uint8_t	i;
+	for(i=0;i<MIDI_NOTES;i++)
+	{
+		if ((midi_freq[i]>=freq) && (midi_freq[i+1]<=freq))
+			return i;
+	}
+	return 255;
+}
 #endif // #ifdef AUDIO_GENERATORS_ENABLED
 

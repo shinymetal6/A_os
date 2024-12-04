@@ -32,6 +32,7 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	TIM_HandleTypeDef	*backlight_timer;
+	uint32_t			backlight_timer_channel;
 	SPI_HandleTypeDef 	*bus;
 	GPIO_TypeDef	 	*cs_port;
 	uint16_t			cs_bit;
@@ -53,13 +54,23 @@ typedef struct
 	uint32_t			(*lcd_draw_image)  (uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
 }SPI_LCD_DriverStruct_t;
 
-extern	GPIO_TypeDef	*ST7735_cs_port;
-extern	uint16_t		ST7735_cs_bit;
-extern	GPIO_TypeDef	*ST7735_reset_port;
-extern	uint16_t		ST7735_reset_bit;
-extern	uint16_t		ST7735_reset_time;
-extern	GPIO_TypeDef	*ST7735_dc_port;
-extern	uint16_t		ST7735_dc_bit;
+extern	GPIO_TypeDef		*ST7735_cs_port;
+extern	uint16_t			ST7735_cs_bit;
+extern	GPIO_TypeDef		*ST7735_reset_port;
+extern	uint16_t			ST7735_reset_bit;
+extern	uint16_t			ST7735_reset_time;
+extern	GPIO_TypeDef		*ST7735_dc_port;
+extern	uint16_t			ST7735_dc_bit;
+extern	SPI_HandleTypeDef 	*ST7735_spi_port;
+
+extern uint32_t	spi_lcd_init(uint8_t handle);
+extern uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *driver_private_data);
+extern uint32_t	spi_lcd_clear_screen(uint8_t handle);
+extern uint32_t	spi_lcd_fill_rect(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+extern uint32_t	spi_lcd_reset(uint8_t handle);
+extern uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness);
+
+
 
 #include	"st7735_lcd/lcd_7735.h"
 

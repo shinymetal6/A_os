@@ -94,7 +94,7 @@ DAC_Drv_TypeDef	*dac_drv;
 
 /************ Interrupt *************/
 
-ITCM_AREA_CODE  uint32_t get_handle_from_dac_dma_channel(DAC_HandleTypeDef *hdac)
+ITCM_AREA_CODE  static uint32_t get_handle_from_dac_dma_channel(DAC_HandleTypeDef *hdac)
 {
 uint32_t	i,drv_ret=255;
 	for(i=0;i<MAX_ANALOG_DRIVERS;i++)
@@ -112,6 +112,17 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
+ITCM_AREA_CODE  static void dac_irq_common(DAC_Drv_TypeDef	*dac_drv,uint32_t handle)
+{
+	if (( dac_drv->flags & DAC_FLAGS_USE_AUDIOMODULE) == DAC_FLAGS_USE_AUDIOMODULE)
+	{
+		RunOscillator32();
+		effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
+	}
+	if ( dac_drv->flags & DAC_FLAGS_WAKEUP)
+		activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
+}
+
 ITCM_AREA_CODE void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
 {
 uint32_t handle;
@@ -121,13 +132,7 @@ uint32_t handle;
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 		dac_drv->status |= DAC_STATUS_HALF;
 		dac_drv->status &= ~DAC_STATUS_FULL;
-		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
-		{
-			RunOscillator32();
-			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
-		}
-		if ( dac_drv->flags & (DAC_FLAGS_HALF_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
-			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
+		dac_irq_common(dac_drv,handle);
 	}
 	__enable_irq();
 }
@@ -141,13 +146,7 @@ uint32_t handle;
 		DAC_Drv_TypeDef	*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 		dac_drv->status |= DAC_STATUS_FULL;
 		dac_drv->status &= ~DAC_STATUS_HALF;
-		if ( dac_drv->flags & (DAC_FLAGS_USE_AUDIOMODULE | DAC_FLAGS_USE_AUDIOMODULE))
-		{
-			RunOscillator32();
-			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
-		}
-		if ( dac_drv->flags & (DAC_FLAGS_FULL_WAKEUP | DAC_FLAGS_ALL_WAKEUP))
-			activate_process(ANALOG_DriverStruct[handle].process,EVENT_DAC_IRQ,HW_DAC);
+		dac_irq_common(dac_drv,handle);
 	}
 	__enable_irq();
 }

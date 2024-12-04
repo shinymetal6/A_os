@@ -26,12 +26,10 @@
 #include "../../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_I2S_H
+#ifdef AUDIO_GENERATORS_ENABLED
 #include "../audio.h"
 #include "../effects.h"
 
-#include "oscillators.h"
-#include "oscillator_core.h"
 #include "noise.h"
 
 #ifdef STM32H7xx_HAL_RNG_H
@@ -52,19 +50,34 @@ NOISE_Gen_TypeDef	*NOISE_Gen = (NOISE_Gen_TypeDef *)Effects[index].private_data;
 		{
 	#ifdef	STM32H7xx_HAL_RNG_H
 			HAL_RNG_GenerateRandomNumber(&hrng, &random_number);
-			out[i] =  (random_number>>16) & 0xffff;
-			out[i+1] =  random_number & 0xffff;
+			if (( NOISE_Gen->flags & NOISE_ADD) == NOISE_ADD)
+			{
+				out[i]   =  (in[i]   >> 1) + (int16_t )( (float )( random_number >> 16    ) * NOISE_Gen->noise_weight);
+				out[i+1] =  (in[i+1] << 1) + (int16_t )( (float )( random_number & 0xffff ) * NOISE_Gen->noise_weight);
+			}
+			else
+			{
+				out[i]   =  (random_number >> 16) & 0xffff;
+				out[i+1] =  random_number & 0xffff;
+			}
 	#else
-			out[i] =  (rand()>>16) & 0xffff;
-			out[i+1] =  rand() & 0xffff;
+			if (( NOISE_Gen->flags & NOISE_ADD) == NOISE_ADD)
+			{
+				out[i]   =  (in[i]   >> 1 ) + (((rand()>>16) & 0xffff) >> 1);
+				out[i+1] =  (in[i+1] >> 1 ) + ((rand() & 0xffff)       >> 1);
+			}
+			else
+			{
+				out[i]   =  (random_number >> 16) & 0xffff;
+				out[i+1] =  random_number & 0xffff;
+			}
 	#endif
 		}
 	}
 	else
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 			out[i] = in[i];
-
 }
 
 
-#endif // #ifdef STM32H7xx_HAL_I2S_H
+#endif // #ifdef AUDIO_GENERATORS_ENABLED

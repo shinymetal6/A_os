@@ -76,7 +76,7 @@ uint32_t	i,j,last_effect=0;
 		else
 			break;
 	}
-	if ( full == 0 )
+	if ( full )
 	{
 		if ( stereo )
 		{
