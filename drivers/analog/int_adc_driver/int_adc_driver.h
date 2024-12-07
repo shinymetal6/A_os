@@ -32,6 +32,7 @@ typedef struct
 	TIM_HandleTypeDef 	*adc_timer;
 	uint16_t 			*adc_buffer;
 	uint16_t 			num_channels;
+	uint32_t 			wakeup_id;
 }ADC_Drv_TypeDef;
 
 /* status */

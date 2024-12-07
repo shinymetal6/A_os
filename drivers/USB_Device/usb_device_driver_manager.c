@@ -87,19 +87,16 @@ ITCM_AREA_CODE uint32_t usb_send(uint8_t handle,uint8_t* ptr, uint16_t len)
 ITCM_AREA_CODE void USB_Driver_RxTimeoutCheckCallback(void)
 {
 USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
-	if ( usb_Drv->rx_num_chars )
+	if ( usb_Drv->data_index )
 	{
 		if ( usb_Drv->timeout )
 		{
 			usb_Drv->timeout--;
 			if ( usb_Drv->timeout == 0 )
 			{
-				if (  usb_Drv->data_index )
-				{
-					usb_Drv->rx_num_chars = usb_Drv->data_index;
-					usb_Drv->data_index = 0;
-					activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE | WAKEUP_FLAGS_HW_USB_RX_TO);
-				}
+				usb_Drv->rx_num_chars = usb_Drv->data_index;
+				usb_Drv->data_index = 0;
+				activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE | WAKEUP_FLAGS_HW_USB_RX_TO);
 				usb_Drv->timeout = usb_Drv->timeout_reload_value;
 			}
 		}

@@ -295,7 +295,7 @@ uint32_t i, b, j;
     }
 }
 
-void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor)
+uint32_t ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor)
 {
     ST7735_Select();
 
@@ -324,6 +324,8 @@ void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, u
     }
 
     ST7735_Unselect();
+    return 0;
+
 }
 
 uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
@@ -364,32 +366,35 @@ uint32_t	i;
 	ST7735_FillScreen(ST7735_BLACK);
 }
 
-void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data)
+uint32_t ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data)
 {
-    if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return;
-    if((x + w - 1) > ST7735_WIDTH) return;
-    if((y + h - 1) > ST7735_HEIGHT) return;
+    if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT)) return 1;
+    if((x + w - 1) > ST7735_WIDTH) return 1;
+    if((y + h - 1) > ST7735_HEIGHT) return 1;
 
     ST7735_Select();
     ST7735_SetAddressWindow(x, y, x+w-1, y+h-1);
     ST7735_WriteData((uint8_t*)data, sizeof(uint16_t)*w*h);
     ST7735_Unselect();
+    return 0;
 }
 
-void ST7735_DrawLogo(const uint16_t* data)
+uint32_t ST7735_DrawLogo(uint16_t* data)
 {
     ST7735_Select();
     ST7735_SetAddressWindow(0, 0, ST7735_WIDTH-1, ST7735_HEIGHT-1);
     ST7735_WriteData((uint8_t*)data, ST7735_WIDTH*ST7735_HEIGHT*2);
     ST7735_Unselect();
+    return 0;
 }
 
 
-void ST7735_InvertColors(bool invert)
+uint32_t ST7735_InvertColors(uint8_t invert)
 {
     ST7735_Select();
     ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);
     ST7735_Unselect();
+    return 0;
 }
 
 uint8_t ST7735_GetFontHeigth(FontDef font)

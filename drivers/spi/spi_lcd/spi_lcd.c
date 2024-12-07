@@ -42,6 +42,13 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 	return 0;
 }
 
+ITCM_AREA_CODE uint32_t	spi_lcd_write_string(uint8_t handle,uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor)
+{
+SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
+	spi_lcd_Drv->lcd_write_string(x, y, str,font,color,bgcolor);
+	return 0;
+}
+
 ITCM_AREA_CODE uint32_t	spi_lcd_clear_screen(uint8_t handle)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
@@ -56,6 +63,21 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 	spi_lcd_Drv->lcd_reset();
 	return 0;
 }
+
+ITCM_AREA_CODE uint32_t	spi_lcd_draw_image(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image)
+{
+SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
+	spi_lcd_Drv->lcd_draw_image(x,y,w,h,image);
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t	lcd_draw_logo(uint8_t handle,uint16_t* image)
+{
+SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
+	spi_lcd_Drv->lcd_draw_logo(image);
+	return 0;
+}
+
 
 ITCM_AREA_CODE uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness)
 {
@@ -113,6 +135,10 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 			spi_lcd_Drv->lcd_init = ST7735_Init;
 			spi_lcd_Drv->lcd_fill_rect = ST7735_FillRectangle;
 			spi_lcd_Drv->lcd_clear_screen = ST7735_ClearScreen;
+			spi_lcd_Drv->lcd_draw_image = ST7735_DrawImage;
+			spi_lcd_Drv->lcd_draw_logo = ST7735_DrawLogo;
+			spi_lcd_Drv->lcd_invert_colors = ST7735_InvertColors;
+			spi_lcd_Drv->lcd_write_string = ST7735_WriteString;
 			break;
 		case LCD_IS_9341 :
 			break;

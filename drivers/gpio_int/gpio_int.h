@@ -14,25 +14,23 @@
  * Project : A_os
 */
 /*
- * fonts_7735.h
+ * gpio_int.h
  *
- *  Created on: Nov 23, 2024
+ *  Created on: Dec 7, 2024
  *      Author: fil
  */
+#ifndef DRIVERS_GPIO_INT_GPIO_INT_H_
+#define DRIVERS_GPIO_INT_GPIO_INT_H_
 
-#ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_
-#define DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_
+typedef struct
+{
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint16_t			irq_bit;
+	uint32_t			wakeup_id;
+	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
 
-typedef struct {
-    const uint8_t width;
-    const uint8_t height;
-    const uint16_t *data;
-} FontDef;
+}GPIO_Int_DriverStruct_t;
 
-
-extern  FontDef Font_7x10;
-extern 	FontDef Font_7x11;
-extern  FontDef Font_11x18;
-extern 	FontDef Font_16x26;
-
-#endif /* DRIVERS_SPI_SPI_LCD_ST7735_LCD_FONTS_7735_H_ */
+#endif /* DRIVERS_GPIO_INT_GPIO_INT_H_ */

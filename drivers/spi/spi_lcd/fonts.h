@@ -14,24 +14,25 @@
  * Project : A_os
 */
 /*
- * sample_processes_includes.h
+ * fonts.h
  *
- *  Created on: Dec 4, 2024
+ *  Created on: Dec 7, 2024
  *      Author: fil
  */
+#ifndef DRIVERS_SPI_SPI_LCD_FONTS_H_
+#define DRIVERS_SPI_SPI_LCD_FONTS_H_
 
-#ifndef SAMPLEPROCESSES_SAMPLE_PROCESSES_INCLUDES_H_
-#define SAMPLEPROCESSES_SAMPLE_PROCESSES_INCLUDES_H_
-
-//#define	SAMPLEPROCESS_1_XMODEM	1
-//#define	SAMPLEPROCESS_1_DCCPWM	1
-//#define	SAMPLEPROCESS_1_DHTxx	1
-//#define	SAMPLEPROCESS_1_QSPI	1
-//#define	SAMPLEPROCESS_1_I2CMEM	1
-#ifdef	SAMPLEPROCESS_1_I2CMEM
-//#define	AOS_STM32H7xx_HAL_I2C_H	1
-#endif // #ifdef	SAMPLEPROCESS_1_I2CMEM
-#define	SAMPLEPROCESS_1_ADC			1
+typedef struct {
+    const uint8_t width;
+    const uint8_t height;
+    const uint16_t *data;
+} FontDef;
 
 
-#endif /* SAMPLEPROCESSES_SAMPLE_PROCESSES_INCLUDES_H_ */
+extern  FontDef Font_7x10;
+extern 	FontDef Font_7x11;
+extern  FontDef Font_11x18;
+extern 	FontDef Font_16x26;
+
+
+#endif /* DRIVERS_SPI_SPI_LCD_FONTS_H_ */

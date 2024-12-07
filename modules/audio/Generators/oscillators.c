@@ -88,14 +88,10 @@ ITCM_AREA_CODE	void DisableAllOscillator(void)
 {
 uint8_t	i;
 	for(i=0;i<NUMOSCILLATORS;i++)
-	{
-		//Oscillator[i].state |= OSCILLATOR_GO_OFF;
 		Oscillator[i].state &= ~OSCILLATOR_ON;
-	}
 }
 
 extern	float	midi_freq[128];
-//float delta_phase_k =  (float )WAVETABLE_SIZE / (float )SAMPLE_FREQUENCY;
 extern	uint32_t 				sample_frequency;
 
 ITCM_AREA_CODE	void NoteON(uint16_t midi_note , uint8_t velocity)

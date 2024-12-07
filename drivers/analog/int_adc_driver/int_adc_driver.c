@@ -25,7 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #include "int_adc_driver.h"
 #include <string.h>
@@ -37,9 +37,18 @@ ITCM_AREA_CODE static uint32_t int_adc_start(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
-	HAL_TIM_Base_Start(timer);
+	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
+	/*
+	if ( HAL_ADC_Start_DMA(adc_drv->adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels)  == 0 )
+	{
+		HAL_TIM_Base_Start(timer);
+		adc_drv->status |= ADC_STATUS_RUNNING;
+		return 0;
+	}
+	return 1;
+	*/
 	adc_drv->status |= ADC_STATUS_RUNNING;
-	return 0;
+	return HAL_TIM_Base_Start(timer);
 }
 
 ITCM_AREA_CODE static uint32_t int_adc_stop(uint8_t handle)
@@ -62,8 +71,7 @@ ITCM_AREA_CODE static uint32_t int_adc_init(uint8_t handle)
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
 ADC_HandleTypeDef	*adc = adc_drv->adc;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
-	HAL_ADC_Start_DMA(adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels);
-	return 0;
+	return HAL_ADC_Start_DMA(adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels);
 }
 
 ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
@@ -80,6 +88,12 @@ ADC_Drv_TypeDef	*adc_drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( adc_drv->adc_timer == NULL)
 			return DRIVER_REQUEST_FAILED;
+		if ( adc_drv->flags != 0 )
+		{
+			if ( adc_drv->wakeup_id == 0)
+				return DRIVER_REQUEST_FAILED;
+		}
+
 		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
 		ANALOG_DriverStruct[last_analog_used_handle].adc_start = int_adc_start;
 		ANALOG_DriverStruct[last_analog_used_handle].adc_stop = int_adc_stop;
@@ -123,7 +137,7 @@ uint32_t handle;
 		adc_drv->status |= ADC_STATUS_HALF;
 		adc_drv->status &= ~ADC_STATUS_FULL;
 		if ( adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
-			activate_process(ANALOG_DriverStruct[handle].process,EVENT_ADC1_IRQ,HW_ADC1);
+			activate_process(ANALOG_DriverStruct[handle].process,adc_drv->wakeup_id,adc_drv->wakeup_id);
 	}
 }
 
@@ -136,7 +150,7 @@ uint32_t handle;
 		adc_drv->status |= ADC_STATUS_FULL;
 		adc_drv->status &= ~ADC_STATUS_HALF;
 		if ( adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
-			activate_process(ANALOG_DriverStruct[handle].process,EVENT_ADC1_IRQ,HW_ADC1);
+			activate_process(ANALOG_DriverStruct[handle].process,adc_drv->wakeup_id,adc_drv->wakeup_id);
 	}
 }
 

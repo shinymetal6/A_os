@@ -33,12 +33,12 @@
 extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
 extern	uint8_t				last_tim_used_handle,tim_driver_request;
 
-ITCM_AREA_CODE uint32_t pwm_start(uint8_t handle,uint32_t pwm_channel)
+ITCM_AREA_CODE uint32_t pwm_start(uint8_t handle)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 
-	switch(pwm_channel)
+	switch(pwm_drv->pwm_channel)
 	{
 	case	TIM_CHANNEL_1	:	timer->Instance->CCR1 = pwm_drv->pulse_width[0]; break;
 	case	TIM_CHANNEL_2	:	timer->Instance->CCR2 = pwm_drv->pulse_width[1]; break;
@@ -48,15 +48,15 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	case	TIM_CHANNEL_6	:	timer->Instance->CCR6 = pwm_drv->pulse_width[5]; break;
 	default : return 1;
 	}
-	if ( HAL_TIM_PWM_Start(timer,pwm_channel) == 0 )
+	if ( HAL_TIM_PWM_Start(timer,pwm_drv->pwm_channel) == 0 )
 		pwm_drv->status |= PWM_CHANNEL_RUNNING;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_stop(uint8_t handle,uint32_t pwm_channel)
+ITCM_AREA_CODE uint32_t pwm_stop(uint8_t handle)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
-	if ( HAL_TIM_PWM_Stop(pwm_drv->pwm_timer,pwm_channel) == 0 )
+	if ( HAL_TIM_PWM_Stop(pwm_drv->pwm_timer,pwm_drv->pwm_channel) == 0 )
 		pwm_drv->status &= ~PWM_CHANNEL_RUNNING;
 	return 0;
 }
@@ -75,11 +75,11 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_set_width(uint8_t handle,uint32_t pwm_channel,uint32_t pulse_width)
+ITCM_AREA_CODE uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width)
 {
 Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
-	switch(pwm_channel)
+	switch(pwm_drv->pwm_channel)
 	{
 	case	TIM_CHANNEL_1	:	pwm_drv->pulse_width[0] = timer->Instance->CCR1 = pulse_width; break;
 	case	TIM_CHANNEL_2	:	pwm_drv->pulse_width[1] = timer->Instance->CCR2 = pulse_width; break;

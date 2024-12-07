@@ -59,7 +59,7 @@ uint32_t	pw=0 , dir = 0;
 
 	pwm_driver_handle = pwm_register(&Pwm_Control,0);
 	pwm_init(pwm_driver_handle);
-	pwm_start(pwm_driver_handle,Pwm_Control.pwm_channel);
+	pwm_start(pwm_driver_handle);
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -74,7 +74,7 @@ uint32_t	pw=0 , dir = 0;
 				pw += 1000;
 				if (pw >= 10000)
 					dir = 0;
-				pwm_set_width(pwm_driver_handle,pw,Pwm_Control.pwm_channel);
+				pwm_set_width(pwm_driver_handle,pw);
 			}
 			else
 			{
@@ -82,7 +82,7 @@ uint32_t	pw=0 , dir = 0;
 					pw -= 1000;
 				if (pw <= 1000)
 					dir = 1;
-				pwm_set_width(pwm_driver_handle,pw,Pwm_Control.pwm_channel);
+				pwm_set_width(pwm_driver_handle,pw);
 			}
 		}
 	}

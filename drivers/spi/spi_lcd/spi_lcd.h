@@ -27,6 +27,9 @@
 #define	LCD_IS_9341		0x9341
 
 #define	DEFAULT_RESET_TIME	100
+
+#include	"fonts.h"
+
 typedef struct
 {
 	uint8_t				status;
@@ -47,11 +50,12 @@ typedef struct
 	void				(*lcd_init)(void);
 	void				(*lcd_reset)(void);
 	void				(*lcd_clear_screen)  (void);
-	uint32_t			(*lcd_invert_colors)  (uint8_t handle,uint8_t invert);
+	uint32_t			(*lcd_invert_colors)  (uint8_t invert);
 	uint32_t			(*lcd_write_char)    (uint16_t x, uint16_t y, char ch,    uint8_t font_index, uint16_t color, uint16_t bgcolor);
-	uint32_t			(*lcd_write_string)  (uint16_t x, uint16_t y, char *line, uint8_t font_index, uint16_t color, uint16_t bgcolor);
+	uint32_t			(*lcd_write_string)  (uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 	uint32_t			(*lcd_fill_rect)  (uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-	uint32_t			(*lcd_draw_image)  (uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
+	uint32_t			(*lcd_draw_image)  (uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
+	uint32_t			(*lcd_draw_logo)  (uint16_t* image);
 }SPI_LCD_DriverStruct_t;
 
 extern	GPIO_TypeDef		*ST7735_cs_port;
@@ -69,8 +73,8 @@ extern uint32_t	spi_lcd_clear_screen(uint8_t handle);
 extern uint32_t	spi_lcd_fill_rect(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 extern uint32_t	spi_lcd_reset(uint8_t handle);
 extern uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness);
-
-
+extern uint32_t	spi_lcd_draw_image(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
+extern uint32_t	spi_lcd_write_string(uint8_t handle,uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 
 #include	"st7735_lcd/lcd_7735.h"
 

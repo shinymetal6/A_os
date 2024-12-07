@@ -290,7 +290,7 @@ uint32_t	*ram_ptr,i;
 	//NVIC_SystemReset();
 }
 
-FLASH_RAM_FUNC void flash_update(uint8_t *flash_data,uint32_t size)
+FLASH_RAM_FUNC void flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size)
 {
 uint8_t		status;
 
@@ -304,7 +304,7 @@ uint8_t		status;
 	HAL_GPIO_WritePin(LED_2_GPIOPORT, LED_2_GPIOBIT,GPIO_PIN_SET);
 #endif
 
-	status = flash_write(flash_data,(uint8_t *)&_fdata_start,size); // ADDR_FLASH_SECTOR_0_BANK2
+	status = flash_write(flash_data,dest_address,size); // ADDR_FLASH_SECTOR_0_BANK2
     if ( status  )
     {
     	while(1);	// error so loop forever
@@ -326,6 +326,39 @@ FLASH_RAM_FUNC uint32_t get_flash_size(void)
 {
 uint32_t size = (&_fdata_end - &_fdata_start) + 32;
 	return size * 4;
+}
+
+
+uint32_t ConfigureBootBank(uint32_t bank)
+{
+    HAL_FLASH_Unlock();
+    HAL_FLASH_OB_Unlock();
+
+    FLASH_OBProgramInitTypeDef ob_config;
+    HAL_FLASHEx_OBGetConfig(&ob_config);
+
+    if (bank == 1)
+    {
+        ob_config.OptionType = OPTIONBYTE_BOOTADD;
+        ob_config.BootAddr0 = 0x08000000; // Bank 1 Sector 0
+        ob_config.BootAddr1 = 0x08100000; // Default Bank 2
+    }
+    else if (bank == 2)
+    {
+        ob_config.OptionType = OPTIONBYTE_BOOTADD;
+        ob_config.BootAddr0 = 0x08100000; // Bank 2 Sector 0
+        ob_config.BootAddr1 = 0x08000000; // Default Bank 1
+    }
+
+    if (HAL_FLASHEx_OBProgram(&ob_config) != HAL_OK)
+    {
+        return 1;
+    }
+
+    HAL_FLASH_OB_Launch();
+    HAL_FLASH_OB_Lock();
+    HAL_FLASH_Lock();
+    return 0;
 }
 
 #endif // #ifdef	FLASH_UPDATER_ENABLED

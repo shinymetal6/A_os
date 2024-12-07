@@ -30,10 +30,12 @@ extern	void flash_update(uint32_t flash_address_offset,uint8_t *data,uint32_t si
 extern void flash_update(uint8_t *flash_data,uint32_t size);
 #endif
 #ifdef	STM32H753xx
-extern void flash_update(uint8_t *flash_data,uint32_t size);
+extern void flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size);
+extern	uint32_t ConfigureBootBank(uint32_t bank);
 #endif
 #ifdef	STM32H743xx
-extern void flash_update(uint8_t *flash_data,uint32_t size);
+extern void flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size);
+extern	uint32_t ConfigureBootBank(uint32_t bank);
 #endif
 
 extern	uint32_t get_flash_storage_ptr(void);

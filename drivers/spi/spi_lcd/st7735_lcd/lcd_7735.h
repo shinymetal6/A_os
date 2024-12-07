@@ -23,7 +23,7 @@
 #ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
 #define DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
 
-#include "fonts_7735.h"
+#include "../fonts.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -274,15 +274,16 @@ void ST7735_Unselect();
 extern	void ST7735_Init(void);
 extern	void ST7735_Reset(void);
 
+uint32_t	ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+uint32_t	ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data);
+uint8_t		ST7735_GetFontHeigth(FontDef font);
+uint8_t		ST7735_GetFontWidth(FontDef font);
+uint32_t	ST7735_DrawLogo(uint16_t* data);
+uint32_t	ST7735_InvertColors(uint8_t invert);
+uint32_t	ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
+
 void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
-void ST7735_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
-uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 void ST7735_FillScreen(uint16_t color);
-void ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, const uint16_t* data);
-void ST7735_InvertColors(bool invert);
-uint8_t ST7735_GetFontHeigth(FontDef font);
-uint8_t ST7735_GetFontWidth(FontDef font);
-void ST7735_DrawLogo(const uint16_t* data);
 void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color);
 extern	void 	ST7735_ClearScreen(void);
 extern	void 	A_os_7735_SPI_TxCpltCallback(void);
