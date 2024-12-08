@@ -32,3 +32,19 @@
 
 SYSTEM_RAM	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 SYSTEM_RAM	uint8_t				last_spi_used_handle,spi_driver_request;
+
+
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+uint32_t	i;
+	for(i=0;i<MAX_SPI_DEVICES;i++)
+	{
+		if ( SPI_DriverStruct[i].bus != NULL )
+		{
+			if ( SPI_DriverStruct[i].bus  == hspi )
+			{
+				SPI_DriverStruct[i].flags |= SPI_TX_DMA_COMPLETE;
+			}
+		}
+	}
+}

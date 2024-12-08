@@ -25,12 +25,15 @@
 
 typedef struct
 {
-	uint8_t 	process;
-	uint8_t		status;
-	uint8_t		flags;
-	uint8_t		handle;
-	uint32_t	*driver_private_data;
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	SPI_HandleTypeDef 	*bus;
+	uint32_t			*driver_private_data;
 }SPI_DriverStruct_t;
+
+/* flags */
+#define	SPI_TX_DMA_COMPLETE	0x80
 
 #ifdef STM32H7xx_HAL_SPI_H
 #include "spi_lcd/spi_lcd.h"

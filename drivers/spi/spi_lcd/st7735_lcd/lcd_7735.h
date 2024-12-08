@@ -278,7 +278,6 @@ uint32_t	ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, ui
 uint32_t	ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data);
 uint8_t		ST7735_GetFontHeigth(FontDef font);
 uint8_t		ST7735_GetFontWidth(FontDef font);
-uint32_t	ST7735_DrawLogo(uint16_t* data);
 uint32_t	ST7735_InvertColors(uint8_t invert);
 uint32_t	ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 

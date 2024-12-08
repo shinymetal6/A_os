@@ -30,7 +30,12 @@ typedef struct
 	uint16_t			irq_bit;
 	uint32_t			wakeup_id;
 	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
-
+	uint16_t			hide_time;
+	uint16_t			hide_time_counter;
+	uint16_t			irq_index;
 }GPIO_Int_DriverStruct_t;
+/* flags */
+#define	GPIO_INT_HIDE_ENABLED	0x80
+extern uint32_t	gpio_int_register(GPIO_Int_DriverStruct_t *driver_private_data);
 
 #endif /* DRIVERS_GPIO_INT_GPIO_INT_H_ */

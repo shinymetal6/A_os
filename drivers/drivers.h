@@ -26,6 +26,7 @@
 #define	DRIVER_STATUS_IN_USE		0x02
 
 #include "gpio/gpio.h"
+#include "gpio_int/gpio_int.h"
 #include "analog/analog.h"
 #include "uart/uart.h"
 #include "dmx512/dmx512.h"

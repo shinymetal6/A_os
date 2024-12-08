@@ -71,28 +71,19 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	lcd_draw_logo(uint8_t handle,uint16_t* image)
-{
-SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
-	spi_lcd_Drv->lcd_draw_logo(image);
-	return 0;
-}
-
-
 ITCM_AREA_CODE uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	if ( brightness <= FULL_BRIGHTNESS)
 	{
-		spi_lcd_Drv->current_brightness = brightness;
 		switch(spi_lcd_Drv->backlight_timer_channel)
 		{
-		case	TIM_CHANNEL_1	:	spi_lcd_Drv->backlight_timer->Instance->CCR1 = spi_lcd_Drv->current_brightness; break;
-		case	TIM_CHANNEL_2	:	spi_lcd_Drv->backlight_timer->Instance->CCR2 = spi_lcd_Drv->current_brightness; break;
-		case	TIM_CHANNEL_3	:	spi_lcd_Drv->backlight_timer->Instance->CCR3 = spi_lcd_Drv->current_brightness; break;
-		case	TIM_CHANNEL_4	:	spi_lcd_Drv->backlight_timer->Instance->CCR4 = spi_lcd_Drv->current_brightness; break;
-		case	TIM_CHANNEL_5	:	spi_lcd_Drv->backlight_timer->Instance->CCR5 = spi_lcd_Drv->current_brightness; break;
-		case	TIM_CHANNEL_6	:	spi_lcd_Drv->backlight_timer->Instance->CCR6 = spi_lcd_Drv->current_brightness; break;
+		case	TIM_CHANNEL_1	:	spi_lcd_Drv->backlight_timer->Instance->CCR1 = brightness; break;
+		case	TIM_CHANNEL_2	:	spi_lcd_Drv->backlight_timer->Instance->CCR2 = brightness; break;
+		case	TIM_CHANNEL_3	:	spi_lcd_Drv->backlight_timer->Instance->CCR3 = brightness; break;
+		case	TIM_CHANNEL_4	:	spi_lcd_Drv->backlight_timer->Instance->CCR4 = brightness; break;
+		case	TIM_CHANNEL_5	:	spi_lcd_Drv->backlight_timer->Instance->CCR5 = brightness; break;
+		case	TIM_CHANNEL_6	:	spi_lcd_Drv->backlight_timer->Instance->CCR6 = brightness; break;
 		default : return 1;
 		}
 		HAL_TIM_PWM_Start(spi_lcd_Drv->backlight_timer,spi_lcd_Drv->backlight_timer_channel);
@@ -104,7 +95,20 @@ ITCM_AREA_CODE uint32_t	spi_lcd_init(uint8_t handle)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	spi_lcd_Drv->lcd_init();
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t	spi_lcd_on(uint8_t handle)
+{
+SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	spi_lcd_set_brightness(handle,spi_lcd_Drv->current_brightness);
+	return 0;
+}
+
+
+ITCM_AREA_CODE uint32_t	spi_lcd_off(uint8_t handle)
+{
+	spi_lcd_set_brightness(handle,ZERO_BRIGHTNESS);
 	return 0;
 }
 
@@ -115,8 +119,19 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 	{
 		SPI_DriverStruct[last_spi_used_handle].process = get_current_process();
 		SPI_DriverStruct[last_spi_used_handle].driver_private_data = (uint32_t *)driver_private_data;
-
 		spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[last_spi_used_handle].driver_private_data;
+		SPI_DriverStruct[last_spi_used_handle].bus = spi_lcd_Drv->bus;
+
+		if ( spi_lcd_Drv->bus == NULL )
+			return DRIVER_REQUEST_FAILED;
+		if ( spi_lcd_Drv->backlight_timer == NULL )
+			return DRIVER_REQUEST_FAILED;
+		if ( spi_lcd_Drv->cs_port == NULL )
+			return DRIVER_REQUEST_FAILED;
+		if ( spi_lcd_Drv->reset_port == NULL )
+			return DRIVER_REQUEST_FAILED;
+		if ( spi_lcd_Drv->dc_port == NULL )
+			return DRIVER_REQUEST_FAILED;
 
 		switch(spi_lcd_Drv->lcd_model)
 		{
@@ -136,9 +151,9 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 			spi_lcd_Drv->lcd_fill_rect = ST7735_FillRectangle;
 			spi_lcd_Drv->lcd_clear_screen = ST7735_ClearScreen;
 			spi_lcd_Drv->lcd_draw_image = ST7735_DrawImage;
-			spi_lcd_Drv->lcd_draw_logo = ST7735_DrawLogo;
 			spi_lcd_Drv->lcd_invert_colors = ST7735_InvertColors;
 			spi_lcd_Drv->lcd_write_string = ST7735_WriteString;
+			ST7735_flags = (uint8_t *)&SPI_DriverStruct[last_spi_used_handle].flags;
 			break;
 		case LCD_IS_9341 :
 			break;
@@ -146,16 +161,6 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 			return DRIVER_REQUEST_FAILED;
 		}
 
-		if ( spi_lcd_Drv->bus == NULL )
-			return DRIVER_REQUEST_FAILED;
-		if ( spi_lcd_Drv->backlight_timer == NULL )
-			return DRIVER_REQUEST_FAILED;
-		if ( spi_lcd_Drv->cs_port == NULL )
-			return DRIVER_REQUEST_FAILED;
-		if ( spi_lcd_Drv->reset_port == NULL )
-			return DRIVER_REQUEST_FAILED;
-		if ( spi_lcd_Drv->dc_port == NULL )
-			return DRIVER_REQUEST_FAILED;
 
 		SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_IN_USE;
 		last_spi_used_handle++;
