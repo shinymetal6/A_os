@@ -30,6 +30,9 @@ extern	void sample_process_1_i2cmem(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_ADC
 extern	void sample_process_1_adc(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_ADC
+#ifdef	SAMPLEPROCESS_UARTQUEUES
+extern	void sample_process_1_queuetest(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_ADC
 
 extern	void sample_process_2(uint32_t process_id);	//This is process2
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -59,6 +62,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_ADC
 				.user_process = sample_process_1_adc,
 #endif // #define	SAMPLEPROCESS_1_ADC
+#ifdef	SAMPLEPROCESS_UARTQUEUES
+				.user_process = sample_process_1_queuetest,
+#endif // #define	SAMPLEPROCESS_UARTQUEUES
 				.stack_size = 1024,
 		},
 		{

@@ -96,6 +96,20 @@ typedef struct
 	UART_Drv_TypeDef	*driver_private_data;
 }UARTS_DriverStruct_t;
 
+typedef struct
+{
+	uint8_t					insert_index;
+	uint8_t					extract_index;
+	uint8_t					status[MAX_UARTS_QUEUE];
+	uint8_t 				handle[MAX_UARTS_QUEUE];
+	uint8_t 				*buffer[MAX_UARTS_QUEUE];
+	uint16_t 				len[MAX_UARTS_QUEUE];
+	UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_QUEUE];
+}UARTS_QueueDriverStruct_t;
+/* status */
+#define	UART_QUEUE_BUSY		0x01
+#define	UART_QUEUE_FREE		0x00
+
 extern  uint32_t 	uart_init(uint8_t handle);
 extern  uint32_t 	uart_get_status(uint8_t handle);
 extern  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint16_t len);

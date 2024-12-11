@@ -32,6 +32,7 @@
 #define MAX_TIMERS					8
 #define MAX_SEMAPHORES				8
 #define MAX_UARTS_DRIVERS			8
+#define MAX_UARTS_QUEUE				8
 #define MAX_TIM_DRIVERS				8
 #define MAX_ANALOG_DRIVERS			8
 #define MAX_EXTMEM_DRIVERS			8
@@ -46,19 +47,12 @@
 #define	HWDEVICES_NUM				32
 #define	MODULES_NUM					32
 
-/*
-#define	DRIVER_STATUS_REQUESTED		0x01
-#define	DRIVER_STATUS_IN_USE		0x02
-#define	DRIVER_STATUS_INITIALIZED	0x04
-#define	DRIVER_STATUS_INITPEND		0x08
-#define	DRIVER_FLAGS_AUTOSTART		0x10
-*/
-
 #define	DRIVER_STATUS_FAILED		0x40
 #define	DRIVER_REQUEST_FAILED		0x80
 
 #define DUMMY_XPSR  				0x01000000U
 
+#ifdef	POOL_ENABLE
 typedef struct
 {
 	uint8_t		*nxt_link;
@@ -77,6 +71,9 @@ typedef struct
 #define		MEM_IN_LIST			0x04
 #define		LAST_IN_LIST		0x08
 #define		INVALID				0x80
+#endif	// #ifdef	POOL_ENABLE
+
+#ifdef	HWMngr_ENABLE
 
 typedef struct
 {
@@ -244,6 +241,7 @@ typedef struct
 #define	IRQMAN_TIMEOUT_ENABLED	0x80000000
 #define	IRQMAN_FREE		0
 #define	IRQMAN_ALLOCATED	1
+#endif // #ifdef	HWMngr_ENABLE
 
 #pragma pack(4)
 
@@ -253,6 +251,7 @@ typedef struct
 	uint32_t	osSysRam_size_word;
 	uint32_t	g_tick_count;
 	uint32_t	g_os_started;
+#ifdef	POOL_ENABLE
 	uint8_t		*first_mem;
 	uint32_t	num_buf_in_use;
 	uint32_t	first_data_address;
@@ -260,6 +259,8 @@ typedef struct
 	uint32_t	mempool_requested_size;
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
+#endif // #ifdef	POOL_ENABLE
+
 	uint32_t	system_flags;
 	uint8_t		general_flags;
 	uint8_t		current_process;
@@ -335,11 +336,14 @@ typedef struct
 #define	MODULE_STATUS_FREE		0x00
 #define	MODULE_STATUS_ALLOCATED	0x01
 
+#ifdef	HWMngr_ENABLE
+
 /* status */
 #define	HWDEV_STATUS_ALLOCATED		0x01
 #define	HWDEV_STATUS_PRC_WAKEUP		0x02
 /* flags */
 #define	HWDEV_FLAGS_BUSY			0x80000000
+#endif // #ifdef	HWMngr_ENABLE
 
 extern	void A_PreOS_Init(void);
 extern	void A_Processor_Quirks(void);
@@ -350,8 +354,11 @@ extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 extern	void schedule(void);
 extern	void A_mem_init(void);
+
+#ifdef	POOL_ENABLE
 extern	void defrag_mem(void);
 extern	void reset_orphaned_chunks(uint8_t process);
+#endif // #ifdef	POOL_ENABLE
 
 extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);
