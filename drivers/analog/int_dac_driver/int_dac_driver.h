@@ -23,6 +23,8 @@
 #ifndef DRIVERS_ANALOG_INT_DAC_DRIVER_INT_DAC_DRIVER_H_
 #define DRIVERS_ANALOG_INT_DAC_DRIVER_INT_DAC_DRIVER_H_
 
+#ifdef STM32H7xx_HAL_DAC_H
+
 typedef struct
 {
 	uint8_t				status;
@@ -46,5 +48,6 @@ typedef struct
 #define		DAC_FLAGS_WAKEUP			0x80
 #define		DAC_FLAGS_USE_AUDIOMODULE	0x01
 extern ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
+#endif // #ifdef STM32H7xx_HAL_DAC_H
 
 #endif /* DRIVERS_ANALOG_INT_DAC_DRIVER_INT_DAC_DRIVER_H_ */

@@ -257,7 +257,7 @@ uint32_t i;
 	// 7 - vectors relocated
 }
 
-ITCM_AREA_CODE void flash_update(uint8_t *flash_data,uint32_t size)
+ITCM_AREA_CODE uint32_t flash_update(uint8_t *flash_data,uint32_t size)
 {
 uint8_t	status;
 	relocate_vtable_systick();

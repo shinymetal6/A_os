@@ -81,6 +81,7 @@ typedef struct
 	uint8_t		*requested_data_ptr;
 	uint32_t	requested_data_count;
 	uint32_t	data_count;
+	uint32_t	received_data_len;
 	uint32_t	received_bytes_count;
 	uint32_t	(*send_function)(uint8_t handle, uint8_t *buffer,uint16_t len);
 

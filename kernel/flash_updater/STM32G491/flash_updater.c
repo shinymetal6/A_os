@@ -111,7 +111,7 @@ G491_RAMFUNC void G491_DWT_Delay_us(uint32_t au32_microseconds)
 }
 
 
-G491_RAMFUNC void flash_update(uint32_t flash_address_offset,uint8_t *flash_data,uint32_t size)
+G491_RAMFUNC uint32_t flash_update(uint32_t flash_address_offset,uint8_t *flash_data,uint32_t size)
 {
 uint32_t 	FirstPage    = flash_address_offset / FLASH_PAGE_SIZE;
 uint32_t 	PagesToErase = size / FLASH_PAGE_SIZE;

@@ -149,6 +149,70 @@ FLASH_RAM_FUNC uint8_t Flash_Erase_Sector(uint32_t Sector, uint32_t Banks)
   return WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, Banks);
 }
 
+
+FLASH_RAM_FUNC static uint8_t Flash_Erase_Sector_by_address(uint32_t Address, uint32_t Bank)
+{
+uint32_t Sector = 0;
+
+	if(((Address < ADDR_FLASH_SECTOR_1_BANK1) && (Address >= ADDR_FLASH_SECTOR_0_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_1_BANK2) && (Address >= ADDR_FLASH_SECTOR_0_BANK2)))
+	{
+		Sector = FLASH_SECTOR_0;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_2_BANK1) && (Address >= ADDR_FLASH_SECTOR_1_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_2_BANK2) && (Address >= ADDR_FLASH_SECTOR_1_BANK2)))
+	{
+		Sector = FLASH_SECTOR_1;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_3_BANK1) && (Address >= ADDR_FLASH_SECTOR_2_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_3_BANK2) && (Address >= ADDR_FLASH_SECTOR_2_BANK2)))
+	{
+		Sector = FLASH_SECTOR_2;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_4_BANK1) && (Address >= ADDR_FLASH_SECTOR_3_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_4_BANK2) && (Address >= ADDR_FLASH_SECTOR_3_BANK2)))
+	{
+		Sector = FLASH_SECTOR_3;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_5_BANK1) && (Address >= ADDR_FLASH_SECTOR_4_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_5_BANK2) && (Address >= ADDR_FLASH_SECTOR_4_BANK2)))
+	{
+		Sector = FLASH_SECTOR_4;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_6_BANK1) && (Address >= ADDR_FLASH_SECTOR_5_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_6_BANK2) && (Address >= ADDR_FLASH_SECTOR_5_BANK2)))
+	{
+		Sector = FLASH_SECTOR_5;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_7_BANK1) && (Address >= ADDR_FLASH_SECTOR_6_BANK1)) || \
+	((Address < ADDR_FLASH_SECTOR_7_BANK2) && (Address >= ADDR_FLASH_SECTOR_6_BANK2)))
+	{
+		Sector = FLASH_SECTOR_6;
+	}
+	else if(((Address < ADDR_FLASH_SECTOR_0_BANK2) && (Address >= ADDR_FLASH_SECTOR_7_BANK1)) || \
+	((Address < FLASH_END_ADDR) && (Address >= ADDR_FLASH_SECTOR_7_BANK2)))
+	{
+		Sector = FLASH_SECTOR_7;
+	}
+	else
+	{
+		return 1;
+	}
+
+	if((Bank & FLASH_BANK_1) == FLASH_BANK_1)
+	{
+		/* Reset Program/erase VoltageRange and Sector Number for Bank1 */
+		FLASH->CR1 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+		FLASH->CR1 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3 | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+	}
+	if((Bank & FLASH_BANK_2) == FLASH_BANK_2)
+	{
+		FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
+		FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3  | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
+	}
+	return WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, Bank);
+}
+
 FLASH_RAM_FUNC uint8_t FLASH_32B_data(uint32_t TypeProgram, uint32_t FlashAddress, uint32_t DataAddress)
 {
 uint8_t status;
@@ -158,22 +222,22 @@ uint32_t bank;
 uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
 
 	if(IS_FLASH_PROGRAM_ADDRESS_BANK1(FlashAddress))
+	{
 		bank = FLASH_BANK_1;
+		status = WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, bank);
+		if(status == HAL_OK)
+			SET_BIT(FLASH->CR1, FLASH_CR_PG);
+	}
 	else if(IS_FLASH_PROGRAM_ADDRESS_BANK2(FlashAddress))
+	{
 		bank = FLASH_BANK_2;
+		status = WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, bank);
+		if(status == HAL_OK)
+			SET_BIT(FLASH->CR2, FLASH_CR_PG);
+	}
 	else
 		return 1;
 
-	/* Wait for last operation to be completed */
-	status = WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, bank);
-
-	if(status == HAL_OK)
-	{
-		if(bank == FLASH_BANK_1)
-			SET_BIT(FLASH->CR1, FLASH_CR_PG);
-	}
-	else
-		SET_BIT(FLASH->CR2, FLASH_CR_PG);
 	__ISB();
 	__DSB();
 
@@ -201,26 +265,31 @@ uint8_t row_index = FLASH_NB_32BITWORD_IN_FLASHWORD;
 
 FLASH_RAM_FUNC uint32_t flash_write(uint8_t const *src, uint8_t *dst,uint32_t size)
 {
-uint32_t FlashAddress = (uint32_t)dst , Sector, Banks;
+uint32_t FlashAddress , Sector, Bank;
 uint32_t	i;
 
-	Sector = (size / FLASH_SECTOR_SIZE)+1;
-
+	__disable_irq();
+	FlashAddress = (uint32_t)dst;
 	if (FlashAddress & (32-1))
 		return 1; // bad alignment
-	if ( flash_unlock() )
-		return 1;
 	if(IS_FLASH_PROGRAM_ADDRESS_BANK1(FlashAddress))
-		Banks = FLASH_BANK_1;
+		Bank = FLASH_BANK_1;
 	else if(IS_FLASH_PROGRAM_ADDRESS_BANK2(FlashAddress))
-		Banks = FLASH_BANK_2;
+		Bank = FLASH_BANK_2;
 	else
 		return 1;
+
+	if ( flash_unlock() )
+		return 1;
+
+	Sector = (size / FLASH_SECTOR_SIZE)+1;
 	for(i=0;i<Sector;i++)
 	{
-		if ( Flash_Erase_Sector(i, Banks) )
+		if ( Flash_Erase_Sector_by_address(FlashAddress, Bank) )
 			return 1;
+		FlashAddress += FLASH_SECTOR_SIZE;
 	}
+	FlashAddress = (uint32_t)dst;
 	for(i=0,FlashAddress = (uint32_t)dst;i<size;i+=32,FlashAddress+=32)
 	{
 		if (  FLASH_32B_data(FLASH_TYPEPROGRAM_FLASHWORD, FlashAddress, (uint32_t)(src + i)) != 0 )
@@ -228,93 +297,19 @@ uint32_t	i;
 	}
 	if ( flash_Lock() )
 		return 1;
+	__enable_irq();
 	return 0;
 }
 
-
-FLASH_RAM_FUNC void FLASH_GPIO_WritePin(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin, GPIO_PinState PinState)
+FLASH_RAM_FUNC uint32_t flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size)
 {
-  if (PinState != GPIO_PIN_RESET)
-  {
-    GPIOx->BSRR = GPIO_Pin;
-  }
-  else
-  {
-    GPIOx->BSRR = (uint32_t)GPIO_Pin << 16;
-  }
-}
-
-FLASH_RAM_FUNC	void sys_jump(void)
-{
-uint32_t	*ram_ptr,i;
-
-	__DSB();
-	__ISB();
-	FlashDelay_1MS();
-	__DSB();
-	__ISB();
-
-	FlashDelay_1MS();
-
-    ram_ptr = (uint32_t	*)0x00000000;
-	for(i=0;i<0x10000;i+=4)
-		ram_ptr[i] = 0;
-    __DSB();
-    __ISB();
-
-	FlashDelay_1MS();
-
-	ram_ptr = (uint32_t	*)0x20000000;
-	for(i=0;i<0x20000;i+=4)
-		ram_ptr[i] = 0;
-    __DSB();
-    __ISB();
-
-	FlashDelay_1MS();
-    __DSB();
-    __ISB();
-	FlashDelay_1MS();
-
-#ifdef LED_3_GPIOPORT
-	FLASH_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
-#endif
-	IWDG1->KR = 0x0000cccc;
-	IWDG1->KR = 0x00005555;
-	IWDG1->PR = 0;
-	IWDG1->RLR = 4095;
-	IWDG1->WINR = 4095;
-	IWDG1->KR = 0x0000aaaa;
-    __DSB();
-    __ISB();
-    while(1);
-	//NVIC_SystemReset();
-}
-
-FLASH_RAM_FUNC void flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size)
-{
-uint8_t		status;
-
-	HAL_RCC_DeInit();
-	__disable_irq();
-
-#ifdef LED_3_GPIOPORT
-	HAL_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_RESET);
-#endif
-#ifdef LED_2_GPIOPORT
-	HAL_GPIO_WritePin(LED_2_GPIOPORT, LED_2_GPIOBIT,GPIO_PIN_SET);
-#endif
-
-	status = flash_write(flash_data,dest_address,size); // ADDR_FLASH_SECTOR_0_BANK2
-    if ( status  )
+uint32_t ret_val=0;
+    if ( (ret_val = flash_write(flash_data,dest_address,size) ) )
     {
+    	__disable_irq();
     	while(1);	// error so loop forever
     }
-
-    // All done, restart
-#ifdef LED_3_GPIOPORT
-	FLASH_GPIO_WritePin(LED_3_GPIOPORT, LED_3_GPIOBIT,GPIO_PIN_SET);
-#endif
-	sys_jump();
+    return ret_val;
 }
 
 FLASH_RAM_FUNC uint32_t get_flash_storage_ptr(void)
@@ -328,36 +323,64 @@ uint32_t size = (&_fdata_end - &_fdata_start) + 32;
 	return size * 4;
 }
 
-
 uint32_t ConfigureBootBank(uint32_t bank)
 {
-    HAL_FLASH_Unlock();
-    HAL_FLASH_OB_Unlock();
+uint32_t switched = 0;
+	SCB_DisableICache();
+	HAL_FLASH_Unlock();
+	HAL_FLASH_OB_Unlock();
 
-    FLASH_OBProgramInitTypeDef ob_config;
-    HAL_FLASHEx_OBGetConfig(&ob_config);
-
-    if (bank == 1)
-    {
-        ob_config.OptionType = OPTIONBYTE_BOOTADD;
-        ob_config.BootAddr0 = 0x08000000; // Bank 1 Sector 0
-        ob_config.BootAddr1 = 0x08100000; // Default Bank 2
-    }
-    else if (bank == 2)
-    {
-        ob_config.OptionType = OPTIONBYTE_BOOTADD;
-        ob_config.BootAddr0 = 0x08100000; // Bank 2 Sector 0
-        ob_config.BootAddr1 = 0x08000000; // Default Bank 1
-    }
-
-    if (HAL_FLASHEx_OBProgram(&ob_config) != HAL_OK)
-    {
-        return 1;
-    }
-
-    HAL_FLASH_OB_Launch();
-    HAL_FLASH_OB_Lock();
-    HAL_FLASH_Lock();
+	FLASH_OBProgramInitTypeDef OBInit;
+	OBInit.Banks     = FLASH_BANK_1;
+	HAL_FLASHEx_OBGetConfig(&OBInit);
+	/* Check Swap flash memory banks status */
+	if ((OBInit.USERConfig & OB_SWAP_BANK_ENABLE) == OB_SWAP_BANK_DISABLE)
+	{
+		if ( bank == 2 )
+		{
+			/*Swap to bank2 */
+			/*Set OB SWAP_BANK_OPT to swap Bank2*/
+			OBInit.OptionType = OPTIONBYTE_USER;
+			OBInit.USERType   = OB_USER_SWAP_BANK;
+			OBInit.USERConfig = OB_SWAP_BANK_ENABLE;
+			HAL_FLASHEx_OBProgram(&OBInit);
+			/* Launch Option bytes loading */
+			HAL_FLASH_OB_Launch();
+			switched = 1;
+		}
+	}
+	else
+	{
+		if ( bank == 1 )
+		{
+			/* Swap to bank1 */
+			/*Set OB SWAP_BANK_OPT to swap Bank1*/
+			OBInit.OptionType = OPTIONBYTE_USER;
+			OBInit.USERType = OB_USER_SWAP_BANK;
+			OBInit.USERConfig = OB_SWAP_BANK_DISABLE;
+			HAL_FLASHEx_OBProgram(&OBInit);
+			/* Launch Option bytes loading */
+			HAL_FLASH_OB_Launch();
+			switched = 1;
+		}
+	}
+	if ( switched )
+	{
+	    HAL_FLASH_OB_Lock();
+	    HAL_FLASH_Lock();
+		__DSB();
+		__ISB();
+		FlashDelay_1MS();
+		IWDG1->KR = 0x0000cccc;
+		IWDG1->KR = 0x00005555;
+		IWDG1->PR = 0;
+		IWDG1->RLR = 4095;
+		IWDG1->WINR = 4095;
+		IWDG1->KR = 0x0000aaaa;
+	    __DSB();
+	    __ISB();
+	    while(1);
+	}
     return 0;
 }
 

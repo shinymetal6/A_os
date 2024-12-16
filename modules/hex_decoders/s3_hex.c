@@ -27,8 +27,6 @@
 #include "../../kernel/scheduler.h"
 //#include "../../kernel/kernel_opt.h"
 
-#ifdef MOTOROLA_HEX_DECODER_ENABLE
-
 #include "s3_hex.h"
 #include <string.h>
 
@@ -95,4 +93,3 @@ uint8_t decoded_len = 255;
 	return decoded_len;
 }
 
-#endif // #ifdef MOTOROLA_HEX_DECODER_ENABLE

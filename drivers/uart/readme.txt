@@ -55,7 +55,8 @@ c - transmit
 			
 Notes:
 
-The flags field is optional, defaults to WAKEUP_ON_RXFULL.:
+The flags field is optional, defaults to WAKEUP_ON_RXFULL and wakes up on interupt.
+There is no polling use for uart.
 The flags field can be a or combination of:
 	UART_USES_DMA_TX			
 	UART_USES_DMA_RX			
@@ -67,13 +68,16 @@ The flags field can be a or combination of:
 	
 The wakeup_id field is the way A_os has to wake up the process, and is used to identify the uart. Mandatory.
 
-The timeout filed is the timeout after which even if the packet len has not reached the required len specified 
- in rx_max_len field the driver will wake up the process. 
+The timeout field is the timeout after which even if the packet len has not reached the required len specified 
+ in rx_max_len field the driver will wake up the process. A 0 timeout means no timeout.
  
  Specifying the fields sentinel_start and / or sentinel_end will start reception after the sentinel_start 
   char is received and stop reception and wake up the calling process when sentinel_end is received.
   Specifyng only sentinel_start means the store op of the rxed chars start when the rxed char is equal to 
   sentinel_start and stops after rx_max_len chars are receiveds or a timeout occourred.
+  
+ There is a configurable depth queue in the uart management, so the user can que more than 1 message on a uart.
+ The queue is a static array, the depth is configured as #define MAX_UARTS_QUEUE 8   in A.h 
   
  
 

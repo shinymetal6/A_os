@@ -33,6 +33,9 @@ extern	void sample_process_1_adc(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_UARTQUEUES
 extern	void sample_process_1_queuetest(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_ADC
+#ifdef	SAMPLEPROCESS_INTFLASH
+extern	void sample_process_1_intflash(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_INTFLASH
 
 extern	void sample_process_2(uint32_t process_id);	//This is process2
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -65,6 +68,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_UARTQUEUES
 				.user_process = sample_process_1_queuetest,
 #endif // #define	SAMPLEPROCESS_UARTQUEUES
+#ifdef	SAMPLEPROCESS_INTFLASH
+				.user_process = sample_process_1_intflash,
+#endif // #define	SAMPLEPROCESS_INTFLASH
 				.stack_size = 1024,
 		},
 		{

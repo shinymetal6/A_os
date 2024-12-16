@@ -73,175 +73,6 @@ typedef struct
 #define		INVALID				0x80
 #endif	// #ifdef	POOL_ENABLE
 
-#ifdef	HWMngr_ENABLE
-
-typedef struct
-{
-	uint8_t 	process;
-	uint8_t		status;
-	uint16_t	rxlen;
-	uint32_t	flags;
-	uint8_t		*rx_buf;
-	uint16_t	rx_buf_index;
-	uint16_t	rx_buf_max_len;
-	void 		(*irq_callback)(void);
-}HWMngr_t;
-/* flags */
-#define	HWMAN_TIMEOUT_ENABLED	0x80000000
-/* status */
-#define	HWMAN_STATUS_FREE		0x00
-#define	HWMAN_STATUS_ALLOCATED	0x01
-#define	HWMAN_SENTINEL_ENABLE	0x02
-#define	HWMAN_SENTINEL_FOUND	0x04
-#define	HWMAN_SINGLE_IRQ		0x80
-#define	HWMAN_STD_IRQ			0x00
-
-#define	HWMAN_QUEUE_LEN			16
-
-typedef struct
-{
-	uint8_t 	process;
-	uint8_t		status;
-	uint8_t		device_peripheral;
-	uint8_t		bus_peripheral;
-	uint32_t	flags;
-	void 		(*irq_callback)(void);
-}HWDevices_t;
-
-/* status */
-#define	HWDEV_STATUS_ALLOCATED		0x01
-#define	HWDEV_STATUS_PRC_WAKEUP		0x02
-/* flags */
-#define	HWDEV_FLAGS_BUSY			0x80000000
-
-#ifdef A_HAS_SPI_BUS
-#include "HwDevices/hw_spi.h"
-
-#ifdef	A_HAS_SPI1
-extern	SPI_HandleTypeDef hspi1;
-#endif
-#ifdef	A_HAS_SPI2
-extern	SPI_HandleTypeDef hspi2;
-#endif
-#ifdef	A_HAS_SPI3
-extern	SPI_HandleTypeDef hspi3;
-#endif
-#ifdef	A_HAS_SPI4
-extern	SPI_HandleTypeDef hspi4;
-#endif
-
-typedef struct _HW_Spi_t
-{
-	SPI_HandleTypeDef 	*hwspi_handle;
-	uint32_t			hwspi_index;
-	uint8_t				hwspi_flags;
-}HW_Spi_t;
-
-#define	A_SPI_CLEARFLAG		0x00
-#define	A_SPI_DMA_RUNNING	0x00
-#define	A_SPI_DMA_DONE		0x01
-#define	A_SPI_USE_DMA		0x80
-#define	A_MAX_SPI			4
-#endif
-
-#ifdef A_HAS_I2C_BUS
-#include "HwDevices/hw_i2c.h"
-
-#ifdef	A_HAS_I2C1
-extern	I2C_HandleTypeDef 	hi2c1;
-#endif
-#ifdef	A_HAS_I2C2
-extern	I2C_HandleTypeDef 	hi2c2;
-#endif
-
-typedef struct _HW_I2C_t
-{
-	I2C_HandleTypeDef 	*hwi2c_handle;
-	uint32_t			hwi2c_index;
-	uint8_t				hwi2c_flags;
-}HW_I2C_t;
-/* hwi2c_flags */
-#define	I2C_IRQ_SET			0x01
-#define	I2C_TXDMA_SET		0x02
-#define	I2C_RXDMA_SET		0x04
-#define	A_MAX_I2C			2
-#endif
-
-#ifdef A_HAS_TIMERS
-#include "HwDevices/hw_timers.h"
-
-#ifdef	A_HAS_TIMER1
-extern	TIM_HandleTypeDef htim1;
-#endif
-#ifdef	A_HAS_TIMER2
-extern	TIM_HandleTypeDef htim2;
-#endif
-#ifdef	A_HAS_TIMER3
-extern	TIM_HandleTypeDef htim3;
-#endif
-#ifdef	A_HAS_TIMER4
-extern	TIM_HandleTypeDef htim4;
-#endif
-#ifdef	A_HAS_TIMER5
-extern	TIM_HandleTypeDef htim5;
-#endif
-#ifdef	A_HAS_TIMER6
-extern	TIM_HandleTypeDef htim6;
-#endif
-#ifdef	A_HAS_TIMER7
-extern	TIM_HandleTypeDef htim7;
-#endif
-#ifdef	A_HAS_TIMER8
-extern	TIM_HandleTypeDef htim8;
-#endif
-#ifdef	A_HAS_TIMER9
-extern	TIM_HandleTypeDef htim9;
-#endif
-#ifdef	A_HAS_TIMER10
-extern	TIM_HandleTypeDef htim10;
-#endif
-#ifdef	A_HAS_TIMER11
-extern	TIM_HandleTypeDef htim11;
-#endif
-#ifdef	A_HAS_TIMER12
-extern	TIM_HandleTypeDef htim12;
-#endif
-#ifdef	A_HAS_TIMER13
-extern	TIM_HandleTypeDef htim13;
-#endif
-#ifdef	A_HAS_TIMER14
-extern	TIM_HandleTypeDef htim14;
-#endif
-#ifdef	A_HAS_TIMER15
-extern	TIM_HandleTypeDef htim15;
-#endif
-#ifdef	A_HAS_TIMER16
-extern	TIM_HandleTypeDef htim16;
-#endif
-#ifdef	A_HAS_TIMER17
-extern	TIM_HandleTypeDef htim17;
-#endif
-
-typedef struct _HW_Timers_t
-{
-	TIM_HandleTypeDef 	*hwtimer_handle;
-	uint32_t			hwtimer_index;
-	uint8_t				hwtimer_owner;
-	uint8_t				hwtimer_flags;
-}HW_Timers_t;
-#define	A_MAX_TIMERS		17
-#endif
-
-typedef struct
-{
-	uint8_t 	process;
-	uint8_t		status;
-}IrqMngr_t;
-/* flags */
-#define	IRQMAN_TIMEOUT_ENABLED	0x80000000
-#define	IRQMAN_FREE		0
-#define	IRQMAN_ALLOCATED	1
-#endif // #ifdef	HWMngr_ENABLE
 
 #pragma pack(4)
 
@@ -260,7 +91,6 @@ typedef struct
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
 #endif // #ifdef	POOL_ENABLE
-
 	uint32_t	system_flags;
 	uint8_t		general_flags;
 	uint8_t		current_process;
@@ -273,10 +103,6 @@ typedef struct
 	uint8_t		process_mem_manage_fault[MAX_PROCESS];
 	uint8_t		process_usage_fault[MAX_PROCESS];
 	uint8_t		started_processes;
-
-	//	uint32_t 	qspi_size;
-//	uint8_t		qspi_status;
-	//uint8_t		qspi_id;
 	char		version[40];
 } Asys_t;
 
@@ -336,14 +162,6 @@ typedef struct
 #define	MODULE_STATUS_FREE		0x00
 #define	MODULE_STATUS_ALLOCATED	0x01
 
-#ifdef	HWMngr_ENABLE
-
-/* status */
-#define	HWDEV_STATUS_ALLOCATED		0x01
-#define	HWDEV_STATUS_PRC_WAKEUP		0x02
-/* flags */
-#define	HWDEV_FLAGS_BUSY			0x80000000
-#endif // #ifdef	HWMngr_ENABLE
 
 extern	void A_PreOS_Init(void);
 extern	void A_Processor_Quirks(void);
@@ -360,7 +178,6 @@ extern	void defrag_mem(void);
 extern	void reset_orphaned_chunks(uint8_t process);
 #endif // #ifdef	POOL_ENABLE
 
-extern	void check_semaphores(void);
 extern	void MX_USB_DEVICE_Init(void);
 extern	uint8_t MX_USB_Device_Init(void);
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);

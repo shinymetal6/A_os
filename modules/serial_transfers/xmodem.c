@@ -70,7 +70,8 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 		{
 			memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
 			xmodem_struct.data_ptr += xmodem_struct.data_len;
-			xmodem_struct.received_bytes_count += xmodem_struct.data_len;
+			xmodem_struct.received_data_len += xmodem_struct.data_len;
+			xmodem_struct.received_bytes_count += XMODEM_LEN;
 			return X_ACK;
 		}
 		return X_NAK;
