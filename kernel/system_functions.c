@@ -22,6 +22,7 @@
 
 
 #include "main.h"
+#include "A.h"
 //#include "kernel_opt.h"
 #include "system_functions.h"
 
@@ -42,7 +43,7 @@ void A_get_timelapse_start(void)
 
 uint32_t A_get_timelapse_end(void)
 {
-    usec_elapsed = (DWT->CYCCNT - time_start)/480;
+    usec_elapsed = (DWT->CYCCNT - time_start)/ (SYSTICK_TIM_CLK/1000000) ;
     return	usec_elapsed;
 }
 
