@@ -34,7 +34,7 @@
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-#define PRESSO_PROGRAM		__attribute__((section(".framebuffer"))) 	__attribute__ ((aligned (32)))
+//#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) __attribute__ ((aligned (32)))
 
 /* Clock */
 #define TICK_HZ 				1000U

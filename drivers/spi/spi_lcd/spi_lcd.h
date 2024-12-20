@@ -26,6 +26,9 @@
 #define	LCD_IS_7735		0x7735
 #define	LCD_IS_9341		0x9341
 
+#define MAX_WIDTH  240
+#define MAX_HEIGHT 320
+
 #define	DEFAULT_RESET_TIME	100
 
 #include	"fonts.h"
@@ -46,6 +49,8 @@ typedef struct
 	GPIO_TypeDef	 	*dc_port;
 	uint16_t			dc_bit;
 	uint16_t			lcd_model;
+	uint16_t			lcd_width;
+	uint16_t			lcd_height;
 	uint16_t			current_brightness;
 	void				(*lcd_init)(void);
 	void				(*lcd_reset)(void);
@@ -71,6 +76,18 @@ extern	uint16_t			ST7735_dc_bit;
 extern	SPI_HandleTypeDef 	*ST7735_spi_port;
 extern	uint8_t				*ST7735_flags;
 
+extern	GPIO_TypeDef		*ILI9341_cs_port;
+extern	uint16_t			ILI9341_cs_bit;
+extern	GPIO_TypeDef		*ILI9341_reset_port;
+extern	uint16_t			ILI9341_reset_bit;
+extern	uint16_t			ILI9341_reset_time;
+extern	GPIO_TypeDef		*ILI9341_dc_port;
+extern	uint16_t			ILI9341_dc_bit;
+extern	SPI_HandleTypeDef 	*ILI9341_spi_port;
+extern	uint8_t				*ILI9341_flags;
+
+extern	uint16_t	framebuffer_rect[MAX_WIDTH*MAX_HEIGHT];
+
 extern uint32_t	spi_lcd_init(uint8_t handle);
 extern uint32_t	spi_lcd_on(uint8_t handle);
 extern uint32_t	spi_lcd_off(uint8_t handle);
@@ -83,6 +100,7 @@ extern uint32_t	spi_lcd_draw_image(uint8_t handle,uint16_t x, uint16_t y, uint16
 extern uint32_t	spi_lcd_write_string(uint8_t handle,uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 extern uint32_t	spi_lcd_draw_logo(uint8_t handle,uint16_t* image);
 
-#include	"st7735_lcd/lcd_7735.h"
+#include	"lcd_st7735/lcd_7735.h"
+#include	"lcd_ili9341/lcd_ili9341.h"
 
 #endif /* DRIVERS_SPI_SPI_LCD_SPI_LCD_H_ */

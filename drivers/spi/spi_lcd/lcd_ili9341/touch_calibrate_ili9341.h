@@ -14,24 +14,15 @@
  * Project : A_os
 */
 /*
- * fonts.h
+ * touch_calibrate_ili9341.h
  *
- *  Created on: Dec 20, 2024
+ *  Created on: Feb 16, 2024
  *      Author: fil
  */
-#ifndef DRIVERS_SPI_SPI_LCD_FONTS_H_
-#define DRIVERS_SPI_SPI_LCD_FONTS_H_
 
-typedef struct {
-    const uint8_t width;
-    const uint8_t height;
-    const uint16_t *data;
-} FontDef;
+#ifndef DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
+#define DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
 
+void ILI9341_calibrate_touch(void);
 
-extern  FontDef Font_7x10;
-extern 	FontDef Font_7x11;
-extern  FontDef Font_11x18;
-extern 	FontDef Font_16x26;
-
-#endif /* DRIVERS_SPI_SPI_LCD_FONTS_H_ */
+#endif /* DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_ */

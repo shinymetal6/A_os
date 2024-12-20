@@ -35,6 +35,8 @@
 extern	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 extern	uint8_t				last_spi_used_handle,spi_driver_request;
 
+__attribute__ ((aligned (32)))	uint16_t	framebuffer_rect[MAX_WIDTH*MAX_HEIGHT];
+
 ITCM_AREA_CODE uint32_t	spi_lcd_fill_rect(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
@@ -153,9 +155,31 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 			spi_lcd_Drv->lcd_draw_image = ST7735_DrawImage;
 			spi_lcd_Drv->lcd_invert_colors = ST7735_InvertColors;
 			spi_lcd_Drv->lcd_write_string = ST7735_WriteString;
-			ST7735_flags = (uint8_t *)&SPI_DriverStruct[last_spi_used_handle].flags;
+			spi_lcd_Drv->lcd_width = ST7735_WIDTH;
+			spi_lcd_Drv->lcd_height = ST7735_HEIGHT;
+			ST7735_flags = (uint8_t *)&spi_lcd_Drv->flags;
 			break;
 		case LCD_IS_9341 :
+			ILI9341_cs_port = spi_lcd_Drv->cs_port;
+			ILI9341_cs_bit = spi_lcd_Drv->cs_bit;
+			ILI9341_reset_port = spi_lcd_Drv->reset_port;
+			ILI9341_reset_bit = spi_lcd_Drv->reset_bit;
+			ILI9341_dc_port = spi_lcd_Drv->dc_port;
+			ILI9341_dc_bit = spi_lcd_Drv->dc_bit;
+			ILI9341_spi_port = spi_lcd_Drv->bus;
+			if ( spi_lcd_Drv->reset_time == 0 )
+				spi_lcd_Drv->reset_time = DEFAULT_RESET_TIME;
+			ILI9341_reset_time = spi_lcd_Drv->reset_time;
+			spi_lcd_Drv->lcd_reset = ILI9341_Reset;
+			spi_lcd_Drv->lcd_init = ILI9341_Init;
+			spi_lcd_Drv->lcd_fill_rect = ILI9341_FillRectangle;
+			spi_lcd_Drv->lcd_clear_screen = ILI9341_ClearScreen;
+			spi_lcd_Drv->lcd_draw_image = ILI9341_DrawImage;
+			spi_lcd_Drv->lcd_invert_colors = ILI9341_InvertColors;
+			spi_lcd_Drv->lcd_write_string = ILI9341_WriteString;
+			spi_lcd_Drv->lcd_width = ILI9341_WIDTH;
+			spi_lcd_Drv->lcd_height = ILI9341_HEIGHT;
+			ILI9341_flags = (uint8_t *)&spi_lcd_Drv->flags;
 			break;
 		default :
 			return DRIVER_REQUEST_FAILED;

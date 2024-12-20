@@ -14,14 +14,13 @@
  * Project : A_os
 */
 /*
- * fonts_7735.c
+ * fonts.c
  *
- *  Created on: Jan 3, 2024
+ *  Created on: Dec 20, 2024
  *      Author: fil
  */
 
 #include "main.h"
-
 #include "fonts.h"
 
 __attribute__((section(".table"))) static const uint16_t Font7x10 [] = {

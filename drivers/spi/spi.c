@@ -44,7 +44,8 @@ uint32_t	i;
 		{
 			if ( SPI_DriverStruct[i].bus  == hspi )
 			{
-				SPI_DriverStruct[i].flags |= SPI_TX_DMA_COMPLETE;
+				SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[i].driver_private_data;
+				spi_lcd_Drv->flags  |= SPI_DMA_DONE;
 			}
 		}
 	}
