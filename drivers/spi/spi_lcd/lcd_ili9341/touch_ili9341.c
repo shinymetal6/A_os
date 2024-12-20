@@ -24,8 +24,12 @@
 /* vim: set ai et ts=4 sw=4: */
 
 #include "main.h"
-#include "../../kernel/system_default.h"
-#ifdef	LCD_2I8_ENABLED
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
+#ifdef TOUCH_ENABLED
+
+#ifdef STM32H7xx_HAL_SPI_H
 
 #define READ_X 0xD0
 #define READ_Y 0x90
@@ -118,5 +122,6 @@ uint32_t ret_val = 0;
 	return ret_val;
 }
 
-#endif // #ifdef	LCD_2I8_ENABLED
+#endif // #ifdef	STM32H7xx_HAL_SPI_H
 
+#endif // #ifdef TOUCH_ENABLED

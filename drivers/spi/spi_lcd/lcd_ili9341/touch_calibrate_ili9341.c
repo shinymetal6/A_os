@@ -19,10 +19,13 @@
  *  Created on: Feb 16, 2024
  *      Author: fil
  */
-
 #include "main.h"
-#include "../../kernel/system_default.h"
-#ifdef	LCD_2I8_ENABLED
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
+
+#ifdef TOUCH_ENABLED
+#ifdef STM32H7xx_HAL_SPI_H
 
 #include "lcd_ili9341.h"
 #include <string.h>
@@ -95,4 +98,5 @@ char		calibration_string[CALIBRATION_STRING_LEN];
 
 }
 
-#endif // #ifdef	LCD_2I8_ENABLED
+#endif // #ifdef	STM32H7xx_HAL_SPI_H
+#endif // #ifdef TOUCH_ENABLED
