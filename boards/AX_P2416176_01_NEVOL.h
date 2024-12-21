@@ -23,6 +23,7 @@
 #ifndef BOARDS_AX_P2416176_01_NEVOL_H_
 #define BOARDS_AX_P2416176_01_NEVOL_H_
 
+#include "iodef_common.h"
 #include "memdef_common.h"
 
 #define USB_DEVICE_ENABLED	1

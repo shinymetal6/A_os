@@ -27,7 +27,7 @@
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_ADC_H
+#ifdef A_OS_ADC_ENABLED
 
 #include "int_adc_driver.h"
 #include <string.h>
@@ -156,4 +156,4 @@ uint32_t handle;
 	}
 }
 
-#endif // #ifdef STM32H7xx_HAL_ADC_H
+#endif // #ifdef A_OS_ADC_ENABLED

@@ -30,7 +30,12 @@ typedef struct
 	uint8_t		flags;
 	uint8_t		handle;
 	uint32_t	sensor_id;
-	uint32_t	*sensor_driver_private_data;
+	uint32_t	*private_data;
+	uint32_t	(*sensor_start)  (uint8_t handle);
+	uint32_t	(*sensor_stop)  (uint8_t handle);
+	uint32_t	(*sensor) (uint8_t handle);
+	uint32_t	(*sensor_init) (uint8_t handle);
+
 	void 		(*periodic_before_check_timers_callback)(void);
 	void 		(*periodic_after_check_timers_callback)(void);
 

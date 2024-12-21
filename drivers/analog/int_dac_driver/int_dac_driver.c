@@ -26,7 +26,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
-#ifdef STM32H7xx_HAL_DAC_H
+#ifdef A_OS_DAC_ENABLED
 
 #include "int_dac_driver.h"
 
@@ -152,5 +152,5 @@ uint32_t handle;
 	__enable_irq();
 }
 
-#endif // #ifdef STM32H7xx_HAL_DAC_H
+#endif // #ifdef A_OS_DAC_ENABLED
 

@@ -21,6 +21,8 @@
  */
 
 #include "main.h"
+#ifdef STM32L4xx_HAL_TIM_H
+
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
@@ -258,3 +260,4 @@ uint32_t handle_dht,i;
 	}
 }
 
+#endif // #ifdef STM32L4xx_HAL_TIM_H

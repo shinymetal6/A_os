@@ -21,6 +21,8 @@
  */
 
 #include "main.h"
+#ifdef A_OS_UART_ENABLED
+
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
@@ -68,3 +70,4 @@ DMX512_Drv_TypeDef	*dmx512_Drv = (DMX512_Drv_TypeDef	*)UARTS_DriverStruct[handle
 	uart_send(handle,buffer,buffer_len);
 	__enable_irq();
 }
+#endif // #ifdef A_OS_UART_ENABLED

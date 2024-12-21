@@ -29,7 +29,7 @@
 SYSTEM_RAM	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 SYSTEM_RAM	uint8_t					last_analog_used_handle=0,analog_driver_request = 0;
 
-#ifdef STM32H7xx_HAL_ADC_H
+#ifdef A_OS_ADC_ENABLED
 
 uint32_t adc_start(uint8_t handle)
 {
@@ -60,7 +60,7 @@ uint32_t adc_init(uint8_t handle)
 }
 #endif
 
-#ifdef STM32H7xx_HAL_DAC_H
+#ifdef A_OS_DAC_ENABLED
 
 uint32_t dac_start(uint8_t handle)
 {
@@ -92,7 +92,7 @@ uint32_t dac_init(uint8_t handle)
 
 #endif
 
-#ifdef STM32H7xx_HAL_I2S_H
+#ifdef A_OS_I2S_ENABLED
 
 uint32_t i2s_start(uint8_t handle)
 {

@@ -24,7 +24,7 @@
 #include "../../kernel/A.h"
 #include "../../kernel/system_default.h"
 
-#ifdef INTERNAL_RTC_ENABLED
+#ifdef A_OS_RTC_ENABLED
 #include "../../kernel/kernel_opt.h"
 #include "../../kernel/scheduler.h"
 #include "../../kernel/hwmanager.h"
@@ -109,5 +109,6 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 	rtcexpired = 1;
 }
 
-#endif
+#endif // #ifdef A_OS_RTC_ENABLED
+
 

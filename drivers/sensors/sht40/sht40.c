@@ -23,72 +23,84 @@
 #include "main.h"
 #include "../../../kernel/system_default.h"
 
-#ifdef SENSORS_SHT40
+#ifdef A_OS_I2C_ENABLED
 #include "../../../kernel/A_exported_functions.h"
 #include "sht40.h"
 
-uint32_t	sht40_status;
+extern	Sensors_DriverStruct_t	Sensors_DriverStruct[MAX_I2C_DEVICES];
+extern	uint8_t					last_sensor_used_handle,sensor_driver_request;;
 
- static int32_t	inline SHT40_acq_start(uint8_t	sht40_reg)
+ITCM_AREA_CODE static uint32_t sht40_start(uint8_t handle)
 {
-	return hw_i2c_Send(SENSORS_SHT40_I2C_INDEX,SHT40_ADDR, &sht40_reg, 1);
+Sht40_Drv_TypeDef	*sht40_Drv;
+	if ( Sensors_DriverStruct[handle].process == Asys.current_process)
+	{
+		sht40_Drv = (Sht40_Drv_TypeDef	*)Sensors_DriverStruct[handle].private_data;
+		sht40_Drv->status = SHT40_STARTED;
+		return HAL_I2C_Master_Transmit(sht40_Drv->bus,sht40_Drv->device_address, (uint8_t *)&sht40_Drv->precision, 1, SHT40_I2C_TIMEOUT);
+	}
+	else
+		return SHT40_DRIVER_NOT_OWNED;
 }
 
- int32_t  SHT40_Start_HP_Acquisition(void)
+ITCM_AREA_CODE static uint32_t sht40_stop(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_DATA_HP);
+	return 0;
 }
 
- int32_t  SHT40_Start_MP_Acquisition(void)
+ITCM_AREA_CODE static uint32_t sht40_get_values(uint8_t handle,uint8_t *data,uint16_t datalen)
 {
-	return SHT40_acq_start(SHT40_DATA_MP);
+Sht40_Drv_TypeDef	*sht40_Drv;
+uint32_t	ret_i2c_code;
+	if ( Sensors_DriverStruct[handle].process == Asys.current_process)
+	{
+		sht40_Drv = (Sht40_Drv_TypeDef	*)Sensors_DriverStruct[handle].private_data;
+		ret_i2c_code =  HAL_I2C_Master_Receive(sht40_Drv->bus,sht40_Drv->device_address, data, datalen, SHT40_I2C_TIMEOUT);
+		if ( ret_i2c_code == 0 )
+			return datalen;
+		return ret_i2c_code;
+	}
+	else
+		return SHT40_DRIVER_NOT_OWNED;
 }
 
- int32_t  SHT40_Start_LP_Acquisition(void)
+ITCM_AREA_CODE static uint32_t sht40_init(uint8_t handle)
 {
-	return SHT40_acq_start(SHT40_DATA_LP);
+Sht40_Drv_TypeDef	*sht40_Drv;
+	sht40_Drv = (Sht40_Drv_TypeDef	*)Sensors_DriverStruct[handle].private_data;
+	sht40_Drv->status = SHT40_STOPPED;
+	if ( sht40_Drv->power_port != NULL )
+	{
+		if ( sht40_Drv->power_active_level == 1 )
+			  HAL_GPIO_WritePin(sht40_Drv->power_port, sht40_Drv->power_bit, GPIO_PIN_SET);
+		else
+			  HAL_GPIO_WritePin(sht40_Drv->power_port, sht40_Drv->power_bit, GPIO_PIN_RESET);
+	}
+	return 0;
 }
 
- int32_t  SHT40_Start_Heat200_1sec_Acquisition(void)
+ITCM_AREA_CODE uint32_t sht40_register(Sht40_Drv_TypeDef *driver_private_data,uint32_t driver_flags)
 {
-	return SHT40_acq_start(SHT40_HEAT200_1);
-}
+Sht40_Drv_TypeDef	*sht40_Drv;
+	if ( Sensors_DriverStruct[last_sensor_used_handle].process == 0 )
+	{
+		Sensors_DriverStruct[last_sensor_used_handle].process = get_current_process();
+		Sensors_DriverStruct[last_sensor_used_handle].flags |= driver_flags;
+		Sensors_DriverStruct[last_sensor_used_handle].private_data = (uint32_t *)driver_private_data;
 
- int32_t  SHT40_Start_Heat200_01sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT200_01);
-}
+		sht40_Drv = (Sht40_Drv_TypeDef *)Sensors_DriverStruct[last_sensor_used_handle].private_data;
+		if ( sht40_Drv->bus == NULL)
+			return DRIVER_REQUEST_FAILED;
+		Sensors_DriverStruct[last_sensor_used_handle].status = DRIVER_STATUS_IN_USE;
+		Sensors_DriverStruct[last_sensor_used_handle].sensor_start = sht40_start;
+		Sensors_DriverStruct[last_sensor_used_handle].sensor_stop = sht40_stop;
+		Sensors_DriverStruct[last_sensor_used_handle].sensor_init = sht40_init;
+		last_sensor_used_handle++;
+		sensor_driver_request++;
+		return last_sensor_used_handle-1;
+	}
+	return DRIVER_REQUEST_FAILED;
 
- int32_t  SHT40_Start_Heat110_1sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT110_1);
+	return 0;
 }
-
- int32_t  SHT40_Start_Heat110_01sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT110_01);
-}
-
- int32_t  SHT40_Start_Heat20_1sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT20_1);
-}
-
- int32_t  SHT40_Start_Heat20_01sec_Acquisition(void)
-{
-	return SHT40_acq_start(SHT40_HEAT20_01);
-}
-
- int32_t  SHT40_ReadData(uint8_t *pData)
-{
-	return sht40_status = hw_i2c_Get(SENSORS_SHT40_I2C_INDEX, SHT40_ADDR, pData, 6);
-}
-
- int32_t  SHT40_Get_uid(uint8_t *pData)
-{
-uint8_t		sht40_reg = SHT40_UUID;
-	sht40_status =  hw_i2c_Send(SENSORS_SHT40_I2C_INDEX,SHT40_ADDR, &sht40_reg, 1);
-	return sht40_status = hw_i2c_Get(SENSORS_SHT40_I2C_INDEX, SHT40_ADDR, pData, 2);
-}
-
-#endif // #ifdef SENSORS_LPS22DF
+#endif // #ifdef A_OS_I2C_ENABLED

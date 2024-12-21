@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
 #define DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
+#ifdef STM32L4xx_HAL_TIM_H
 
 #define	MAX_DHT11_DEVICES					8
 
@@ -77,6 +78,8 @@ extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_dri
 extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *values);
+
+#endif // #ifdef STM32L4xx_HAL_TIM_H
 
 
 #endif /* DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_ */

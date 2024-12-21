@@ -23,9 +23,8 @@
 #ifndef BOARDS_STM32H753ZI_NUCLEO_H_
 #define BOARDS_STM32H753ZI_NUCLEO_H_
 
+#include "iodef_common.h"
 #include "memdef_common.h"
-
-
 
 //#define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1

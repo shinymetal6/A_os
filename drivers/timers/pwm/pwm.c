@@ -21,11 +21,13 @@
  */
 
 #include "main.h"
+
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 #include "../../../kernel/kernel_opt.h"
+#ifdef A_OS_TIMERS_ENABLED
 
 #include "pwm.h"
 #include <string.h>
@@ -133,4 +135,5 @@ ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *private_data,uint32_t 
 	return DRIVER_REQUEST_FAILED;
 }
 
+#endif // #ifdef A_OS_TIMERS_ENABLED
 

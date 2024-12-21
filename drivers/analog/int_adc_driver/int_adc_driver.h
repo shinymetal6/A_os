@@ -23,7 +23,7 @@
 #ifndef DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_
 #define DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_
 
-#ifdef STM32H7xx_HAL_ADC_H
+#ifdef A_OS_ADC_ENABLED
 
 typedef struct
 {
@@ -48,6 +48,6 @@ typedef struct
 #define		ADC_FLAGS_ALL_WAKEUP	0x80
 
 extern uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
-#endif // #ifdef STM32H7xx_HAL_ADC_H
+#endif // #ifdef A_OS_ADC_ENABLED
 
 #endif /* DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_ */

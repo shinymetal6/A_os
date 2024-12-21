@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_DMX512_DMX512_H_
 #define DRIVERS_DMX512_DMX512_H_
+#ifdef A_OS_UART_ENABLED
 
 typedef struct
 {
@@ -50,5 +51,6 @@ extern	uint32_t	dmx512_register(DMX512_Drv_TypeDef *driver_private_data);
 extern	uint32_t 	dmx512_init(UART_HandleTypeDef	*huart,uint32_t wakeup_id,GPIO_TypeDef *tx_port,uint16_t tx_bit);
 extern	void 		dmx512_send(uint8_t handle, uint8_t *buffer, uint16_t buffer_len);
 
+#endif // #ifdef A_OS_UART_ENABLED
 
 #endif /* DRIVERS_DMX512_DMX512_H_ */

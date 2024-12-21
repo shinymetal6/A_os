@@ -14,45 +14,36 @@
  * Project : A_os
 */
 /*
- * VB_10x_00.h
+ * ROLLON_AX_P2311171.h
  *
- *  Created on: Nov 22, 2024
+ *  Created on: Dec 21, 2024
  *      Author: fil
  */
-
-#ifndef BOARDS_VB_10X_00_H_
-#define BOARDS_VB_10X_00_H_
+#ifndef BOARDS_ROLLON_AX_P2311171_H_
+#define BOARDS_ROLLON_AX_P2311171_H_
 
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define USB_DEVICE_ENABLED	1
-#ifdef USB_DEVICE_ENABLED
-	#define	USB_CDC				1
-	//#define	USB_MIDI			1
-#endif // #ifdef USB_ENABLED
-
-#define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
-#define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-//#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) __attribute__ ((aligned (32)))
+#undef DTCM_VECTORS_DATA
+#undef ITCM_AREA_CODE
+#define DTCM_VECTORS_DATA
+#define ITCM_AREA_CODE
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		480000000U
+#define HSI_CLOCK         		48000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
+/* Others */
 /* Others */
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12
 #define	ASSIGNED				1
 
-#define	DFU_BOOT_ENTRY			0x1FF09800
-#define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
-#define	DFU_BOOT_VERSION		0x91
+#define	ITCM_AREA_CODE
 
-#define	BOARD_NAME			"VB1ox_00"
-#define	MACHINE_NAME		"BB"
+#define	BOARD_NAME			"AX_P2311171_RS"
+#define	MACHINE_NAME		"Sensors"
 #define	MACHINE_VERSION		"A"
 
-
-#endif /* BOARDS_VB_10X_00_H_ */
+#endif /* BOARDS_ROLLON_AX_P2311171_H_ */

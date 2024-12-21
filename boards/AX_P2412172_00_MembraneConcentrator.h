@@ -23,6 +23,7 @@
 #ifndef BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 #define BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 
+#include "iodef_common.h"
 #include "memdef_common.h"
 
 #define USB_DEVICE_ENABLED	1

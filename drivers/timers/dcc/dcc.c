@@ -21,11 +21,13 @@
  */
 
 #include "main.h"
+
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
+#ifdef A_OS_TIMERS_ENABLED
 
 #include "dcc.h"
 #include <string.h>
@@ -465,3 +467,4 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	}
 }
 
+#endif // #ifdef A_OS_TIMERS_ENABLED

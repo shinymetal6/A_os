@@ -45,6 +45,12 @@
 	#endif
 #endif
 
+#ifdef	STM32L431xx
+	#ifdef ROLLON_AX_P2311171
+		#include "../boards/ROLLON_AX_P2311171.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

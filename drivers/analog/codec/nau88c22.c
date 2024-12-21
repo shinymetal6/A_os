@@ -21,11 +21,13 @@
  */
 
 #include "main.h"
+
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
+#ifdef A_OS_I2C_ENABLED
 
 #include "nau88c22.h"
 
@@ -344,3 +346,4 @@ Nau88C22_Drv_TypeDef	*codec_drv;
 	}
 	return DRIVER_REQUEST_FAILED;
 }
+#endif // #ifdef A_OS_I2C_ENABLED

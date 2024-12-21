@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_TIMERS_PWM_PWM_H_
 #define DRIVERS_TIMERS_PWM_PWM_H_
+#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -49,5 +50,7 @@ extern	uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler);
 extern	uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width);
 extern	uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction);
 extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data,uint32_t driver_flags);
+
+#endif // #ifdef A_OS_TIMERS_ENABLED
 
 #endif /* DRIVERS_TIMERS_PWM_PWM_H_ */
