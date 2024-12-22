@@ -36,6 +36,9 @@ extern	void sample_process_1_queuetest(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_INTFLASH
 extern	void sample_process_1_intflash(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_INTFLASH
+#ifdef	SAMPLEPROCESS_I2CSENSORS
+extern	void sample_process_1_i2csensors(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_I2CSENSORS
 
 extern	void sample_process_2(uint32_t process_id);	//This is process2
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -71,6 +74,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_INTFLASH
 				.user_process = sample_process_1_intflash,
 #endif // #define	SAMPLEPROCESS_INTFLASH
+#ifdef	SAMPLEPROCESS_I2CSENSORS
+				.user_process = sample_process_1_i2csensors,
+#endif // #define	SAMPLEPROCESS_I2CSENSORS
+
 				.stack_size = 1024,
 		},
 		{

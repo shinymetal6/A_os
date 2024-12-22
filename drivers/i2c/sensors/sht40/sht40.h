@@ -30,14 +30,20 @@ typedef struct
 	uint8_t				*data;
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
-	uint16_t 			precision;
+	uint16_t 			device_address_size;
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
+	uint32_t 			wakeup_id;
 }Sht40_Drv_TypeDef;
 /* status */
 #define	SHT40_STARTED		0x80
-#define	SHT40_STOPPED		0x00
+#define	SHT40_STARTED		0x80
+#define	SHT40_STATUS_WRITE_COMPLETE		0x80
+#define	SHT40_STATUS_ERROR				0x80
+#define	SHT40_STATUS_BUSY				0x00
+
+#define	SHT40_ADDR					0x88
 
 #define	SHT40_DATA_HP		0xfd		/* reply 6 bytes 	measure T & RH with high precision (high repeatability) 	*/
 #define	SHT40_DATA_MP		0xf6		/* reply 6 bytes  	measure T & RH with high precision (medium repeatability) 	*/
@@ -54,6 +60,6 @@ typedef struct
 #define SHT40_I2C_TIMEOUT			1000U
 #define SHT40_DRIVER_NOT_OWNED		0xffffffff
 
-extern	uint32_t sht40_register(Sht40_Drv_TypeDef *driver_private_data,uint32_t driver_flags);
+extern	uint32_t sht40_register(I2C_Sensors_DriverStruct_t *driver_private_data);
 
 #endif /* DRIVERS_SENSORS_SHT40_SHT40_H_ */

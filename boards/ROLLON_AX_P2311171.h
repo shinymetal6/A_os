@@ -32,7 +32,7 @@
 
 /* Clock */
 #define TICK_HZ 				1000U
-#define HSI_CLOCK         		48000000U
+#define HSI_CLOCK         		8000000U
 #define SYSTICK_TIM_CLK   		HSI_CLOCK
 /* Others */
 /* Others */

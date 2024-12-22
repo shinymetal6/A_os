@@ -16,16 +16,11 @@
 /*
  * lps22df.h
  *
- *  Created on: Mar 13, 2024
+ *  Created on: Dec 22, 2024
  *      Author: fil
  */
-
-#ifndef DRIVERS_SENSORS_LPS22DF_LPS22DF_H_
-#define DRIVERS_SENSORS_LPS22DF_LPS22DF_H_
-
-#include <stdint.h>
-#include <stddef.h>
-#include <math.h>
+#ifndef DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_
+#define DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_
 
 #define	LPS22DF_I2C_TIMEOUT				1000
 #define	LPS22DF_ADDR					0xb8
@@ -91,16 +86,9 @@
 
 #define	LPS22DF_BOOT_ON_REG_INT_SOURCE	0x80
 
-/* status definitions */
-#define	LPS22DF_P_DA_STATUS				0x01
-#define	LPS22DF_T_DA_STATUS				0x02
+#define	LPS22DF_STARTED	0x80
 
-extern	uint32_t LPS22DF_Init(void);
-extern	uint8_t LPS22DF_GetWhoAmI(void);
-extern	uint8_t LPS22DF_Read_P_Data(uint8_t *pressure_p_ptr);
-extern	uint8_t LPS22DF_Read_T_Data(uint8_t *pressure_t_ptr);
-extern	int32_t LPS22DF_Start_Acquisition(void);
-extern	uint8_t LPS22DF_GetStatus(void);
+extern uint32_t lps22df_register(I2C_Sensors_DriverStruct_t *driver_private_data);
 
 
-#endif /* DRIVERS_SENSORS_LPS22DF_LPS22DF_H_ */
+#endif /* DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_ */

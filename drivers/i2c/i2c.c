@@ -14,27 +14,24 @@
  * Project : A_os
 */
 /*
- * drivers.h
+ * i2c.c
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Dec 21, 2024
  *      Author: fil
  */
 
-#ifndef DRIVERS_DRIVERS_H_
-#define DRIVERS_DRIVERS_H_
+#include "main.h"
+#include "../../kernel/system_default.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+#include "../../kernel/scheduler.h"
+//#include "../../../kernel/kernel_opt.h"
 
-#define	DRIVER_STATUS_IN_USE		0x02
+#include "i2c.h"
+#include <string.h>
+#ifdef A_OS_I2C_ENABLED
 
-#include "gpio/gpio.h"
-#include "gpio_int/gpio_int.h"
-#include "analog/analog.h"
-#include "uart/uart.h"
-#include "dmx512/dmx512.h"
-#include "timers/timers.h"
-#include "sensors/sensors.h"
-#include "USB_Device/usb_device_driver_manager.h"
-#include "external_flash/external_flash.h"
-#include "spi/spi.h"
-#include "i2c/i2c.h"
+SYSTEM_RAM	I2C_DriverStruct_t	I2C_DriverStruct[MAX_I2C_DEVICES];
+SYSTEM_RAM	uint8_t				last_i2c_used_handle,i2c_driver_request;
 
-#endif /* DRIVERS_DRIVERS_H_ */
+#endif // #ifdef A_OS_I2C_ENABLED
