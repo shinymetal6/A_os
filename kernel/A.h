@@ -168,7 +168,6 @@ extern	void A_Processor_Quirks(void);
 extern	void A_PreScheduler_Init(void);
 extern	void A_IrqPriority_Init(void);
 
-extern	void A_bzero(uint8_t *ptr,uint16_t count);
 extern	void A_memcpy(uint8_t *dest,uint8_t *source,uint16_t size);
 extern	void schedule(void);
 extern	void A_mem_init(void);

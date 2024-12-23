@@ -47,11 +47,12 @@ uint32_t A_get_timelapse_end(void)
     return	usec_elapsed;
 }
 
-uint32_t	memindex;
 void A_clear32(uint32_t	*ptr,uint32_t size)
 {
+uint32_t	i;
 	__disable_irq();
-	for(memindex=0;memindex<size;memindex++)
-		ptr[memindex] = 0;
+	for(i=0;i<size;i++)
+		ptr[i] = 0;
 	__enable_irq();
 }
+
