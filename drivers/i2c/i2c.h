@@ -49,6 +49,7 @@ typedef struct
 #define	I2C_FLAGS_WAKEUP_ON_READ			0x02
 #define	I2C_FLAGS_WAKEUP_ON_WRITE			0x01
 
+#define	I2C_BUSY_TIMEOUT					100
 #include "sensors/i2c_sensors.h"
 
 #endif /* DRIVERS_I2C_I2C_H_ */

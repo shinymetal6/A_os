@@ -34,4 +34,30 @@
 SYSTEM_RAM	I2C_DriverStruct_t	I2C_DriverStruct[MAX_I2C_DEVICES];
 SYSTEM_RAM	uint8_t				last_i2c_used_handle,i2c_driver_request;
 
+static void i2c_irq_common(I2C_HandleTypeDef *hi2c,uint8_t flags)
+{
+uint32_t	i;
+	for(i=0;i<MAX_I2C_DEVICES;i++)
+	{
+		if ( I2C_DriverStruct[i].bus != NULL )
+		{
+			if ( I2C_DriverStruct[i].bus  == hi2c )
+			{
+				I2C_DriverStruct_t	*i2c_Drv = (I2C_DriverStruct_t *)I2C_DriverStruct[i].private_data;
+				i2c_Drv->flags  |= flags;
+			}
+		}
+	}
+}
+
+void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	i2c_irq_common(hi2c,I2C_STATUS_READ_COMPLETE);
+}
+
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+	i2c_irq_common(hi2c,I2C_STATUS_WRITE_COMPLETE);
+}
+
 #endif // #ifdef A_OS_I2C_ENABLED

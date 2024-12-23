@@ -28,15 +28,55 @@
 #include "sht40.h"
 
 extern	I2C_DriverStruct_t	I2C_DriverStruct[MAX_I2C_DEVICES];
-extern	uint8_t				last_i2c_used_handle,i2c_driver_request;
+extern	uint8_t				last_i2c_used_handle,i2c_driver_request,i2c_busy_timeout;
+
+ITCM_AREA_CODE static uint32_t sht40_i2cread(I2C_Sensors_DriverStruct_t *sht40_Drv)
+{
+uint8_t	ret = HAL_BUSY;
+
+	sht40_Drv->flags  &= ~I2C_STATUS_READ_COMPLETE;
+	sht40_Drv->i2c_timeout = I2C_BUSY_TIMEOUT;
+	while(ret == HAL_BUSY )
+	{
+		ret = HAL_I2C_Master_Receive_IT(sht40_Drv->bus,sht40_Drv->device_address, sht40_Drv->data, 6);
+		if ( ret == HAL_BUSY)
+		{
+			task_delay(1);
+			sht40_Drv->i2c_timeout--;
+			if ( sht40_Drv->i2c_timeout == 0 )
+				return 1;
+		}
+	}
+	return 0;
+}
+
+ITCM_AREA_CODE static uint32_t sht40_i2cwrite(I2C_Sensors_DriverStruct_t *sht40_Drv)
+{
+uint8_t	ret = HAL_BUSY;
+uint8_t		cmd = 0xfd;
+
+	sht40_Drv->flags  &= ~I2C_STATUS_WRITE_COMPLETE;
+	sht40_Drv->i2c_timeout = I2C_BUSY_TIMEOUT;
+	while(ret == HAL_BUSY )
+	{
+		ret = HAL_I2C_Master_Transmit_IT(sht40_Drv->bus, sht40_Drv->device_address, &cmd,1);
+		if ( ret == HAL_BUSY)
+		{
+			task_delay(1);
+			sht40_Drv->i2c_timeout--;
+			if ( sht40_Drv->i2c_timeout == 0 )
+				return 1;
+		}
+	}
+	return 0;
+}
 
 ITCM_AREA_CODE static uint32_t sht40_start(uint8_t handle)
 {
 I2C_Sensors_DriverStruct_t	*sht40_Drv;
-uint8_t		cmd = 0xfd;
 	sht40_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
 	sht40_Drv->status = SHT40_STARTED;
-	return HAL_I2C_Master_Transmit(sht40_Drv->bus, sht40_Drv->device_address, &cmd,1, SHT40_I2C_TIMEOUT);
+	return sht40_i2cwrite(sht40_Drv);
 }
 
 ITCM_AREA_CODE static uint32_t sht40_stop(uint8_t handle)
@@ -48,7 +88,7 @@ ITCM_AREA_CODE static uint32_t sht40_get_data(uint8_t handle)
 {
 I2C_Sensors_DriverStruct_t	*sht40_Drv;
 	sht40_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
-	return  HAL_I2C_Master_Receive(sht40_Drv->bus,sht40_Drv->device_address, sht40_Drv->data, 6, SHT40_I2C_TIMEOUT);
+	return sht40_i2cread(sht40_Drv);
 }
 
 ITCM_AREA_CODE static uint32_t sht40_init(uint8_t handle)

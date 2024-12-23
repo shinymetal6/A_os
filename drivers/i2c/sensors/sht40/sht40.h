@@ -23,10 +23,12 @@
 #ifndef DRIVERS_SENSORS_SHT40_SHT40_H_
 #define DRIVERS_SENSORS_SHT40_SHT40_H_
 
+/*
 typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t				i2c_timeout;
 	uint8_t				*data;
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
@@ -36,6 +38,7 @@ typedef struct
 	uint16_t			power_active_level;
 	uint32_t 			wakeup_id;
 }Sht40_Drv_TypeDef;
+*/
 /* status */
 #define	SHT40_STARTED		0x80
 #define	SHT40_STARTED		0x80

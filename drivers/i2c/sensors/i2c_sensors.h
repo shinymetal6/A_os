@@ -29,6 +29,7 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
+	uint8_t				i2c_timeout;
 	uint32_t			sensor_id;
 	uint32_t			who_am_i;
 	uint8_t				*data;
@@ -51,13 +52,12 @@ typedef struct
 
 #include "sht40/sht40.h"
 #include "lps22df/lps22df.h"
+#include "stts22h/stts22h.h"
 
 extern	uint32_t sensor_init(uint8_t handle);
 extern	uint32_t sensor_start(uint8_t handle);
 extern	uint32_t sensor_get_data(uint8_t handle);
 extern	uint32_t sensor_power_on(uint8_t handle);
 extern	uint32_t sensor_power_off(uint8_t handle);
-
-
 
 #endif /* DRIVERS_I2C_SENSORS_I2C_SENSORS_H_ */

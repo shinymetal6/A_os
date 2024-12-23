@@ -16,21 +16,17 @@
 /*
  * stts22h.h
  *
- *  Created on: Mar 13, 2024
+ *  Created on: Dec 23, 2024
  *      Author: fil
  */
-
-#ifndef DRIVERS_SENSORS_STTS22H_STTS22H_H_
-#define DRIVERS_SENSORS_STTS22H_STTS22H_H_
+#ifndef DRIVERS_I2C_SENSORS_STTS22H_STTS22H_H_
+#define DRIVERS_I2C_SENSORS_STTS22H_STTS22H_H_
 
 #define	STTS22H_I2C_TIMEOUT				1000
 
 #define	STTS22H_ADDR					0x7e
 #define	STTS22H_T_LEN					2
-
-#include <stdint.h>
-#include <stddef.h>
-#include <math.h>
+#define	STTS22H_STARTED					0x80
 
 
 /* who am i */
@@ -47,10 +43,6 @@
 
 #define	STTS22H_ONE_SHOT_REG_CTRL	0x01
 
+extern	uint32_t stts22h_register(I2C_Sensors_DriverStruct_t *driver_private_data);
 
-extern	uint32_t STTS22H_Init(void);
-extern	uint8_t STTS22H_GetWhoAmI(void);
-extern	int32_t STTS22H_Start_Acquisition(void);
-extern	uint8_t STTS22H_Read_T_Data(uint8_t *temperature_ptr);
-
-#endif /* DRIVERS_SENSORS_STTS22H_STTS22H_H_ */
+#endif /* DRIVERS_I2C_SENSORS_STTS22H_STTS22H_H_ */
