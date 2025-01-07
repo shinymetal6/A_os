@@ -24,7 +24,7 @@
 #include "A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef STM32H7xx_HAL_ADC_H
+#ifdef SAMPLEPROCESS_1_ADC
 extern	ADC_HandleTypeDef hadc1;
 extern	TIM_HandleTypeDef htim6;
 
@@ -65,7 +65,7 @@ uint32_t	wakeup,flags;
 
 	}
 }
-#endif // #ifdef STM32H7xx_HAL_ADC_H
+#endif // #ifdef SAMPLEPROCESS_1_ADC
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 

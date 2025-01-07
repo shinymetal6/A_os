@@ -53,9 +53,12 @@ uint32_t		i2cflash_driver_handle;
 void sample_process_1_i2cmem(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+uint32_t	i;
 
 	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	i2c_24xx_register(&i2c_24xx_Drv);;
+	i2cflash_driver_handle = i2c_24xx_register(&i2c_24xx_Drv);
+	for(i=0;i<I2CMEM_BUFFERSIZE;i++)
+		i2cBufw[i] = i & 0xff;
 	while(1)
 	{
 		wait_event(EVENT_TIMER | EVENT_QSPI_IRQ);
@@ -64,6 +67,7 @@ uint32_t	wakeup,flags;
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			extflash_read(i2cflash_driver_handle,0,i2cBufr,I2C_24XX_PAGESIZE*2);
+			extflash_write(i2cflash_driver_handle,0,i2cBufw,I2C_24XX_PAGESIZE*2);
 		}
 	}
 }

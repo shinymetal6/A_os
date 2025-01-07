@@ -37,6 +37,7 @@
 #define MAX_ANALOG_DRIVERS			8
 #define MAX_EXTMEM_DRIVERS			8
 //#define MAX_SENSORS					16
+#define MAX_I2C_BUSES				4
 #define MAX_I2C_DEVICES				16
 #define MAX_SPI_DEVICES				16
 #define MAX_GPIOINT_DRIVERS			16

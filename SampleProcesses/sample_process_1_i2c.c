@@ -39,12 +39,6 @@ uint32_t	wakeup,flags;
 		}
 	}
 }
-#else
-void sample_process_1_i2c(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
-}
-
 #endif // #ifdef SAMPLEPROCESS_I2C
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 

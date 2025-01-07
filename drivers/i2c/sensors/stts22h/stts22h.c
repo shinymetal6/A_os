@@ -73,9 +73,16 @@ uint8_t	ret = HAL_BUSY;
 
 ITCM_AREA_CODE static uint32_t stts22h_start(uint8_t handle)
 {
-I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;;
-	stts22h_Drv->status = STTS22H_STARTED;
-	return stts22h_write_reg(stts22h_Drv,STTS22H_CTRL,STTS22H_ONE_SHOT_REG_CTRL);
+I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
+	if ( get_and_set_i2c_bus_lock(stts22h_Drv->bus,handle) == 0 )
+	{
+		stts22h_Drv->status = STTS22H_STARTED;
+		if ( stts22h_write_reg(stts22h_Drv,STTS22H_CTRL,STTS22H_ONE_SHOT_REG_CTRL) )
+			return 1;
+		unset_i2c_bus_lock(stts22h_Drv->bus,handle);
+		return 0;
+	}
+	return 1;
 }
 
 ITCM_AREA_CODE static uint32_t stts22h_stop(uint8_t handle)
@@ -85,10 +92,15 @@ ITCM_AREA_CODE static uint32_t stts22h_stop(uint8_t handle)
 
 ITCM_AREA_CODE static uint32_t stts22h_init(uint8_t handle)
 {
-I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;;
-	stts22h_read_reg(stts22h_Drv,STTS22H_WHOAMI,1);
-	stts22h_Drv->who_am_i = stts22h_Drv->data[0];
-	return 0;
+I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
+	if ( get_and_set_i2c_bus_lock(stts22h_Drv->bus,handle) == 0 )
+	{
+		stts22h_read_reg(stts22h_Drv,STTS22H_WHOAMI,1);
+		stts22h_Drv->who_am_i = stts22h_Drv->data[0];
+		unset_i2c_bus_lock(stts22h_Drv->bus,handle);
+		return 0;
+	}
+	return 1;
 }
 
 ITCM_AREA_CODE static uint32_t stts22h_power_on(uint8_t handle)
@@ -120,9 +132,15 @@ I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_Driv
 ITCM_AREA_CODE static uint32_t stts22h_get_data(uint8_t handle)
 {
 I2C_Sensors_DriverStruct_t	*stts22h_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;;
-	return  stts22h_read_reg(stts22h_Drv,STTS22H_TEMP_L_OUT,STTS22H_T_LEN);
+	if ( get_and_set_i2c_bus_lock(stts22h_Drv->bus,handle) == 0 )
+	{
+		if ( stts22h_read_reg(stts22h_Drv,STTS22H_TEMP_L_OUT,STTS22H_T_LEN) )
+			return 1;
+		unset_i2c_bus_lock(stts22h_Drv->bus,handle);
+		return 0;
+	}
+	return 1;
 }
-
 
 ITCM_AREA_CODE uint32_t stts22h_register(I2C_Sensors_DriverStruct_t *driver_private_data)
 {
@@ -132,6 +150,7 @@ I2C_Sensors_DriverStruct_t	*stts22h_Drv;
 	{
 		I2C_DriverStruct[last_i2c_used_handle].process = get_current_process();
 		I2C_DriverStruct[last_i2c_used_handle].private_data = (uint32_t *)driver_private_data;
+		I2C_DriverStruct[last_i2c_used_handle].handle = last_i2c_used_handle;
 
 		stts22h_Drv = (I2C_Sensors_DriverStruct_t *)I2C_DriverStruct[last_i2c_used_handle].private_data;
 		if ( stts22h_Drv->bus == NULL)
@@ -140,6 +159,8 @@ I2C_Sensors_DriverStruct_t	*stts22h_Drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( stts22h_Drv->wakeup_id == 0)
 			return DRIVER_REQUEST_FAILED;
+		I2C_DriverStruct[last_i2c_used_handle].bus = stts22h_Drv->bus;
+
 		stts22h_Drv->status = DRIVER_STATUS_IN_USE;
 		stts22h_Drv->sensor_start = stts22h_start;
 		stts22h_Drv->sensor_stop = stts22h_stop;

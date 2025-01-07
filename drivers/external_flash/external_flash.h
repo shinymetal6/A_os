@@ -29,7 +29,7 @@ typedef struct
 	uint8_t		status;
 	uint8_t		flags;
 	uint8_t		handle;
-	uint32_t	*driver_private_data;
+	uint32_t	*private_data;
 	uint32_t	(*read)  (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 	uint32_t	(*write) (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 	uint32_t	(*erase_blocks) (uint8_t handle, uint32_t start_block, uint32_t number_of_blocks);

@@ -75,8 +75,15 @@ ITCM_AREA_CODE static uint32_t sht40_start(uint8_t handle)
 {
 I2C_Sensors_DriverStruct_t	*sht40_Drv;
 	sht40_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
-	sht40_Drv->status = SHT40_STARTED;
-	return sht40_i2cwrite(sht40_Drv);
+	if ( get_and_set_i2c_bus_lock(sht40_Drv->bus,handle) == 0 )
+	{
+		sht40_Drv->status = SHT40_STARTED;
+		if ( sht40_i2cwrite(sht40_Drv) )
+			return 1;
+		unset_i2c_bus_lock(sht40_Drv->bus,handle);
+		return 0;
+	}
+	return 1;
 }
 
 ITCM_AREA_CODE static uint32_t sht40_stop(uint8_t handle)
@@ -88,7 +95,14 @@ ITCM_AREA_CODE static uint32_t sht40_get_data(uint8_t handle)
 {
 I2C_Sensors_DriverStruct_t	*sht40_Drv;
 	sht40_Drv = (I2C_Sensors_DriverStruct_t	*)I2C_DriverStruct[handle].private_data;
-	return sht40_i2cread(sht40_Drv);
+	if ( get_and_set_i2c_bus_lock(sht40_Drv->bus,handle) == 0 )
+	{
+		if ( sht40_i2cread(sht40_Drv) )
+			return 1;
+		unset_i2c_bus_lock(sht40_Drv->bus,handle);
+		return 0;
+	}
+	return 1;
 }
 
 ITCM_AREA_CODE static uint32_t sht40_init(uint8_t handle)
@@ -143,6 +157,7 @@ I2C_Sensors_DriverStruct_t	*sht40_Drv;
 	{
 		I2C_DriverStruct[last_i2c_used_handle].process = get_current_process();
 		I2C_DriverStruct[last_i2c_used_handle].private_data = (uint32_t *)driver_private_data;
+		I2C_DriverStruct[last_i2c_used_handle].handle = last_i2c_used_handle;
 
 		sht40_Drv = (I2C_Sensors_DriverStruct_t *)I2C_DriverStruct[last_i2c_used_handle].private_data;
 		if ( sht40_Drv->bus == NULL)
@@ -151,6 +166,8 @@ I2C_Sensors_DriverStruct_t	*sht40_Drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( sht40_Drv->wakeup_id == 0)
 			return DRIVER_REQUEST_FAILED;
+		I2C_DriverStruct[last_i2c_used_handle].bus = sht40_Drv->bus;
+
 		sht40_Drv->status = DRIVER_STATUS_IN_USE;
 		sht40_Drv->sensor_start = sht40_start;
 		sht40_Drv->sensor_stop = sht40_stop;

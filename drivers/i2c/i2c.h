@@ -27,6 +27,7 @@ typedef struct
 	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t				handle;
 	I2C_HandleTypeDef 	*bus;
 	uint32_t			*private_data;
 }I2C_DriverStruct_t;
@@ -51,5 +52,10 @@ typedef struct
 
 #define	I2C_BUSY_TIMEOUT					100
 #include "sensors/i2c_sensors.h"
+
+extern	uint8_t get_and_set_i2c_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
+extern	uint8_t unset_i2c_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
+extern	uint8_t get_and_set_i2cmem_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
+extern	uint8_t unset_i2cmem_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
 
 #endif /* DRIVERS_I2C_I2C_H_ */
