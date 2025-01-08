@@ -23,7 +23,7 @@
 #ifndef KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_
 #define KERNEL_FLASH_UPDATER_FLASH_UPDATER_COMMON_H_
 
-#ifdef	STM32G491xx
+#ifdef	STM32G4xx_USB
 extern	uint32_t flash_update(uint32_t flash_address_offset,uint8_t *data,uint32_t size);
 #endif
 #ifdef	STM32F446xx

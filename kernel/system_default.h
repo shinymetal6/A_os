@@ -51,6 +51,18 @@
 	#endif
 #endif
 
+#ifdef	STM32G474xx
+	#ifdef ARROW_AX_P2214177
+		#include "../boards/ARROW_AX_P2214177.h"
+	#endif
+#endif
+
+#ifdef	STM32G491xx
+	#ifdef DCC_491_48
+		#include "../boards/DCC_491_48.h"
+	#endif
+#endif
+
 #ifndef ASSIGNED
 #error "Processor not implemented"
 #endif

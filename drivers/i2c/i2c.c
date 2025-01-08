@@ -172,4 +172,38 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
 	i2c_irq_common(hi2c,I2C_STATUS_WRITE_COMPLETE);
 }
 
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+uint32_t	i;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	for(i=0;i<MAX_I2C_DEVICES;i++)
+	{
+		if ( I2C_DriverStruct[i].process != 0)
+		{
+			i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)I2C_DriverStruct[i].private_data;
+			if ( i2c_24xx_Drv->bus == hi2c )
+				i2c_24xx_Drv->status |= I2C_STATUS_READ_COMPLETE;
+		}
+		else
+			break;
+	}
+}
+
+void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
+{
+uint32_t	i;
+I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
+	for(i=0;i<MAX_I2C_DEVICES;i++)
+	{
+		if ( I2C_DriverStruct[i].process != 0)
+		{
+			i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)I2C_DriverStruct[i].private_data;
+			__DSB ();
+			if ( i2c_24xx_Drv->bus == hi2c )
+				i2c_24xx_Drv->status |= I2C_STATUS_WRITE_COMPLETE;
+		}
+		else
+			break;
+	}
+}
 #endif // #ifdef A_OS_I2C_ENABLED

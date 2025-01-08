@@ -33,7 +33,7 @@
 #include "timers/timers.h"
 #include "sensors/sensors.h"
 #include "USB_Device/usb_device_driver_manager.h"
-#include "external_flash/external_flash.h"
+#include "qspi/qspi.h"
 #include "spi/spi.h"
 #include "i2c/i2c.h"
 

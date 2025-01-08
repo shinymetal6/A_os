@@ -49,6 +49,8 @@
 #endif
 
 #ifdef	STM32H753xx
+	#define STM32_HAS_STREAM_DMA	1
+
 	#ifdef STM32H7xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
 	#endif
@@ -94,7 +96,56 @@
 	#ifdef STM32L4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
-
 #endif
 
+#ifdef	STM32G474xx
+	#define STM32G4xx_USB	1
+	#ifdef STM32G4xx_HAL_UART_H
+		#define A_OS_UART_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_TIM_H
+		#define A_OS_TIMERS_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_ADC_H
+		#define A_OS_ADC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_DAC_H
+		#define A_OS_DAC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2S_H
+		#define A_OS_I2S_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_RTC_H
+		#define A_OS_RTC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2C_H
+		#define A_OS_I2C_ENABLED	1
+	#endif
+#endif
+
+
+#ifdef	STM32G491xx
+	#define STM32G4xx_USB	1
+	#ifdef STM32G4xx_HAL_UART_H
+		#define A_OS_UART_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_TIM_H
+		#define A_OS_TIMERS_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_ADC_H
+		#define A_OS_ADC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_DAC_H
+		#define A_OS_DAC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2S_H
+		#define A_OS_I2S_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_RTC_H
+		#define A_OS_RTC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2C_H
+		#define A_OS_I2C_ENABLED	1
+	#endif
+#endif
 #endif /* BOARDS_IODEF_COMMON_H_ */

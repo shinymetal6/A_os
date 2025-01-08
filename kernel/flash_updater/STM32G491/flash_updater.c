@@ -23,7 +23,7 @@
 #include "main.h"
 #include "../../A.h"
 
-#ifdef	STM32G491xx
+#ifdef	STM32G4xx_USB
 #include "../../system_default.h"
 #include "flash_updater.h"
 
@@ -147,5 +147,5 @@ uint32_t	i;
 	while(1);
 }
 
-#endif // #ifdef STM32G491xx
+#endif // #ifdef STM32G4xx_USB
 
