@@ -23,6 +23,12 @@
 #ifndef BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 #define BOARDS_AX_P2412172_00_MEMBRANECONCENTRATOR_H_
 
+/*
+ * for this board define
+ * MEMBRANE_2412172_00
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 

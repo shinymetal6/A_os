@@ -23,6 +23,12 @@
 #ifndef BOARDS_VB_10X_00_H_
 #define BOARDS_VB_10X_00_H_
 
+/*
+ * for this board define
+ * VB_10x
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 

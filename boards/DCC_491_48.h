@@ -22,6 +22,12 @@
 #ifndef BOARDS_DCC_491_48_H_
 #define BOARDS_DCC_491_48_H_
 
+/*
+ * for this board define
+ * DCC_491_48
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 

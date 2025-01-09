@@ -22,9 +22,14 @@
 #ifndef BOARDS_NUCLEO_G491_H_
 #define BOARDS_NUCLEO_G491_H_
 
+/*
+ * for this board define
+ * NUCLEO_G491
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
-
 
 #define DTCM_VECTORS_DATA
 #define DWNLD_DATA_AREA

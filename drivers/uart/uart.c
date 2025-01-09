@@ -199,6 +199,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 		if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 		{
+
 #ifdef   STM32_HAS_STREAM_DMA
 			uarts_Drv->rx_num_chars = ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 #else

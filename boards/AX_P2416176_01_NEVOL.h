@@ -23,6 +23,12 @@
 #ifndef BOARDS_AX_P2416176_01_NEVOL_H_
 #define BOARDS_AX_P2416176_01_NEVOL_H_
 
+/*
+ * for this board define
+ * NUCLEO_G491
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 

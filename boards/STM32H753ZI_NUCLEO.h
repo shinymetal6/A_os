@@ -23,6 +23,12 @@
 #ifndef BOARDS_STM32H753ZI_NUCLEO_H_
 #define BOARDS_STM32H753ZI_NUCLEO_H_
 
+/*
+ * for this board define
+ * STM32H753ZI_NUCLEO
+ * in preprocessor defines
+ */
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 

@@ -22,6 +22,11 @@
 #ifndef BOARDS_ARROW_AX_P2214177_H_
 #define BOARDS_ARROW_AX_P2214177_H_
 
+/*
+ * for this board define
+ * ARROW_AX_P2214177
+ * in preprocessor defines
+ */
 
 #include "iodef_common.h"
 #include "memdef_common.h"

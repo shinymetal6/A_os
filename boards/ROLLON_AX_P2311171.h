@@ -22,6 +22,13 @@
 #ifndef BOARDS_ROLLON_AX_P2311171_H_
 #define BOARDS_ROLLON_AX_P2311171_H_
 
+/*
+ * for this board define
+ * ROLLON_AX_P2311171
+ * in preprocessor defines
+ */
+
+
 #include "iodef_common.h"
 #include "memdef_common.h"
 
