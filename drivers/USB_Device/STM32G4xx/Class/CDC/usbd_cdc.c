@@ -56,8 +56,10 @@
 EndBSPDependencies */
 
 /* Includes ------------------------------------------------------------------*/
+#include "../../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
 #include "usbd_cdc.h"
-#include "usbd_ctlreq.h"
+#include "../../Core/usbd_ctlreq.h"
 
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
@@ -966,3 +968,4 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif // #ifdef STM32G4xx_USB

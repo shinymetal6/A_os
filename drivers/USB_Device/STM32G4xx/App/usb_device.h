@@ -29,7 +29,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx.h"
 #include "stm32g4xx_hal.h"
-#include "usbd_def.h"
+#include "../Core/usbd_def.h"
 
 /* USER CODE BEGIN INCLUDE */
 

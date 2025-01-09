@@ -61,6 +61,9 @@
 	#ifdef DCC_491_48
 		#include "../boards/DCC_491_48.h"
 	#endif
+	#ifdef NUCLEO_G491
+		#include "../boards/NUCLEO_G491.h"
+	#endif
 #endif
 
 #ifndef ASSIGNED

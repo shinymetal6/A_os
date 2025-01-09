@@ -78,6 +78,8 @@ The timeout field is the timeout after which even if the packet len has not reac
   
  There is a configurable depth queue in the uart management, so the user can que more than 1 message on a uart.
  The queue is a static array, the depth is configured as #define MAX_UARTS_QUEUE 8   in A.h 
+ 
+ Remember to enable uart global irqs, as this initialization is not intended for circular buffers
   
  
 

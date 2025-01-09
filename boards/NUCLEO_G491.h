@@ -14,24 +14,17 @@
  * Project : A_os
 */
 /*
- * DCC_491_48.h
+ * NUCLEO_G491.h
  *
- *  Created on: Jan 8, 2025
+ *  Created on: Jan 9, 2025
  *      Author: fil
  */
-#ifndef BOARDS_DCC_491_48_H_
-#define BOARDS_DCC_491_48_H_
+#ifndef BOARDS_NUCLEO_G491_H_
+#define BOARDS_NUCLEO_G491_H_
 
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define STM32G4xx_USB	1
-
-#define USB_DEVICE_ENABLED	1
-#ifdef USB_DEVICE_ENABLED
-	#define	USB_CDC				1
-	//#define	USB_MIDI			1
-#endif // #ifdef USB_ENABLED
 
 #define DTCM_VECTORS_DATA
 #define DWNLD_DATA_AREA
@@ -52,8 +45,9 @@
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"DCC_491_48_00"
+#define	BOARD_NAME			"NUCLEO_G491_00"
 #define	MACHINE_NAME		"III"
 #define	MACHINE_VERSION		"A"
 
-#endif /* BOARDS_DCC_491_48_H_ */
+
+#endif /* BOARDS_NUCLEO_G491_H_ */

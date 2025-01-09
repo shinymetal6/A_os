@@ -125,7 +125,6 @@
 
 
 #ifdef	STM32G491xx
-	#define STM32G4xx_USB	1
 	#ifdef STM32G4xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
 	#endif
