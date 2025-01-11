@@ -27,8 +27,13 @@
 
 #ifdef SAMPLEPROCESS_UARTQUEUES
 
+#ifdef USE_STD_UART
 #define	__EXTERN_UART_HANDLE_	huart2
 #define	__UART_WAKEUP_			WAKEUP_FROM_UART2_IRQ
+#else
+#define	__EXTERN_UART_HANDLE_	hlpuart1
+#define	__UART_WAKEUP_			WAKEUP_FROM_UART1_IRQ
+#endif
 extern	UART_HandleTypeDef		__EXTERN_UART_HANDLE_;
 
 #define	UART_RX_BUF_SIZE	192
@@ -80,7 +85,9 @@ uint32_t	i;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+#ifdef BOARD_HAS_LED
 			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+#endif
 #ifdef SINGLE_NO_QUEUE
 			switch(bufcntr)
 			{

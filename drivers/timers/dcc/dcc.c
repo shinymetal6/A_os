@@ -365,17 +365,17 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_Driver
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	dcc_register(DCC_Control_Drv_TypeDef *private_data,uint32_t driver_flags,uint32_t timer_flags)
+ITCM_AREA_CODE uint32_t	dcc_register(DCC_Control_Drv_TypeDef *private_data)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
 	{
 		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
-		TIM_DriverStruct[last_tim_used_handle].flags |= driver_flags;
+		TIM_DriverStruct[last_tim_used_handle].flags = 0;
 		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
 
 		dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
-		dcc_driver_data->flags |= timer_flags;
+		dcc_driver_data->flags = 0;
 		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
 
 		last_tim_used_handle++;

@@ -16,7 +16,8 @@
   *
   ******************************************************************************
   */
-
+#include "../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ioreq.h"
 
@@ -224,3 +225,4 @@ uint32_t USBD_GetRxCount(USBD_HandleTypeDef *pdev, uint8_t ep_addr)
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif // #ifdef STM32G4xx_USB

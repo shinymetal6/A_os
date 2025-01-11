@@ -26,6 +26,9 @@
  extern "C" {
 #endif
 
+#include "../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx.h"
 #include "stm32g4xx_hal.h"
@@ -98,6 +101,8 @@
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef STM32G4xx_USB
 
 #endif /* __USB_DEVICE__H__ */
 

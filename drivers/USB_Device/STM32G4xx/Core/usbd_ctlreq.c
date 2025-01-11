@@ -16,6 +16,8 @@
   *
   ******************************************************************************
   */
+#include "../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ctlreq.h"
@@ -946,3 +948,4 @@ static uint8_t USBD_GetLen(uint8_t *buf)
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+#endif // #ifdef STM32G4xx_USB

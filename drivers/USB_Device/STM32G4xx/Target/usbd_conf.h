@@ -26,6 +26,9 @@
  extern "C" {
 #endif
 
+#include "../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
+
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -170,6 +173,8 @@ void USBD_static_free(void *p);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef STM32G4xx_USB
 
 #endif /* __USBD_CONF__H__ */
 

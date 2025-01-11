@@ -91,7 +91,7 @@ typedef struct
 #define	DCC_DATAH	3
 #define	DCC_DATAL	4
 
-extern	uint32_t	dcc_register(DCC_Control_Drv_TypeDef *tim_driver_private_data,uint32_t driver_flags,uint32_t timer_flags);
+extern	uint32_t	dcc_register(DCC_Control_Drv_TypeDef *tim_driver_private_data);
 extern	uint32_t	dcc_init(uint8_t handle);
 extern	uint32_t	dcc_start(uint8_t handle);
 extern	uint32_t	dcc_stop(uint8_t handle);

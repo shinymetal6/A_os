@@ -27,6 +27,9 @@
 #undef   STM32_HAS_STREAM_DMA
 
 #ifdef	STM32H743xx
+
+	#define STM32_HAS_STREAM_DMA	1
+
 	#ifdef STM32H7xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
 	#endif

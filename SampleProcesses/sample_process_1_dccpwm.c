@@ -25,27 +25,50 @@
 #include "sample_processes_includes.h"
 #ifdef DCC_ENABLE_GPIO_Port
 
-extern	TIM_HandleTypeDef htim1;
-DCC_Control_Drv_TypeDef	DCC_Control =
+#define	CH1_DCC_TIMER			htim1
+#define	CH1_DCC_TIMER_PWM		TIM_CHANNEL_1
+#define	CH1_DCC_TIMER_CUTOUT	TIM_CHANNEL_2
+extern	TIM_HandleTypeDef 		CH1_DCC_TIMER;
+
+#define	CH2_DCC_TIMER			htim15
+#define	CH2_DCC_TIMER_PWM		TIM_CHANNEL_1
+#define	CH2_DCC_TIMER_CUTOUT	TIM_CHANNEL_2
+extern	TIM_HandleTypeDef 		CH2_DCC_TIMER;
+
+#define	BACKLIGHT_TIMER			htim3
+#define	BACKLIGHT_TIMER_CHANNEL	TIM_CHANNEL_2
+extern	TIM_HandleTypeDef 		BACKLIGHT_TIMER;
+
+DCC_Control_Drv_TypeDef	DCC_Control_ch1 =
 {
-	.dcc_timer = &htim1,
-	.timer_dcc_channel = TIM_CHANNEL_3,
-	.timer_cutout_channel = TIM_CHANNEL_4,
+	.dcc_timer = &CH1_DCC_TIMER,
+	.timer_dcc_channel = CH1_DCC_TIMER_PWM,
+	.timer_cutout_channel = CH1_DCC_TIMER_CUTOUT,
 	.enable_port = DCC_ENABLE_GPIO_Port,
 	.enable_bit = DCC_ENABLE_Pin,
 };
-uint32_t		dcc_driver_handle;
+uint32_t		dcc_ch1_driver_handle;
 
-extern	TIM_HandleTypeDef htim4;
-
-Pwm_Control_TypeDef	Pwm_Control =
+DCC_Control_Drv_TypeDef	DCC_Control_ch2 =
 {
-		.pwm_timer = &htim4,
-		.pwm_channel = TIM_CHANNEL_4,
+	.dcc_timer = &CH2_DCC_TIMER,
+	.timer_dcc_channel = CH2_DCC_TIMER_PWM,
+	.timer_cutout_channel = CH2_DCC_TIMER_CUTOUT,
+	.enable_port = DCC_ENABLE_GPIO_Port,
+	.enable_bit = DCC_ENABLE_Pin,
+};
+uint32_t		dcc_ch2_driver_handle;
+
+extern	TIM_HandleTypeDef htim3;
+
+Pwm_Control_TypeDef	Pwm_Backlight_Control =
+{
+		.pwm_timer = &BACKLIGHT_TIMER,
+		.pwm_channel = BACKLIGHT_TIMER_CHANNEL,
 		.pulse_width[4] = 1000,
 };
 
-uint32_t		pwm_driver_handle;
+uint32_t		backlight_pwm_driver_handle;
 
 void sample_process_1_dccpwm(uint32_t process_id)
 {
@@ -53,13 +76,16 @@ uint32_t	wakeup,flags;
 
 uint32_t	pw=0 , dir = 0;
 
-	dcc_driver_handle = dcc_register(&DCC_Control,0,0);
-	dcc_init(dcc_driver_handle);
-	dcc_start(dcc_driver_handle);
+	dcc_ch1_driver_handle = dcc_register(&DCC_Control_ch1);
+	dcc_init(dcc_ch1_driver_handle);
+	dcc_start(dcc_ch1_driver_handle);
+	dcc_ch2_driver_handle = dcc_register(&DCC_Control_ch2);
+	dcc_init(dcc_ch2_driver_handle);
+	dcc_start(dcc_ch2_driver_handle);
 
-	pwm_driver_handle = pwm_register(&Pwm_Control,0);
-	pwm_init(pwm_driver_handle);
-	pwm_start(pwm_driver_handle);
+	backlight_pwm_driver_handle = pwm_register(&Pwm_Backlight_Control,0);
+	pwm_init(backlight_pwm_driver_handle);
+	pwm_start(backlight_pwm_driver_handle);
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -74,7 +100,7 @@ uint32_t	pw=0 , dir = 0;
 				pw += 1000;
 				if (pw >= 10000)
 					dir = 0;
-				pwm_set_width(pwm_driver_handle,pw);
+				pwm_set_width(backlight_pwm_driver_handle,pw);
 			}
 			else
 			{
@@ -82,7 +108,7 @@ uint32_t	pw=0 , dir = 0;
 					pw -= 1000;
 				if (pw <= 1000)
 					dir = 1;
-				pwm_set_width(pwm_driver_handle,pw);
+				pwm_set_width(backlight_pwm_driver_handle,pw);
 			}
 		}
 	}

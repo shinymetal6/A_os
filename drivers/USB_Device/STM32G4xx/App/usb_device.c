@@ -20,6 +20,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 
+#include "../../../../kernel/system_default.h"
+#ifdef STM32G4xx_USB
+
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
 #include "usbd_desc.h"
@@ -95,3 +98,4 @@ uint8_t MX_USB_Device_Init(void)
   * @}
   */
 
+#endif // #ifdef STM32G4xx_USB
