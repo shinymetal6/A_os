@@ -90,6 +90,21 @@ uint32_t dac_init(uint8_t handle)
 	return 1;
 }
 
+uint32_t dac_play_wav(uint8_t handle,uint16_t *wav_ptr)
+{
+	if ( ANALOG_DriverStruct[handle].dac_play_wav != NULL )
+	{
+		return ANALOG_DriverStruct[handle].dac_play_wav(handle,wav_ptr);
+	}
+	return 1;
+}
+
+uint32_t dac_stop_wav(uint8_t handle)
+{
+	if ( ANALOG_DriverStruct[handle].dac_stop_wav != NULL )
+		return ANALOG_DriverStruct[handle].dac_stop_wav(handle);
+	return 1;
+}
 #endif
 
 #ifdef A_OS_I2S_ENABLED

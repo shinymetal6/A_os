@@ -14,17 +14,32 @@
  * Project : A_os
 */
 /*
- * system_functions.h
+ * sample_process_1_basic.c
  *
- *  Created on: Sep 11, 2024
+ *  Created on: Jan 21, 2025
  *      Author: fil
  */
 
+#include "main.h"
+#include "A_os_includes.h"
+#ifdef SAMPLE_PROCESSES_ENABLED
+#include "sample_processes_includes.h"
+#ifdef SAMPLEPROCESS_1_BASIC
+void sample_process_1_basic(uint32_t process_id)
+{
+uint32_t	wakeup,flags;
 
-#ifndef KERNEL_SYSTEM_FUNCTIONS_H_
-#define KERNEL_SYSTEM_FUNCTIONS_H_
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
-extern	void A_clear32(uint8_t	*ptr,uint32_t size);
-extern	void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes);
-
-#endif /* KERNEL_SYSTEM_FUNCTIONS_H_ */
+	while(1)
+	{
+		wait_event(EVENT_TIMER);
+		get_wakeup_flags(&wakeup,&flags);
+		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
+		{
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+		}
+	}
+}
+#endif // #ifdef SAMPLEPROCESS_1_BASIC
+#endif // #ifdef SAMPLE_PROCESSES_ENABLED

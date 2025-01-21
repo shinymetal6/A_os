@@ -36,6 +36,9 @@
 #ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
 	#endif
+#ifdef	FY_201023_01
+		#include "../boards/FY_201023_01.h"
+	#endif
 #endif	//#ifdef	STM32H743xx
 
 
@@ -79,6 +82,6 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"v2025.01.00-rc2"
+#define	A_OS_VERSION			"v2025.01.00-rc4"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

@@ -124,12 +124,11 @@ uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
     Asys.g_os_started = 1;
 }
 
-
 void A_init_mem(void)
 {
 	Asys.osSysRam_start = (uint32_t *)&_osSysRam_start;
 	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
-	A_clear32(Asys.osSysRam_start,Asys.osSysRam_size_word);
+	A_clear32((uint8_t *)Asys.osSysRam_start,Asys.osSysRam_size_word);
 
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);

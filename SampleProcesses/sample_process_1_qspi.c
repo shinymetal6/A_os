@@ -25,6 +25,7 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 
+#ifdef SAMPLEPROCESS_1_QSPI
 #ifdef STM32H7xx_HAL_QSPI_H
 
 extern	QSPI_HandleTypeDef hqspi;
@@ -67,22 +68,22 @@ uint32_t	i;
 			switch(qspi_state)
 			{
 			case 0 :
-				extflash_erase_blocks(w25_handle,0,1);
+				qspi_erase_blocks(w25_handle,0,1);
 				if (( W25Qxx_Drv.status & QSPI_BUSY ) != QSPI_BUSY )
 				{
 					qspi_state++;
 				}
 				break;
 			case 1 :
-				extflash_read(w25_handle,0,w25_bufr,DATALEN);
+				qspi_read(w25_handle,0,w25_bufr,DATALEN);
 				qspi_state++;
 				break;
 			case 2 :
-				extflash_write(w25_handle,qspi_address,&w25_bufw[DATAOFFSET],qspi_len);
+				qspi_write(w25_handle,qspi_address,&w25_bufw[DATAOFFSET],qspi_len);
 				qspi_state++;
 				break;
 			case 3 :
-				extflash_read(w25_handle,qspi_address,w25_bufr,qspi_len);
+				qspi_read(w25_handle,qspi_address,w25_bufr,qspi_len);
 				qspi_state++;
 				break;
 			case 4 :
@@ -101,6 +102,8 @@ void sample_process_1_qspi(uint32_t process_id)
 {
 	wait_event(HW_SLEEP_FOREVER);
 }
+
+#endif // #ifdef SAMPLEPROCESS_1_QSPI
 #endif // #ifdef QSPI_ENABLED
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 

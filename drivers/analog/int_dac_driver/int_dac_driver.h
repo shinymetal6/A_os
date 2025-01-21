@@ -36,6 +36,13 @@ typedef struct
 	uint16_t 			channel;
 	uint16_t 			len;
 	uint16_t 			alignment;
+	uint32_t			dac_sample_frequency;
+	uint32_t			PSC;
+	uint32_t			ARR;
+	uint8_t				dac_wav_flags;
+	uint16_t			*wav_ptr;
+	uint32_t			wav_samples_counter;
+	uint32_t			wav_len;
 }DAC_Drv_TypeDef;
 
 /* status */
@@ -47,6 +54,54 @@ typedef struct
 /* flags */
 #define		DAC_FLAGS_WAKEUP			0x80
 #define		DAC_FLAGS_USE_AUDIOMODULE	0x01
+/* wav_flags */
+#define		DAC_WAV_FLAGS_8000		0x01
+#define		DAC_WAV_FLAGS_11025		0x02
+#define		DAC_WAV_FLAGS_16000		0x04
+#define		DAC_WAV_FLAGS_22050		0x08
+#define		DAC_WAV_FLAGS_DO_PLAY	0x80
+
+/*
+ * [Master RIFF chunk]
+   FileTypeBlocID  (4 bytes) : Identifier « RIFF »  (0x52, 0x49, 0x46, 0x46)
+   FileSize        (4 bytes) : Overall file size minus 8 bytes
+   FileFormatID    (4 bytes) : Format = « WAVE »  (0x57, 0x41, 0x56, 0x45)
+
+[Chunk describing the data format]
+   FormatBlocID    (4 bytes) : Identifier « fmt␣ »  (0x66, 0x6D, 0x74, 0x20)
+   BlocSize        (4 bytes) : Chunk size minus 8 bytes, which is 16 bytes here  (0x10)
+   AudioFormat     (2 bytes) : Audio format (1: PCM integer, 3: IEEE 754 float)
+   NbrChannels     (2 bytes) : Number of channels
+   Frequency       (4 bytes) : Sample rate (in hertz)
+   BytePerSec      (4 bytes) : Number of bytes to read per second (Frequency * BytePerBloc).
+   BytePerBloc     (2 bytes) : Number of bytes per block (NbrChannels * BitsPerSample / 8).
+   BitsPerSample   (2 bytes) : Number of bits per sample
+
+[Chunk containing the sampled data]
+   DataBlocID      (4 bytes) : Identifier « data »  (0x64, 0x61, 0x74, 0x61)
+   DataSize        (4 bytes) : SampledData size
+   */
+
+typedef struct
+{
+	uint8_t				FileTypeBlocID[4];
+	uint32_t			FileSize;
+	uint8_t				FileFormatID[4];
+	uint8_t				FormatBlocID[4];
+	uint32_t			BlocSize;
+	uint16_t			AudioFormat;
+	uint16_t			NbrChannels;
+	uint32_t			Frequency;
+	uint32_t			BytePerSec;
+	uint16_t			BytePerBloc;
+	uint16_t			BitsPerSample;
+	uint8_t				DataBlocID[4];
+	uint32_t			DataSize;
+	uint16_t			first_audio_sample;
+}Wav_Header_TypeDef;
+
+#define	STD_DAC_PRESCALER 10
+
 extern ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
 #endif // #ifdef A_OS_DAC_ENABLED
 

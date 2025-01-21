@@ -29,7 +29,7 @@ typedef struct
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
-	uint32_t			*analog_driver_private_data;
+	uint32_t			*private_data;
 	uint32_t			(*adc_start)  (uint8_t handle);
 	uint32_t			(*adc_stop)  (uint8_t handle);
 	uint32_t			(*adc_get_status) (uint8_t handle);
@@ -38,6 +38,8 @@ typedef struct
 	uint32_t			(*dac_stop)  (uint8_t handle);
 	uint32_t			(*dac_get_status) (uint8_t handle);
 	uint32_t			(*dac_init) (uint8_t handle);
+	uint32_t			(*dac_play_wav)  (uint8_t handle,uint16_t *wav_ptr);
+	uint32_t			(*dac_stop_wav) (uint8_t handle);
 	uint32_t			(*i2s_start)  (uint8_t handle);
 	uint32_t			(*i2s_stop)  (uint8_t handle);
 	uint32_t			(*i2s_get_status) (uint8_t handle);
@@ -48,6 +50,7 @@ typedef struct
 	uint32_t			(*codec_init) (uint8_t handle);
 	uint32_t			(*codec_internal_ops) (uint8_t handle,uint8_t command,uint32_t param0,uint32_t param1,uint32_t param2,uint32_t param3);
 }ANALOG_DriverStruct_t;
+
 
 #ifdef STM32H7xx_HAL_ADC_H
 #include "int_adc_driver/int_adc_driver.h"
@@ -72,6 +75,9 @@ extern	uint32_t dac_start(uint8_t handle);
 extern	uint32_t dac_stop(uint8_t handle);
 extern	uint32_t dac_get_status(uint8_t handle);
 extern	uint32_t dac_init(uint8_t handle);
+extern	uint32_t dac_play_wav(uint8_t handle,uint16_t *wav_ptr);
+extern	uint32_t dac_stop_wav(uint8_t handle);
+
 extern	uint32_t i2s_init(uint8_t handle);
 extern	uint32_t i2s_start(uint8_t handle);
 extern	uint32_t codec_start(uint8_t handle);

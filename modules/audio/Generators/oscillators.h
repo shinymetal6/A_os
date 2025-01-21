@@ -23,29 +23,6 @@
 #ifndef MODULES_AUDIO_GENERATORS_OSCILLATORS_H_
 #define MODULES_AUDIO_GENERATORS_OSCILLATORS_H_
 
-/*
-typedef struct _OscillatorsFlagsTypeDef
-{
-	uint8_t 	oscillator_flags;
-	uint8_t		osc_waves[4];
-	uint8_t 	osc_duty[4];
-	uint8_t 	osc_volume[4];	// range 0..10
-	uint8_t 	osc_duty_percent[4];
-}OscillatorsFlagsTypeDef;
-*/
-/* oscillator_flags */
-/*
-#define	OSC_VOLUME_PENDING			0x01
-#define	OSC_DETUNE_PENDING			0x02
-#define	OSC_DUTY_PENDING			0x04
-#define	OSC_WAVE_PENDING			0x08
-#define	OSC_FM_PENDING				0x10
-#define	OSC_TUNE_PENDING			0x20
-//NOT USED							0x40
- *
- */
-//#define	OSC_SRCFLAG					0x80	/* 0 is from Cv , 1 is from MIDI */
-
 
 extern	void InitOscillators(void);
 extern	void NoteON( uint16_t midi_note , uint8_t velocity);

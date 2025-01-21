@@ -32,7 +32,7 @@
 #include "w25qxx_defs.h"
 
 extern	ExtFlash_DriverStruct_t		ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
-extern	uint8_t						last_extflash_used_handle;
+extern	uint8_t						last_qspi_used_handle;
 
 ITCM_AREA_CODE static uint8_t w25qxx_seterror(W25Qxx_Drv_TypeDef	*w25qxx_Drv,uint8_t error)
 {
@@ -424,19 +424,19 @@ ITCM_AREA_CODE uint32_t	w25qxx_register(W25Qxx_Drv_TypeDef *private_data)
 {
 W25Qxx_Drv_TypeDef	*w25qxx_Drv;
 uint8_t id = 0;
-	if ( ExtFlashDriverStruct[last_extflash_used_handle].process == 0 )
+	if ( ExtFlashDriverStruct[last_qspi_used_handle].process == 0 )
 	{
 		if ( private_data->wakeup_id == 0 )
 			return DRIVER_REQUEST_FAILED;
-		ExtFlashDriverStruct[last_extflash_used_handle].process = get_current_process();
-		ExtFlashDriverStruct[last_extflash_used_handle].private_data = (uint32_t *)private_data;
-		ExtFlashDriverStruct[last_extflash_used_handle].read = w25qxx_read;
-		ExtFlashDriverStruct[last_extflash_used_handle].write = w25qxx_write;
-		ExtFlashDriverStruct[last_extflash_used_handle].erase_blocks = w25qxx_eraseblocks;
-		ExtFlashDriverStruct[last_extflash_used_handle].erase_chip = w25qxx_erasechip;
-		ExtFlashDriverStruct[last_extflash_used_handle].get_id = w25qxx_GetID;
+		ExtFlashDriverStruct[last_qspi_used_handle].process = get_current_process();
+		ExtFlashDriverStruct[last_qspi_used_handle].private_data = (uint32_t *)private_data;
+		ExtFlashDriverStruct[last_qspi_used_handle].read = w25qxx_read;
+		ExtFlashDriverStruct[last_qspi_used_handle].write = w25qxx_write;
+		ExtFlashDriverStruct[last_qspi_used_handle].erase_blocks = w25qxx_eraseblocks;
+		ExtFlashDriverStruct[last_qspi_used_handle].erase_chip = w25qxx_erasechip;
+		ExtFlashDriverStruct[last_qspi_used_handle].get_id = w25qxx_GetID;
 
-		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[last_extflash_used_handle].private_data;
+		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[last_qspi_used_handle].private_data;
 
 		if ( w25qxx_Drv->qspi_bus->hmdma == NULL )
 		{
@@ -459,16 +459,16 @@ uint8_t id = 0;
 		w25qxx_Drv->com.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
 		w25qxx_Drv->com.DummyCycles = W25Q_DUMMY_0;
 
-		ExtFlashDriverStruct[last_extflash_used_handle].status = DRIVER_STATUS_IN_USE;
+		ExtFlashDriverStruct[last_qspi_used_handle].status = DRIVER_STATUS_IN_USE;
 
 		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
 		w25qxx_Drv->qspi_status_reg &= ~W25Q_NO_PROTECTION_MASK;
 		w25qxx_WriteStatusReg(w25qxx_Drv, 1,W25Q_WRITE_TIMEOUT);
 		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
 		w25qxx_ReadAllStatusRegs(w25qxx_Drv,W25Q_READ_TIMEOUT);
-		w25qxx_GetID(last_extflash_used_handle,&id);
-		last_extflash_used_handle++;
-		return last_extflash_used_handle-1;
+		w25qxx_GetID(last_qspi_used_handle,&id);
+		last_qspi_used_handle++;
+		return last_qspi_used_handle-1;
 	}
 	return DRIVER_REQUEST_FAILED;
 }

@@ -47,12 +47,24 @@ uint32_t A_get_timelapse_end(void)
     return	usec_elapsed;
 }
 
-void A_clear32(uint32_t	*ptr,uint32_t size)
+void A_clear32(uint8_t	*ptr,uint32_t size_in_bytes)
 {
 uint32_t	i;
+uint32_t *ptr2 = (uint32_t *)ptr;
 	__disable_irq();
-	for(i=0;i<size;i++)
-		ptr[i] = 0;
+	for(i=0;i<size_in_bytes/sizeof(uint32_t);i++)
+		*ptr2++ = 0;
+	__enable_irq();
+}
+
+void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes)
+{
+uint32_t	i;
+uint32_t *src32 = (uint32_t *)src, *dest32 = (uint32_t *)dest;
+
+	__disable_irq();
+	for(i=0;i<size_in_bytes/sizeof(uint32_t);i++)
+		*dest32++ = *src32++;
 	__enable_irq();
 }
 

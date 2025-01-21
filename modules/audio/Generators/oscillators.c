@@ -91,8 +91,8 @@ uint8_t	i;
 		Oscillator[i].state &= ~OSCILLATOR_ON;
 }
 
-extern	float	midi_freq[128];
-extern	uint32_t 				sample_frequency;
+extern	float		midi_freq[128];
+extern	uint32_t	sample_frequency;
 
 ITCM_AREA_CODE	void NoteON(uint16_t midi_note , uint8_t velocity)
 {
@@ -105,7 +105,7 @@ uint32_t	osc_number,i;
 	{
 		Oscillator[osc_number].midi_note = midi_note;
 		freq = midi_freq[Oscillator[osc_number].midi_note] + Oscillator[osc_number].detune;
-		delta_phase = (float )WAVETABLE_SIZE / ((float )sample_frequency / freq);
+		delta_phase = (float )WAVETABLE_SIZE / ((float )(sample_frequency / 2 ) / freq);
 		Oscillator[osc_number+i].delta_phase = (uint16_t )(delta_phase * (float )INT_PRECISION);
 		Oscillator[osc_number+i].current_phase = 0;
 		Oscillator[osc_number+i].midi_note = midi_note;

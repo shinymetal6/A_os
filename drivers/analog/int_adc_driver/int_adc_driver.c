@@ -37,7 +37,7 @@ extern	uint8_t							last_analog_used_handle,analog_driver_request;
 
 ITCM_AREA_CODE static uint32_t int_adc_start(uint8_t handle)
 {
-ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
 	/*
@@ -55,7 +55,7 @@ TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 
 ITCM_AREA_CODE static uint32_t int_adc_stop(uint8_t handle)
 {
-ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	HAL_TIM_Base_Stop(timer);
 	adc_drv->status &= ~ADC_STATUS_RUNNING;
@@ -64,28 +64,28 @@ TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 
 ITCM_AREA_CODE static uint32_t int_adc_get_status(uint8_t handle)
 {
-ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	return (uint32_t )adc_drv->status;
 }
 
 ITCM_AREA_CODE static uint32_t int_adc_init(uint8_t handle)
 {
-ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 ADC_HandleTypeDef	*adc = adc_drv->adc;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
 	return HAL_ADC_Start_DMA(adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels);
 }
 
-ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *private_data,uint32_t driver_flags)
 {
 ADC_Drv_TypeDef	*adc_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
 		ANALOG_DriverStruct[last_analog_used_handle].flags |= driver_flags;
-		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
+		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
-		adc_drv = (ADC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
+		adc_drv = (ADC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
 		if ( adc_drv->adc == NULL)
 			return DRIVER_REQUEST_FAILED;
 		if ( adc_drv->adc_timer == NULL)
@@ -119,9 +119,9 @@ uint32_t	i,drv_ret=255;
 	{
 		if (( ANALOG_DriverStruct[i].status & DRIVER_STATUS_IN_USE) ==  DRIVER_STATUS_IN_USE)
 		{
-			if ( ANALOG_DriverStruct[i].analog_driver_private_data != NULL )
+			if ( ANALOG_DriverStruct[i].private_data != NULL )
 			{
-				ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[i].analog_driver_private_data;
+				ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[i].private_data;
 				if ( adc_drv->adc == hadc )
 					return i;
 			}
@@ -135,7 +135,7 @@ ITCM_AREA_CODE void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
 	{
-		ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+		ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 		adc_drv->status |= ADC_STATUS_HALF;
 		adc_drv->status &= ~ADC_STATUS_FULL;
 		if ( adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
@@ -148,7 +148,7 @@ ITCM_AREA_CODE void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
 	{
-		ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+		ADC_Drv_TypeDef	*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 		adc_drv->status |= ADC_STATUS_FULL;
 		adc_drv->status &= ~ADC_STATUS_HALF;
 		if ( adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP))

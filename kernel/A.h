@@ -175,7 +175,6 @@ extern	void A_mem_init(void);
 
 extern	void A_get_timelapse_start(void);
 extern	uint32_t A_get_timelapse_end(void);
-extern	void A_clear32(uint32_t	*ptr,uint32_t size);
 
 #ifdef	POOL_ENABLE
 extern	void defrag_mem(void);

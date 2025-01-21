@@ -12,6 +12,9 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 
+#ifdef	SAMPLEPROCESS_1_BASIC
+extern	void sample_process_1_basic(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_BASIC
 #ifdef	SAMPLEPROCESS_1_XMODEM
 extern	void sample_process_1_xmodem(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM
@@ -50,6 +53,9 @@ VERSIONING	uint8_t	app_version[32] 	= "h753";
 USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 {
 		{
+#ifdef	SAMPLEPROCESS_1_BASIC
+				.user_process = sample_process_1_basic,
+#endif // #define	SAMPLEPROCESS_1_BASIC
 #ifdef	SAMPLEPROCESS_1_XMODEM
 				.user_process = sample_process_1_xmodem,
 #endif // #define	SAMPLEPROCESS_1_XMODEM

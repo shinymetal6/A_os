@@ -218,13 +218,13 @@ ITCM_AREA_CODE static uint32_t nau88c22_stop(uint8_t handle)
 
 ITCM_AREA_CODE static uint32_t nau88c22_get_status(uint8_t handle)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	return codec_drv->status;
 }
 
 ITCM_AREA_CODE uint32_t nau88c22_init(uint8_t handle)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 uint8_t	i = 0;
 	if ( Nau88c22_CheckPresent(codec_drv->bus , codec_drv->device_address) == 0)
 	{
@@ -246,7 +246,7 @@ uint8_t	i = 0;
 
 uint32_t nau88c22_internal_ops(uint8_t handle,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 I2C_HandleTypeDef		*bus = codec_drv->bus;
 uint16_t 				device_address = codec_drv->device_address;
 /* params order
@@ -321,16 +321,16 @@ uint8_t 	gain				= (uint8_t  )param3;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data,uint32_t driver_flags)
 {
 Nau88C22_Drv_TypeDef	*codec_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
 		ANALOG_DriverStruct[last_analog_used_handle].flags |= driver_flags;
-		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
+		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
-		codec_drv = (Nau88C22_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
+		codec_drv = (Nau88C22_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
 		if ( codec_drv->bus == NULL)
 			return DRIVER_REQUEST_FAILED;
 		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
