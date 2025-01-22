@@ -44,6 +44,7 @@ uint32_t	w25_handle;
 uint8_t		w25_bufw[DATALEN];
 uint8_t		w25_bufr[DATALEN];
 uint32_t	qspi_state = 0 , qspi_irqs = 0 , done = 0 , qspi_address = 0 , qspi_len = 0;
+uint32_t	qspi_error = 0;
 
 void sample_process_1_qspi(uint32_t process_id)
 {
@@ -54,7 +55,7 @@ uint32_t	i;
 	w25_handle = w25qxx_register(&W25Qxx_Drv);
 	qspi_address = 0+DATAOFFSET;
 	qspi_len = DATALEN-DATAOFFSET;
-
+	qspi_error = 0;
 	for(i=0;i<DATALEN;i++)
 		w25_bufw[i] = 255 - (i & 0xff);
 
@@ -65,25 +66,24 @@ uint32_t	i;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 			switch(qspi_state)
 			{
 			case 0 :
-				qspi_erase_blocks(w25_handle,0,1);
+				qspi_error += qspi_erase_blocks(w25_handle,0,1);
 				if (( W25Qxx_Drv.status & QSPI_BUSY ) != QSPI_BUSY )
-				{
 					qspi_state++;
-				}
 				break;
 			case 1 :
-				qspi_read(w25_handle,0,w25_bufr,DATALEN);
+				qspi_error += qspi_read(w25_handle,0,w25_bufr,DATALEN);
 				qspi_state++;
 				break;
 			case 2 :
-				qspi_write(w25_handle,qspi_address,&w25_bufw[DATAOFFSET],qspi_len);
+				qspi_error += qspi_write(w25_handle,qspi_address,&w25_bufw[DATAOFFSET],qspi_len);
 				qspi_state++;
 				break;
 			case 3 :
-				qspi_read(w25_handle,qspi_address,w25_bufr,qspi_len);
+				qspi_error += qspi_read(w25_handle,qspi_address,w25_bufr,qspi_len);
 				qspi_state++;
 				break;
 			case 4 :

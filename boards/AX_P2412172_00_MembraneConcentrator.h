@@ -38,6 +38,9 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+#define LD1_Pin			LED_Pin
+#define LD1_GPIO_Port	LED_GPIO_Port
+
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 #define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
