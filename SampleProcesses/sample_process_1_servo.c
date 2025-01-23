@@ -36,6 +36,9 @@ SERVO_Control_Drv_TypeDef	servo_ch1 =
 	.servo_timer = &SERVO_TIMER,
 	.servo_channel = SERVO_CHANNEL,
 	.cycle_time = 20000,
+	.repetition = 8,
+	.min_time = 500,
+	.max_time = 2500,
 };
 uint32_t		servo_ch1_driver_handle;
 
@@ -53,15 +56,9 @@ uint8_t		state=0;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			switch(state)
-			{
-			case 0 : servo_set_position(servo_ch1_driver_handle,0,SERVO_PULSES); break;
-			case 1 : servo_set_position(servo_ch1_driver_handle,50,SERVO_PULSES); break;
-			case 2 : servo_set_position(servo_ch1_driver_handle,100,SERVO_PULSES); break;
-			case 3 : servo_set_position(servo_ch1_driver_handle,50,SERVO_PULSES); break;
-			}
+			servo_set_position(servo_ch1_driver_handle,state*10,SERVO_PULSES);
 			state++;
-			if ( state == 4 )
+			if ( state == 11 )
 				state = 0;
 
 		}

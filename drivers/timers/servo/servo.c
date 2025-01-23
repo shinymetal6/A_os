@@ -60,15 +60,20 @@ ITCM_AREA_CODE uint32_t servo_set_prescaler(uint8_t handle,uint32_t prescaler)
 
 ITCM_AREA_CODE uint32_t servo_set_position(uint8_t handle,uint8_t servo_position,uint8_t servo_pulses)
 {
+uint16_t				span_time;
+uint16_t				servo_pulse_len;
+
 	// position is expressed in percentage : 0 .. 100
 	if ( servo_position > 100 )
 		return DRIVER_STATUS_FAILED;
 
 	SERVO_Control_Drv_TypeDef	*servo_driver_data = (SERVO_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;
 	__HAL_TIM_DISABLE(servo_driver_data->servo_timer);
+	span_time = servo_driver_data->max_time - servo_driver_data->min_time;
+	servo_pulse_len = servo_driver_data->min_time + ((span_time / 100 ) * servo_position);
 	servo_driver_data->servo_timer->Instance->CNT = 0;
 	servo_driver_data->servo_timer->Instance->ARR = servo_driver_data->cycle_time;
-	servo_driver_data->servo_timer->Instance->CCR1 = servo_driver_data->cycle_time - 1000 - (servo_position * 10);
+	servo_driver_data->servo_timer->Instance->CCR1 = servo_driver_data->cycle_time - servo_pulse_len;
 	servo_driver_data->servo_timer->Instance->RCR = servo_driver_data->repetition;
     __HAL_TIM_ENABLE(servo_driver_data->servo_timer);
 

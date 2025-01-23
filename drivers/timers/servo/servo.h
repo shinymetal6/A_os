@@ -29,6 +29,8 @@ typedef struct
 	uint8_t					handle;
 	uint8_t					repetition;
 	uint32_t				cycle_time;
+	uint16_t				min_time;
+	uint16_t				max_time;
 	TIM_HandleTypeDef 		*servo_timer;
 	uint32_t 				servo_channel;
 
