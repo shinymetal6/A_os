@@ -34,5 +34,6 @@ typedef struct
 
 #include "dcc/dcc.h"
 #include "pwm/pwm.h"
+#include "servo/servo.h"
 
 #endif /* DRIVERS_TIMERS_TIMERS_H_ */

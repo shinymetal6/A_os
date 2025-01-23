@@ -40,12 +40,12 @@
 #include "flash_updater/flash_updater_common.h"
 
 #ifdef NETWORKING_ENABLED
-#include "../modules/lwip2.2/App/lwip.h"
+#include "../libraries/lwip2.2/App/lwip.h"
 #ifdef MQTT_ENABLE
-	#include "../modules/mqtt_client/mqtt_client.h"
+	#include "../libraries/mqtt_client/mqtt_client.h"
 #endif // #ifdef MQTT_ENABLE
 #ifdef WIFI_ESP01S
-	#include "../modules/WiFi/esp01_s.h"
+	#include "../libraries/WiFi/esp01_s.h"
 #endif // 	#ifdef WIFI_ESP01S
 #endif // #ifdef NETWORKING_ENABLED
 
