@@ -32,7 +32,7 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define	NETWORKING_ENABLED		1
+//#define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1
 
 #ifdef NETWORKING_ENABLED

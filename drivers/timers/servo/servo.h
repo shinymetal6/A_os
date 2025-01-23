@@ -28,15 +28,17 @@ typedef struct
 	uint8_t					flags;
 	uint8_t					handle;
 	uint8_t					repetition;
-	uint8_t					repetition_counter;
+	uint32_t				cycle_time;
 	TIM_HandleTypeDef 		*servo_timer;
+	uint32_t 				servo_channel;
+
 }SERVO_Control_Drv_TypeDef;
 
 extern uint32_t servo_start(uint8_t handle);
 extern uint32_t servo_stop(uint8_t handle);
 extern uint32_t servo_get_status(uint8_t handle);
 extern uint32_t servo_set_prescaler(uint8_t handle,uint32_t prescaler);
-extern uint32_t servo_set_position(uint8_t handle,uint32_t servo_position);
+extern uint32_t servo_set_position(uint8_t handle,uint8_t servo_position,uint8_t servo_pulses);
 extern uint32_t	servo_register(SERVO_Control_Drv_TypeDef *private_data);
 
 #endif /* DRIVERS_TIMERS_SERVO_SERVO_H_ */
