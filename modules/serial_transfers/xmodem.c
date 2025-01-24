@@ -29,17 +29,15 @@
 #include "xmodem.h"
 #include <string.h>
 
-uint8_t 	xmodem_sm;
 xmodem_t	xmodem_struct;
 
 static uint8_t xmodem_allocate_area(uint8_t *data_ptr,uint32_t max_data_count)
 {
-uint32_t	i_clear;
+uint32_t	i;
 	xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr = data_ptr;
 	xmodem_struct.requested_data_count = max_data_count;
-	xmodem_struct.data_count = 0;
-	for(i_clear=0;i_clear<max_data_count;i_clear++)
-		data_ptr[i_clear] = 0xff;
+	for(i=0;i<max_data_count;i++)
+		data_ptr[i] = 0xff;
 	return 0;
 }
 
@@ -54,24 +52,28 @@ uint16_t	calc_csum=0,i;
 uint8_t xmodem_line_parser(uint8_t *buf)
 {
 	if ( buf[0] == X_EOT)
+	{
+		xmodem_struct.session_received_bytes_count = xmodem_struct.received_bytes_count;
+		xmodem_struct.received_bytes_count = 0;
+		xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr;
 		return X_EOT;
+	}
 	if ( buf[0] == X_SOH)
 	{
-		xmodem_struct.data_len = XMODEM_LEN;
 		if ( (buf[XMODEM_ADDR] + buf[XMODEM_ADDRI]) != 0xff)
 			return X_NAK;
 		xmodem_struct.addr = buf[XMODEM_ADDR];
 		xmodem_struct.addri = buf[XMODEM_ADDRI];
-		if ( xmodem_struct.data_len == XMODEM_LEN )
-			xmodem_struct.cs = buf[XMODEM_CS];
+		xmodem_struct.cs = buf[XMODEM_CS];
 		xmodem_struct.calculated_checksum = xmodem_calc_csum(buf);
 
 		if ( xmodem_struct.calculated_checksum == xmodem_struct.cs)
 		{
-			memcpy(xmodem_struct.data_ptr,&buf[3],xmodem_struct.data_len);
-			xmodem_struct.data_ptr += xmodem_struct.data_len;
-			xmodem_struct.received_data_len += xmodem_struct.data_len;
+			memcpy(xmodem_struct.data_ptr,&buf[3],XMODEM_LEN);
+			xmodem_struct.data_ptr += XMODEM_LEN;
 			xmodem_struct.received_bytes_count += XMODEM_LEN;
+			if ( xmodem_struct.received_bytes_count >= xmodem_struct.requested_data_count)
+				return X_NAK;
 			return X_ACK;
 		}
 		return X_NAK;
@@ -81,7 +83,7 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 
 uint32_t xmodem_get_rxed_amount(void)
 {
-	return xmodem_struct.received_bytes_count;
+	return xmodem_struct.session_received_bytes_count;
 }
 
 void xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count )

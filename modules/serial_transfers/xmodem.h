@@ -51,6 +51,7 @@
 #define	XMODEM_CS		131
 #define	XMODEM_LINE_LEN	XMODEM_LEN+4
 
+/*
 #define	XMODEM_SEND_NAK			0
 #define	XMODEM_DATA_PHASE		1
 #define	XMODEM_TIMEOUT			5
@@ -58,33 +59,21 @@
 #define	XMODEM_AUTOSEND_AK		1
 #define	XMODEM_USERSEND_AK		0
 #define	XMODEM_RETRIES			5
-
+*/
 typedef struct
 {
-	uint16_t	data_len;
+	//uint16_t	data_len;
 	uint8_t		addr;
 	uint8_t		addri;
 	uint8_t		cs;
 	uint8_t		checksum;
 	uint8_t		calculated_checksum;
-	uint8_t		packet_checksum;
-	uint8_t		crch;
-	uint8_t		crcl;
-	uint8_t		state;
-	uint8_t 	auto_send_ack;
-	uint8_t		xtimeout;
-	uint8_t		num_retries;
-	uint8_t		uart_handle;
-	uint32_t	xmodem_wakeup_mask;
-	uint8_t		*rxbuf;
 	uint8_t		*data_ptr;
 	uint8_t		*requested_data_ptr;
 	uint32_t	requested_data_count;
-	uint32_t	data_count;
-	uint32_t	received_data_len;
+	//uint32_t	data_count;
 	uint32_t	received_bytes_count;
-	uint32_t	(*send_function)(uint8_t handle, uint8_t *buffer,uint16_t len);
-
+	uint32_t	session_received_bytes_count;
 }xmodem_t;
 
 extern	void 		xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
