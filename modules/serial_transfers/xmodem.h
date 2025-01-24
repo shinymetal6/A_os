@@ -32,18 +32,6 @@
 #define X_NAK	0x15
 #define X_CAN	0x18
 #define X_DEL	0x7f
-#define X_C		'C'  /* notify the host we can use CRC16. */
-
-#define IDLE			0
-#define	RECV_SOH		1
-#define	RECV_ADDR		2
-#define	RECV_ADDRI		3
-#define	DATA_PHASE		4
-#define	CS_PHASE		5
-#define	CRCH_PHASE		6
-#define	CRCL_PHASE		7
-#define	RECV_LOOP		8
-#define	RECV_EOT		9
 
 #define	XMODEM_LEN		128
 #define	XMODEM_ADDR		1
@@ -51,18 +39,8 @@
 #define	XMODEM_CS		131
 #define	XMODEM_LINE_LEN	XMODEM_LEN+4
 
-/*
-#define	XMODEM_SEND_NAK			0
-#define	XMODEM_DATA_PHASE		1
-#define	XMODEM_TIMEOUT			5
-#define	XMODEM_MAX_EOT_PKTLEN	32
-#define	XMODEM_AUTOSEND_AK		1
-#define	XMODEM_USERSEND_AK		0
-#define	XMODEM_RETRIES			5
-*/
 typedef struct
 {
-	//uint16_t	data_len;
 	uint8_t		addr;
 	uint8_t		addri;
 	uint8_t		cs;
@@ -71,7 +49,6 @@ typedef struct
 	uint8_t		*data_ptr;
 	uint8_t		*requested_data_ptr;
 	uint32_t	requested_data_count;
-	//uint32_t	data_count;
 	uint32_t	received_bytes_count;
 	uint32_t	session_received_bytes_count;
 }xmodem_t;

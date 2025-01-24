@@ -24,14 +24,14 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-//#include "../../kernel/kernel_opt.h"
+#include "../../kernel/kernel_opt.h"
 
 #include "xmodem.h"
 #include <string.h>
 
 xmodem_t	xmodem_struct;
 
-static uint8_t xmodem_allocate_area(uint8_t *data_ptr,uint32_t max_data_count)
+ITCM_AREA_CODE	static uint8_t xmodem_allocate_area(uint8_t *data_ptr,uint32_t max_data_count)
 {
 uint32_t	i;
 	xmodem_struct.data_ptr = xmodem_struct.requested_data_ptr = data_ptr;
@@ -41,7 +41,7 @@ uint32_t	i;
 	return 0;
 }
 
-static uint8_t xmodem_calc_csum(uint8_t *buf)
+ITCM_AREA_CODE	static uint8_t xmodem_calc_csum(uint8_t *buf)
 {
 uint16_t	calc_csum=0,i;
 	for(i=0;i<XMODEM_LEN;i++)
@@ -49,7 +49,7 @@ uint16_t	calc_csum=0,i;
 	return calc_csum & 0xff;
 }
 
-uint8_t xmodem_line_parser(uint8_t *buf)
+ITCM_AREA_CODE	uint8_t xmodem_line_parser(uint8_t *buf)
 {
 	if ( buf[0] == X_EOT)
 	{
@@ -81,17 +81,17 @@ uint8_t xmodem_line_parser(uint8_t *buf)
 	return X_DEL;
 }
 
-uint32_t xmodem_get_rxed_amount(void)
+ITCM_AREA_CODE	uint32_t xmodem_get_rxed_amount(void)
 {
 	return xmodem_struct.session_received_bytes_count;
 }
 
-void xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count )
+ITCM_AREA_CODE	void xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count )
 {
 	xmodem_allocate_area(dest_data_ptr,max_data_count);
 }
 
-void xmodem_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count )
+ITCM_AREA_CODE	void xmodem_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count )
 {
 	xmodem_allocate_area(dest_data_ptr,max_data_count);
 }
