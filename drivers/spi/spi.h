@@ -23,7 +23,7 @@
 #ifndef DRIVERS_SPI_SPI_LCD_H_
 #define DRIVERS_SPI_SPI_LCD_H_
 
-#ifdef STM32H7xx_HAL_SPI_H
+#ifdef A_OS_SPI_ENABLED
 typedef struct
 {
 	uint8_t 			process;
@@ -37,7 +37,7 @@ typedef struct
 #define	SPI_TX_DMA_COMPLETE	0x80
 
 #include "spi_lcd/spi_lcd.h"
-#endif
 
+#endif // #ifdef A_OS_SPI_ENABLED
 
 #endif /* DRIVERS_SPI_LCD_SPI_LCD_H_ */

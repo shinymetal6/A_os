@@ -51,6 +51,9 @@
 	#ifdef STM32H7xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
+	#endif
 #endif
 
 #ifdef	STM32H753xx
@@ -77,6 +80,9 @@
 	#ifdef STM32H7xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
+	#endif
 #endif
 
 #ifdef	STM32L431xx
@@ -100,6 +106,9 @@
 	#endif
 	#ifdef STM32L4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
+	#endif
+	#ifdef STM32L4xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
 	#endif
 #endif
 
@@ -126,6 +135,9 @@
 	#ifdef STM32G4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
+	#ifdef STM32G4xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
+	#endif
 #endif
 
 
@@ -150,6 +162,9 @@
 	#endif
 	#ifdef STM32G4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
 	#endif
 #endif
 #endif /* BOARDS_IODEF_COMMON_H_ */

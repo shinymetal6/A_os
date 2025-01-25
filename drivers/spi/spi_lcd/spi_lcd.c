@@ -75,6 +75,7 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 
 ITCM_AREA_CODE uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness)
 {
+#ifdef A_OS_TIMERS_ENABLED
 SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[handle].driver_private_data;
 	if ( brightness <= FULL_BRIGHTNESS)
 	{
@@ -90,6 +91,7 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct
 		}
 		HAL_TIM_PWM_Start(spi_lcd_Drv->backlight_timer,spi_lcd_Drv->backlight_timer_channel);
 	}
+#endif
 	return 0;
 }
 

@@ -23,6 +23,7 @@
 #ifndef DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 #define DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 
+
 #define	LCD_IS_7735		0x7735
 #define	LCD_IS_9341		0x9341
 
@@ -37,8 +38,10 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+#ifdef A_OS_TIMERS_ENABLED
 	TIM_HandleTypeDef	*backlight_timer;
 	uint32_t			backlight_timer_channel;
+#endif
 	SPI_HandleTypeDef 	*bus;
 	GPIO_TypeDef	 	*cs_port;
 	uint16_t			cs_bit;

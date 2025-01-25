@@ -27,9 +27,10 @@
 #include "../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
 
+#ifdef A_OS_SPI_ENABLED
+
 #include "spi.h"
 #include <string.h>
-#ifdef STM32H7xx_HAL_SPI_H
 
 SYSTEM_RAM	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 SYSTEM_RAM	uint8_t				last_spi_used_handle,spi_driver_request;
@@ -50,4 +51,4 @@ uint32_t	i;
 		}
 	}
 }
-#endif // #ifdef STM32H7xx_HAL_SPI_H
+#endif // #ifdef A_OS_SPI_ENABLED

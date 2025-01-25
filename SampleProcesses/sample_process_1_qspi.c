@@ -79,7 +79,7 @@ uint32_t	i;
 				qspi_state++;
 				break;
 			case 2 :
-				qspi_error += qspi_write(w25_handle,qspi_address,&w25_bufw[DATAOFFSET],qspi_len);
+				qspi_error += qspi_write(w25_handle,qspi_address,&w25_bufw[0],qspi_len);
 				qspi_state++;
 				break;
 			case 3 :
