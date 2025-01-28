@@ -30,5 +30,6 @@
 #include "hex_decoders/s3_hex.h"
 #include "modbus/modbus.h"
 #include "audio/audio.h"
+#include "cypher/md5.h"
 
 #endif /* MODULES_MODULES_H_ */

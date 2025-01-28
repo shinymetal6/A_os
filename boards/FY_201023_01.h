@@ -25,6 +25,14 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
+#define	NETWORKING_ENABLED		1
+//#define	USB_DEVICE_ENABLED		1
+
+#ifdef NETWORKING_ENABLED
+	#define MQTT_ENABLE				1
+	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
+#endif // #ifdef NETWORKING_ENABLED
+
 #define USB_DEVICE_ENABLED	1
 #ifdef USB_DEVICE_ENABLED
 	#define	USB_CDC				1
