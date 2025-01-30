@@ -42,6 +42,9 @@
 	#ifdef STM32H7xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_OPAMP_H
+		#define A_OS_OPAMP_ENABLED	1
+	#endif
 	#ifdef STM32H7xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1
 	#endif
@@ -71,6 +74,9 @@
 	#ifdef STM32H7xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_OPAMP_H
+		#define A_OS_OPAMP_ENABLED	1
+	#endif
 	#ifdef STM32H7xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1
 	#endif
@@ -97,6 +103,9 @@
 	#endif
 	#ifdef STM32L4xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
+	#endif
+	#ifdef STM32L4xx_HAL_OPAMP_H
+		#define A_OS_OPAMP_ENABLED	1
 	#endif
 	#ifdef STM32L4xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1
@@ -126,6 +135,9 @@
 	#ifdef STM32G4xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
 	#endif
+	#ifdef STM32G4xx_HAL_OPAMP_H
+		#define A_OS_OPAMP_ENABLED	1
+	#endif
 	#ifdef STM32G4xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1
 	#endif
@@ -153,6 +165,9 @@
 	#endif
 	#ifdef STM32G4xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_OPAMP_H
+		#define A_OS_OPAMP_ENABLED	1
 	#endif
 	#ifdef STM32G4xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1

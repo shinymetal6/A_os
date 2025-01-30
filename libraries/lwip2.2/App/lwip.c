@@ -29,8 +29,8 @@
 #include "../LwIp/src/include/lwip/netif.h"
 #include "../Target/ethernetif.h"
 
-ETH_DATA_AREA	ETH_DMADescTypeDef DMARxDscrTab[32] ; /* Ethernet Rx DMA Descriptors */
-ETH_DATA_AREA	ETH_DMADescTypeDef DMATxDscrTab[32];   /* Ethernet Tx DMA Descriptors */
+extern	ETH_DATA_AREA	ETH_DMADescTypeDef DMARxDscrTab[32] ; /* Ethernet Rx DMA Descriptors */
+extern	ETH_DATA_AREA	ETH_DMADescTypeDef DMATxDscrTab[32];   /* Ethernet Tx DMA Descriptors */
 
 static void ethernet_link_status_updated(struct netif *netif);
 static void Ethernet_Link_Periodic_Handle(struct netif *netif);

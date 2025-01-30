@@ -52,17 +52,21 @@ typedef struct
 }ANALOG_DriverStruct_t;
 
 
-#ifdef STM32H7xx_HAL_ADC_H
+#ifdef A_OS_ADC_ENABLED
 #include "int_adc_driver/int_adc_driver.h"
 #endif
 
-#ifdef STM32H7xx_HAL_DAC_H
+#ifdef A_OS_DAC_ENABLED
 #include "int_dac_driver/int_dac_driver.h"
 #endif
 
-#ifdef STM32H7xx_HAL_I2S_H
+#ifdef A_OS_OPAMP_ENABLED
+#include "int_opamp/int_opamp.h"
+#endif
+
+#ifdef A_OS_I2S_ENABLED
 	#include "int_i2s_driver/int_i2s_driver.h"
-	#ifdef STM32H7xx_HAL_I2C_H
+	#ifdef A_OS_I2C_ENABLED
 		#include "codec/nau88c22.h"
 	#endif // #ifdef STM32H7xx_HAL_I2C_H
 #endif // #ifdef STM32H7xx_HAL_I2S_H

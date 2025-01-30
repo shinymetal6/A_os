@@ -45,6 +45,11 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+#ifdef A_OS_OPAMP_ENABLED
+//	#define	A_OS_OPAMP_1_ENABLED				1
+	#define	A_OS_OPAMP_2_ENABLED				1
+#endif // #ifdef A_OS_OPAMP_ENABLED
+
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
