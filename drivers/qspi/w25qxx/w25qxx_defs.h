@@ -109,6 +109,8 @@
 #define	W25Q_ERASECHIP_TIMEOUT				35000
 #define	W25Q_DUMMY_0						0
 #define	W25Q_DUMMY_6						6
+#define	W25Q_ENABLE_WRITE					1
+#define	W25Q_DISABLE_WRITE					0
 
 
 

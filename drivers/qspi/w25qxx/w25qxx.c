@@ -285,71 +285,81 @@ W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[hand
 uint32_t			Instruction;
 uint32_t 			p_data_len;
 
-		if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
-			return 1;
-		w25qxx_Drv->status = QSPI_BUSY;
+	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
+		return 1;
+	w25qxx_Drv->status = QSPI_BUSY;
 
+	Instruction = w25qxx_Drv->FlashSize > 128U ? W25Q_PAGE_PROGRAM_QUAD_INP_4B : W25Q_PAGE_PROGRAM_QUAD_INP;
 
-		Instruction = w25qxx_Drv->FlashSize > 128U ? W25Q_PAGE_PROGRAM_QUAD_INP_4B : W25Q_PAGE_PROGRAM_QUAD_INP;
+	w25qxx_Drv->status &= ~QSPI_WRITE_COMPLETE;
 
-		w25qxx_Drv->status &= ~QSPI_WRITE_COMPLETE;
-
-		if (w25qxx_WriteEnable(w25qxx_Drv,1) != W25Q_OK)
+	if ( (address & 0xff ) != 0 )
+	{
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_ENABLE_WRITE) != W25Q_OK)
 			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-		if ( (address & 0xff ) != 0 )
-		{
-
-			if ( ((address & 0xff ) + data_len) <=  W25Q_MEM_PAGE_SIZE)
-			{
-				if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
-					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-				if ( w25qxx_write_cycle(w25qxx_Drv, data))
-					return 1;
-				data_len = 0;
-			}
-			else
-			{
-				p_data_len = W25Q_MEM_PAGE_SIZE - (address & 0xff );
-
-				if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, p_data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
-					return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-				if ( w25qxx_write_cycle(w25qxx_Drv, data))
-					return 1;
-
-				data_len -= p_data_len;
-				address &= 0xffffff00;
-				address += 0x100;
-				data += p_data_len;
-			}
-		}
-
-		while ( data_len  > W25Q_MEM_PAGE_SIZE)
-		{
-			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
-				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
-			if ( w25qxx_write_cycle(w25qxx_Drv, data))
-				return 1;
-
-			data_len -= W25Q_MEM_PAGE_SIZE;
-			address += W25Q_MEM_PAGE_SIZE;
-			data += W25Q_MEM_PAGE_SIZE;
-		}
-		if ( data_len )
+		if ( ((address & 0xff ) + data_len) <=  W25Q_MEM_PAGE_SIZE)
 		{
 			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
 				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-
 			if ( w25qxx_write_cycle(w25qxx_Drv, data))
 				return 1;
+			data_len = 0;
 		}
+		else
+		{
+			p_data_len = W25Q_MEM_PAGE_SIZE - (address & 0xff );
 
-		if (w25qxx_WriteEnable(w25qxx_Drv,0) != W25Q_OK)
+			if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, p_data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
+				return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+			if ( w25qxx_write_cycle(w25qxx_Drv, data))
+				return 1;
+
+			data_len -= p_data_len;
+			address &= 0xffffff00;
+			address += 0x100;
+			data += p_data_len;
+		}
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_DISABLE_WRITE) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+
+	while ( data_len >= W25Q_MEM_PAGE_SIZE)
+	{
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_ENABLE_WRITE) != W25Q_OK)
 			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 
-		w25qxx_Drv->status &= ~QSPI_BUSY;
-		return 0;
+		if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, W25Q_MEM_PAGE_SIZE, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+		if ( w25qxx_write_cycle(w25qxx_Drv, data))
+			return 1;
+
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_DISABLE_WRITE) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+		data_len -= W25Q_MEM_PAGE_SIZE;
+		address += W25Q_MEM_PAGE_SIZE;
+		data += W25Q_MEM_PAGE_SIZE;
+	}
+	if ( data_len )
+	{
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_ENABLE_WRITE) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+		if ( set_qspi_com(w25qxx_Drv, Instruction, QSPI_INSTRUCTION_1_LINE, address, QSPI_ADDRESS_1_LINE, data_len, QSPI_DATA_4_LINES,W25Q_DUMMY_0) )
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+
+		if ( w25qxx_write_cycle(w25qxx_Drv, data))
+			return 1;
+
+		if (w25qxx_WriteEnable(w25qxx_Drv,W25Q_DISABLE_WRITE) != W25Q_OK)
+			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
+	}
+
+	w25qxx_Drv->status &= ~QSPI_BUSY;
+
+	return 0;
 }
 
 ITCM_AREA_CODE static uint32_t w25qxx_eraseblocks(uint8_t handle, uint32_t start_block, uint32_t number_of_blocks)
@@ -464,7 +474,12 @@ uint8_t id = 0;
 		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
 		w25qxx_Drv->qspi_status_reg &= ~W25Q_NO_PROTECTION_MASK;
 		w25qxx_WriteStatusReg(w25qxx_Drv, 1,W25Q_WRITE_TIMEOUT);
-		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
+
+		w25qxx_ReadStatusReg(w25qxx_Drv, 2,W25Q_READ_TIMEOUT);
+		w25qxx_Drv->qspi_status_reg |= 0x02;
+		w25qxx_WriteStatusReg(w25qxx_Drv, 2,W25Q_WRITE_TIMEOUT);
+
+
 		w25qxx_ReadAllStatusRegs(w25qxx_Drv,W25Q_READ_TIMEOUT);
 		w25qxx_GetID(last_qspi_used_handle,&id);
 		last_qspi_used_handle++;

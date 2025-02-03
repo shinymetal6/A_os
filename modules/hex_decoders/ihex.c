@@ -48,8 +48,6 @@ uint32_t ihex_get_data_len(uint8_t *data_ptr)
 	return ((data_ptr[1] & 0x0f)<<4 ) | (data_ptr[2] & 0x0f);
 }
 
-
-
 uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len)
 {
 uint32_t	check=0 , i;
@@ -70,7 +68,7 @@ uint32_t 	i,data_idx;
 	IHex.stored_bytes += data_len;
 }
 
-uint8_t	ihex_decode(uint8_t *data_ptr, uint8_t data_len)
+uint8_t	ihex_decode_line(uint8_t *data_ptr, uint8_t data_len)
 {
 uint8_t decoded_len = 255;
 	if ( ihex_check_line(data_ptr,data_len))
@@ -120,4 +118,36 @@ uint8_t decoded_len = 255;
 	}
 	return decoded_len;
 }
+
+uint32_t ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr)
+{
+uint32_t	linelen;
+uint8_t		ihex_result;
+uint32_t	ihex_len;
+uint32_t	i;
+
+	IHex.decoded_length = 0;
+	while(1)
+	{
+		if ((linelen = get_hex_crlflen(ihex_data_ptr)) == 0 )
+			return 0;	// no more lines
+
+		ihex_result = ihex_decode_line(ihex_data_ptr,linelen);
+		if ( ihex_result == 255 )
+			return 1;	// error
+		if ( ihex_result == 0 )
+			return IHex.decoded_length;	// end of file, return size of the decoded binary
+		if ( ihex_result < 127 )
+		{
+			ihex_len = ihex_get_data_len(ihex_data_ptr);
+			for(i=0;i<ihex_len;i++,IHex.decoded_length++)
+				binary_data_ptr[i] = IHex.ihex_line[i];
+			binary_data_ptr += ihex_len;
+		}
+		ihex_data_ptr += linelen;
+	}
+	return 2;
+}
+
+
 

@@ -34,13 +34,13 @@ extern	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 W25Qxx_Drv_TypeDef W25Qxx_Drv =
 {
 		.qspi_bus = &hqspi,
-		.flags = QSPI_USES_DMA,
+		//.flags = QSPI_USES_DMA,
 		.FlashSize = 128,
 		.wakeup_id = WAKEUP_FROM_QSPI_IRQ,
 };
 uint32_t	w25_handle;
 #define		DATALEN			1024
-#define		DATAOFFSET		8
+#define		DATAOFFSET		0
 uint8_t		w25_bufw[DATALEN];
 uint8_t		w25_bufr[DATALEN];
 uint32_t	qspi_state = 0 , qspi_irqs = 0 , done = 0 , qspi_address = 0 , qspi_len = 0;
@@ -57,7 +57,7 @@ uint32_t	i;
 	qspi_len = DATALEN-DATAOFFSET;
 	qspi_error = 0;
 	for(i=0;i<DATALEN;i++)
-		w25_bufw[i] = 255 - (i & 0xff);
+		w25_bufw[i] = i >> 8;
 
 	while(1)
 	{
@@ -79,15 +79,14 @@ uint32_t	i;
 				qspi_state++;
 				break;
 			case 2 :
-				qspi_error += qspi_write(w25_handle,qspi_address,&w25_bufw[0],qspi_len);
+				qspi_error += qspi_write(w25_handle,0,&w25_bufw[16],1024-16);
 				qspi_state++;
 				break;
 			case 3 :
-				qspi_error += qspi_read(w25_handle,qspi_address,w25_bufr,qspi_len);
+				qspi_error += qspi_read(w25_handle,0,w25_bufr,1024);
 				qspi_state++;
 				break;
-			case 4 :
-				qspi_state = 3;
+			default :
 				break;
 			}
 		}

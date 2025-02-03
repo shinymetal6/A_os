@@ -215,7 +215,7 @@ MD5Final (unsigned char hash[], MD5_CTX *mdContext)
     mdContext->digest[ii+3] =
       (unsigned char)((mdContext->buf[i] >> 24) & 0xFF);
   }
-  SMEMCPY(hash, mdContext->digest, 16);
+  memcpy(hash, mdContext->digest, 16);
 }
 
 /* Basic MD5 step. Transforms buf based on in.

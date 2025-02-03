@@ -23,6 +23,8 @@
 #ifndef MODULES_HEX_DECODERS_IHEX_H_
 #define MODULES_HEX_DECODERS_IHEX_H_
 
+#define	IHEX_MAX_LINE_LEN				64
+
 #define	IHEX_DATA						0x00
 #define	IHEX_END_OF_FILE				0x01
 #define	IHEX_EXTENDED_SEGMENT_ADDRESS	0x02
@@ -41,12 +43,14 @@ typedef struct {
 	uint32_t	start_linear_address;
 	uint32_t	absolute_address;
 	uint32_t	stored_bytes;
+	uint32_t	decoded_length;
 } IHex_struct_t;
 
-extern	uint8_t	 ihex_decode(uint8_t *data_ptr, uint8_t data_len);
-extern	uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len);
-extern	uint32_t ihex_get_data_len(uint8_t *data_ptr);
-extern	uint8_t	*get_ihex_data_ptr(void);
-extern	uint32_t get_ihex_address(void);
+extern	uint8_t		ihex_decode_line(uint8_t *data_ptr, uint8_t data_len);
+extern	uint32_t 	ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr);
+extern	uint32_t 	ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len);
+extern	uint32_t 	ihex_get_data_len(uint8_t *data_ptr);
+extern	uint8_t		*get_ihex_data_ptr(void);
+extern	uint32_t 	get_ihex_address(void);
 
 #endif /* MODULES_HEX_DECODERS_IHEX_H_ */
