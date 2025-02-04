@@ -93,7 +93,6 @@ typedef struct
 	uint8_t 	process;
 	uint8_t		status;
 	uint8_t		flags;
-	uint8_t		handle;
 	UART_Drv_TypeDef	*driver_private_data;
 }UARTS_DriverStruct_t;
 

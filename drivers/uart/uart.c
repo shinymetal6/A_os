@@ -33,8 +33,7 @@
 #include <string.h>
 
 SYSTEM_RAM	UARTS_DriverStruct_t		UARTS_DriverStruct[MAX_UARTS_DRIVERS];
-SYSTEM_RAM	UARTS_QueueDriverStruct_t	UARTS_QueueDriver;
-SYSTEM_RAM	uint8_t					last_uart_used_handle=0,uart_driver_request = 0;
+SYSTEM_RAM	uint8_t						last_uart_used_handle=0,uart_driver_request = 0;
 
 ITCM_AREA_CODE  uint32_t uart_init(uint8_t handle)
 {
@@ -53,24 +52,10 @@ ITCM_AREA_CODE  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint16_t len)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
 uint32_t ret_val = 0;
-	if ( UARTS_QueueDriver.status[UARTS_QueueDriver.extract_index] == 0)
-	{
-		UARTS_QueueDriver.UARTS_DriverStruct[UARTS_QueueDriver.insert_index] = &UARTS_DriverStruct[handle];
-		if ( (uarts_Drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
-			ret_val = HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
-		else
-			ret_val = HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
-	}
+	if ( (uarts_Drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
+		ret_val = HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
 	else
-	{
-		UARTS_QueueDriver.UARTS_DriverStruct[UARTS_QueueDriver.insert_index] = &UARTS_DriverStruct[handle];
-	}
-	UARTS_QueueDriver.status[UARTS_QueueDriver.insert_index] = UART_QUEUE_BUSY;
-	UARTS_QueueDriver.handle[UARTS_QueueDriver.insert_index] = handle;
-	UARTS_QueueDriver.buffer[UARTS_QueueDriver.insert_index] = buffer;
-	UARTS_QueueDriver.len[UARTS_QueueDriver.insert_index] = len;
-	UARTS_QueueDriver.insert_index++;
-	UARTS_QueueDriver.insert_index &= (MAX_UARTS_QUEUE-1);
+		ret_val = HAL_UART_Transmit_IT(uarts_Drv->uart , buffer, len);
 	return ret_val;
 }
 
@@ -163,26 +148,11 @@ ITCM_AREA_CODE void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 UART_Drv_TypeDef	*uarts_Drv;
-uint8_t	*buffer;
-uint8_t	len;
 
 	__disable_irq();
-	if ( UARTS_QueueDriver.extract_index != UARTS_QueueDriver.insert_index)
+	if ( (handle = find_handle_from_uart(huart)) != 255)
 	{
-		UARTS_QueueDriver.status[UARTS_QueueDriver.extract_index] = UART_QUEUE_FREE;
-		UARTS_QueueDriver.extract_index++;
-		UARTS_QueueDriver.extract_index &= (MAX_UARTS_QUEUE-1);
-		if ( UARTS_QueueDriver.status[UARTS_QueueDriver.extract_index] )
-		{
-			handle = UARTS_QueueDriver.handle[UARTS_QueueDriver.extract_index];
-			buffer = UARTS_QueueDriver.buffer[UARTS_QueueDriver.extract_index];
-			len = UARTS_QueueDriver.len[UARTS_QueueDriver.extract_index];
-			uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
-			if ( (uarts_Drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
-				HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer,len );
-			else
-				HAL_UART_Transmit_IT(uarts_Drv->uart , buffer,len );
-		}
+		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_TX) == UART_WAKEUP_ON_TX)
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TX);
 	}
