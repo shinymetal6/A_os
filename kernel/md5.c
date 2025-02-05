@@ -1,12 +1,4 @@
 /*
- * md5.c
- *
- *  Created on: Jan 28, 2025
- *      Author: fil
- */
-
-
-/*
  ***********************************************************************
  ** md5.c -- the source code for MD5 routines                         **
  ** RSA Data Security, Inc. MD5 Message-Digest Algorithm              **
@@ -38,11 +30,11 @@
  ** documentation and/or software.                                    **
  ***********************************************************************
  */
+
 #include "main.h"
-#include "../../kernel/system_default.h"
-#include "../../kernel/A.h"
-#include "../../kernel/A_exported_functions.h"
-#include "../../kernel/kernel_opt.h"
+#include "main.h"
+#include "A.h"
+#include "system_default.h"
 
 #include "md5.h"
 
@@ -319,3 +311,11 @@ Transform (uint32_t *buf, uint32_t *in)
   buf[3] += d;
 }
 
+MD5_CTX mdContext;
+uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
+{
+	MD5Init (&mdContext);
+	MD5Update(&mdContext, buf, len);
+	MD5Final (hash, &mdContext);
+	return 0;
+}

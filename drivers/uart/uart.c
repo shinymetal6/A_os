@@ -144,6 +144,22 @@ UART_Drv_TypeDef	*uarts_Drv;
 /***********************************/
 /****	Interrupt functions 	****/
 /***********************************/
+
+ITCM_AREA_CODE void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+uint8_t	handle;
+UART_Drv_TypeDef	*uarts_Drv;
+	__disable_irq();
+	if ( (handle = find_handle_from_uart(huart)) != 255)
+	{
+		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+		uarts_Drv->uart_error++;
+		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
+			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
+		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
+	}
+}
+
 ITCM_AREA_CODE void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
@@ -273,20 +289,6 @@ UART_Drv_TypeDef	*uarts_Drv;
 	__enable_irq();
 }
 
-ITCM_AREA_CODE void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
-uint8_t	handle;
-UART_Drv_TypeDef	*uarts_Drv;
-	__disable_irq();
-	if ( (handle = find_handle_from_uart(huart)) != 255)
-	{
-		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
-		uarts_Drv->uart_error++;
-		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
-			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
-		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
-	}
-}
 
 ITCM_AREA_CODE void UART_Driver_RxTimeoutCheckCallback(void)
 {

@@ -33,6 +33,7 @@
 #include "system_functions.h"
 #include "mbx.h"
 #include "svc.h"
+#include "md5.h"
 
 #include "../drivers/drivers.h"
 #include "../modules/modules.h"

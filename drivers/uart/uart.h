@@ -56,23 +56,6 @@ typedef struct
 #define	UART_DRIVER_STATUS_FAILED		0x01
 #define	UART_DRIVER_STATUS_UNUSED		0
 
-#ifdef OLDFLAGS
-/* flags */
-#define	UART_WAKEUP_ON_TX			0x80
-#define	UART_WAKEUP_ON_RXCHAR		0x40
-#define	UART_WAKEUP_ON_RXFULL		0x20
-#define	UART_WAKEUP_ON_TIMEOUT		0x10
-#define	UART_WAKEUP_ON_ERRORS		0x08
-
-/* sentinel_flags */
-#define	UART_SENTINEL_END_FOUND		0x02
-#define	UART_SENTINEL_START_FOUND	0x01
-
-/* config */
-#define	UART_USE_DMA_TX				0x80
-#define	UART_USE_DMA_RX				0x40
-#else
-
 /* flags */
 #define	UART_USES_DMA_TX			0x80
 #define	UART_USES_DMA_RX			0x40
@@ -87,7 +70,6 @@ typedef struct
 #define	UART_SENTINEL_END_FOUND		0x02
 #define	UART_SENTINEL_START_FOUND	0x01
 
-#endif
 typedef struct
 {
 	uint8_t 	process;
@@ -95,20 +77,6 @@ typedef struct
 	uint8_t		flags;
 	UART_Drv_TypeDef	*driver_private_data;
 }UARTS_DriverStruct_t;
-
-typedef struct
-{
-	uint8_t					insert_index;
-	uint8_t					extract_index;
-	uint8_t					status[MAX_UARTS_QUEUE];
-	uint8_t 				handle[MAX_UARTS_QUEUE];
-	uint8_t 				*buffer[MAX_UARTS_QUEUE];
-	uint16_t 				len[MAX_UARTS_QUEUE];
-	UARTS_DriverStruct_t	*UARTS_DriverStruct[MAX_UARTS_QUEUE];
-}UARTS_QueueDriverStruct_t;
-/* status */
-#define	UART_QUEUE_BUSY		0x01
-#define	UART_QUEUE_FREE		0x00
 
 extern  uint32_t 	uart_init(uint8_t handle);
 extern  uint32_t 	uart_get_status(uint8_t handle);
