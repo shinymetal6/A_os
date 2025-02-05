@@ -68,6 +68,9 @@ uint32_t 	i,data_idx;
 	IHex.stored_bytes += data_len;
 }
 
+
+uint8_t bum=0;
+
 uint8_t	ihex_decode_line(uint8_t *data_ptr, uint8_t data_len)
 {
 uint8_t decoded_len = 255;
@@ -79,6 +82,8 @@ uint8_t decoded_len = 255;
 	case	IHEX_DATA	:
 		IHex.address = (to_hex_byte(data_ptr[3],data_ptr[4]) << 8) | to_hex_byte(data_ptr[5],data_ptr[6]);
 		decoded_len = to_hex_byte(data_ptr[1],data_ptr[2]);
+		if ( decoded_len < 0x10 )
+			bum++;
 		pack_ihex_data(&data_ptr[9],decoded_len);
 		break;
 	case	IHEX_END_OF_FILE	:
@@ -141,8 +146,7 @@ uint32_t	i;
 		{
 			ihex_len = ihex_get_data_len(ihex_data_ptr);
 			for(i=0;i<ihex_len;i++,IHex.decoded_length++)
-				binary_data_ptr[i] = IHex.ihex_line[i];
-			binary_data_ptr += ihex_len;
+				binary_data_ptr[IHex.address+i] = IHex.ihex_line[i];
 		}
 		ihex_data_ptr += linelen;
 	}
