@@ -26,5 +26,6 @@
 
 extern	void A_clear32(uint8_t	*ptr,uint32_t size);
 extern	void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes);
+extern	uint8_t A_hex_to_byte(uint8_t byte1 , uint8_t byte2);
 
 #endif /* KERNEL_SYSTEM_FUNCTIONS_H_ */

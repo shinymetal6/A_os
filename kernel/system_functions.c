@@ -68,3 +68,17 @@ uint32_t *src32 = (uint32_t *)src, *dest32 = (uint32_t *)dest;
 	__enable_irq();
 }
 
+uint8_t A_hex_to_byte(uint8_t byte1 , uint8_t byte2)
+{
+uint8_t	packed_byte;
+	if ( byte1 <= '9' )
+		packed_byte = (byte1 - '0') << 4;
+	else
+		packed_byte = ((byte1 - 'A')+10) << 4;
+	if ( byte2 <= '9' )
+		packed_byte |= (byte2 - '0');
+	else
+		packed_byte |= ((byte2 - 'A')+10);
+	return packed_byte;
+}
+

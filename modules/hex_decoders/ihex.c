@@ -53,8 +53,8 @@ uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len)
 uint32_t	check=0 , i;
 
 	for(i=1;i<ihex_len;i+=2)
-		check += to_hex_byte(ihex_buf[i] , ihex_buf[i+1]);
-	return to_hex_byte(ihex_buf[ihex_len-2] , ihex_buf[ihex_len-1]) - (check & 0xff);
+		check += A_hex_to_byte(ihex_buf[i] , ihex_buf[i+1]);
+	return A_hex_to_byte(ihex_buf[ihex_len-2] , ihex_buf[ihex_len-1]) - (check & 0xff);
 }
 
 void pack_ihex_data(uint8_t *data_ptr, uint8_t data_len)
@@ -63,7 +63,7 @@ uint32_t 	i,data_idx;
 
 	for(i=0,data_idx=0;i<data_len*2;i+=2,data_idx++)
 	{
-		IHex.ihex_line[data_idx] = to_hex_byte(data_ptr[i],data_ptr[i+1]);
+		IHex.ihex_line[data_idx] = A_hex_to_byte(data_ptr[i],data_ptr[i+1]);
 	}
 	IHex.stored_bytes += data_len;
 }
@@ -80,8 +80,8 @@ uint8_t decoded_len = 255;
 	switch(IHex.record_type)
 	{
 	case	IHEX_DATA	:
-		IHex.address = (to_hex_byte(data_ptr[3],data_ptr[4]) << 8) | to_hex_byte(data_ptr[5],data_ptr[6]);
-		decoded_len = to_hex_byte(data_ptr[1],data_ptr[2]);
+		IHex.address = (A_hex_to_byte(data_ptr[3],data_ptr[4]) << 8) | A_hex_to_byte(data_ptr[5],data_ptr[6]);
+		decoded_len = A_hex_to_byte(data_ptr[1],data_ptr[2]);
 		if ( decoded_len < 0x10 )
 			bum++;
 		pack_ihex_data(&data_ptr[9],decoded_len);
@@ -91,33 +91,33 @@ uint8_t decoded_len = 255;
 		break;
 	case	IHEX_EXTENDED_SEGMENT_ADDRESS	:
 		IHex.extended_address =
-				(to_hex_byte(data_ptr[3],data_ptr[4]) << 24) |
-				(to_hex_byte(data_ptr[5],data_ptr[6]) << 16) |
-				(to_hex_byte(data_ptr[7],data_ptr[8]) << 8 ) |
-				(to_hex_byte(data_ptr[9],data_ptr[10]));
+				(A_hex_to_byte(data_ptr[3],data_ptr[4]) << 24) |
+				(A_hex_to_byte(data_ptr[5],data_ptr[6]) << 16) |
+				(A_hex_to_byte(data_ptr[7],data_ptr[8]) << 8 ) |
+				(A_hex_to_byte(data_ptr[9],data_ptr[10]));
 		decoded_len = 0x80+IHEX_EXTENDED_SEGMENT_ADDRESS;
 		break;
 	case	IHEX_START_SEGMENT_ADDRESS	:
 		IHex.start_segment_address =
-				(to_hex_byte(data_ptr[3],data_ptr[4]) << 24) |
-				(to_hex_byte(data_ptr[5],data_ptr[6]) << 16) |
-				(to_hex_byte(data_ptr[7],data_ptr[8]) << 8 ) |
-				(to_hex_byte(data_ptr[9],data_ptr[10]));
+				(A_hex_to_byte(data_ptr[3],data_ptr[4]) << 24) |
+				(A_hex_to_byte(data_ptr[5],data_ptr[6]) << 16) |
+				(A_hex_to_byte(data_ptr[7],data_ptr[8]) << 8 ) |
+				(A_hex_to_byte(data_ptr[9],data_ptr[10]));
 		decoded_len = 0x80+IHEX_START_SEGMENT_ADDRESS;
 		break;
 	case	IHEX_EXTENDED_LINEAR_ADDRESS	:
 		IHex.extended_linear_address =
-				(to_hex_byte(data_ptr[9],data_ptr[10]) << 8 ) |
-				(to_hex_byte(data_ptr[11],data_ptr[12]));
-		decoded_len = to_hex_byte(data_ptr[1],data_ptr[2]);
+				(A_hex_to_byte(data_ptr[9],data_ptr[10]) << 8 ) |
+				(A_hex_to_byte(data_ptr[11],data_ptr[12]));
+		decoded_len = A_hex_to_byte(data_ptr[1],data_ptr[2]);
 		decoded_len = 0x80+IHEX_EXTENDED_LINEAR_ADDRESS;
 		break;
 	case	IHEX_START_LINEAR_ADDRESS	:
 		IHex.start_linear_address =
-				(to_hex_byte(data_ptr[3],data_ptr[4]) << 24) |
-				(to_hex_byte(data_ptr[5],data_ptr[6]) << 16) |
-				(to_hex_byte(data_ptr[7],data_ptr[8]) << 8 ) |
-				(to_hex_byte(data_ptr[9],data_ptr[10]));
+				(A_hex_to_byte(data_ptr[3],data_ptr[4]) << 24) |
+				(A_hex_to_byte(data_ptr[5],data_ptr[6]) << 16) |
+				(A_hex_to_byte(data_ptr[7],data_ptr[8]) << 8 ) |
+				(A_hex_to_byte(data_ptr[9],data_ptr[10]));
 		decoded_len = 0x80+IHEX_START_LINEAR_ADDRESS;
 		break;
 	}

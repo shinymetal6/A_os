@@ -27,20 +27,6 @@
 #include "../../kernel/scheduler.h"
 //#include "../../kernel/kernel_opt.h"
 
-uint8_t to_hex_byte(uint8_t byte1 , uint8_t byte2)
-{
-uint8_t	packed_byte;
-	if ( byte1 <= '9' )
-		packed_byte = (byte1 - '0') << 4;
-	else
-		packed_byte = ((byte1 - 'A')+10) << 4;
-	if ( byte2 <= '9' )
-		packed_byte |= (byte2 - '0');
-	else
-		packed_byte |= ((byte2 - 'A')+10);
-	return packed_byte;
-}
-
 uint32_t get_hex_crlflen(uint8_t *data_ptr)
 {
 uint32_t	i;
