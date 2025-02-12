@@ -11,12 +11,12 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : A_os
+ * Project : A_os_Nucleo753
 */
 /*
- * sample_process_1_xmodem.c
+ * sample_process_1_xmodem_rx.c
  *
- *  Created on: Dec 4, 2024
+ *  Created on: Feb 12, 2025
  *      Author: fil
  */
 
@@ -24,10 +24,10 @@
 #include "A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_XMODEM
+#ifdef SAMPLEPROCESS_1_XMODEM_RX
 
-#define	xmodem_data_area	0x30001000
-#define	xmodem_data_len		0x2ffff
+#define	xmodem_rx_data_area	0x30001000
+#define	xmodem_rx_data_len		0x2ffff
 
 extern	UART_HandleTypeDef	huart3;
 
@@ -47,20 +47,20 @@ UART_Drv_TypeDef Uart3_Drv =
 };
 
 uint32_t	uart3_driver_handle;
-uint8_t		xmodem_uart_reply;
-uint8_t		xmodem_uart_enable_poll;
+uint8_t		xmodem_rx_uart_reply;
+uint8_t		xmodem_rx_uart_enable_poll;
 
 uint8_t		nak=X_NAK,ack=X_ACK;
 
-void sample_process_1_xmodem(uint32_t process_id)
+void sample_process_1_xmodem_rx(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
 	uart3_driver_handle = uart_register(&Uart3_Drv);
 	uart_start_receive(uart3_driver_handle);
-	xmodem_uart_enable_poll = 1;
+	xmodem_rx_uart_enable_poll = 1;
 
-	xmodem_init((uint8_t *)xmodem_data_area,xmodem_data_len);
+	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
 
 	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -69,10 +69,10 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			if ( xmodem_uart_enable_poll == 1 )
+			if ( xmodem_rx_uart_enable_poll == 1 )
 			{
-				xmodem_set_data_area((uint8_t *)xmodem_data_area,xmodem_data_len );
-				uart_send(uart3_driver_handle,&nak,1);
+				xmodem_rx_set_data_area((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len );
+				//uart_send(uart3_driver_handle,&nak,1);
 			}
 			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		}
@@ -80,16 +80,16 @@ uint32_t	wakeup,flags;
 		{
 			if (( flags & WAKEUP_FLAGS_UART_RX) == WAKEUP_FLAGS_UART_RX )
 			{
-				xmodem_uart_enable_poll = 0;
-				xmodem_uart_reply = xmodem_line_parser(uart3_rx_buffer);
-				switch(xmodem_uart_reply)
+				xmodem_rx_uart_enable_poll = 0;
+				xmodem_rx_uart_reply = xmodem_rx_line_parser(uart3_rx_buffer);
+				switch(xmodem_rx_uart_reply)
 				{
 				case	X_NAK:
 					uart_send(uart3_driver_handle,&nak,1);
 					break;
 				case	X_EOT:
 					uart_send(uart3_driver_handle,&ack,1);
-					xmodem_uart_enable_poll = 1;
+					xmodem_rx_uart_enable_poll = 1;
 					break;
 				case	X_ACK:
 					uart_send(uart3_driver_handle,&ack,1);
@@ -110,4 +110,5 @@ void sample_process_1_xmodem(uint32_t process_id)
 #endif // #ifdef 	SAMPLEPROCESS_1_XMODEM
 
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
+
 

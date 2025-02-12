@@ -68,8 +68,8 @@ NOISE_Gen_TypeDef	*NOISE_Gen = (NOISE_Gen_TypeDef *)Effects[index].private_data;
 			}
 			else
 			{
-				out[i]   =  (random_number >> 16) & 0xffff;
-				out[i+1] =  random_number & 0xffff;
+				out[i]   =  (rand() >> 16) & 0xffff;
+				out[i+1] =  rand() & 0xffff;
 			}
 	#endif
 		}
