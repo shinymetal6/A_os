@@ -35,6 +35,7 @@ typedef struct
 	uint16_t 			*adc_buffer;
 	uint16_t 			num_channels;
 	uint32_t 			wakeup_id;
+	uint32_t			calibration;
 }ADC_Drv_TypeDef;
 
 /* status */

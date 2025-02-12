@@ -40,6 +40,9 @@ ITCM_AREA_CODE static uint32_t int_adc_start(uint8_t handle)
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
+	HAL_ADCEx_Calibration_Start(adc_drv->adc, ADC_SINGLE_ENDED);
+	adc_drv->calibration = HAL_ADCEx_Calibration_GetValue(adc_drv->adc, ADC_SINGLE_ENDED);
+
 	if ( HAL_ADC_Start_DMA(adc_drv->adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels)  == 0 )
 	{
 		HAL_TIM_Base_Start(timer);
@@ -47,10 +50,6 @@ TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 		return 0;
 	}
 	return 1;
-	/*
-	adc_drv->status |= ADC_STATUS_RUNNING;
-	return HAL_TIM_Base_Start(timer);
-	*/
 }
 
 ITCM_AREA_CODE static uint32_t int_adc_stop(uint8_t handle)
