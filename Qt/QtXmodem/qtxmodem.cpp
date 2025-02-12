@@ -172,7 +172,6 @@ void QtXmodem::on_Download_pushButton_clicked()
         data[131] = csum;
 
         serial.flush();
-        qApp->processEvents();
         create_buf_and_tx(data);
         serial.flush();
         while ( (rx_data = serial_rx()) != 0x06 )
@@ -190,7 +189,6 @@ void QtXmodem::on_Download_pushButton_clicked()
                 return;
             }
         }
-        qApp->processEvents();
         ui->statusbar->showMessage("Downloading");
         ui->download_progressBar->setValue(index/s_unit);
         if ((( index/s_unit) & 1 ) == 0)
