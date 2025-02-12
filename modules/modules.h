@@ -23,7 +23,7 @@
 #ifndef MODULES_MODULES_H_
 #define MODULES_MODULES_H_
 
-#include "serial_transfers/xmodem.h"
+#include "serial_transfers/xmodem_rx.h"
 #include "hex_decoders/hex_decoders_common.h"
 #include "hex_decoders/ihex.h"
 #include "hex_decoders/hex_decoders_common.h"

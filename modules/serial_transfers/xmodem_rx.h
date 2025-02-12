@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * xmodem.h
+ * xmodem_rx.h
  *
- *  Created on: Jan 31, 2024
+ *  Created on: Feb 12, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_XMODEM_XMODEM_H_
-#define MODULES_XMODEM_XMODEM_H_
+#ifndef MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_
+#define MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_
 
 #define X_SOH	0x01
 #define X_STX 	0x02
@@ -51,14 +51,15 @@ typedef struct
 	uint32_t	requested_data_count;
 	uint32_t	received_bytes_count;
 	uint32_t	session_received_bytes_count;
-}xmodem_t;
+}xmodem_rx_t;
 
-extern	void 		xmodem_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
-extern	void 		xmodem_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count );
+extern	void 		xmodem_rx_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
+extern	void 		xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count );
 
-extern	uint8_t 	xmodem_process(uint32_t wakeup);
-extern	uint32_t 	xmodem_get_rxed_amount(void);
-extern	uint8_t 	xmodem_send_ack(void);
-extern	uint8_t 	xmodem_line_parser(uint8_t *buf);
+extern	uint8_t 	xmodem_rx_process(uint32_t wakeup);
+extern	uint32_t 	xmodem_rx_get_rxed_amount(void);
+extern	uint8_t 	xmodem_rx_send_ack(void);
+extern	uint8_t 	xmodem_rx_line_parser(uint8_t *buf);
 
-#endif /* MODULES_XMODEM_XMODEM_H_ */
+
+#endif /* MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_ */
