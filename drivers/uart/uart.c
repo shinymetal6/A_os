@@ -327,6 +327,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 							#endif
 							__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
 							HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
+							uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 						}
 					}
 				}

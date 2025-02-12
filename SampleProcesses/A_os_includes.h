@@ -29,6 +29,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define	SAMPLE_PROCESSES_ENABLED		1
+//#define	SAMPLE_PROCESSES_ENABLED		1
 
 #endif /* SAMPLEPROCESSES_A_OS_INCLUDES_H_ */

@@ -19,6 +19,7 @@ QtXmodem::QtXmodem(QWidget *parent)
     , ui(new Ui::QtXmodem)
 {
     ui->setupUi(this);
+    ui->Download_pushButton->setEnabled(false);
 }
 
 QtXmodem::~QtXmodem()
@@ -65,6 +66,7 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
     if ( arg1 == "Invalid")
     {
         ui->statusbar->showMessage("Serial port closed");
+        ui->Download_pushButton->setEnabled(false);
     }
     serial_started = 0;
     serial.setPortName(arg1);
@@ -75,6 +77,7 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
             ui->Comm_label->setPixmap(redled);
             qDebug()<< arg1 << " : " << serial.errorString();
             ui->statusbar->showMessage(arg1+" : "+serial.errorString());
+            ui->Download_pushButton->setEnabled(false);
         }
         else
         {
@@ -83,6 +86,7 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
             qDebug()<< "Serial port opened";
             ui->statusbar->showMessage(arg1+" : Serial port opened");
             serial.setReadBufferSize (1024);
+            ui->Download_pushButton->setEnabled(true);
         }
     }
     else
@@ -103,6 +107,8 @@ void QtXmodem:: create_buf_and_tx(char    *data)
 
 void QtXmodem::on_SelectFile_pushButton_clicked()
 {
+    QPixmap redled (":/ledred.png");
+    QPixmap greenled(":/ledgreen.png");
     QString filters = "BIN/WAV files (*.bin , *.wav, *.hex)";
 
     filename = QFileDialog::getOpenFileName(this, tr("Open bin/wav/hex File"), "/Devel/Stm32_16.1_A_os_2024.10-rc/Membrane-2412171-00-WSensor_03/Debug",filters);
@@ -121,6 +127,7 @@ void QtXmodem::on_SelectFile_pushButton_clicked()
         file_size = file.size();
         blob = file.readAll();
         file.close();
+        ui->SelectedFile_label->setPixmap(greenled);
     }
 }
 
@@ -130,17 +137,15 @@ void QtXmodem::on_Download_pushButton_clicked()
     QPixmap greenled(":/ledgreen.png");
     char    data[132];
     QByteArray reply;
-    int i,retry=10,rx_data;
+    int i,retry=MAX_RETRY,rx_data;
     int s_unit;
     int index=0;
     int block_number;
     int csum;
-
-    ui->Download_pushButton->setEnabled(false);
+    int retry_number=0;
 
     ui->statusbar->showMessage("Downloading "+bin_filename);
     block_number = 1;
-    csum = 0;
     ui->Flashing_label->setPixmap(redled);
     s_unit = file_size/100;
     ui->download_progressBar->setValue(0);
@@ -167,6 +172,7 @@ void QtXmodem::on_Download_pushButton_clicked()
         data[131] = csum;
 
         serial.flush();
+        qApp->processEvents();
         create_buf_and_tx(data);
         serial.flush();
         while ( (rx_data = serial_rx()) != 0x06 )
@@ -175,6 +181,7 @@ void QtXmodem::on_Download_pushButton_clicked()
             qDebug()<<"Retry on Ack, block_number "<< block_number<<" data "<<rx_data;
             serial.flush();
             create_buf_and_tx(data);
+            retry_number++;
             retry--;
             if ( retry == 0 )
             {
@@ -183,17 +190,26 @@ void QtXmodem::on_Download_pushButton_clicked()
                 return;
             }
         }
+        qApp->processEvents();
         ui->statusbar->showMessage("Downloading");
         ui->download_progressBar->setValue(index/s_unit);
+        if ((( index/s_unit) & 1 ) == 0)
+            ui->Flashing_label->setPixmap(greenled);
+        else
+            ui->Flashing_label->setPixmap(redled);
     }
     data[0] = 0x04;
     QByteArray ba1(QByteArray::fromRawData(data, 1));
     serial_tx(ba1);
-    ui->statusbar->showMessage(bin_filename+" downloaded");
+    QString retry_number_str;
+    retry_number_str.setNum(retry_number);
+    if (retry_number == 1 )
+        ui->statusbar->showMessage(bin_filename+" downloaded, "+retry_number_str+" retry");
+    else
+        ui->statusbar->showMessage(bin_filename+" downloaded, "+retry_number_str+" retries");
+
     ui->download_progressBar->setValue(100);
     qDebug()<<bin_filename<<" downloaded";
     ui->Flashing_label->setPixmap(greenled);
-    ui->Download_pushButton->setEnabled(true);
-
 }
 

@@ -42,14 +42,13 @@ UART_Drv_TypeDef Uart3_Drv =
 	.rx_max_len = XMODEM_LINE_LEN,
 	.uart = &huart3,
 	.wakeup_id = WAKEUP_FROM_UART3_IRQ,
-	.timeout = 50,
+	.timeout = 100,
 	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
 uint32_t	uart3_driver_handle;
 uint8_t		xmodem_rx_uart_reply;
 uint8_t		xmodem_rx_uart_enable_poll;
-uint8_t		xmodem_rx_timer_shift;
 
 uint8_t		nak=X_NAK,ack=X_ACK;
 
@@ -60,11 +59,10 @@ uint32_t	wakeup,flags;
 	uart3_driver_handle = uart_register(&Uart3_Drv);
 	uart_start_receive(uart3_driver_handle);
 	xmodem_rx_uart_enable_poll = 1;
-	xmodem_rx_timer_shift = 0;
 
 	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
 
-	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
 		wait_event(EVENT_TIMER | EVENT_UART3_IRQ);
@@ -73,14 +71,8 @@ uint32_t	wakeup,flags;
 		{
 			if ( xmodem_rx_uart_enable_poll == 1 )
 			{
-				if ( xmodem_rx_timer_shift >= 100)
-				{
-					xmodem_rx_set_data_area((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len );
-					uart_send(uart3_driver_handle,&nak,1);
-					xmodem_rx_timer_shift = 0;
-				}
-				else
-					xmodem_rx_timer_shift ++;
+				xmodem_rx_set_data_area((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len );
+				uart_send(uart3_driver_handle,&nak,1);
 			}
 			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		}

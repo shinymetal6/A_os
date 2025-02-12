@@ -78,7 +78,7 @@
      <string>Download</string>
     </property>
    </widget>
-   <widget class="QLabel" name="RX_label">
+   <widget class="QLabel" name="SelectedFile_label">
     <property name="enabled">
      <bool>true</bool>
     </property>
