@@ -18,6 +18,9 @@ extern	void sample_process_1_basic(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX
 extern	void sample_process_1_xmodem_rx(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM
+#ifdef	SAMPLEPROCESS_1_XMODEM_RX_USB
+extern	void sample_process_1_xmodem_rx_USB(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_XMODEM
 #ifdef	SAMPLEPROCESS_1_DCCPWM
 extern	void sample_process_1_dccpwm(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_DCCPWM
@@ -64,6 +67,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX
 				.user_process = sample_process_1_xmodem_rx,
 #endif // #define	SAMPLEPROCESS_1_XMODEM
+#ifdef	SAMPLEPROCESS_1_XMODEM_RX_USB
+				.user_process = sample_process_1_xmodem_rx_USB,
+#endif // #define	SAMPLEPROCESS_1_XMODEM_RX_USB
 #ifdef	SAMPLEPROCESS_1_DCCPWM
 				.user_process = sample_process_1_dccpwm,
 #endif // #define	SAMPLEPROCESS_1_DCCPWM
