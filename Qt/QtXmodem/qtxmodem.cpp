@@ -75,7 +75,7 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
         if(!serial.setBaudRate(QSerialPort::Baud115200))
         {
             ui->Comm_label->setPixmap(redled);
-            qDebug()<< arg1 << " : " << serial.errorString();
+            //qDebug()<< arg1 << " : " << serial.errorString();
             ui->statusbar->showMessage(arg1+" : "+serial.errorString());
             ui->Download_pushButton->setEnabled(false);
         }
@@ -83,16 +83,15 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
         {
             ui->Comm_label->setPixmap(greenled);
             serial_started = 1;
-            qDebug()<< "Serial port opened";
+            //qDebug()<< "Serial port opened";
             ui->statusbar->showMessage(arg1+" : Serial port opened");
             serial.setReadBufferSize (1024);
-            ui->Download_pushButton->setEnabled(true);
         }
     }
     else
     {
         ui->Comm_label->setPixmap(redled);
-        qDebug()<< arg1 << " : " << serial.errorString();
+        //qDebug()<< arg1 << " : " << serial.errorString();
         ui->statusbar->showMessage(arg1+" : "+serial.errorString());
     }
 }
@@ -109,11 +108,10 @@ void QtXmodem::on_SelectFile_pushButton_clicked()
 {
     QPixmap redled (":/ledred.png");
     QPixmap greenled(":/ledgreen.png");
-    QString filters = "BIN/WAV files (*.bin , *.wav, *.hex)";
+    QString filters = "BIN/WAV/HEX files (*.bin , *.wav, *.hex)";
 
     filename = QFileDialog::getOpenFileName(this, tr("Open bin/wav/hex File"), "/Devel/Stm32_16.1_A_os_2024.10-rc/Membrane-2412171-00-WSensor_03/Debug",filters);
 
-    ui->label_BINFILE->setText(filename);
     QFile file(filename);
 
     if (!file.open(QIODevice::ReadOnly))
@@ -123,11 +121,12 @@ void QtXmodem::on_SelectFile_pushButton_clicked()
         const QFileInfo info(filename);
         const QString ffname(info.fileName());
         bin_filename = ffname;
-        qDebug()<<ffname;
+        ui->label_BINFILE->setText(ffname);
         file_size = file.size();
         blob = file.readAll();
         file.close();
         ui->SelectedFile_label->setPixmap(greenled);
+        ui->Download_pushButton->setEnabled(true);
     }
 }
 
@@ -185,7 +184,6 @@ void QtXmodem::on_Download_pushButton_clicked()
             if ( retry == 0 )
             {
                 ui->statusbar->showMessage(bin_filename+" aborted download");
-                qDebug()<<bin_filename<<" aborted download";
                 return;
             }
         }
@@ -207,7 +205,6 @@ void QtXmodem::on_Download_pushButton_clicked()
         ui->statusbar->showMessage(bin_filename+" downloaded, "+retry_number_str+" retries");
 
     ui->download_progressBar->setValue(100);
-    qDebug()<<bin_filename<<" downloaded";
     ui->Flashing_label->setPixmap(greenled);
 }
 
