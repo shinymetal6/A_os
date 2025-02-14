@@ -115,12 +115,11 @@ ITCM_AREA_CODE uint32_t pwm_init(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *private_data)
 {
 	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
 	{
 		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
-		TIM_DriverStruct[last_tim_used_handle].flags |= driver_flags;
 		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
 
 		Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;

@@ -49,7 +49,7 @@ extern	uint32_t pwm_get_status(uint8_t handle);
 extern	uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler);
 extern	uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width);
 extern	uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction);
-extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data,uint32_t driver_flags);
+extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data);
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

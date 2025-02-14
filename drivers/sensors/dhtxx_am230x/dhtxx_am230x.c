@@ -21,13 +21,14 @@
  */
 
 #include "main.h"
-#ifdef STM32L4xx_HAL_TIM_H
 
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 #include "../../../kernel/kernel_opt.h"
+
+#ifdef A_OS_TIMERS_ENABLED
 
 #include "dhtxx_am230x.h"
 #include <string.h>
@@ -127,7 +128,7 @@ uint32_t 					i,handle_dht;
 		handle_dht = get_handle_from_dht_workers(i);
 		if ( handle_dht != 255)
 		{
-			dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+			dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].private_data;
 			dht_timer = dhtxx_am230x_Drv->dht_timer;
 			dht_timer_channel = dhtxx_am230x_Drv->dht_timer_channel;
 
@@ -177,7 +178,7 @@ uint32_t 					i,handle_dht;
 ITCM_AREA_CODE uint32_t dhtxx_am230x_init(uint8_t handle_dht)
 {
 	Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
-	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].private_data;
 
 	dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_IDLE;
 	dhtxx_am230x_Drv->ticks = dhtxx_am230x_Drv->errors = 0;
@@ -191,7 +192,7 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_start(uint8_t handle_dht)
 {
 uint32_t	i;
 Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
-	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].private_data;
 
 	if (( dhtxx_am230x_Drv->status & DHTXX_AM230X_RUNNING) == DHTXX_AM230X_RUNNING )
 		return 1;
@@ -206,7 +207,7 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *valu
 {
 uint8_t j;
 Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
-	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+	dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].private_data;
 
 	if (( dhtxx_am230x_Drv->status & DHTXX_AM230X_VALID) == DHTXX_AM230X_VALID)
 	{
@@ -218,19 +219,17 @@ Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 	return DHTXX_AM230X_BYTES_NUM-1;
 }
 
-ITCM_AREA_CODE uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t driver_flags,uint32_t dhtxx_am230x_flags,uint32_t sensor_id)
+ITCM_AREA_CODE uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t sensor_id)
 {
 Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 	if ( Sensors_DriverStruct[last_sensor_used_handle].process == 0 )
 	{
 		Sensors_DriverStruct[last_sensor_used_handle].process = get_current_process();
-		Sensors_DriverStruct[last_sensor_used_handle].flags |= driver_flags;
-		Sensors_DriverStruct[last_sensor_used_handle].sensor_driver_private_data = (uint32_t *)dhtxx_am230x_driver_private_data;
+		Sensors_DriverStruct[last_sensor_used_handle].private_data = (uint32_t *)dhtxx_am230x_driver_private_data;
 
-		dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[last_sensor_used_handle].sensor_driver_private_data;
+		dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[last_sensor_used_handle].private_data;
 		if (( dhtxx_am230x_Drv->dht_timer != NULL ) && ( dhtxx_am230x_Drv->one_wire_port != NULL ))
 		{
-			dhtxx_am230x_Drv->flags |= dhtxx_am230x_flags;
 			Sensors_DriverStruct[last_sensor_used_handle].sensor_id = sensor_id;
 			Sensors_DriverStruct[last_sensor_used_handle].status = DRIVER_STATUS_IN_USE;
 
@@ -254,10 +253,10 @@ uint32_t handle_dht,i;
 		handle_dht = get_handle_from_dht_workers(i);
 		if ( handle_dht != 255)
 		{
-			dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].sensor_driver_private_data;
+			dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)Sensors_DriverStruct[handle_dht].private_data;
 			dhtxx_am230x_Drv->status = DHTXX_AM230X_ACQDONE;
 		}
 	}
 }
 
-#endif // #ifdef STM32L4xx_HAL_TIM_H
+#endif // #ifdef A_OS_TIMERS_ENABLED

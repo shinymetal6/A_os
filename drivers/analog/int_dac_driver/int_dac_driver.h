@@ -102,7 +102,7 @@ typedef struct
 
 #define	STD_DAC_PRESCALER 10
 
-extern ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
+extern uint32_t	int_dac_register(DAC_Drv_TypeDef *analog_driver_private_data);
 #endif // #ifdef A_OS_DAC_ENABLED
 
 #endif /* DRIVERS_ANALOG_INT_DAC_DRIVER_INT_DAC_DRIVER_H_ */

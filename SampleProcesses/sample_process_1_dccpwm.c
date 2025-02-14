@@ -59,8 +59,6 @@ DCC_Control_Drv_TypeDef	DCC_Control_ch2 =
 };
 uint32_t		dcc_ch2_driver_handle;
 
-extern	TIM_HandleTypeDef htim3;
-
 Pwm_Control_TypeDef	Pwm_Backlight_Control =
 {
 		.pwm_timer = &BACKLIGHT_TIMER,
@@ -83,7 +81,7 @@ uint32_t	pw=0 , dir = 0;
 	dcc_init(dcc_ch2_driver_handle);
 	dcc_start(dcc_ch2_driver_handle);
 
-	backlight_pwm_driver_handle = pwm_register(&Pwm_Backlight_Control,0);
+	backlight_pwm_driver_handle = pwm_register(&Pwm_Backlight_Control);
 	pwm_init(backlight_pwm_driver_handle);
 	pwm_start(backlight_pwm_driver_handle);
 

@@ -47,6 +47,6 @@ typedef struct
 #define		I2S_FLAGS_WAKEUP			0x20
 
 extern 	I2S_HandleTypeDef hi2s2;
-extern	uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
+extern	uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data);
 
 #endif /* DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_ */

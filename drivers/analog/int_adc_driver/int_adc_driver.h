@@ -44,11 +44,13 @@ typedef struct
 #define		ADC_STATUS_DATA_READY	0x40
 #define		ADC_STATUS_RUNNING		0x80
 /* flags */
-#define		ADC_FLAGS_HALF_WAKEUP	0x20
-#define		ADC_FLAGS_FULL_WAKEUP	0x40
-#define		ADC_FLAGS_ALL_WAKEUP	0x80
+#define		ADC_FLAGS_CALIBRATE				0x01
+#define		ADC_FLAGS_CALIBRATION_LINEARITY	0x02
+#define		ADC_FLAGS_HALF_WAKEUP			0x20
+#define		ADC_FLAGS_FULL_WAKEUP			0x40
+#define		ADC_FLAGS_ALL_WAKEUP			0x80
 
-extern uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
+extern uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data);
 #endif // #ifdef A_OS_ADC_ENABLED
 
 #endif /* DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_ */

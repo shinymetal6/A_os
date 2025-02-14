@@ -37,6 +37,7 @@
 		#define A_OS_TIMERS_ENABLED	1
 	#endif
 	#ifdef STM32H7xx_HAL_ADC_H
+		#define A_OS_ADC_CALIBRATION_3PARAMS	1
 		#define A_OS_ADC_ENABLED	1
 	#endif
 	#ifdef STM32H7xx_HAL_DAC_H
@@ -67,6 +68,7 @@
 	#endif
 	#ifdef STM32H7xx_HAL_ADC_H
 		#define A_OS_ADC_ENABLED	1
+		#define A_OS_ADC_CALIBRATION_3PARAMS	1
 	#endif
 	#ifdef STM32H7xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1

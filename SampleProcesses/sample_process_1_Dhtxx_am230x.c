@@ -44,7 +44,7 @@ uint8_t dht_sm = 0;
 void sample_process_1_Dhtxx_am230x(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-	dht_driver_handle = dhtxx_am230x_register(&Dhtxx_am230x_Drv,0,0,Dhtxx_am230x_Drv.device_index);
+	dht_driver_handle = dhtxx_am230x_register(&Dhtxx_am230x_Drv,Dhtxx_am230x_Drv.device_index);
 	dhtxx_am230x_init(dht_driver_handle);
 	dhtxx_am230x_start(dht_driver_handle);
 	HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_SET);

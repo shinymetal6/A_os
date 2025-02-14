@@ -35,7 +35,7 @@ ADC_Drv_TypeDef	ADC_Drv =
 		.adc_buffer = &adc_data,
 		.num_channels = 1,
 		.adc_timer = &htim6,
-		.flags = ADC_FLAGS_FULL_WAKEUP,
+		.flags = ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_CALIBRATE,
 };
 uint32_t		adc_driver_handle;
 uint32_t		adc_ops=0;
@@ -44,7 +44,7 @@ void sample_process_1_adc(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
-	adc_driver_handle = int_adc_register(&ADC_Drv,0);
+	adc_driver_handle = int_adc_register(&ADC_Drv);
 	adc_start(adc_driver_handle);
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);

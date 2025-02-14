@@ -103,7 +103,7 @@ uint32_t	wakeup,flags;
 	}
 }
 #else
-void sample_process_1_xmodem(uint32_t process_id)
+void sample_process_1_xmodem_rx_USB(uint32_t process_id)
 {
 	wait_event(HW_SLEEP_FOREVER);
 }

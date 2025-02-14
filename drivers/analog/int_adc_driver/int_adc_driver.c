@@ -40,8 +40,21 @@ ITCM_AREA_CODE static uint32_t int_adc_start(uint8_t handle)
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = adc_drv->adc_timer;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
-	HAL_ADCEx_Calibration_Start(adc_drv->adc, ADC_SINGLE_ENDED);
-	adc_drv->calibration = HAL_ADCEx_Calibration_GetValue(adc_drv->adc, ADC_SINGLE_ENDED);
+	if (( adc_drv->flags & ADC_FLAGS_CALIBRATE) == ADC_FLAGS_CALIBRATE)
+	{
+#ifdef A_OS_ADC_CALIBRATION_3PARAMS
+		/* defaults to Channel in mode linear calibration offset */
+		if (( adc_drv->flags & ADC_FLAGS_CALIBRATION_LINEARITY) == ADC_FLAGS_CALIBRATION_LINEARITY)
+			HAL_ADCEx_Calibration_Start(adc_drv->adc, ADC_CALIB_OFFSET_LINEARITY,ADC_SINGLE_ENDED);
+		else
+			HAL_ADCEx_Calibration_Start(adc_drv->adc, ADC_CALIB_OFFSET,ADC_SINGLE_ENDED);
+#else
+		HAL_ADCEx_Calibration_Start(adc_drv->adc, ADC_SINGLE_ENDED);
+#endif
+		adc_drv->calibration = HAL_ADCEx_Calibration_GetValue(adc_drv->adc, ADC_SINGLE_ENDED);
+	}
+	else
+		adc_drv->calibration = 0;
 
 	if ( HAL_ADC_Start_DMA(adc_drv->adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels)  == 0 )
 	{
@@ -75,13 +88,12 @@ ADC_HandleTypeDef	*adc = adc_drv->adc;
 	return HAL_ADC_Start_DMA(adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels);
 }
 
-ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *private_data)
 {
 ADC_Drv_TypeDef	*adc_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
-		ANALOG_DriverStruct[last_analog_used_handle].flags |= driver_flags;
 		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
 		adc_drv = (ADC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;

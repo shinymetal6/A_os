@@ -61,13 +61,12 @@ ITCM_AREA_CODE  static uint32_t int_i2s_get_status(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data)
 {
 I2S_Drv_TypeDef	*i2s_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
-		ANALOG_DriverStruct[last_analog_used_handle].flags |= driver_flags;
 		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
 
 		i2s_drv = (I2S_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;

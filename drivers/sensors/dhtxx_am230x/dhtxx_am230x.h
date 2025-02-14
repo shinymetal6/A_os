@@ -22,7 +22,8 @@
 
 #ifndef DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
 #define DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_
-#ifdef STM32L4xx_HAL_TIM_H
+
+#ifdef A_OS_TIMERS_ENABLED
 
 #define	MAX_DHT11_DEVICES					8
 
@@ -74,12 +75,12 @@ enum DHTXX_AM230X_STATE_MACHINE {
 #define	DHTXX_AM230X_START_TICKS	18
 #define	DHTXX_AM230X_CYCLE_TICKS	6
 
-extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t driver_flags,uint32_t dhtxx_am230x_flags,uint32_t sensor_id);
+extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t sensor_id);
 extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *values);
 
-#endif // #ifdef STM32L4xx_HAL_TIM_H
+#endif // #ifdef A_OS_TIMERS_ENABLED
 
 
 #endif /* DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_ */
