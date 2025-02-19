@@ -23,7 +23,7 @@
 #include "main.h"
 #include "../../A.h"
 
-#ifdef	STM32G4xx_USB
+#ifdef	A_OS_STM32G4xx_PROCESSOR
 #include "../../system_default.h"
 #include "flash_updater.h"
 

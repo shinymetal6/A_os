@@ -33,6 +33,6 @@ typedef struct
 }Echo_Effect_TypeDef;
 /* flags */
 
-extern	ITCM_AREA_CODE void Do_Echo(int16_t *inputData, int16_t *outputData, uint8_t index);
+extern	void Do_Echo(int16_t *inputData, int16_t *outputData, uint8_t index);
 
 #endif /* MODULES_AUDIO_EFFECTS_ECHO_H_ */

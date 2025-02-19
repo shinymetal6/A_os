@@ -67,6 +67,9 @@
 	#ifdef NUCLEO_G491
 		#include "../boards/NUCLEO_G491.h"
 	#endif
+	#ifdef MEMBRANE_WS_2412171_00
+		#include "../boards/MEMBRANE_WS_2412171_00.h"
+	#endif
 #endif
 
 #ifndef ASSIGNED
