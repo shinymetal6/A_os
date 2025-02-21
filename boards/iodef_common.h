@@ -27,7 +27,7 @@
 #undef   STM32_HAS_STREAM_DMA
 
 #ifdef	STM32H743xx
-
+	#define A_OS_STM32H743_PROCESSOR	1
 	#define STM32_HAS_STREAM_DMA	1
 
 	#ifdef STM32H7xx_HAL_UART_H
@@ -58,6 +58,7 @@
 #endif
 
 #ifdef	STM32H753xx
+	#define A_OS_STM32H753_PROCESSOR	1
 	#define STM32_HAS_STREAM_DMA	1
 
 	#ifdef STM32H7xx_HAL_UART_H
@@ -88,6 +89,7 @@
 #endif
 
 #ifdef	STM32L431xx
+	#define A_OS_STM32L4xx_PROCESSOR	1
 	#ifdef STM32L4xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
 	#endif
