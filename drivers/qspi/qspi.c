@@ -50,6 +50,13 @@ uint32_t qspi_erase_blocks(uint8_t handle, uint32_t start_block,uint32_t number_
 	return 1;
 }
 
+uint32_t qspi_erase_sectors(uint8_t handle, uint32_t start_sector,uint32_t number_of_sectors)
+{
+	if ( ExtFlashDriverStruct[handle].erase_sectors != NULL )
+		return ExtFlashDriverStruct[handle].erase_sectors(handle,start_sector,number_of_sectors);
+	return 1;
+}
+
 uint32_t qspi_erase_chip(uint8_t handle)
 {
 	if ( ExtFlashDriverStruct[handle].erase_chip != NULL )

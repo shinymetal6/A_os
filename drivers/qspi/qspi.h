@@ -32,6 +32,7 @@ typedef struct
 	uint32_t	(*read)  (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 	uint32_t	(*write) (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 	uint32_t	(*erase_blocks) (uint8_t handle, uint32_t start_block, uint32_t number_of_blocks);
+	uint32_t	(*erase_sectors) (uint8_t handle, uint32_t start_sector, uint32_t number_of_sectors);
 	uint32_t	(*erase_chip) (uint8_t handle);
 	uint32_t	(*get_id) (uint8_t handle,uint8_t *data);
 	uint32_t	(*get_status) (uint8_t handle);
@@ -46,6 +47,7 @@ typedef struct
 extern	uint32_t qspi_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 extern	uint32_t qspi_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
 extern	uint32_t qspi_erase_blocks(uint8_t handle, uint32_t start_block,uint32_t number_of_blocks);
+extern	uint32_t qspi_erase_sectors(uint8_t handle, uint32_t start_sector,uint32_t number_of_sectors);
 extern	uint32_t qspi_erase_chip(uint8_t handle);
 extern	uint32_t qspi_get_id(uint8_t handle,uint8_t *data);
 extern	uint32_t qspi_get_status(uint8_t handle);
