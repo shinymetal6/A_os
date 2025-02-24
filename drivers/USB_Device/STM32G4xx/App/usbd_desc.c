@@ -17,8 +17,10 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+#include "main.h"
 #include "../../../../kernel/system_default.h"
-#ifdef STM32G4xx_USB
+#ifdef A_OS_STM32G4xx_PROCESSOR
+#ifdef USB_DEVICE_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Core/usbd_core.h"
@@ -397,3 +399,4 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
   */
 
 #endif // #ifdef STM32G4xx_USB
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR

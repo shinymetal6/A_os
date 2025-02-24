@@ -16,8 +16,11 @@
   *
   ******************************************************************************
   */
+#include "main.h"
 #include "../../../../kernel/system_default.h"
-#ifdef STM32G4xx_USB
+#ifdef A_OS_STM32G4xx_PROCESSOR
+#ifdef USB_DEVICE_ENABLED
+
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_ctlreq.h"
@@ -948,4 +951,5 @@ static uint8_t USBD_GetLen(uint8_t *buf)
   */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
-#endif // #ifdef STM32G4xx_USB
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR
+#endif // #ifdef USB_DEVICE_ENABLED

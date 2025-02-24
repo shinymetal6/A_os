@@ -47,7 +47,7 @@ ITCM_AREA_CODE  static uint32_t int_i2s_init(uint8_t handle)
 
 ITCM_AREA_CODE  static uint32_t int_i2s_start(uint8_t handle)
 {
-I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	return HAL_I2SEx_TransmitReceive_DMA(i2s_drv->i2s, (uint16_t*)i2s_drv->dac_buffer, (uint16_t*)i2s_drv->adc_buffer,I2S_AUDIO_BUF_SIZE);
 }
 
@@ -61,15 +61,15 @@ ITCM_AREA_CODE  static uint32_t int_i2s_get_status(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *analog_driver_private_data)
+ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *private_data)
 {
 I2S_Drv_TypeDef	*i2s_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
-		ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data = (uint32_t *)analog_driver_private_data;
+		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
-		i2s_drv = (I2S_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].analog_driver_private_data;
+		i2s_drv = (I2S_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
 
 		if ( ( i2s_drv->i2s == NULL ) || ( i2s_drv->adc_buffer == NULL ) || ( i2s_drv->dac_buffer == NULL ))
 				return DRIVER_REQUEST_FAILED;
@@ -98,9 +98,9 @@ uint32_t	i,drv_ret=255;
 	{
 		if (( ANALOG_DriverStruct[i].status & DRIVER_STATUS_IN_USE) ==  DRIVER_STATUS_IN_USE)
 		{
-			if ( ANALOG_DriverStruct[i].analog_driver_private_data != NULL )
+			if ( ANALOG_DriverStruct[i].private_data != NULL )
 			{
-				I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[i].analog_driver_private_data;
+				I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[i].private_data;
 				if ( i2s_drv->i2s == hi2s )
 					return i;
 			}
@@ -122,7 +122,7 @@ ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
-		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 		i2s_drv->status |= (I2S_STATUS_HALF | I2S_STATUS_DATA_READY);
 		i2s_drv->status &= ~I2S_STATUS_FULL;
 		i2s_irq_common(i2s_drv,handle);
@@ -134,7 +134,7 @@ ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
 uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
-		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].analog_driver_private_data;
+		I2S_Drv_TypeDef	*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 		i2s_drv->status |= (I2S_STATUS_FULL | I2S_STATUS_DATA_READY);
 		i2s_drv->status &= ~I2S_STATUS_HALF;
 		i2s_irq_common(i2s_drv,handle);

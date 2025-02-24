@@ -19,8 +19,10 @@
 /* USER CODE END Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
 #include "../../../../kernel/system_default.h"
-#ifdef STM32G4xx_USB
+#ifdef A_OS_STM32G4xx_PROCESSOR
+#ifdef USB_DEVICE_ENABLED
 
 #include "stm32g4xx.h"
 #include "stm32g4xx_hal.h"
@@ -798,4 +800,5 @@ USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)
   }
   return usb_status;
 }
-#endif // #ifdef STM32G4xx_USB
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR
+#endif // #ifdef USB_DEVICE_ENABLED

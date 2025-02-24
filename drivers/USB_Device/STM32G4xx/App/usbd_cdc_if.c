@@ -17,8 +17,10 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
+#include "main.h"
 #include "../../../../kernel/system_default.h"
-#ifdef STM32G4xx_USB
+#ifdef A_OS_STM32G4xx_PROCESSOR
+#ifdef USB_DEVICE_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 
@@ -331,3 +333,4 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   * @}
   */
 #endif // #ifdef STM32G4xx_USB
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR

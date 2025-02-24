@@ -27,7 +27,7 @@
 #endif
 
 #include "../../../../kernel/system_default.h"
-#ifdef STM32G4xx_USB
+#ifdef A_OS_STM32G4xx_PROCESSOR
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx.h"
@@ -102,7 +102,7 @@
 }
 #endif
 
-#endif // #ifdef STM32G4xx_USB
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR
 
 #endif /* __USB_DEVICE__H__ */
 
