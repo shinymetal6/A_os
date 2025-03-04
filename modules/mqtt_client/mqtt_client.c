@@ -12,7 +12,6 @@
 #include "../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
 
-#define MQTT_ENABLE	1
 #ifdef MQTT_ENABLE
 
 #include "../../libraries/lwip2.2/LwIp/src/include/lwip/apps/mqtt.h"
