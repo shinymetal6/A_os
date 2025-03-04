@@ -36,6 +36,7 @@
 #define MAX_TIM_DRIVERS				8
 #define MAX_ANALOG_DRIVERS			8
 #define MAX_EXTMEM_DRIVERS			8
+//#define MAX_MODULES					8
 //#define MAX_SENSORS					16
 #define MAX_I2C_BUSES				4
 #define MAX_I2C_DEVICES				16
@@ -47,6 +48,8 @@
 #define	PERIPHERAL_NUM				32
 #define	HWDEVICES_NUM				32
 #define	MODULES_NUM					32
+
+#define	MODULE_ID_MQTT				1
 
 #define	DRIVER_STATUS_FAILED		0x40
 #define	DRIVER_REQUEST_FAILED		0x80

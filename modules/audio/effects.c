@@ -45,13 +45,13 @@ uint8_t i;
 			Effects[i].effect_index = i;
 			Effects[i].effect = do_effect;
 
-			Effects[i].pipe_out = pipe[i];
+			Effects[i].pipe_out = audio_pipe[i];
 			if ( i == 0 )
 				Effects[i].pipe_in = oscout_buffer;
 			else
 			{
-				Effects[i-1].pipe_out = pipe[i-1];
-				Effects[i].pipe_in = pipe[i-1];
+				Effects[i-1].pipe_out = audio_pipe[i-1];
+				Effects[i].pipe_in = audio_pipe[i-1];
 			}
 			active_effects_number++;
 			__enable_irq();
@@ -81,12 +81,12 @@ uint32_t	i,j,last_effect=0;
 		if ( stereo )
 		{
 			for(i=HALF_NUMBER_OF_AUDIO_SAMPLES*2,j=0;i<NUMBER_OF_AUDIO_SAMPLES*2;i+=2,j++)
-				dac_buffer[i] = dac_buffer[i+1] = pipe[last_effect][j];
+				dac_buffer[i] = dac_buffer[i+1] = audio_pipe[last_effect][j];
 		}
 		else
 		{
 			for(i=HALF_NUMBER_OF_AUDIO_SAMPLES,j=0;i<NUMBER_OF_AUDIO_SAMPLES;i++,j++)
-				dac_buffer[i] = pipe[last_effect][j];
+				dac_buffer[i] = audio_pipe[last_effect][j];
 		}
 	}
 	else
@@ -94,12 +94,12 @@ uint32_t	i,j,last_effect=0;
 		if ( stereo )
 		{
 			for(i=0,j=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES*2;i+=2,j++)
-				dac_buffer[i] = dac_buffer[i+1] = pipe[last_effect][j];
+				dac_buffer[i] = dac_buffer[i+1] = audio_pipe[last_effect][j];
 		}
 		else
 		{
 			for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-				dac_buffer[i] = pipe[last_effect][i];
+				dac_buffer[i] = audio_pipe[last_effect][i];
 		}
 	}
 }

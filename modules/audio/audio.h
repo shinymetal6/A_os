@@ -109,7 +109,7 @@ typedef struct _AudioFlagsTypeDef
 
 extern	int16_t		oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 extern	int16_t		pipe_out[HALF_NUMBER_OF_AUDIO_SAMPLES];
-extern	int16_t		pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
+extern	int16_t		audio_pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 
 #endif /* MODULES_AUDIO_AUDIO_H_ */

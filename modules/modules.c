@@ -14,27 +14,18 @@
  * Project : A_os
 */
 /*
- * timers.h
+ * modules.c
  *
- *  Created on: Nov 12, 2024
+ *  Created on: Mar 4, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_TIMERS_TIMERS_H_
-#define DRIVERS_TIMERS_TIMERS_H_
+#include "main.h"
+#include "../kernel/system_default.h"
+#include "../kernel/A.h"
+#include "../kernel/A_exported_functions.h"
+#include "../kernel/scheduler.h"
+#include "modules.h"
 
-typedef struct
-{
-	uint8_t 	process;
-	uint8_t		status;
-	uint8_t		flags;
-	uint8_t		handle;
-	uint32_t	*private_data;
-}TIM_DriverStruct_t;
-
-#include "dcc/dcc.h"
-#include "pwm/pwm.h"
-#include "servo/servo.h"
-#include "ws2812/ws2812.h"
-
-#endif /* DRIVERS_TIMERS_TIMERS_H_ */
+SYSTEM_RAM	MODULES_Struct_t	MODULES_Struct[MODULES_NUM];
+SYSTEM_RAM	uint8_t				last_module_used_handle=0,module_request = 0;

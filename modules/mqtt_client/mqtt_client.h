@@ -27,10 +27,13 @@
 #define	MQTT_MAX_TOPIC_CHARS	32
 typedef struct
 {
-	uint8_t		ip_addrhh;
-	uint8_t		ip_addrhl;
-	uint8_t		ip_addrlh;
-	uint8_t		ip_addrll;
+	uint8_t		status;
+	uint8_t		flags;
+	uint8_t		handle;
+	uint8_t		broker_ip_addr[4];
+	char		*mqtt_incoming_data_ptr;
+	ip_addr_t	mqtt_ip;
+	mqtt_client_t		*mqtt_client;
 	uint8_t		connected;
 	uint8_t		qos;
 	uint8_t		retain;
@@ -44,11 +47,10 @@ typedef struct
 	uint8_t		max_collisions;
 	uint32_t	collisions;
 	uint8_t		retry_time_after_collision;
-	char		*mqtt_incoming_data_ptr;
 	uint8_t		mqtt_flags;
 	uint32_t	mqtt_tx_stat;
 	uint32_t	mqtt_rx_stat;
-}A_MQTT_SubInfo_t;
+}A_Mqtt_TypeDef;
 
 /* mqtt_flags */
 #define	MQTT_CONNECTED		0x01
@@ -57,13 +59,17 @@ typedef struct
 #define	MQTT_PUBLISHED		0x08
 #define	MQTT_DATA_RECEIVED	0x10
 
+#define	MODULE_MQTT_RXFLAG	1
+
 #define	MAX_COLLISIONS	20
+
+extern	MODULES_Struct_t	MODULES_Struct[MODULES_NUM];
+extern	uint8_t				last_module_used_handle,module_request;
+
 extern	uint8_t 	mqtt_client_init(uint8_t *broker_ip_addr,char *main_topic,char *client_identity, char *client_user, char *client_pass, char *mqtt_incoming_data_ptr);
 extern	uint32_t 	mqtt_client_check_connect(void);
 extern	uint32_t 	mqtt_client_send(char *topic, char *message,uint32_t message_len);
 extern	uint8_t 	mqtt_client_add_subscribed_topic(char *topic);
 extern	uint8_t 	mqtt_client_remove_subscribed_topic(char *topic);
-
-
 
 #endif /* MODULES_MQTT_CLIENT_MQTT_CLIENT_H_ */

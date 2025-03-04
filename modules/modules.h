@@ -23,6 +23,15 @@
 #ifndef MODULES_MODULES_H_
 #define MODULES_MODULES_H_
 
+typedef struct
+{
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	uint32_t			*private_data;
+}MODULES_Struct_t;
+
 #include "serial_transfers/xmodem_rx.h"
 #include "hex_decoders/hex_decoders_common.h"
 #include "hex_decoders/ihex.h"

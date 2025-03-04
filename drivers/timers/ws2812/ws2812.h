@@ -14,27 +14,38 @@
  * Project : A_os
 */
 /*
- * timers.h
+ * ws2812.h
  *
- *  Created on: Nov 12, 2024
+ *  Created on: Feb 24, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_TIMERS_TIMERS_H_
-#define DRIVERS_TIMERS_TIMERS_H_
+#ifndef DRIVERS_TIMERS_WS2812_WS2812_H_
+#define DRIVERS_TIMERS_WS2812_WS2812_H_
+
+#define	LEDBPP		24
+#define	NUMLEDS		45
+
+#define	SYNCLEN		50
+#define	BUFLEN		((SYNCLEN*LEDBPP)+(NUMLEDS*LEDBPP))
+
+#define	PATTERN_0		35
+#define	PATTERN_1		80
+
+#define	GREEN_SHIFT		16
+#define	RED_SHIFT		8
+#define	BLUE_SHIFT		0
 
 typedef struct
 {
-	uint8_t 	process;
-	uint8_t		status;
-	uint8_t		flags;
-	uint8_t		handle;
-	uint32_t	*private_data;
-}TIM_DriverStruct_t;
+	uint8_t					status;
+	uint8_t					flags;
+	uint8_t					handle;
+	TIM_HandleTypeDef 		*ws2812_timer;
+	uint32_t 				ws2812_channel;
+}WS2812_Drv_TypeDef;
 
-#include "dcc/dcc.h"
-#include "pwm/pwm.h"
-#include "servo/servo.h"
-#include "ws2812/ws2812.h"
+extern uint32_t	ws2812_register(Pwm_Control_TypeDef *private_data);
 
-#endif /* DRIVERS_TIMERS_TIMERS_H_ */
+
+#endif /* DRIVERS_TIMERS_WS2812_WS2812_H_ */
