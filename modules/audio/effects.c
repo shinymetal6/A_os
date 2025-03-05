@@ -25,9 +25,9 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 //#include "../../kernel/kernel_opt.h"
-#ifdef AUDIO_GENERATORS_ENABLED
 
 #include "audio.h"
+#ifdef AUDIO_GENERATORS_ENABLED
 #include "effects.h"
 
 Effects_TypeDef		Effects[MAX_EFFECTS];

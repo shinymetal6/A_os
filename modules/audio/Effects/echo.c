@@ -26,6 +26,7 @@
 //#include "../../kernel/kernel_opt.h"
 
 #include "../audio.h"
+#ifdef AUDIO_GENERATORS_ENABLED
 #include "../effects.h"
 #include "echo.h"
 
@@ -54,3 +55,4 @@ Echo_Effect_TypeDef	*echo_Effect = (Echo_Effect_TypeDef *)Effects[index].private
 	}
 }
 
+#endif // #ifdef AUDIO_GENERATORS_ENABLED

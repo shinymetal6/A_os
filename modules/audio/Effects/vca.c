@@ -26,6 +26,7 @@
 #include "../../../kernel/kernel_opt.h"
 
 #include "../audio.h"
+#ifdef AUDIO_GENERATORS_ENABLED
 #include "../effects.h"
 #include "vca.h"
 
@@ -43,3 +44,4 @@ VCA_Effect_TypeDef	*VCA_Effect = (VCA_Effect_TypeDef *)Effects[index].private_da
 	}
 }
 
+#endif // #ifdef AUDIO_GENERATORS_ENABLED

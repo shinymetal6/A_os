@@ -28,6 +28,7 @@
 //#include "../../kernel/kernel_opt.h"
 
 #include "../audio.h"
+#ifdef AUDIO_GENERATORS_ENABLED
 #include "../effects.h"
 #include "dummy.h"
 
@@ -39,3 +40,4 @@ uint32_t	i;
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		out[i] = in[i];
 }
+#endif // #ifdef AUDIO_GENERATORS_ENABLED

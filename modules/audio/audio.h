@@ -73,10 +73,12 @@ typedef struct _AudioFlagsTypeDef
 
 #include 	"effects.h"
 
-#if defined(STM32H7xx_HAL_I2S_H) || defined(STM32H7xx_HAL_DAC_H)
-#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
-#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  	__attribute__ ((aligned (32)))
-#define	AUDIO_GENERATORS_ENABLED	1
+#ifdef AUDIO_ENABLED
+	#if defined(STM32H7xx_HAL_I2S_H) || defined(STM32H7xx_HAL_DAC_H)
+		#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
+		#define DMA_NOCACHE_RAM		__attribute__((section(".dmaNoCache")))  	__attribute__ ((aligned (32)))
+		#define	AUDIO_GENERATORS_ENABLED	1
+	#endif
 #endif
 
 /*
