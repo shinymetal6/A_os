@@ -123,7 +123,7 @@ ADC_Drv_TypeDef	*adc_drv;
 
 /************ Interrupt *************/
 
-ITCM_AREA_CODE static uint32_t get_handle_from_adc_dma_channel(ADC_HandleTypeDef *hadc)
+static uint32_t get_handle_from_adc_dma_channel(ADC_HandleTypeDef *hadc)
 {
 uint32_t	i,drv_ret=255;
 	for(i=0;i<MAX_ANALOG_DRIVERS;i++)
@@ -141,7 +141,7 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
-ITCM_AREA_CODE void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )
@@ -154,7 +154,7 @@ uint32_t handle;
 	}
 }
 
-ITCM_AREA_CODE void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 uint32_t handle;
 	if ( (handle = get_handle_from_adc_dma_channel(hadc)) != 255 )

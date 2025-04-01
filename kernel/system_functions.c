@@ -57,14 +57,16 @@ uint32_t *ptr2 = (uint32_t *)ptr;
 	__enable_irq();
 }
 
+uint32_t	copy_i;
+uint32_t	*copy_src32, *copy_dest32;
+
 void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes)
 {
-uint32_t	i;
-uint32_t *src32 = (uint32_t *)src, *dest32 = (uint32_t *)dest;
-
 	__disable_irq();
-	for(i=0;i<size_in_bytes/sizeof(uint32_t);i++)
-		*dest32++ = *src32++;
+	copy_src32 = (uint32_t *)src;
+	copy_dest32 = (uint32_t *)dest;
+	for(copy_i=0;copy_i<size_in_bytes/sizeof(uint32_t);copy_i++)
+		*copy_dest32++ = *copy_src32++;
 	__enable_irq();
 }
 

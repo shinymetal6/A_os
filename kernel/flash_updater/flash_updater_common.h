@@ -36,6 +36,9 @@ extern	uint32_t ConfigureBootBank(uint32_t bank);
 #ifdef	STM32H743xx
 extern 	uint32_t flash_update(uint8_t *flash_data,uint8_t *dest_address,uint32_t size);
 extern	uint32_t ConfigureBootBank(uint32_t bank);
+extern	uint32_t flash_probe_address(uint8_t *address);
+extern	uint32_t flash_erase_by_address(uint8_t *flash_address,uint32_t size);
+
 #endif
 
 extern	uint32_t get_flash_storage_ptr(void);

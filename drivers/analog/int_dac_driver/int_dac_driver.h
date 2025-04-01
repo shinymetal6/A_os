@@ -43,6 +43,7 @@ typedef struct
 	uint16_t			*wav_ptr;
 	uint32_t			wav_samples_counter;
 	uint32_t			wav_len;
+	float				wav_volume;
 }DAC_Drv_TypeDef;
 
 /* status */

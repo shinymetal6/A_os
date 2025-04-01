@@ -70,6 +70,7 @@ uint32_t			fdiv;
 ITCM_AREA_CODE  static uint32_t int_dac_timer_set(DAC_Drv_TypeDef *dac_drv,uint32_t frequency)
 {
 TIM_HandleTypeDef 	*dac_timer = dac_drv->dac_timer;
+
 	fdiv = (((HSI_CLOCK ) / frequency) / STD_DAC_PRESCALER) - 1;
 	__HAL_TIM_DISABLE(dac_timer);
 	dac_timer->Instance->CNT = 0;
@@ -88,10 +89,11 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].priva
 Wav_Header_TypeDef  *Wav = (Wav_Header_TypeDef *)wav_ptr;
 	if ((Wav->FileTypeBlocID[0] == 'R') && (Wav->FileTypeBlocID[1] == 'I')&&(Wav->FileTypeBlocID[2] == 'F') &&(Wav->FileTypeBlocID[3] == 'F'))
 	{
-		dac_drv->wav_ptr = wav_ptr;
+		dac_drv->wav_ptr = (uint16_t *)&Wav->first_audio_sample;
 		dac_drv->wav_len = Wav->DataSize;
 		dac_drv->wav_samples_counter = 0;
-		int_dac_timer_set(dac_drv,Wav->Frequency);
+		int_dac_timer_set(dac_drv,Wav->Frequency*2);
+		dac_drv->wav_volume = 0.0F;
 		dac_drv->dac_wav_flags |= DAC_WAV_FLAGS_DO_PLAY;
 		return 0;
 	}
@@ -160,17 +162,20 @@ uint32_t	i,drv_ret=255;
 
 ITCM_AREA_CODE  static void dac_irq_common(DAC_Drv_TypeDef	*dac_drv,uint32_t handle)
 {
-uint32_t i , start_sample;
+uint32_t	i , start_sample;
 
 	start_sample = (dac_drv->status & DAC_STATUS_HALF) ? 0 : dac_drv->len/2;
 	if (( dac_drv->dac_wav_flags & DAC_WAV_FLAGS_DO_PLAY) == DAC_WAV_FLAGS_DO_PLAY)
 	{
+		if ( dac_drv->wav_volume < 1.0F)
+			dac_drv->wav_volume += 0.01F;
 		for(i=0;i<dac_drv->len/2;i++)
 		{
-			dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_ptr[i];
+//			dac_drv->dac_buffer[i+start_sample] = (32767 + dac_drv->wav_ptr[i]) >> 4;
+			dac_drv->dac_buffer[i+start_sample] = ((int16_t )(dac_drv->wav_volume*32767.0F) + dac_drv->wav_ptr[i]) >> 4;
 		}
 		dac_drv->wav_ptr += dac_drv->len/2;
-		dac_drv->wav_samples_counter += dac_drv->len/2;
+		dac_drv->wav_samples_counter += dac_drv->len;
 		if ( dac_drv->wav_samples_counter >= dac_drv->wav_len)
 			int_dac_stop_wav(handle);
 	}
