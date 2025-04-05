@@ -104,6 +104,7 @@ typedef struct _AudioFlagsTypeDef
 #include	"Effects/vca.h"
 #include	"Effects/echo.h"
 #include	"Effects/dummy.h"
+#include	"Effects/reverb.h"
 
 #include	"Generators/noise.h"
 #include	"Generators/oscillator_core.h"
