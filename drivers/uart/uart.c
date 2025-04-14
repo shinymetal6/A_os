@@ -191,7 +191,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 #else
 			uarts_Drv->rx_num_chars = ((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
 #endif
-			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len;
+			//uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len;
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 			HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
@@ -289,7 +289,6 @@ UART_Drv_TypeDef	*uarts_Drv;
 	__enable_irq();
 }
 
-
 ITCM_AREA_CODE void UART_Driver_RxTimeoutCheckCallback(void)
 {
 uint8_t	i;
@@ -303,32 +302,30 @@ UART_Drv_TypeDef	*uarts_Drv;
 
 			if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 			{
-				if ( uarts_Drv->timeout )
+				#ifdef   STM32_HAS_STREAM_DMA
+				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
+				#else
+				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - ((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+				#endif
+				if (( uarts_Drv->rx_num_chars ) && ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len))
 				{
-					uarts_Drv->timeout--;
+					if ( uarts_Drv->timeout )
+						uarts_Drv->timeout--;
 					if ( uarts_Drv->timeout == 0 )
 					{
+						if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
+							activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+						/* a bit of unicorn dust here ... */
+						__HAL_DMA_DISABLE(uarts_Drv->uart->hdmarx);
 						#ifdef   STM32_HAS_STREAM_DMA
-						uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
+						__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF0_4);
+						((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR = uarts_Drv->rx_max_len;
 						#else
-						uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - ((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+						((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR = uarts_Drv->rx_max_len;
 						#endif
-						if (( uarts_Drv->rx_num_chars ) && ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len))
-						{
-							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
-								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
-							/* a bit of unicorn dust here ... */
-							__HAL_DMA_DISABLE(uarts_Drv->uart->hdmarx);
-							#ifdef   STM32_HAS_STREAM_DMA
-							__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF0_4);
-							((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR = uarts_Drv->rx_max_len;
-							#else
-							((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR = uarts_Drv->rx_max_len;
-							#endif
-							__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
-							HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
-							uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
-						}
+						__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
+						uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
+						HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 					}
 				}
 			}

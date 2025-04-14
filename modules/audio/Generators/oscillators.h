@@ -27,6 +27,7 @@
 extern	void InitOscillators(void);
 extern	void NoteON( uint16_t midi_note , uint8_t velocity);
 extern	void NoteOFF(uint16_t midi_note , uint8_t velocity);
+extern	void AllNoteOFF(void);
 extern	uint8_t Freq2Midi(float freq );
 extern	float Midi2Freq(uint8_t midi_note );
 extern	void SetSampleFrequency(uint32_t new_sample_frequency);

@@ -40,9 +40,12 @@ typedef struct
 	uint32_t			PSC;
 	uint32_t			ARR;
 	uint8_t				dac_wav_flags;
-	uint16_t			*wav_ptr;
+	int16_t				*wav_ptr;
 	uint32_t			wav_samples_counter;
 	uint32_t			wav_len;
+	uint16_t			wav_volume_int;
+	uint8_t				wav_flags;
+	int16_t				wav_progressive_sample;
 }DAC_Drv_TypeDef;
 
 /* status */
@@ -97,7 +100,7 @@ typedef struct
 	uint16_t			BitsPerSample;
 	uint8_t				DataBlocID[4];
 	uint32_t			DataSize;
-	uint16_t			first_audio_sample;
+	int16_t			 	first_audio_sample;
 }Wav_Header_TypeDef;
 
 #define	STD_DAC_PRESCALER 10

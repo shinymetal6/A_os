@@ -84,6 +84,18 @@ uint8_t	i;
 	}
 }
 
+ITCM_AREA_CODE	void AllNoteOFF( void )
+{
+uint8_t	i;
+	for(i=0;i<NUMOSCILLATORS;i++)
+	{
+		if (( Oscillator[i].midi_note ) && ((Oscillator[i].state & OSCILLATOR_ON ) == OSCILLATOR_ON ))
+		{
+			Oscillator[i].state |= OSCILLATOR_GO_OFF;
+		}
+	}
+}
+
 ITCM_AREA_CODE	void DisableAllOscillator(void)
 {
 uint8_t	i;
@@ -110,7 +122,7 @@ uint32_t	osc_number,i;
 		Oscillator[osc_number+i].current_phase = 0;
 		Oscillator[osc_number+i].midi_note = midi_note;
 		Oscillator[osc_number+i].velocity = velocity;
-		Oscillator[osc_number+i].state = OSCILLATOR_ON;
+		Oscillator[osc_number+i].state = OSCILLATOR_GO_ON;
 		Oscillator[osc_number+i].oscillator_age = 0;
 		Oscillator[osc_number+i].volume = ((float )1.0F);
 	}

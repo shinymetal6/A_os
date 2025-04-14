@@ -33,7 +33,14 @@
 Effects_TypeDef		Effects[MAX_EFFECTS];
 uint8_t				active_effects_number = 0;
 
-uint32_t effect_insert(void (*do_effect),uint32_t *private_data,int16_t *dac_buffer)
+uint32_t 	effect_set_params(uint32_t *params_struct, uint8_t index)
+{
+	if ( Effects[index].effect_set_params != NULL )
+		return Effects[index].effect_set_params(params_struct,index);
+	return 1;
+}
+
+uint32_t 	effect_insert(void (*do_effect),void (*set_params_effect),uint32_t *private_data,int16_t *dac_buffer)
 {
 uint8_t i;
 	__disable_irq();
@@ -44,6 +51,7 @@ uint8_t i;
 			Effects[i].private_data = private_data;
 			Effects[i].effect_index = i;
 			Effects[i].effect = do_effect;
+			Effects[i].effect_set_params = set_params_effect;
 
 			Effects[i].pipe_out = audio_pipe[i];
 			if ( i == 0 )

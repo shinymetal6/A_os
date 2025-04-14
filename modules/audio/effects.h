@@ -28,6 +28,7 @@
 
 typedef struct
 {
+	uint32_t	(*effect_set_params)(uint32_t *params_struct, uint8_t index);
 	void 		(*effect)(int16_t* inputData, int16_t* outputData,uint8_t index);
 	int16_t		*pipe_in,*pipe_out;
 	uint32_t	*private_data;
@@ -40,8 +41,8 @@ typedef struct
 
 extern	Effects_TypeDef		Effects[MAX_EFFECTS];
 
-extern	uint32_t effect_insert(void (*do_effect),uint32_t *private_data,int16_t *dac_buffer);
-extern	void effects_apply(uint8_t full,uint8_t stereo,int16_t *dac_buffer);
-
+extern	uint32_t 	effect_insert(void (*do_effect),void (*set_params_effect),uint32_t *private_data,int16_t *dac_buffer);
+extern	void 		effects_apply(uint8_t full,uint8_t stereo,int16_t *dac_buffer);
+extern	uint32_t 	effect_set_params(uint32_t *params_struct, uint8_t index);
 
 #endif /* MODULES_AUDIO_EFFECTS_H_ */

@@ -198,7 +198,6 @@ uint32_t Sector = 0;
 	{
 		return 1;
 	}
-
 	if((Bank & FLASH_BANK_1) == FLASH_BANK_1)
 	{
 		/* Reset Program/erase VoltageRange and Sector Number for Bank1 */
@@ -207,13 +206,15 @@ uint32_t Sector = 0;
 	}
 	if((Bank & FLASH_BANK_2) == FLASH_BANK_2)
 	{
+		/* Reset Program/erase VoltageRange and Sector Number for Bank2 */
 		FLASH->CR2 &= ~(FLASH_CR_PSIZE | FLASH_CR_SNB);
 		FLASH->CR2 |= (FLASH_CR_SER | FLASH_VOLTAGE_RANGE_3  | (Sector << FLASH_CR_SNB_Pos) | FLASH_CR_START);
 	}
+
 	return WaitForLastFlashOperation((uint32_t)FLASH_TIMEOUT_VALUE, Bank);
 }
 
-FLASH_RAM_FUNC uint8_t FLASH_32B_data(uint32_t TypeProgram, uint32_t FlashAddress, uint32_t DataAddress)
+FLASH_RAM_FUNC uint8_t FLASH_32B_data(uint32_t FlashAddress, uint32_t DataAddress)
 {
 uint8_t status;
 __IO uint32_t *dest_addr = (__IO uint32_t *)FlashAddress;
@@ -282,7 +283,10 @@ uint32_t	i;
 	if ( flash_unlock() )
 		return 1;
 
-	Sector = (size / FLASH_SECTOR_SIZE)+1;
+//	Sector = (size / FLASH_SECTOR_SIZE)+1;
+	Sector = (size / FLASH_SECTOR_SIZE);
+	if ( Sector == 0 )
+		Sector = 1;
 	for(i=0;i<Sector;i++)
 	{
 		if ( Flash_Erase_Sector_by_address(FlashAddress, Bank) )
@@ -292,8 +296,42 @@ uint32_t	i;
 	FlashAddress = (uint32_t)dst;
 	for(i=0,FlashAddress = (uint32_t)dst;i<size;i+=32,FlashAddress+=32)
 	{
-		if (  FLASH_32B_data(FLASH_TYPEPROGRAM_FLASHWORD, FlashAddress, (uint32_t)(src + i)) != 0 )
+		if (  FLASH_32B_data(FlashAddress, (uint32_t)(src + i)) != 0 )
 			return 1;
+	}
+	if ( flash_Lock() )
+		return 1;
+	__enable_irq();
+	return 0;
+}
+
+FLASH_RAM_FUNC uint32_t flash_erase_by_address(uint8_t *flash_address,uint32_t size)
+{
+uint32_t FlashAddress , Sector, Bank;
+uint32_t	i;
+
+	__disable_irq();
+	FlashAddress = (uint32_t)flash_address;
+	if (FlashAddress & (32-1))
+		return 1; // bad alignment
+	if(IS_FLASH_PROGRAM_ADDRESS_BANK1(FlashAddress))
+		Bank = FLASH_BANK_1;
+	else if(IS_FLASH_PROGRAM_ADDRESS_BANK2(FlashAddress))
+		Bank = FLASH_BANK_2;
+	else
+		return 1;
+
+	if ( flash_unlock() )
+		return 1;
+
+	Sector = (size / FLASH_SECTOR_SIZE);
+	if ( Sector == 0 )
+		Sector = 1;
+	for(i=0;i<Sector;i++)
+	{
+		if ( Flash_Erase_Sector_by_address(FlashAddress, Bank) )
+			return 1;
+		FlashAddress += FLASH_SECTOR_SIZE;
 	}
 	if ( flash_Lock() )
 		return 1;
@@ -382,6 +420,50 @@ uint32_t switched = 0;
 	    while(1);
 	}
     return 0;
+}
+
+/*
+ * Probe read access to address in the MCU memory space
+ * Return: true = OK, false = error
+ * Supported: Cortex-M3, M4/F, M7
+ * NOTE: call this with interrupts disabled to avoid side effects
+ */
+
+uint8_t  flashval;
+uint32_t busfault_CFSR;
+FLASH_RAM_FUNC uint32_t flash_probe_address(uint8_t *address)
+{
+uint32_t BFARVALID_MASK = (0x80 << SCB_CFSR_BUSFAULTSR_Pos);
+uint32_t ret_val = 0;
+
+
+    /* Clear BFARVALID flag by writing 1 to it */
+    SCB->CFSR |= BFARVALID_MASK;
+
+    /* Ignore BusFault by enabling BFHFNMIGN; disable faults and interrupts */
+    uint32_t mask = __get_FAULTMASK();
+    __disable_fault_irq();
+    SCB->CCR |= SCB_CCR_BFHFNMIGN_Msk;
+
+    /* probe the address by performing 8-bit read */
+    __DSB();
+    flashval = *address;
+    __DMB();
+
+    busfault_CFSR = SCB->CFSR ;
+    if (SCB->CFSR & BFARVALID_MASK)
+    {
+        /* Yes, Bus Fault occurred */
+    	ret_val = 1;
+    }
+
+    /* Re-enable BusFault by clearing  BFHFNMIGN */
+    SCB->CCR &= ~SCB_CCR_BFHFNMIGN_Msk;
+    __set_FAULTMASK(mask);
+    __enable_fault_irq();
+    __DSB();
+
+    return ret_val;
 }
 
 #endif // #ifdef	FLASH_UPDATER_ENABLED

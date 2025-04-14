@@ -70,6 +70,7 @@ uint32_t			fdiv;
 ITCM_AREA_CODE  static uint32_t int_dac_timer_set(DAC_Drv_TypeDef *dac_drv,uint32_t frequency)
 {
 TIM_HandleTypeDef 	*dac_timer = dac_drv->dac_timer;
+
 	fdiv = (((HSI_CLOCK ) / frequency) / STD_DAC_PRESCALER) - 1;
 	__HAL_TIM_DISABLE(dac_timer);
 	dac_timer->Instance->CNT = 0;
@@ -88,10 +89,11 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].priva
 Wav_Header_TypeDef  *Wav = (Wav_Header_TypeDef *)wav_ptr;
 	if ((Wav->FileTypeBlocID[0] == 'R') && (Wav->FileTypeBlocID[1] == 'I')&&(Wav->FileTypeBlocID[2] == 'F') &&(Wav->FileTypeBlocID[3] == 'F'))
 	{
-		dac_drv->wav_ptr = wav_ptr;
+		dac_drv->wav_ptr = &Wav->first_audio_sample;
 		dac_drv->wav_len = Wav->DataSize;
 		dac_drv->wav_samples_counter = 0;
-		int_dac_timer_set(dac_drv,Wav->Frequency);
+		int_dac_timer_set(dac_drv,Wav->Frequency*2);
+		dac_drv->wav_volume_int = 2048;
 		dac_drv->dac_wav_flags |= DAC_WAV_FLAGS_DO_PLAY;
 		return 0;
 	}
@@ -103,6 +105,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop_wav(uint8_t handle)
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
 	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
+	dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 	return 0;
 }
 
@@ -158,21 +161,43 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
+#define DAC_WAV_ADAPTWND_SAMPLES_NUM	4096
+
 ITCM_AREA_CODE  static void dac_irq_common(DAC_Drv_TypeDef	*dac_drv,uint32_t handle)
 {
-uint32_t i , start_sample;
+uint32_t	i , start_sample;
 
 	start_sample = (dac_drv->status & DAC_STATUS_HALF) ? 0 : dac_drv->len/2;
 	if (( dac_drv->dac_wav_flags & DAC_WAV_FLAGS_DO_PLAY) == DAC_WAV_FLAGS_DO_PLAY)
 	{
 		for(i=0;i<dac_drv->len/2;i++)
 		{
-			dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_ptr[i];
+			if ( dac_drv->wav_samples_counter < DAC_WAV_ADAPTWND_SAMPLES_NUM)
+			{
+				if ( dac_drv->wav_progressive_sample < 2048 )
+					dac_drv->wav_progressive_sample ++;
+				dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_progressive_sample;
+			}
+			else if ( dac_drv->wav_samples_counter < dac_drv->wav_len - DAC_WAV_ADAPTWND_SAMPLES_NUM)
+			{
+				//dac_drv->dac_buffer[i+start_sample] = ((((dac_drv->wav_ptr[i] + 0x8000) >> 4) & 0xfff) * dac_drv->wav_volume_int) >> 12;
+				dac_drv->dac_buffer[i+start_sample] = (((dac_drv->wav_ptr[i] + 0x8000) >> 4) & 0xfff);
+				dac_drv->wav_progressive_sample = 2048;
+			}
+			else
+			{
+				dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_progressive_sample;
+				if ( dac_drv->wav_progressive_sample )
+					dac_drv->wav_progressive_sample--;
+			}
 		}
 		dac_drv->wav_ptr += dac_drv->len/2;
-		dac_drv->wav_samples_counter += dac_drv->len/2;
+		dac_drv->wav_samples_counter += dac_drv->len;
 		if ( dac_drv->wav_samples_counter >= dac_drv->wav_len)
+		{
+			dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 			int_dac_stop_wav(handle);
+		}
 	}
 	else
 	{

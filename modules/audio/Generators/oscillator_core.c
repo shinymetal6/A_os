@@ -233,32 +233,32 @@ uint8_t		angle,osc_number;
 		osc_buffer[i] = 0;
 	for(osc_number=0;osc_number<NUMOSCILLATORS;osc_number++)
 	{
-		if ((Oscillator[osc_number].state & OSCILLATOR_ON ) == OSCILLATOR_ON )
+		if (Oscillator[osc_number].state & (OSCILLATOR_GO_ON | OSCILLATOR_ON ))
 		{
 			Oscillator[osc_number].oscillator_age++;
 			for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 			{
 				angle = (uint8_t )(Oscillator[osc_number].current_phase >> 8);
 
-				osc_buffer_gen[i] = Oscillator[osc_number].wave[angle];
-				Oscillator[osc_number].current_phase += Oscillator[osc_number].delta_phase;
-				// zero crossing
+				if ((Oscillator[osc_number].state & OSCILLATOR_GO_ON ) == OSCILLATOR_GO_ON )
+				{
+					if ( angle < 8)
+						Oscillator[osc_number].state |= OSCILLATOR_ON;
+				}
+
 				if ((Oscillator[osc_number].state & OSCILLATOR_GO_OFF ) == OSCILLATOR_GO_OFF )
 				{
 					if ( angle < 8)
-						Oscillator[osc_number].state = ~( OSCILLATOR_ON | OSCILLATOR_GO_OFF);
-					/*
-					if ( ( i > 1) && (i < WAVETABLE_SIZE-1 ))
-					{
-						if ( (osc_buffer_gen[i-1] < 0 ) || (osc_buffer_gen[i] > 0) )
-							Oscillator[osc_number].state = ~( OSCILLATOR_ON | OSCILLATOR_GO_OFF);
-					}
-					*/
+						Oscillator[osc_number].state = ~( OSCILLATOR_ON | OSCILLATOR_GO_OFF | OSCILLATOR_GO_ON);
 				}
 				if ((Oscillator[osc_number].state & OSCILLATOR_ON ) != OSCILLATOR_ON )
 					osc_buffer_gen[i] = 0;
-				// zero crossing end
-				osc_buffer[i] += (int32_t )( (float )osc_buffer_gen[i] * Oscillator[osc_number].volume);
+				else
+				{
+					osc_buffer_gen[i] = Oscillator[osc_number].wave[angle];
+					osc_buffer[i] += (int32_t )( (float )osc_buffer_gen[i] * Oscillator[osc_number].volume);
+				}
+				Oscillator[osc_number].current_phase += Oscillator[osc_number].delta_phase;
 			}
 		}
 	}
