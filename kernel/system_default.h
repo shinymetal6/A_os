@@ -85,6 +85,6 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"v2025.03.00-rc0"
+#define	A_OS_VERSION			"v2025.05.00-rc0"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */
