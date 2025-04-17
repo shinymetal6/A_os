@@ -23,48 +23,27 @@
 #ifndef MODULES_AUDIO_EFFECTS_REVERB_H_
 #define MODULES_AUDIO_EFFECTS_REVERB_H_
 
-#define REVERB_NUM_DELAY_LINES 4
-#define REVERB_MAX_DELAY_SAMPLES DEFAULT_SAMPLE_FREQUENCY  // 1 second at the sample frequency
-
-
-typedef struct {
-    float 	*buffer;
-    int 	length;
-    int 	position;
-    float 	feedback;
-    float 	gain;
-} Reverb_DelayLine_typedef;
-
-typedef struct {
-	Reverb_DelayLine_typedef lines[REVERB_NUM_DELAY_LINES];
-    float 	mix;
-    float 	decay;
-} Reverb_effect_internals_typedef;
+#define REVERB_BUFFER_SIZE 			128       // 128 bytes = 64 16-bit integers
+#define REVERB_FIXED_ALLPASS_GAIN 	0.5f
+#define REVERB_FIXED_ALLPASS_DELAY 	13
+#define REVERB_MIX				 	0.5f
 
 typedef struct
 {
-	uint8_t							status;
-	uint8_t							initialized;
-	uint8_t							flags;
-	float 							decayTime;
-	float 							mix;
-	float 							sampleRate;
-	int 							lengths[REVERB_NUM_DELAY_LINES];
-	float 							feedbacks[REVERB_NUM_DELAY_LINES];
-	float 							gains[REVERB_NUM_DELAY_LINES];
-	Reverb_effect_internals_typedef	reverb[REVERB_NUM_DELAY_LINES];
+	uint8_t			status;
+	uint8_t			initialized;
+	uint8_t			flags;
+	float			buffer[REVERB_BUFFER_SIZE];	// Circular buffer for delay line
+	int32_t			read_pos;            // Read position in the buffer
+	int32_t			write_pos;           // Write position in the buffer
+	float 			comb_gains[6];
+	uint8_t 		comb_delays[6];
+	float 			allpass_feedback_gain;
+	uint8_t 		allpass_delay;
+	float 			mix;				// Depth
 }REVERB_Effect_TypeDef;
-#define	REVERB_EFFECT_INITIALIZED	0x01
 
-typedef struct {
-    int 	length[REVERB_NUM_DELAY_LINES];
-    float 	feedback[REVERB_NUM_DELAY_LINES];
-    float 	gain[REVERB_NUM_DELAY_LINES];
-	float	decayTime;
-	float	mix;
-} Reverb_Params_typedef;
 
 extern void 	Do_Reverb(int16_t *inputData, int16_t *outputData, uint8_t index);
-extern uint32_t Set_Params_Reverb(int32_t *param_struct, uint8_t index);
 
 #endif /* MODULES_AUDIO_EFFECTS_REVERB_H_ */

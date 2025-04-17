@@ -26,194 +26,87 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
-
 #include "reverb.h"
 
-#include <stdlib.h>
-#include <string.h>
 #include <math.h>
 
-// Different delay lengths (prime numbers to avoid comb filtering) default values
-int 	lengths[REVERB_NUM_DELAY_LINES] = {1433, 1787, 2099, 2333};
-float 	feedbacks[REVERB_NUM_DELAY_LINES] = {0.7f, 0.7f, 0.7f, 0.7f};
-float 	gains[REVERB_NUM_DELAY_LINES] = {0.6f, 0.6f, 0.6f, 0.6f};
-float	default_decayTime = 0.5F;
-float	default_mix = 0.3F;
-
-// Initialize a delay line
-ITCM_AREA_CODE void initDelayLine(Reverb_DelayLine_typedef *line, int length, float feedback, float gain) {
-    line->buffer = (float*)calloc(length, sizeof(float));
-    line->length = length;
-    line->position = 0;
-    line->feedback = feedback;
-    line->gain = gain;
-}
-
-// Initialize the reverb
-ITCM_AREA_CODE void initReverb( uint8_t index)
-{
-REVERB_Effect_TypeDef			*REVERB_Effect 	= (REVERB_Effect_TypeDef *)Effects[index].private_data;
-Reverb_effect_internals_typedef	*reverb 		= 	(Reverb_effect_internals_typedef *)REVERB_Effect->reverb;
-uint32_t	i;
-    // Scale delay times based on sample rate
-    float scale = REVERB_Effect->sampleRate / 44100.0F;
-
-    reverb->mix = REVERB_Effect->mix;
-    reverb->decay = REVERB_Effect->decayTime;
-    for(i=0;i<REVERB_NUM_DELAY_LINES;i++)
-    {
-        REVERB_Effect->lengths[i] = lengths[i];
-        REVERB_Effect->feedbacks[i] = feedbacks[i];
-        REVERB_Effect->gains[i] = gains[i];
-    }
-
-    for (i = 0; i < REVERB_NUM_DELAY_LINES; i++)
-    {
-        int scaledLength = (int)(REVERB_Effect->lengths[i] * scale);
-        initDelayLine(&reverb->lines[i], scaledLength, REVERB_Effect->feedbacks[i], REVERB_Effect->gains[i]);
-    }
-}
-
-// Process one sample through the reverb
-ITCM_AREA_CODE float processReverb(Reverb_effect_internals_typedef *reverb, float input) {
-float output = 0.0f;
-float wet = 0.0f;
-float dry = input;
-
-    // Process each delay line
-    for (int i = 0; i < REVERB_NUM_DELAY_LINES; i++)
-    {
-    	Reverb_DelayLine_typedef *line = &reverb->lines[i];
-
-        // Read from delay line
-        int readPos = (line->position - line->length + line->length) % line->length;
-        float delayed = line->buffer[readPos] * line->gain;
-
-        // Write to delay line (input + feedback from other lines)
-        line->buffer[line->position] = input + delayed * line->feedback;
-
-        // Update position
-        line->position = (line->position + 1) % line->length;
-
-        // Accumulate output
-        wet += delayed;
-    }
-
-    // Normalize wet signal
-    wet /= (float)REVERB_NUM_DELAY_LINES;
-
-    // Mix dry and wet signals
-    output = dry * (1.0f - reverb->mix) + wet * reverb->mix;
-
+// Comb filter function
+float reverb_comb_filter(REVERB_Effect_TypeDef *reverb,float input, int delay, float feedback_gain) {
+	reverb->read_pos = (reverb->write_pos - delay + REVERB_BUFFER_SIZE) % REVERB_BUFFER_SIZE;
+    float delayed = reverb->buffer[reverb->read_pos];
+    float output = input + feedback_gain * delayed;
+    reverb->buffer[reverb->write_pos] = output; // Store the output in the reverb->buffer
     return output;
 }
 
-// Free allocated memory
-ITCM_AREA_CODE void freeReverb(uint8_t index)
+// All-pass filter function
+float reverb_all_pass_filter(REVERB_Effect_TypeDef *reverb,float input, int delay, float feedback_gain)
 {
-REVERB_Effect_TypeDef			*REVERB_Effect 	= (REVERB_Effect_TypeDef *)Effects[index].private_data;
-Reverb_effect_internals_typedef	*reverb 		= 	(Reverb_effect_internals_typedef *)REVERB_Effect->reverb;
-	for (int i = 0; i < REVERB_NUM_DELAY_LINES; i++)
-    {
-        free(reverb->lines[i].buffer);
-    }
+	reverb->read_pos = (reverb->write_pos - delay + REVERB_BUFFER_SIZE) % REVERB_BUFFER_SIZE;
+    float delayed = reverb->buffer[reverb->read_pos];
+    float output = feedback_gain * input + delayed - feedback_gain * reverb->buffer[reverb->write_pos];
+    reverb->buffer[reverb->write_pos] = input;
+    reverb->write_pos = (reverb->write_pos + 1) % REVERB_BUFFER_SIZE; // Circular reverb->buffer
+    return output;
 }
+
+// Process one sample
+float reverb_effect(REVERB_Effect_TypeDef *reverb,float input)
+{
+    float wet = 0.0f;
+
+    // Apply multiple comb filters
+    for (int i = 0; i < 6; i++)
+    {
+        wet += reverb_comb_filter(reverb,input, reverb->comb_delays[i], reverb->comb_gains[i]);
+    }
+
+    // Average the outputs of the comb filters
+    wet /= 6.0f; // Divide by 6 (number of comb filters)
+
+    // Apply all-pass filter to smooth echoes
+    wet = reverb_all_pass_filter(reverb,wet, reverb->allpass_delay, reverb->allpass_feedback_gain);
+
+    // Mix dry and wet signals
+    return reverb->mix * input + (1.0F - reverb->mix) * wet;  // Simple equal mix
+}
+
+ITCM_AREA_CODE void reverb_init(REVERB_Effect_TypeDef *reverb)
+{
+	reverb->comb_gains[0] = 0.75f;
+	reverb->comb_gains[1] = 0.7f;
+	reverb->comb_gains[2] = 0.65f;
+	reverb->comb_gains[3] = 0.6f;
+	reverb->comb_gains[4] = 0.55f;
+	reverb->comb_gains[5] = 0.5f;
+
+	reverb->comb_delays[0] = 21;
+	reverb->comb_delays[1] = 29;
+	reverb->comb_delays[2] = 37;
+	reverb->comb_delays[3] = 43;
+	reverb->comb_delays[4] = 53;
+	reverb->comb_delays[5] = 61;
+
+	reverb->allpass_feedback_gain = REVERB_FIXED_ALLPASS_GAIN; // Feedback gain for the all-pass filter
+	reverb->allpass_delay = 13;             // Delay length for the all-pass filter
+}
+
 
 ITCM_AREA_CODE void Do_Reverb(int16_t *inputData, int16_t *outputData, uint8_t index)
 {
-REVERB_Effect_TypeDef			*REVERB_Effect 	= (REVERB_Effect_TypeDef *)Effects[index].private_data;
-Reverb_effect_internals_typedef	*reverb 		= 	(Reverb_effect_internals_typedef *)REVERB_Effect->reverb;
+REVERB_Effect_TypeDef	*reverb	= (REVERB_Effect_TypeDef *)Effects[index].private_data;
 uint32_t	i;
 
-	if (( REVERB_Effect->flags & REVERB_EFFECT_INITIALIZED) == 0)
+	if (( reverb->flags & EFFECT_INITIALIZED) == 0)
 	{
-		REVERB_Effect->sampleRate = (float )DEFAULT_SAMPLE_FREQUENCY;
-		REVERB_Effect->decayTime = default_decayTime;
-		REVERB_Effect->mix = default_mix;
-		initReverb(index);
-		REVERB_Effect->flags |= REVERB_EFFECT_INITIALIZED;
+		reverb_init(reverb);
+		reverb->flags |= EFFECT_INITIALIZED;
 	}
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
-		if (( REVERB_Effect->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
-			outputData[i] = (int16_t )processReverb(reverb,(float )inputData[i]);
+		if (( reverb->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
+			outputData[i] = (int16_t ) reverb_effect(reverb,(float )inputData[i]);
 		else
 				outputData[i] = inputData[i];
 	}
 }
-
-ITCM_AREA_CODE uint32_t Set_Params_Reverb(int32_t *param_struct, uint8_t index)
-{
-uint32_t	i;
-Reverb_Params_typedef	*params = (Reverb_Params_typedef *)param_struct;
-REVERB_Effect_TypeDef	*REVERB_Effect 	= (REVERB_Effect_TypeDef *)Effects[index].private_data;
-Reverb_effect_internals_typedef	*reverb 		= 	(Reverb_effect_internals_typedef *)REVERB_Effect->reverb;
-
-	freeReverb(index);
-    for(i=0;i<REVERB_NUM_DELAY_LINES;i++)
-    {
-        REVERB_Effect->lengths[i] = params->length[i];
-        REVERB_Effect->feedbacks[i] = params->feedback[i];
-        REVERB_Effect->gains[i] = params->gain[i];
-    }
-    reverb->mix = params->mix;
-    reverb->decay = params->decayTime;
-
-    float scale = REVERB_Effect->sampleRate / 44100.0F;
-
-    for (i = 0; i < REVERB_NUM_DELAY_LINES; i++)
-    {
-        int scaledLength = (int)(REVERB_Effect->lengths[i] * scale);
-        initDelayLine(&reverb->lines[i], scaledLength, REVERB_Effect->feedbacks[i], REVERB_Effect->gains[i]);
-    }
-	return 0;
-}
-
-
-// Example usage:
-/*
-Reverb reverb;
-initReverb(&reverb, 44100.0f, 0.5f, 0.3f);
-
-// Process a buffer of samples
-for (int i = 0; i < numSamples; i++) {
-    output[i] = processReverb(&reverb, input[i]);
-}
-
-freeReverb(&reverb);
-*/
-/*
-How It Works
-
-    Delay Lines: The reverb uses multiple delay lines (4 in this case) with different lengths to create a dense reverberation effect.
-
-    Feedback Network: Each delay line feeds back into itself with some attenuation to create the decay characteristic of reverb.
-
-    Parameters:
-
-        sampleRate: The sample rate of your audio system (e.g., 44100 Hz)
-
-        decayTime: How long the reverb tail lasts (in seconds)
-
-        mix: Blend between dry (original) and wet (reverb) signal (0.0 to 1.0)
-
-    Processing: For each audio sample, the function:
-
-        Reads from all delay lines
-
-        Writes new values to the delay lines
-
-        Mixes the dry and wet signals
-
-Improvements You Could Make
-
-    Add low-pass filtering in the feedback path to simulate high-frequency decay
-
-    Implement early reflections before the diffuse reverb tail
-
-    Add modulation to the delay lines to reduce metallic artifacts
-
-    Implement a more sophisticated mixing matrix between delay lines
-
-This is a basic implementation that should work well for many applications, but professional reverbs are typically much more complex.
-*/

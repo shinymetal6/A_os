@@ -28,111 +28,70 @@
 //#include "../../../kernel/kernel_opt.h"
 #include "phaser.h"
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include <math.h>
 
-
-
-
-// Initialize an all-pass filter
-void init_all_pass_filter(AllPassFilter_TypeDef *filter, int delay_samples) {
-    filter->write_index = 0;
-    filter->delay_samples = delay_samples;
-    for (int i = 0; i < MAX_DELAY; i++) {
-        filter->buffer[i] = 0.0f;
-    }
+// Low-frequency oscillator (LFO) function
+ITCM_AREA_CODE static float sine_wave_lfo(float phase)
+{
+    return sinf(phase); // Generate a sine wave
 }
 
-// Process audio through an all-pass filter
-float process_all_pass_filter(AllPassFilter_TypeDef *filter, float input) {
-    int read_index = filter->write_index - filter->delay_samples;
-    if (read_index < 0) {
-        read_index += MAX_DELAY;
-    }
-
-    float buffered_value = filter->buffer[read_index];
-    float output = buffered_value - input;
-    filter->buffer[filter->write_index] = input + buffered_value;
-    filter->write_index = (filter->write_index + 1) % MAX_DELAY;
-
+// All-pass filter function
+ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser,float input, float feedback)
+{
+    float delayed = phaser->buffer[phaser->write_pos];
+    float output = feedback * input + delayed - feedback * phaser->buffer[phaser->write_pos];
+    phaser->buffer[phaser->write_pos] = input;
+    phaser->write_pos = (phaser->write_pos + 1) % PHASER_BUFFER_SIZE; // Circular buffer
     return output;
 }
 
-
-
-// Initialize the phaser effect
-void init_phaser(Phaser_TypeDef *phaser, int sample_rate) {
-    int base_delay = sample_rate / 1000; // Base delay time (e.g., 1ms)
-    for (int i = 0; i < NUM_STAGES; i++) {
-        init_all_pass_filter(&phaser->filters[i], base_delay + i * (base_delay / 2));
-    }
-    phaser->lfo_phase = 0.0f;
-    phaser->feedback_buffer = 0.0f;
-}
-
-// Process audio through the phaser effect
-float process_phaser(Phaser_TypeDef *phaser, float input, float lfo_freq, float depth, float feedback) {
+// Process one sample
+ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float input)
+{
     // Update LFO phase
-    phaser->lfo_phase += 2.0f * M_PI * lfo_freq / PHASER_SAMPLE_RATE;
-    if (phaser->lfo_phase > 2.0f * M_PI) {
-        phaser->lfo_phase -= 2.0f * M_PI;
+	phaser->lfo_phase += phaser->lfo_rate; // Increment phase (adjust for desired LFO rate) , 0.001f default
+    if (phaser->lfo_phase >= 2.0f * M_PI)
+    	phaser->lfo_phase -= 2.0f * M_PI;
+
+    // Generate LFO signal (sinusoidal modulation)
+    float lfo_signal = sine_wave_lfo(phaser->lfo_phase);
+
+    // Modulate feedback coefficient
+    float feedback = 0.7f + 0.3f * lfo_signal; // Base + modulation
+
+    // Apply cascade of all-pass filters
+    float wet = input;
+    for (int i = 0; i < 6; i++) { // Cascade of 6 all-pass filters
+        wet = phaser_all_pass_filter(phaser,wet, feedback);
     }
-
-    // Calculate modulated delay offset
-    //float modulation = depth * sin(phaser->lfo_phase);
-
-    // Process the input through the all-pass filters
-    float wet = phaser->feedback_buffer + input;
-    for (int i = 0; i < NUM_STAGES; i++) {
-        wet = process_all_pass_filter(&phaser->filters[i], wet);
-    }
-
-    // Apply feedback
-    phaser->feedback_buffer = wet * feedback;
 
     // Mix dry and wet signals
-    float output = input + wet;
+    return phaser->mix * input + (1.0F - phaser->mix) * wet;  // Simple equal mix
 
-    return output;
 }
 
-Phaser_TypeDef phaser;
+ITCM_AREA_CODE static void phaser_init(PHASER_Effect_TypeDef *phaser)
+{
+	phaser->lfo_phase = 0.0F;
+	phaser->mix = 0.5F;
+}
 
 ITCM_AREA_CODE void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index)
 {
-PHASER_Effect_TypeDef			*PHASER_Effect 	= (PHASER_Effect_TypeDef *)Effects[index].private_data;
+PHASER_Effect_TypeDef			*phaser	= (PHASER_Effect_TypeDef *)Effects[index].private_data;
 uint32_t	i;
-
-	if (( PHASER_Effect->flags & PHASER_EFFECT_INITIALIZED) == 0)
+	if (( phaser->flags & EFFECT_INITIALIZED) == 0)
 	{
-	    init_phaser(&phaser, PHASER_SAMPLE_RATE);
-	    PHASER_Effect->flags |= PHASER_EFFECT_INITIALIZED;
+		phaser_init(phaser);
+		phaser->flags |= EFFECT_INITIALIZED;
 	}
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
-		if (( PHASER_Effect->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
-			outputData[i] = (int16_t )(process_phaser(&phaser,(float )inputData[i], LFO_FREQ, DEPTH, FEEDBACK)) >> 4;
+		if (( phaser->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
+			outputData[i] = (int16_t ) phaser_effect(phaser,(float )inputData[i]);
 		else
 			outputData[i] = inputData[i];
 	}
 }
-// Example usage
-/*
-int main() {
-    const int num_samples = 48000; // Process 1 second of audio
-
-    Phaser phaser;
-    init_phaser(&phaser, PHASER_SAMPLE_RATE);
-
-    // Simulate processing audio samples
-    for (int i = 0; i < num_samples; i++) {
-        float input_sample = sin(2.0f * M_PI * 440.0f * i / PHASER_SAMPLE_RATE); // 440 Hz sine wave
-        float output_sample = process_phaser(&phaser, input_sample, LFO_FREQ, DEPTH, FEEDBACK);
-
-        // Output the processed sample (for example, write to a file or play back)
-    }
-
-    return 0;
-}
-*/

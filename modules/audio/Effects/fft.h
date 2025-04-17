@@ -14,35 +14,27 @@
  * Project : A_os
 */
 /*
- * small_buf_phaser.h
+ * fft.h
  *
- *  Created on: Apr 14, 2025
+ *  Created on: Apr 16, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_EFFECTS_SMALL_BUF_PHASER_H_
-#define MODULES_AUDIO_EFFECTS_SMALL_BUF_PHASER_H_
-
-
-#define SMALL_BUF_PHASER_PI 			3.14159265358979323846
-#define SMALL_BUF_PHASER_SAMPLE_RATE	44100 // Sample rate in Hz
-#define SMALL_BUF_PHASER_MAX_DELAY 		HALF_NUMBER_OF_AUDIO_SAMPLES     // Small buffer size (in samples) = 128
-#define SMALL_BUF_PHASER_NUM_STAGES 	2      // Fewer stages for simplicity
-
-// All-pass filter structure
-typedef struct {
-    float buffer[MAX_DELAY];
-    int write_pos;
-} AllPassFilter_typedef;
-
+#ifndef MODULES_AUDIO_EFFECTS_FFT_H_
+#define MODULES_AUDIO_EFFECTS_FFT_H_
 
 typedef struct
 {
 	uint8_t			status;
 	uint8_t			initialized;
 	uint8_t			flags;
-	float 			lfo_rate,depth,feedback;
-	Phaser_TypeDef	*phaser;
-}SmallBuf_PHASER_Effect_TypeDef;
+}FFT_Effect_TypeDef;
 
-#endif /* MODULES_AUDIO_EFFECTS_SMALL_BUF_PHASER_H_ */
+#define	FFT_WINDOW_NONE		0
+#define	FFT_WINDOW_BLACKMAN	1
+#define	FFT_WINDOW_HAMMING	2
+#define	FFT_WINDOW_HANNING	3
+
+extern void Do_Fft(int16_t *inputData, int16_t *outputData, uint8_t index);
+
+#endif /* MODULES_AUDIO_EFFECTS_FFT_H_ */

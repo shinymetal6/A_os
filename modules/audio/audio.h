@@ -106,6 +106,7 @@ typedef struct _AudioFlagsTypeDef
 #include	"Effects/dummy.h"
 #include	"Effects/reverb.h"
 #include	"Effects/phaser.h"
+#include	"Effects/fft.h"
 
 #include	"Generators/noise.h"
 #include	"Generators/oscillator_core.h"

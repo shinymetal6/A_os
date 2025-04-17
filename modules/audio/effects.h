@@ -37,6 +37,7 @@ typedef struct
 
 
 #define	EFFECT_NOSPACELEFT	 255
+#define	EFFECT_INITIALIZED	0x40
 #define	EFFECT_ENABLED 		0x80
 
 extern	Effects_TypeDef		Effects[MAX_EFFECTS];

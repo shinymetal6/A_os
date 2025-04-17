@@ -23,39 +23,28 @@
 #ifndef MODULES_AUDIO_EFFECTS_PHASER_H_
 #define MODULES_AUDIO_EFFECTS_PHASER_H_
 
-#define MAX_DELAY 1024       // Maximum delay length for all-pass filters
-#define PHASER_SAMPLE_RATE DEFAULT_SAMPLE_FREQUENCY    // Sample rate in Hz
-
-#define NUM_STAGES 6         // Number of all-pass filter stages
-#define LFO_FREQ 1.0f        // LFO frequency in Hz
-#define DEPTH 0.5f           // Modulation depth (0.0 to 1.0)
-#define FEEDBACK 0.7f        // Feedback amount (0.0 to 1.0)
-
-typedef struct {
-    float buffer[MAX_DELAY]; // Circular buffer for delay line
-    int write_index;         // Write index for circular buffer
-    int delay_samples;       // Delay time in samples
-} AllPassFilter_TypeDef;
-
-// Phaser structure combining multiple all-pass filters and LFO
-typedef struct {
-	AllPassFilter_TypeDef 	filters[NUM_STAGES];
-    float 					lfo_phase;         // Current phase of the LFO
-    float 					feedback_buffer;   // Feedback buffer
-} Phaser_TypeDef;
+#define PHASER_BUFFER_SIZE		128  	// 128 samples
+#define PHASER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
+#define PHASER_LFO_RATE			0.001F		// LFO frequency in Hz
+#define PHASER_LFO_PHASE		0.0		// LFO phase
+#define PHASER_DEPTH			0.5		// Depth of modulation
+#define PHASER_MIX				0.5		// mix rate
 
 typedef struct
 {
 	uint8_t			status;
 	uint8_t			initialized;
 	uint8_t			flags;
-	float 			lfo_freq,depth,feedback;
-	Phaser_TypeDef	*phaser;
+	float 			buffer[PHASER_BUFFER_SIZE];	// Circular buffer for delay line
+	int32_t			write_pos;						// Write position in the buffer
+	int32_t			read_pos;						// Read position in the buffer
+	float 			lfo_phase;						// Phase of the LFO
+	float 			lfo_rate;						// Rate of the LFO
+	float 			depth;							// Depth of the LFO
+	float 			mix;							// Depth of the LFO
 }PHASER_Effect_TypeDef;
 
-#define	PHASER_EFFECT_INITIALIZED	0x01
-
-extern void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index);
+extern	void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index);
 
 
 #endif /* MODULES_AUDIO_EFFECTS_PHASER_H_ */

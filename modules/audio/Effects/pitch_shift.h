@@ -1,0 +1,35 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * pitch_shift.h
+ *
+ *  Created on: Apr 16, 2025
+ *      Author: fil
+ */
+
+#ifndef MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_
+#define MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_
+
+typedef struct
+{
+	uint8_t			status;
+	uint8_t			initialized;
+	uint8_t			flags;
+}PITCH_SHIFT_Effect_TypeDef;
+
+extern void Do_PitchShift(int16_t *inputData, int16_t *outputData, uint8_t index);
+
+#endif /* MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_ */
