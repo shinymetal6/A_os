@@ -14,22 +14,30 @@
  * Project : A_os
 */
 /*
- * pitch_shift.h
+ * dummy.c
  *
- *  Created on: Apr 16, 2025
+ *  Created on: Nov 29, 2024
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_
-#define MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_
 
-typedef struct
+#include "main.h"
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+//#include "../../kernel/kernel_opt.h"
+
+#include "../audio.h"
+#ifdef AUDIO_GENERATORS_ENABLED
+#include "../effects.h"
+#include "dummy.h"
+
+ITCM_AREA_CODE void Do_Dummy(int16_t *in, int16_t *out, uint8_t index)
 {
-	uint8_t			status;
-	uint8_t			initialized;
-	uint8_t			flags;
-}PITCH_SHIFT_Effect_TypeDef;
+uint32_t	i;
+//DUMMY_Effect_TypeDef	*DUMMY_Effect = (DUMMY_Effect_TypeDef *)Effects[index].private_data;
 
-extern void Do_PitchShift(int16_t *inputData, int16_t *outputData, uint8_t index);
-
-#endif /* MODULES_AUDIO_EFFECTS_PITCH_SHIFT_H_ */
+	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		out[i] = in[i];
+}
+#endif // #ifdef AUDIO_GENERATORS_ENABLED

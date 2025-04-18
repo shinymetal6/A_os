@@ -92,14 +92,18 @@ uint32_t	i;
 
 	if (( fft->flags & EFFECT_INITIALIZED) == 0)
 	{
-		arm_rfft_fast_init_f32(&fft_instance, HALF_NUMBER_OF_AUDIO_SAMPLES);
+		if ( fft->samples_number < 256 )
+			arm_rfft_128_fast_init_f32(&fft_instance);
+		else
+			arm_rfft_fast_init_f32(&fft_instance, HALF_NUMBER_OF_AUDIO_SAMPLES);
 		fft->flags |= EFFECT_INITIALIZED;
 	}
 	if (( fft->flags & EFFECT_ENABLED ) == EFFECT_ENABLED )
 	{
+
 		arm_rfft_fast_f32(&fft_instance, float_inbuf, float_fft_outbuf, FORWARD_FFT);
 		arm_rfft_fast_f32(&fft_instance, float_fft_outbuf, float_fft_outbuf_reverse, INVERSE_FFT);
-		arm_cmplx_mag_f32(float_fft_outbuf,float_fftmag_outbuf, HALF_NUMBER_OF_AUDIO_SAMPLES/2);
+		arm_cmplx_mag_f32(float_fft_outbuf,float_fftmag_outbuf, fft->samples_number/2);
 		for(i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 		{
 			outputData[i] = (int16_t)float_fft_outbuf_reverse[i];

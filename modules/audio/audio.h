@@ -92,7 +92,6 @@ typedef struct _AudioFlagsTypeDef
 #include	"Effects/iir.h"
 #include	"Effects/moog_filters.h"
 #include	"Effects/passthrough.h"
-#include	"Effects/phaser.h"
 #include	"Effects/pitch_shift.h"
 #include	"Effects/reverb.h"
 #include	"Effects/tremolo.h"
@@ -102,11 +101,10 @@ typedef struct _AudioFlagsTypeDef
 #endif
 */
 #include	"Effects/vca.h"
-#include	"Effects/echo.h"
 #include	"Effects/dummy.h"
 #include	"Effects/reverb.h"
 #include	"Effects/phaser.h"
-#include	"Effects/fft.h"
+#include	"Effects/chorus.h"
 
 #include	"Generators/noise.h"
 #include	"Generators/oscillator_core.h"

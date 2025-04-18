@@ -14,29 +14,22 @@
  * Project : A_os
 */
 /*
- * dummy.c
+ * dummy.h
  *
  *  Created on: Nov 29, 2024
  *      Author: fil
  */
 
+#ifndef MODULES_AUDIO_EFFECTS_DUMMY_H_
+#define MODULES_AUDIO_EFFECTS_DUMMY_H_
 
-#include "main.h"
-#include "../../../kernel/system_default.h"
-#include "../../../kernel/A.h"
-#include "../../../kernel/A_exported_functions.h"
-//#include "../../kernel/kernel_opt.h"
-
-#include "../audio.h"
-#ifdef AUDIO_GENERATORS_ENABLED
-#include "../effects.h"
-#include "dummy.h"
-
-ITCM_AREA_CODE void Do_Dummy(int16_t *inputData, int16_t *outputData, uint8_t index)
+typedef struct
 {
-uint32_t	i;
+	uint8_t				status;
+	uint8_t				flags;
+}DUMMY_Effect_TypeDef;
+/* flags */
 
-	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		outputData[i] = (int16_t )((float )inputData[i] * 0.5F);
-}
-#endif // #ifdef AUDIO_GENERATORS_ENABLED
+extern	void Do_Dummy(int16_t* inputData, int16_t* outputData,uint8_t effect_index);
+
+#endif /* MODULES_AUDIO_EFFECTS_DUMMY_H_ */

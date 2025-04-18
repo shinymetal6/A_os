@@ -16,26 +16,19 @@
 /*
  * phaser.h
  *
- *  Created on: Apr 18, 2025
+ *  Created on: Apr 7, 2025
  *      Author: fil
  */
 
 #ifndef MODULES_AUDIO_EFFECTS_PHASER_H_
 #define MODULES_AUDIO_EFFECTS_PHASER_H_
 
-
-#define PHASER_BUFFER_SIZE		HALF_NUMBER_OF_AUDIO_SAMPLES  	// 128 samples
+#define PHASER_BUFFER_SIZE		128  	// 128 samples
 #define PHASER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
 #define PHASER_LFO_RATE			0.001F		// LFO frequency in Hz
 #define PHASER_LFO_PHASE		0.0		// LFO phase
 #define PHASER_DEPTH			0.5		// Depth of modulation
 #define PHASER_MIX				0.5		// mix rate
-#define PHASER_NUM_FILTER_STAGES 		4       // Number of all-pass filter stages
-typedef struct
-{
-    float buffer;
-    float feedback;
-} PHASER_AllPassFilter_TypeDef;
 
 typedef struct
 {
@@ -43,16 +36,15 @@ typedef struct
 	uint8_t			initialized;
 	uint8_t			flags;
 	float 			buffer[PHASER_BUFFER_SIZE];	// Circular buffer for delay line
-	uint32_t		write_pos;					// Write position in the buffer
-	uint32_t		read_pos;					// Read position in the buffer
-    float 			lfo_frequency; 				// LFO frequency in Hz
-    float 			lfo_phase;
-    float 			lfo_value;
-    float 			feedback;      				// Feedback amount (0.0 to 1.0)
-    float 			mix;		           		// Mix between dry and wet signals (0.0 to 1.0)
-	PHASER_AllPassFilter_TypeDef	filter[1];
+	int32_t			write_pos;						// Write position in the buffer
+	int32_t			read_pos;						// Read position in the buffer
+	float 			lfo_phase;						// Phase of the LFO
+	float 			lfo_rate;						// Rate of the LFO
+	float 			depth;							// Depth of the LFO
+	float 			mix;							// Depth of the LFO
 }PHASER_Effect_TypeDef;
 
-extern void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index);
+extern	void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index);
+
 
 #endif /* MODULES_AUDIO_EFFECTS_PHASER_H_ */

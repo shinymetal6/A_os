@@ -28,6 +28,7 @@ typedef struct
 	uint8_t			status;
 	uint8_t			initialized;
 	uint8_t			flags;
+	uint32_t		samples_number;
 }FFT_Effect_TypeDef;
 
 #define	FFT_WINDOW_NONE		0

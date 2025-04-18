@@ -14,35 +14,30 @@
  * Project : A_os
 */
 /*
- * phaser.h
+ * flanger.h
  *
  *  Created on: Apr 18, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_AUDIO_EFFECTS_PHASER_H_
-#define MODULES_AUDIO_EFFECTS_PHASER_H_
+#ifndef MODULES_AUDIO_EFFECTS_FLANGER_H_
+#define MODULES_AUDIO_EFFECTS_FLANGER_H_
 
-
-#define PHASER_BUFFER_SIZE		HALF_NUMBER_OF_AUDIO_SAMPLES  	// 128 samples
-#define PHASER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
-#define PHASER_LFO_RATE			0.001F		// LFO frequency in Hz
-#define PHASER_LFO_PHASE		0.0		// LFO phase
-#define PHASER_DEPTH			0.5		// Depth of modulation
-#define PHASER_MIX				0.5		// mix rate
-#define PHASER_NUM_FILTER_STAGES 		4       // Number of all-pass filter stages
-typedef struct
-{
-    float buffer;
-    float feedback;
-} PHASER_AllPassFilter_TypeDef;
+#define FLANGER_BUFFER_SIZE		HALF_NUMBER_OF_AUDIO_SAMPLES  	// 128 samples
+#define FLANGER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
+#define FLANGER_MAX_DELAY_MS 	20       // Maximum delay in milliseconds
+typedef struct {
+    float 	buffer[FLANGER_BUFFER_SIZE];
+    int 	write_index;
+    int 	max_delay_samples;
+} FLANGER_DelayLine_TypeDef;
 
 typedef struct
 {
 	uint8_t			status;
 	uint8_t			initialized;
 	uint8_t			flags;
-	float 			buffer[PHASER_BUFFER_SIZE];	// Circular buffer for delay line
+	float 			buffer[FLANGER_BUFFER_SIZE];	// Circular buffer for delay line
 	uint32_t		write_pos;					// Write position in the buffer
 	uint32_t		read_pos;					// Read position in the buffer
     float 			lfo_frequency; 				// LFO frequency in Hz
@@ -50,9 +45,9 @@ typedef struct
     float 			lfo_value;
     float 			feedback;      				// Feedback amount (0.0 to 1.0)
     float 			mix;		           		// Mix between dry and wet signals (0.0 to 1.0)
-	PHASER_AllPassFilter_TypeDef	filter[1];
-}PHASER_Effect_TypeDef;
+    FLANGER_DelayLine_TypeDef	delay_line[1];
+}FLANGER_Effect_TypeDef;
 
-extern void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index);
+extern void Do_Flanger(int16_t *inputData, int16_t *outputData, uint8_t index);
 
-#endif /* MODULES_AUDIO_EFFECTS_PHASER_H_ */
+#endif /* MODULES_AUDIO_EFFECTS_FLANGER_H_ */

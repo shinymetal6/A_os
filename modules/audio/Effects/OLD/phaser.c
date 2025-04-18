@@ -16,66 +16,66 @@
 /*
  * phaser.c
  *
- *  Created on: Apr 18, 2025
+ *  Created on: Apr 7, 2025
  *      Author: fil
  */
+
 #include "main.h"
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-//#include "../../kernel/kernel_opt.h"
-
-#include "../audio.h"
-#ifdef AUDIO_GENERATORS_ENABLED
-#include "../effects.h"
+#include "../../../kernel/scheduler.h"
+//#include "../../../kernel/kernel_opt.h"
 #include "phaser.h"
-#include "arm_math.h"
 
-float phaser_allpass_process(PHASER_AllPassFilter_TypeDef *filter, float input_sample, float coefficient)
+#include <stdint.h>
+#include <math.h>
+
+// Low-frequency oscillator (LFO) function
+ITCM_AREA_CODE static float sine_wave_lfo(float phase)
 {
-    float output_sample = input_sample * -coefficient + filter->buffer;
-    filter->buffer = output_sample * coefficient + input_sample;
-    return output_sample;
+    return sinf(phase); // Generate a sine wave
+}
+
+// All-pass filter function
+ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser,float input, float feedback)
+{
+    float delayed = phaser->buffer[phaser->write_pos];
+    float output = feedback * input + delayed - feedback * phaser->buffer[phaser->write_pos];
+    phaser->buffer[phaser->write_pos] = input;
+    phaser->write_pos = (phaser->write_pos + 1) % PHASER_BUFFER_SIZE; // Circular buffer
+    return output;
 }
 
 // Process one sample
 ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float input)
 {
-PHASER_AllPassFilter_TypeDef	*filter = (PHASER_AllPassFilter_TypeDef *)phaser->filter;
+    // Update LFO phase
+	phaser->lfo_phase += phaser->lfo_rate; // Increment phase (adjust for desired LFO rate) , 0.001f default
+    if (phaser->lfo_phase >= 2.0f * M_PI)
+    	phaser->lfo_phase -= 2.0f * M_PI;
 
-uint32_t stage;
-float    output;
-    // Compute LFO-modulated all-pass coefficient
-	phaser->lfo_value = 0.5f * (1.0f + sinf(phaser->lfo_phase)); // LFO value between 0 and 1
-    float coefficient = phaser->lfo_value * 0.9f + 0.1f;       // Scale to [0.1, 1.0]
+    // Generate LFO signal (sinusoidal modulation)
+    float lfo_signal = sine_wave_lfo(phaser->lfo_phase);
 
-    // Process input sample through all-pass filters
+    // Modulate feedback coefficient
+    float feedback = 0.7f + 0.3f * lfo_signal; // Base + modulation
+
+    // Apply cascade of all-pass filters
     float wet = input;
-    for (stage = 0; stage < PHASER_NUM_FILTER_STAGES; stage++)
-        wet = phaser_allpass_process(&filter[stage], wet, coefficient);
-
-    // Apply feedback
-    wet += phaser->feedback * filter[PHASER_NUM_FILTER_STAGES - 1].buffer;
+    for (int i = 0; i < 6; i++) { // Cascade of 6 all-pass filters
+        wet = phaser_all_pass_filter(phaser,wet, feedback);
+    }
 
     // Mix dry and wet signals
-    output = phaser->mix * wet + (1.0f - phaser->mix) * input;
+    return phaser->mix * input + (1.0F - phaser->mix) * wet;  // Simple equal mix
 
-    // Update LFO phase
-    phaser->lfo_phase += 2.0f * PI * phaser->lfo_frequency / PHASER_SAMPLE_RATE;
-    if (phaser->lfo_phase >= 2.0f * PI)
-    	phaser->lfo_phase -= 2.0f * PI;
-    return output;
 }
-
 
 ITCM_AREA_CODE static void phaser_init(PHASER_Effect_TypeDef *phaser)
 {
-PHASER_AllPassFilter_TypeDef	*filter = (PHASER_AllPassFilter_TypeDef *)phaser->filter;
-
-	phaser->lfo_frequency = 0.5F;
-	phaser->feedback = 0.7F;
+	phaser->lfo_phase = 0.0F;
 	phaser->mix = 0.5F;
-    filter->buffer = 0.0f;
 }
 
 ITCM_AREA_CODE void Do_Phaser(int16_t *inputData, int16_t *outputData, uint8_t index)
@@ -95,5 +95,3 @@ uint32_t	i;
 			outputData[i] = inputData[i];
 	}
 }
-
-#endif
