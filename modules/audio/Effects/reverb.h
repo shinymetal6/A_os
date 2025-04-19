@@ -16,31 +16,49 @@
 /*
  * reverb.h
  *
- *  Created on: Apr 4, 2025
+ *  Created on: Apr 18, 2025
  *      Author: fil
  */
 
 #ifndef MODULES_AUDIO_EFFECTS_REVERB_H_
 #define MODULES_AUDIO_EFFECTS_REVERB_H_
 
-#define REVERB_BUFFER_SIZE 			128       // 128 bytes = 64 16-bit integers
-#define REVERB_FIXED_ALLPASS_GAIN 	0.5f
-#define REVERB_FIXED_ALLPASS_DELAY 	13
-#define REVERB_MIX				 	0.5f
+#define REVERB_BUFFER_SIZE 			HALF_NUMBER_OF_AUDIO_SAMPLES
+#define REVERB_NUM_COMB 			4
+#define REVERB_NUM_ALLPASS 			2
+#define REVERB_SAMPLE_RATE			DEFAULT_SAMPLE_FREQUENCY
+
+#define REVERB_SMALL_ROOM			0.5F
+#define REVERB_MEDIUM_ROOM			1.0F
+#define REVERB_LARGE_ROOM			1.5F
+#define REVERB_HALL_ROOM			2.0F
+
+typedef struct {
+    q15_t buffer[REVERB_BUFFER_SIZE*2]; // Delay line buffer
+    int write_index;          // Write index for circular buffer
+    int delay_samples;        // Delay in samples
+    q15_t feedback;           // Feedback gain
+} REVERB_CombFilter_TypeDef;
+
+// All-pass filter structure
+typedef struct {
+    q15_t buffer[REVERB_BUFFER_SIZE*2]; // Delay line buffer
+    int write_index;          // Write index for circular buffer
+    int delay_samples;        // Delay in samples
+} REVERB_AllPassFilter_TypeDef;
 
 typedef struct
 {
 	uint8_t			status;
 	uint8_t			initialized;
 	uint8_t			flags;
-	float			buffer[REVERB_BUFFER_SIZE];	// Circular buffer for delay line
-	int32_t			read_pos;            // Read position in the buffer
-	int32_t			write_pos;           // Write position in the buffer
-	float 			comb_gains[6];
-	uint8_t 		comb_delays[6];
-	float 			allpass_feedback_gain;
-	uint8_t 		allpass_delay;
+	float 			room_size;			//Small Room 0.5 , Medium Room 1.0 , Large Room 1.5 , Cathedral/Hall 2.0
 	float 			mix;				// Depth
+	REVERB_CombFilter_TypeDef		REVERB_CombFilter[REVERB_NUM_COMB];
+	REVERB_AllPassFilter_TypeDef	REVERB_AllPassFilter[REVERB_NUM_ALLPASS];
+    float32_t base_delays[REVERB_NUM_COMB];// = {0.0297f, 0.0371f, 0.0411f, 0.0437f}; // Base delay times in seconds
+    float32_t feedback_gains[REVERB_NUM_COMB];// = {0.84f, 0.84f, 0.84f, 0.84f};       // Feedback gains
+
 }REVERB_Effect_TypeDef;
 
 

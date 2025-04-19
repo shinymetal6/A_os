@@ -51,7 +51,7 @@ ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser
 ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float input)
 {
     // Update LFO phase
-	phaser->lfo_phase += phaser->lfo_rate; // Increment phase (adjust for desired LFO rate) , 0.001f default
+	phaser->lfo_phase += phaser->lfo_internal_rate; // Increment phase (adjust for desired LFO rate) , 0.001f default
     if (phaser->lfo_phase >= 2.0f * M_PI)
     	phaser->lfo_phase -= 2.0f * M_PI;
 
@@ -75,6 +75,11 @@ ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float in
 ITCM_AREA_CODE static void phaser_init(PHASER_Effect_TypeDef *phaser)
 {
 	phaser->lfo_phase = 0.0F;
+	if ( phaser->lfo_rate == 0.0F )
+		phaser->lfo_internal_rate = 0.001F;
+	else
+		phaser->lfo_internal_rate = phaser->lfo_rate / 1000.0F;
+
 	phaser->mix = 0.5F;
 }
 

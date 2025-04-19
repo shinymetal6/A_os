@@ -23,6 +23,7 @@
 #ifndef MODULES_AUDIO_AUDIO_H_
 #define MODULES_AUDIO_AUDIO_H_
 
+#include 	"arm_math.h"
 
 typedef struct
 {
@@ -102,11 +103,9 @@ typedef struct _AudioFlagsTypeDef
 #endif
 */
 #include	"Effects/vca.h"
-#include	"Effects/echo.h"
 #include	"Effects/dummy.h"
 #include	"Effects/reverb.h"
 #include	"Effects/phaser.h"
-#include	"Effects/fft.h"
 
 #include	"Generators/noise.h"
 #include	"Generators/oscillator_core.h"

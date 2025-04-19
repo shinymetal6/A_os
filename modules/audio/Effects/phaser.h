@@ -39,7 +39,8 @@ typedef struct
 	int32_t			write_pos;						// Write position in the buffer
 	int32_t			read_pos;						// Read position in the buffer
 	float 			lfo_phase;						// Phase of the LFO
-	float 			lfo_rate;						// Rate of the LFO
+	float 			lfo_rate;						// Rate of the LFO from user
+	float 			lfo_internal_rate;				// Rate of the LFO
 	float 			depth;							// Depth of the LFO
 	float 			mix;							// Depth of the LFO
 }PHASER_Effect_TypeDef;
