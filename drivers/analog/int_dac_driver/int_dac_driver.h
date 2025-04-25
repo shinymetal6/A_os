@@ -56,6 +56,7 @@ typedef struct
 #define		DAC_STATUS_RUNNING		0x80
 /* flags */
 #define		DAC_FLAGS_WAKEUP			0x80
+#define		DAC_FLAGS_USE_SYNTHMODULE	0x02
 #define		DAC_FLAGS_USE_AUDIOMODULE	0x01
 /* wav_flags */
 #define		DAC_WAV_FLAGS_8000		0x01

@@ -186,7 +186,6 @@ uint32_t	i;
 	if ( Asys.g_os_started )
 	{
 		update_global_tick_count();
-
 		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
 		{
 			if ( before_check_timers_callback_array[i] != NULL )

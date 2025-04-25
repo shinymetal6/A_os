@@ -36,6 +36,9 @@
 #ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
 	#endif
+#ifdef	NEVOL_AUDIO_2416176_01
+		#include "../boards/AX_P2416176_01_NEVOL_AUDIO.h"
+	#endif
 #ifdef	FY_201023_01
 		#include "../boards/FY_201023_01.h"
 	#endif

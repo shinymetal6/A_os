@@ -14,31 +14,31 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * passthrough.c
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Apr 24, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#include "main.h"
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+#include "../sound.h"
 
-typedef struct
+#include "passthrough.h"
+
+
+ITCM_AREA_CODE void Effect_Passthrough(uint32_t *effect_s, uint32_t start_sample)
 {
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
+uint32_t	i;
+Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
+PASSTHROUGH_Effect_TypeDef *private = (PASSTHROUGH_Effect_TypeDef *)effect->private_data;
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-//#include "audio/audio.h"
-#include "sound/sound.h"
+	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+		//effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+		OBUF = IBUF;
+	private->call_counter++;
+}
 
-#endif /* MODULES_MODULES_H_ */
+

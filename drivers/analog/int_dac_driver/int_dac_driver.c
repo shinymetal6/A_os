@@ -123,7 +123,7 @@ DAC_Drv_TypeDef	*dac_drv;
 		if ( dac_drv->dac_timer == NULL)
 			return DRIVER_REQUEST_FAILED;
 		if ( dac_drv->dac_sample_frequency == 0)
-			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
+			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;// + 19000;
 
 		int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
 
@@ -201,10 +201,16 @@ uint32_t	i , start_sample;
 	}
 	else
 	{
+		/*
 		if (( dac_drv->flags & DAC_FLAGS_USE_AUDIOMODULE) == DAC_FLAGS_USE_AUDIOMODULE)
 		{
 			RunOscillator32();
 			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
+		}
+		*/
+		if (( dac_drv->flags & DAC_FLAGS_USE_SYNTHMODULE) == DAC_FLAGS_USE_SYNTHMODULE)
+		{
+			Do_synth( start_sample);
 		}
 	}
 }

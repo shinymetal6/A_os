@@ -14,31 +14,20 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * vca.h
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Apr 24, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#ifndef MODULES_SOUND_EFFECTS_VCA_H_
+#define MODULES_SOUND_EFFECTS_VCA_H_
 
 typedef struct
 {
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
+	q15_t				amplitude;
+}VCA_Effect_TypeDef;
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-//#include "audio/audio.h"
-#include "sound/sound.h"
+extern void Effect_VCA(uint32_t *effect_s, uint32_t start_sample);
 
-#endif /* MODULES_MODULES_H_ */
+#endif /* MODULES_SOUND_EFFECTS_VCA_H_ */
