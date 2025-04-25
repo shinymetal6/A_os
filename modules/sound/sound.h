@@ -59,6 +59,7 @@ typedef struct {
 #include	"Effects/phaser.h"
 #include	"Effects/reverb.h"
 #include	"Effects/chorus.h"
+#include	"Effects/echo.h"
 
 extern uint8_t 	Sound_Insert_Effect(Effect_TypeDef *effect);
 extern void 	Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample);

@@ -73,14 +73,7 @@ ITCM_AREA_CODE static q15_t reverb_process(REVERB_Effect_TypeDef *reverb, q15_t 
         for (int a = 0; a < REVERB_NUM_ALLPASS_FILTERS; a++) {
             wet_sample = reverb_delay_line_process(&reverb->allpass_filters[a], wet_sample);
         }
-
-        // Mix dry and wet signals
-        q15_t mixed_output = (q15_t)((((q31_t)dry_sample * reverb->mix_dry_q15) >> 15) +
-                                     (((q31_t)wet_sample * reverb->mix_wet_q15) >> 15));
-
-        // Clamp to prevent overflow
-        if (mixed_output > 32767) mixed_output = 32767;
-        if (mixed_output < -32768) mixed_output = -32768;
+        q15_t mixed_output = (q15_t )(float )(dry_sample * reverb->dry_mix) + (float )(wet_sample * reverb->wet_mix);
 
         // Store the output sample
         return mixed_output;
@@ -106,8 +99,6 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
 
     // Set feedback gain and mix levels
     reverb->feedback_gain_q15 = (q15_t)(reverb->feedback_gain * 32768.0f); // Convert to Q15
-    reverb->mix_dry_q15 = (q15_t)(reverb->dry_mix * 32768.0f);             // Dry mix in Q15
-    reverb->mix_wet_q15 = (q15_t)(reverb->wet_mix * 32768.0f);             // Wet mix in Q15
 }
 
 ITCM_AREA_CODE void Effect_Reverb(uint32_t *effect_s, uint32_t start_sample)

@@ -50,8 +50,6 @@ typedef struct
     Reverb_DelayLine_TypeDef comb_filters[REVERB_NUM_COMB_FILTERS]; // Comb filters
     Reverb_DelayLine_TypeDef allpass_filters[REVERB_NUM_ALLPASS_FILTERS]; // All-pass filters
     q15_t feedback_gain_q15; // Feedback gain for comb filters
-    q15_t mix_dry_q15;       // Dry signal mix (Q15 format)
-    q15_t mix_wet_q15;       // Wet signal mix (Q15 format)
 }REVERB_Effect_TypeDef;
 
 extern void Effect_Reverb_Init(uint32_t *effect_s);
