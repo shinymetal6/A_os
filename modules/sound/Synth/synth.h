@@ -62,6 +62,8 @@ typedef struct {
 	uint8_t				voices_shift;
 	int16_t				*out_buf;
 	uint32_t 			*effect_s;
+	uint8_t				i2s_handle;
+	int16_t 			*codec_buf;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
 } MidiSynth_TypeDef;

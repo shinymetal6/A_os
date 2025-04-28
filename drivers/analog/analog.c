@@ -152,6 +152,7 @@ uint32_t codec_init(uint8_t handle)
 		return ANALOG_DriverStruct[handle].codec_init(handle);
 	return 1;
 }
+
 uint32_t codec_internal_ops(uint8_t handle,uint8_t command,uint32_t param0,uint32_t param1,uint32_t param2,uint32_t param3)
 {
 	if ( ANALOG_DriverStruct[handle].codec_internal_ops != NULL )

@@ -32,6 +32,7 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
+#define SOUND_ENABLED	1
 #define USB_DEVICE_ENABLED	1
 #ifdef USB_DEVICE_ENABLED
 	#define	USB_CDC				1
@@ -40,7 +41,7 @@
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
-#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
+//#define ETH_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
 //#define FRAME_BUFFER		__attribute__((section(".framebuffer"))) __attribute__ ((aligned (32)))
 
 /* Clock */

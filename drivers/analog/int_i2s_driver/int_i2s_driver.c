@@ -25,20 +25,18 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
+//#include "../../../kernel/kernel_opt.h"
 
 #ifdef STM32H7xx_HAL_I2S_H
 
 #include "int_i2s_driver.h"
-#include "../../../modules/audio/audio.h"
+#include "../../../modules/sound/sound.h"
 
 extern	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t					last_analog_used_handle,analog_driver_request;
 
 extern int16_t					oscout_buffer[HALF_NUMBER_OF_AUDIO_SAMPLES];
 
-extern	AudioFlagsTypeDef		AudioFlags;
-extern	int16_t					pipe[MAX_EFFECTS] [HALF_NUMBER_OF_AUDIO_SAMPLES];
 
 ITCM_AREA_CODE  static uint32_t int_i2s_init(uint8_t handle)
 {
@@ -59,6 +57,18 @@ ITCM_AREA_CODE  static uint32_t int_i2s_stop(uint8_t handle)
 ITCM_AREA_CODE  static uint32_t int_i2s_get_status(uint8_t handle)
 {
 	return 0;
+}
+
+ITCM_AREA_CODE int16_t	*get_codec_out_buf(uint8_t handle)
+{
+I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
+	return i2s_drv->dac_buffer;
+}
+
+ITCM_AREA_CODE int16_t	*get_codec_in_buf(uint8_t handle)
+{
+I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
+	return i2s_drv->adc_buffer;
 }
 
 ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *private_data)
@@ -111,10 +121,14 @@ uint32_t	i,drv_ret=255;
 
 ITCM_AREA_CODE  static void i2s_irq_common(I2S_Drv_TypeDef	*i2s_drv,uint32_t handle)
 {
-	RunOscillator32();
-	effects_apply(i2s_drv->status & I2S_STATUS_FULL,AUDIO_IS_STEREO,i2s_drv->dac_buffer);
-	if ( i2s_drv->flags & I2S_FLAGS_WAKEUP)
-		activate_process(ANALOG_DriverStruct[handle].process,i2s_drv->wakeup_id,i2s_drv->wakeup_id);
+uint32_t	start_sample;
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
+	start_sample = (i2s_drv->status & I2S_STATUS_HALF) ? 0 : i2s_drv->len/2;
+	if (( i2s_drv->flags & I2S_FLAGS_USE_SYNTHMODULE) == I2S_FLAGS_USE_SYNTHMODULE)
+	{
+		Do_synth(start_sample);
+	}
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)

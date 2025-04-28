@@ -360,6 +360,10 @@ ITCM_AREA_CODE uint8_t Synth_Init(MidiSynth_TypeDef *synth)
         synth->voices[i].wavetable = NULL;        // No custom wavetable by default
         synth->voices[i].note = 0;
     }
+	if ( Synth->out_device == SYNTH_I2S_OUT)
+	{
+	    synth->codec_buf = get_codec_out_buf(synth->i2s_handle);
+	}
 
     return 0;
 }
@@ -396,13 +400,30 @@ ITCM_AREA_CODE void NoteOff(uint8_t note)
 
 ITCM_AREA_CODE void Do_synth(uint32_t start_sample)
 {
+uint32_t i;
+q15_t *last_buf;
 	if ( Synth == NULL )
 		return;
 	if ( Synth->status == SYNTH_ENABLED )
 	{
 		synth_process_block((uint32_t *)Synth,start_sample);
 		if ( Synth->effect_s != NULL )
-			Sound_Apply_Effect((Effect_TypeDef *)Synth->effect_s,start_sample);
+		{
+			last_buf = Sound_Apply_Effect((Effect_TypeDef *)Synth->effect_s,start_sample);
+			if ( Synth->out_device == SYNTH_I2S_OUT)
+			{
+				for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+					Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = last_buf[i+start_sample];
+			}
+		}
+		else
+		{
+			if ( Synth->out_device == SYNTH_I2S_OUT)
+			{
+				for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+					Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = Synth->out_buf[i+start_sample];
+			}
+		}
 	}
 }
 

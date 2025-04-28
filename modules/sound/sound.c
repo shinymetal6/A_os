@@ -78,7 +78,7 @@ ITCM_AREA_CODE uint8_t Sound_Insert_Effect(Effect_TypeDef *effect)
 	return 0;
 }
 
-ITCM_AREA_CODE void Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample)
+ITCM_AREA_CODE q15_t *Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample)
 {
 uint8_t		done=0;
 uint32_t	st;
@@ -92,7 +92,7 @@ uint32_t	st;
 		if ( effect->next_effect_s != NULL )
 			effect = (Effect_TypeDef *)effect->next_effect_s;
 		else
-			done = 1;
+			return effect->out_buf;
 	}
 }
 #endif

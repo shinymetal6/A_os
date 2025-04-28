@@ -25,7 +25,7 @@
 
 // Constants
 #define ECHO_SAMPLE_RATE DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
-#define ECHO_MAX_DELAY_LENGTH DEFAULT_SAMPLE_FREQUENCY // Maximum delay length (1 second at 44.1 kHz)
+#define ECHO_MAX_DELAY_LENGTH DEFAULT_SAMPLE_FREQUENCY/2 // Maximum delay length (1 second at 44.1 kHz)
 #define ECHO_BLOCK_SIZE SOUND_BLOCK_SIZE         // Number of samples processed per block
 #define ECHO_DELAY_LENGTH_MS 500    // Delay length in milliseconds
 #define ECHO_DEFAULT_ATTENUATION 0.5f       // Attenuation factor for the echo

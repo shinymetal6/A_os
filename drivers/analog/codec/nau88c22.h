@@ -122,6 +122,6 @@ typedef struct
 #define NAU88C22_INTOP_SET_VOLUME			0x07
 #define NAU88C22_INTOP_READ_REG				0x08
 
-extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *analog_driver_private_data,uint32_t driver_flags);
+extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *analog_driver_private_data);
 
 #endif /* DRIVERS_ANALOG_CODEC_NAU88C22_H_ */

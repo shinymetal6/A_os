@@ -27,7 +27,7 @@
 #define REVERB_BLOCK_SIZE 			SOUND_BLOCK_SIZE         // Number of samples processed per block
 #define REVERB_NUM_COMB_FILTERS 	4     // Number of comb filters
 #define REVERB_NUM_ALLPASS_FILTERS 2  // Number of all-pass filters
-#define REVERB_MAX_DELAY_LENGTH 	DEFAULT_SAMPLE_FREQUENCY // Maximum delay length (1 second at 44.1 kHz)
+#define REVERB_MAX_DELAY_LENGTH 	DEFAULT_SAMPLE_FREQUENCY/2 // Maximum delay length (1 second at 44.1 kHz)
 
 #define REVERB_DEFAULT_FBK_GAIN 	0.7F
 #define REVERB_DEFAULT_DRY_MIX	 	0.5F

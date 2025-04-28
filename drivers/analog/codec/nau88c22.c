@@ -160,6 +160,7 @@ const Nau88c22_t	Nau88c22[] =
 			0x0e9	//
 		},
 #endif
+
 #ifdef NAU88C22_EXT_FREQ_12_288MHZ
 		/* 12.288 MHz ext clock */
 		/*
@@ -169,10 +170,18 @@ const Nau88c22_t	Nau88c22[] =
 			R38 0x000 ; middle 9-bits of 24-bit fraction
 			R39 0x000 ; lowest order 9-bits of 24-bit fraction
 		*/
+
+#if DEFAULT_SAMPLE_FREQUENCY == 48000
 		{
 			NAU88C22_PLL_N,
 			0x008	// 256fs IMCLK rate : 12.288Mhz internal / 12.288Mhz external ref clk
 		},
+#else
+		{
+			NAU88C22_PLL_N,
+			0x004	// 256fs IMCLK rate : 12.288Mhz internal / 12.288Mhz external ref clk
+		},
+#endif
 		{
 			NAU88C22_PLL_K1,
 			0x000	//
@@ -321,13 +330,12 @@ uint8_t 	gain				= (uint8_t  )param3;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data,uint32_t driver_flags)
+ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
 {
 Nau88C22_Drv_TypeDef	*codec_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
-		ANALOG_DriverStruct[last_analog_used_handle].flags |= driver_flags;
 		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
 		codec_drv = (Nau88C22_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;

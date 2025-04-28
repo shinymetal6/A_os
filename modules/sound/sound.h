@@ -23,12 +23,18 @@
 #ifndef MODULES_SOUND_SOUND_H_
 #define MODULES_SOUND_SOUND_H_
 
+#ifdef SOUND_ENABLED
+
 #include <arm_math.h>
 
-#define	NUMBER_OF_AUDIO_SAMPLES			256
+#define	NUMBER_OF_AUDIO_SAMPLES			1024
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
 #define	SOUND_BLOCK_SIZE				HALF_NUMBER_OF_AUDIO_SAMPLES
-#define DEFAULT_SAMPLE_FREQUENCY 		48000
+#define DEFAULT_SAMPLE_FREQUENCY 		96000
+#define	DAC_AUDIO_SAMPLES_SIZE			NUMBER_OF_AUDIO_SAMPLES
+#define	DAC_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES
+#define	I2S_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES*2
+#define	I2S_AUDIO_HALF_BUF_SIZE			NUMBER_OF_AUDIO_SAMPLES
 
 
 /* macro for ease the writing */
@@ -62,6 +68,8 @@ typedef struct {
 #include	"Effects/echo.h"
 
 extern uint8_t 	Sound_Insert_Effect(Effect_TypeDef *effect);
-extern void 	Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample);
+extern q15_t * 	Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample);
+#endif // #ifdef SOUND_ENABLED
+
 
 #endif /* MODULES_SOUND_SOUND_H_ */

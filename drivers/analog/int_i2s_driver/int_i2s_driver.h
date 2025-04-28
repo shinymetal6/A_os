@@ -29,6 +29,7 @@ typedef struct
 	uint8_t				flags;
 	uint8_t				handle;
 	I2S_HandleTypeDef 	*i2s;
+	uint16_t 			len;
 	uint8_t 			audio_flags;
 	uint8_t 			control_flags;
 	uint32_t 			wakeup_id;
@@ -44,9 +45,14 @@ typedef struct
 #define		I2S_STATUS_DATA_READY	0x40
 #define		I2S_STATUS_RUNNING		0x80
 /* flags */
-#define		I2S_FLAGS_WAKEUP			0x20
+#define		I2S_FLAGS_WAKEUP			0x80
+#define		I2S_FLAGS_USE_SYNTHMODULE	0x02
+#define		I2S_FLAGS_USE_AUDIOMODULE	0x01
+
 
 extern 	I2S_HandleTypeDef hi2s2;
 extern	uint32_t	i2s_register(I2S_Drv_TypeDef *private_data);
+extern	int16_t	*get_codec_out_buf(uint8_t handle);
+extern	int16_t	*get_codec_in_buf(uint8_t handle);
 
 #endif /* DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_ */
