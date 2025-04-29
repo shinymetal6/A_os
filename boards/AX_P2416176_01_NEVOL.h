@@ -38,7 +38,7 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
-#define AUDIO_ENABLED	1
+//#define AUDIO_ENABLED	1
 #define SOUND_ENABLED	1
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))

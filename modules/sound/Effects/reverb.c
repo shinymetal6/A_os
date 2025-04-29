@@ -28,15 +28,15 @@
 
 #include "reverb.h"
 
+#ifdef	REVERB_INCLUDED
 #define	REVERB_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 REVERB_DELAY_AREA_CODE	q15_t reverb_delay_buffer[REVERB_MAX_DELAY_LENGTH];
 
-#define REVERB_DELAY_RAM_START			_d2ram_start
 // Initialize a delay line
 ITCM_AREA_CODE static void reverb_delay_line_init(Reverb_DelayLine_TypeDef *delay_line, uint32_t delay_length)
 {
-	delay_line->buffer = reverb_delay_buffer;
-    memset(delay_line->buffer, 0, REVERB_MAX_DELAY_LENGTH);
+	delay_line->buffer = (q15_t *)&reverb_delay_buffer[0];
+    memset(delay_line->buffer, 0, REVERB_MAX_DELAY_LENGTH*sizeof(q15_t));
     delay_line->write_index = 0;
     delay_line->delay_length = delay_length;
 }
@@ -116,3 +116,4 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
 
 	}
 }
+#endif

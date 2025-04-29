@@ -79,6 +79,8 @@ extern uint8_t Synth_Stop(MidiSynth_TypeDef *synth);
 
 extern void NoteOn(uint8_t note, uint8_t velocity);
 extern void NoteOff(uint8_t note);
+extern void AllNoteOFF(void);
+
 extern void Do_synth(uint32_t start_sample);
 
 

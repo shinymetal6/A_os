@@ -23,29 +23,28 @@
 #ifndef MODULES_SOUND_EFFECTS_PHASER_H_
 #define MODULES_SOUND_EFFECTS_PHASER_H_
 
-#define PHASER_SAMPLE_RATE 			DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
-#define PHASER_BLOCK_SIZE 			SOUND_BLOCK_SIZE         // Number of samples processed per block
-#define PHASER_NUM_STAGES 			4           // Number of all-pass filter stages
-#define PHASER_LFO_FREQ 			1.0f          // LFO frequency in Hz
-#define PHASER_FEEDBACK_GAIN_Q15 	16384 // Feedback gain (0.5 in Q15 format)
-#define PHASER_FEEDBACK_GAIN	 	0.5F // Feedback gain (0.5 in Q15 format)
 
-// All-pass filter state
-typedef struct {
-    q15_t prev_in;  // Previous input sample
-    q15_t prev_out; // Previous output sample
-} Phaser_AllPassFilter_TypeDef;
+#define PHASER_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
+#define PHASER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
+#define PHASER_DEFAULT_LFO_RATE	2.0F	// LFO frequency in Hz
+#define PHASER_DEFAULT_DEPTH	0.7F	// Depth of modulation
+#define PHASER_DEFAULT_MIX		0.5F	// mix rate
+#define PHASER_NUM_ALLPASS		6		// allpass stages, modifies depth
 
-// Phaser state
-typedef struct {
-    float lfo_frequency;
-    float feedback_gain;
-    /* Internals */
-    float lfo_phase;                 // LFO phase (0.0 to 1.0)
-    float lfo_increment;             // LFO phase increment per sample
-    q15_t feedback;                  // Feedback gain
-    Phaser_AllPassFilter_TypeDef stages[PHASER_NUM_STAGES]; // Array of all-pass filter stages
-} PHASER_Effect_TypeDef;
+typedef struct
+{
+	float 			lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+	float 			depth;							// Depth of the LFO
+	float 			mix;
+	int32_t			allpass_number;					// Read position in the buffer
+	/* internals */
+	float 			lfo_phase;						// Phase of the LFO
+	float			lfo_increment;
+	float 			depth_sum,depth_mul;							// Depth of the LFO
+	float 			buffer[PHASER_BUFFER_SIZE];	// Circular buffer for delay line
+	int32_t			write_pos;						// Write position in the buffer
+	int32_t			read_pos;						// Read position in the buffer
+}PHASER_Effect_TypeDef;
 
 extern void Effect_Phaser(uint32_t *effect_s, uint32_t start_sample);
 extern void Effect_Phaser_Init(uint32_t *effect_s);

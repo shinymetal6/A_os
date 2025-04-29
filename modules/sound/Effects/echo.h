@@ -44,7 +44,7 @@ typedef struct {
     float dry_mix;        // Dry signal mix level
     float wet_mix;        // Wet signal mix level
     /* Internals */
-	Echo_DelayLine_TypeDef delay_line; // Delay line
+    Sound_DelayLine_TypeDef delay_line; // Delay line
 	uint32_t	delay_ms;
 } Echo_Effect_TypeDef;
 

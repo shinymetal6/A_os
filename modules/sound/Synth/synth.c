@@ -218,6 +218,16 @@ ITCM_AREA_CODE static void synth_note_off(MidiSynth_TypeDef *synth, uint8_t note
     }
 }
 
+// all-note-off event handler
+ITCM_AREA_CODE static void synth_all_note_off(MidiSynth_TypeDef *synth)
+{
+    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+    {
+    	synth->voices[i].active = 0;
+    }
+    synth->active_voices = 0;
+    synth->voices_shift = synth_calc_shift(0);
+}
 // Process a block of audio samples
 ITCM_AREA_CODE static void synth_process_block(uint32_t *the_synt,uint32_t start_sample)
 {
@@ -353,18 +363,20 @@ ITCM_AREA_CODE uint8_t Synth_Init(MidiSynth_TypeDef *synth)
 	synth_sine_wavetable_init(Synth);
 	Synth->active_voices = 0;
     // Initialize all voices
-    for (int i = 0; i < SYNTH_MAX_VOICES; i++) {
+    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+    {
         synth->voices[i].active = 0;
         synth->voices[i].waveform = SYNTH_WAVEFORM_SINE; // Default to sine wave
         synth->voices[i].duty_cycle = 0.5f;       // Default duty cycle (50%)
         synth->voices[i].wavetable = NULL;        // No custom wavetable by default
         synth->voices[i].note = 0;
     }
+#ifdef A_OS_I2S_ENABLED
 	if ( Synth->out_device == SYNTH_I2S_OUT)
 	{
 	    synth->codec_buf = get_codec_out_buf(synth->i2s_handle);
 	}
-
+#endif
     return 0;
 }
 
@@ -397,11 +409,22 @@ ITCM_AREA_CODE void NoteOff(uint8_t note)
 	synth_note_off(Synth, note);
 }
 
+ITCM_AREA_CODE void AllNoteOFF(void)
+{
+	synth_all_note_off(Synth);
+}
+
+ITCM_AREA_CODE static inline void audio_to_out(q15_t *out_buf,uint32_t start_sample)
+{
+uint32_t i;
+	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+		Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = out_buf[i+start_sample];
+}
+
 
 ITCM_AREA_CODE void Do_synth(uint32_t start_sample)
 {
-uint32_t i;
-q15_t *last_buf;
+Effect_TypeDef *last_effect;
 	if ( Synth == NULL )
 		return;
 	if ( Synth->status == SYNTH_ENABLED )
@@ -409,20 +432,14 @@ q15_t *last_buf;
 		synth_process_block((uint32_t *)Synth,start_sample);
 		if ( Synth->effect_s != NULL )
 		{
-			last_buf = Sound_Apply_Effect((Effect_TypeDef *)Synth->effect_s,start_sample);
-			if ( Synth->out_device == SYNTH_I2S_OUT)
-			{
-				for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
-					Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = last_buf[i+start_sample];
-			}
+			last_effect = Sound_Apply_Effect((Effect_TypeDef *)Synth->effect_s,start_sample);
+			if ( last_effect->out_device == SYNTH_I2S_OUT)
+				audio_to_out(last_effect->out_buf,start_sample);
 		}
 		else
 		{
 			if ( Synth->out_device == SYNTH_I2S_OUT)
-			{
-				for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
-					Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = Synth->out_buf[i+start_sample];
-			}
+				audio_to_out(Synth->out_buf,start_sample);
 		}
 	}
 }

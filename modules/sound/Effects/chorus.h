@@ -38,7 +38,7 @@ typedef struct {
 
 // Chorus state
 typedef struct {
-	Chorus_DelayLine_TypeDef delay_line; // Delay line
+	Sound_DelayLine_TypeDef	delay_line; // Delay line
     q15_t lfo_phase;      // LFO phase in Q15 format
     float dry_mix;        // Dry signal mix level
     float wet_mix;        // Wet signal mix level

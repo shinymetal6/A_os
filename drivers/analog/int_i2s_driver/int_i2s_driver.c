@@ -154,5 +154,4 @@ uint32_t handle;
 		i2s_irq_common(i2s_drv,handle);
 	}
 }
-
 #endif // #ifdef STM32H7xx_HAL_I2S_H

@@ -27,7 +27,7 @@
 #include "../sound.h"
 
 #include "chorus.h"
-
+/*
 #define	CHORUS_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 CHORUS_DELAY_AREA_CODE	q15_t chorus_delay_buffer[CHORUS_MAX_DELAY_LENGTH];
 
@@ -51,6 +51,7 @@ ITCM_AREA_CODE static q15_t chorus_delay_line_process(Chorus_DelayLine_TypeDef *
 
     return output;
 }
+*/
 // Generate LFO output
 ITCM_AREA_CODE static q15_t chorus_lfo_generate(q15_t phase_increment, q15_t *lfo_phase)
 {
@@ -80,7 +81,7 @@ ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *
 		chorus->delay_line.delay_length = (uint32_t)modulated_delay;
 
 		// Process through delay line
-		q15_t delayed_sample = chorus_delay_line_process(&chorus->delay_line, input[i]);
+		q15_t delayed_sample = Sound_Delay_Line(&chorus->delay_line, input[i]);
 
 		// Store the output sample
 		output[i] = (input[i] >> 1 ) + (delayed_sample >> 1 ) + out_device;
@@ -93,7 +94,7 @@ ITCM_AREA_CODE void Effect_Chorus_Init(uint32_t *effect_s)
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 
-	chorus_delay_line_init(&chorus->delay_line, CHORUS_SAMPLE_RATE / 10); // Initial delay length (100 ms)
+	Sound_Delay_Line_Init(&chorus->delay_line, CHORUS_MAX_DELAY_LENGTH); // Initial delay length (100 ms)
     chorus->lfo_phase = 0;
 }
 

@@ -26,7 +26,7 @@
 #include "../sound.h"
 
 #include "echo.h"
-
+/*
 #define	ECHO_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 ECHO_DELAY_AREA_CODE			q15_t echo_delay_buffer[ECHO_MAX_DELAY_LENGTH];
 
@@ -50,13 +50,13 @@ q15_t echo_delay_line_process(Echo_DelayLine_TypeDef *delay_line, q15_t input) {
 
     return output;
 }
-
+*/
 // Process a block of audio samples through the echo effect
 ITCM_AREA_CODE static void echo_process(Echo_Effect_TypeDef *echo, q15_t *input, q15_t *output, uint32_t out_device, uint32_t block_size)
 {
     for (int i = 0; i < block_size; i++) {
         // Process through delay line
-        q15_t delayed_sample = echo_delay_line_process(&echo->delay_line, input[i]);
+        q15_t delayed_sample = Sound_Delay_Line(&echo->delay_line, input[i]);
 
         // Attenuate the delayed signal
         q15_t attenuated_sample = (q15_t)((float)delayed_sample * echo->attenuation);
@@ -78,7 +78,7 @@ Echo_Effect_TypeDef *echo = (Echo_Effect_TypeDef *)effect->private_data;
     uint32_t delay_samples = (uint32_t)(echo->delay_ms * ECHO_SAMPLE_RATE / 1000);
     if (delay_samples > ECHO_MAX_DELAY_LENGTH)
     	delay_samples = ECHO_MAX_DELAY_LENGTH; // Clamp delay length
-    echo_delay_line_init(&echo->delay_line, delay_samples);
+    Sound_Delay_Line_Init(&echo->delay_line, delay_samples);
 }
 
 ITCM_AREA_CODE void Effect_Echo(uint32_t *effect_s, uint32_t start_sample)
