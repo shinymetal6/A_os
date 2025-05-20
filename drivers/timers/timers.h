@@ -23,6 +23,8 @@
 #ifndef DRIVERS_TIMERS_TIMERS_H_
 #define DRIVERS_TIMERS_TIMERS_H_
 
+#ifdef A_OS_TIMERS_ENABLED
+
 typedef struct
 {
 	uint8_t 	process;
@@ -36,5 +38,7 @@ typedef struct
 #include "pwm/pwm.h"
 #include "servo/servo.h"
 #include "ws2812/ws2812.h"
+
+#endif // #ifdef A_OS_TIMERS_ENABLED
 
 #endif /* DRIVERS_TIMERS_TIMERS_H_ */

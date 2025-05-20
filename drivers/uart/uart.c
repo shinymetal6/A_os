@@ -68,6 +68,22 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].dri
 		return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
+ITCM_AREA_CODE  uint32_t	uart_disable_receive(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+	uarts_Drv->uart->Instance->ISR = 0;
+	uarts_Drv->uart->Instance->CR1 &= ~(USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
+	return 0;
+}
+
+ITCM_AREA_CODE  uint32_t	uart_enable_receive(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+	uarts_Drv->uart->Instance->ISR = 0;
+	uarts_Drv->uart->Instance->CR1 |= (USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
+	return 0;
+}
+
 ITCM_AREA_CODE  uint32_t	uart_get_rxlen(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv;

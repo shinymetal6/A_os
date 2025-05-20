@@ -28,15 +28,19 @@
 
 #include "reverb.h"
 
+//#define	REVERB_INCLUDED	1
+
 #ifdef	REVERB_INCLUDED
 #define	REVERB_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
-REVERB_DELAY_AREA_CODE	q15_t reverb_delay_buffer[REVERB_MAX_DELAY_LENGTH];
+
+REVERB_DELAY_AREA_CODE	Reverb_DelayLine_TypeDef reverb_comb_filters[REVERB_NUM_COMB_FILTERS];
+/*REVERB_DELAY_AREA_CODE*/	Reverb_DelayLine_TypeDef reverb_allpass_filters[REVERB_NUM_ALLPASS_FILTERS]; // All-pass filters
 
 // Initialize a delay line
 ITCM_AREA_CODE static void reverb_delay_line_init(Reverb_DelayLine_TypeDef *delay_line, uint32_t delay_length)
 {
-	delay_line->buffer = (q15_t *)&reverb_delay_buffer[0];
-    memset(delay_line->buffer, 0, REVERB_MAX_DELAY_LENGTH*sizeof(q15_t));
+    //memset(delay_line->buffer, 0, sizeof(delay_line->buffer));
+    memset(delay_line, 0, sizeof(Reverb_DelayLine_TypeDef));
     delay_line->write_index = 0;
     delay_line->delay_length = delay_length;
 }
@@ -88,12 +92,14 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
     // Initialize comb filters with different delay lengths
     uint32_t comb_delay_lengths[REVERB_NUM_COMB_FILTERS] = {1557, 1617, 1491, 1422}; // Prime numbers for diffusion
     for (int i = 0; i < REVERB_NUM_COMB_FILTERS; i++) {
+    	reverb->comb_filters[i] = reverb_comb_filters[i];
     	reverb_delay_line_init(&reverb->comb_filters[i], comb_delay_lengths[i]);
     }
 
     // Initialize all-pass filters with different delay lengths
     uint32_t allpass_delay_lengths[REVERB_NUM_ALLPASS_FILTERS] = {225, 556};
     for (int i = 0; i < REVERB_NUM_ALLPASS_FILTERS; i++) {
+    	reverb->allpass_filters[i] = reverb_allpass_filters[i];
     	reverb_delay_line_init(&reverb->allpass_filters[i], allpass_delay_lengths[i]);
     }
 

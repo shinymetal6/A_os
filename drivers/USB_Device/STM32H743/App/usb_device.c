@@ -41,6 +41,12 @@
 #include "usbd_midi_if.h"
 #endif
 
+#ifdef	USB_AUDIO
+#include "usbd_AUDIO_desc.h"
+#include "../Class/AUDIO/usbd_audio.h"
+#include "usbd_audio_if.h"
+#endif
+
 /* USB Device Core handle declaration. */
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -62,6 +68,14 @@ uint8_t MX_USB_Device_Init(void)
 	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_MIDI) != USBD_OK)
 		  return 1;
 	  if (USBD_MIDI_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
+		  return 1;
+	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
+		  return 1;
+#endif
+#ifdef	USB_AUDIO
+	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_AUDIO) != USBD_OK)
+		  return 1;
+	  if (USBD_AUDIO_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
 		  return 1;
 	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
 		  return 1;

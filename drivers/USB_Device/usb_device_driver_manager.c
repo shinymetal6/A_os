@@ -68,6 +68,8 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	return usb_Drv->rx_num_chars;
 }
 
+#ifdef USB_CDC
+
 #ifdef	STM32U575xx
 extern	uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
 #else
@@ -134,6 +136,12 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	}
 	return	Len;
 }
+#else
+ITCM_AREA_CODE void USB_Driver_RxTimeoutCheckCallback(void)
+{
+
+}
+#endif // #ifdef USB_CDC
 
 #endif // #ifdef USB_DEVICE_ENABLED
 

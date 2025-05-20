@@ -22,7 +22,6 @@
 
 #ifndef DRIVERS_ACTUATORS_DCC_DCC_H_
 #define DRIVERS_ACTUATORS_DCC_DCC_H_
-#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct {
 	uint16_t		preamble[16];
@@ -98,6 +97,5 @@ extern	uint32_t	dcc_stop(uint8_t handle);
 extern	uint32_t	dcc_get_status(uint8_t handle);
 extern	uint32_t	dcc_get_values(uint8_t handle,uint8_t *values,uint16_t values_number);
 extern	uint32_t	dcc_set_values(uint8_t handle,uint8_t *values,uint16_t values_number);
-#endif // #ifdef A_OS_TIMERS_ENABLED
 
 #endif /* DRIVERS_ACTUATORS_DCC_DCC_H_ */

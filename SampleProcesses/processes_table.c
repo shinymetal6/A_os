@@ -48,6 +48,9 @@ extern	void sample_process_1_intflash(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_I2CSENSORS
 extern	void sample_process_1_i2csensors(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_I2CSENSORS
+#ifdef	SAMPLEPROCESS_1_USBAUDIO
+extern	void sample_process_1_usbaudio(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_I2CSENSORS
 
 
 
@@ -97,6 +100,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_I2CSENSORS
 				.user_process = sample_process_1_i2csensors,
 #endif // #define	SAMPLEPROCESS_I2CSENSORS
+#ifdef	SAMPLEPROCESS_1_USBAUDIO
+				.user_process = sample_process_1_usbaudio,
+#endif // #define	SAMPLEPROCESS_1_USBAUDIO
 
 				.stack_size = 1024,
 		},

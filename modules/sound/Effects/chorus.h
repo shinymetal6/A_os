@@ -31,14 +31,14 @@
 #define CHORUS_DEFAULT_MIX_WET	0.5f           // Wet signal mix level
 
 typedef struct {
-    q15_t *buffer; // Circular buffer for delay line
+    q15_t buffer[CHORUS_MAX_DELAY_LENGTH]; // Circular buffer for delay line
     uint32_t write_index;           // Write index for circular buffer
     uint32_t delay_length;          // Current delay length in samples
 } Chorus_DelayLine_TypeDef;
 
 // Chorus state
 typedef struct {
-	Sound_DelayLine_TypeDef	delay_line; // Delay line
+	Chorus_DelayLine_TypeDef	*delay_line; // Delay line
     q15_t lfo_phase;      // LFO phase in Q15 format
     float dry_mix;        // Dry signal mix level
     float wet_mix;        // Wet signal mix level

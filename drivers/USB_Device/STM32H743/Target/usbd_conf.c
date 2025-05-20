@@ -38,6 +38,9 @@
 #ifdef	USB_MIDI
 #include "../Class/MIDI/usbd_midi.h"
 #endif
+#ifdef	USB_AUDIO
+#include "../Class/AUDIO/usbd_audio.h"
+#endif
 
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
@@ -459,6 +462,15 @@ void *USBD_static_malloc(uint32_t size)
 {
   UNUSED(size);
   static uint32_t mem[(sizeof(USBD_MIDI_HandleTypeDef)/4)+1];/* On 32-bit boundary */
+  return mem;
+}
+#endif
+
+#ifdef	USB_AUDIO
+void *USBD_static_malloc(uint32_t size)
+{
+  UNUSED(size);
+  static uint32_t mem[(sizeof(USBD_AUDIO_HandleTypeDef)/4)+1];/* On 32-bit boundary */
   return mem;
 }
 #endif

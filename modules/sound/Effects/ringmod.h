@@ -14,37 +14,28 @@
  * Project : A_os
 */
 /*
- * ws2812.h
+ * ringmod.h
  *
- *  Created on: Feb 24, 2025
+ *  Created on: May 17, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_TIMERS_WS2812_WS2812_H_
-#define DRIVERS_TIMERS_WS2812_WS2812_H_
+#ifndef MODULES_SOUND_EFFECTS_RINGMOD_H_
+#define MODULES_SOUND_EFFECTS_RINGMOD_H_
 
-#define	LEDBPP		24
-#define	NUMLEDS		45
-
-#define	SYNCLEN		50
-#define	BUFLEN		((SYNCLEN*LEDBPP)+(NUMLEDS*LEDBPP))
-
-#define	PATTERN_0		35
-#define	PATTERN_1		80
-
-#define	GREEN_SHIFT		16
-#define	RED_SHIFT		8
-#define	BLUE_SHIFT		0
+#define RINGMOD_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
+#define RINGMOD_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
+#define RINGMOD_DEFAULT_CARRIER_FREQ	800.0f 	// LFO frequency in Hz
 
 typedef struct
 {
-	uint8_t					status;
-	uint8_t					flags;
-	uint8_t					handle;
-	TIM_HandleTypeDef 		*ws2812_timer;
-	uint32_t 				ws2812_channel;
-}WS2812_Drv_TypeDef;
+	float 			carrierFrequency;						// Phase of the LFO
+	/* internals */
+	float 			carrierPhase;						// Phase of the LFO
+	float			phaseIncrement;
+}RINGMOD_Effect_TypeDef;
 
-extern uint32_t	ws2812_register(Pwm_Control_TypeDef *private_data);
+extern void Effect_RingMod(uint32_t *effect_s, uint32_t start_sample);
+extern void Effect_RingMod_Init(uint32_t *effect_s);
 
-#endif /* DRIVERS_TIMERS_WS2812_WS2812_H_ */
+#endif /* MODULES_SOUND_EFFECTS_RINGMOD_H_ */

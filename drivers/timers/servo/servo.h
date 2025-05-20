@@ -21,7 +21,6 @@
  */
 #ifndef DRIVERS_TIMERS_SERVO_SERVO_H_
 #define DRIVERS_TIMERS_SERVO_SERVO_H_
-#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -43,7 +42,5 @@ extern uint32_t servo_get_status(uint8_t handle);
 extern uint32_t servo_set_prescaler(uint8_t handle,uint32_t prescaler);
 extern uint32_t servo_set_position(uint8_t handle,uint8_t servo_position,uint8_t servo_pulses);
 extern uint32_t	servo_register(SERVO_Control_Drv_TypeDef *private_data);
-
-#endif // #ifdef A_OS_TIMERS_ENABLED
 
 #endif /* DRIVERS_TIMERS_SERVO_SERVO_H_ */

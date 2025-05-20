@@ -24,6 +24,7 @@
 #define DRIVERS_UART_UART_H_
 #ifdef A_OS_UART_ENABLED
 
+#define	A_OS_UART_ENABLE_RX		0x04
 /* Private area defs */
 typedef struct
 {
@@ -82,6 +83,8 @@ extern  uint32_t 	uart_init(uint8_t handle);
 extern  uint32_t 	uart_get_status(uint8_t handle);
 extern  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint16_t len);
 extern  uint32_t	uart_start_receive(uint8_t handle);
+extern  uint32_t	uart_disable_receive(uint8_t handle);
+extern  uint32_t	uart_enable_receive(uint8_t handle);
 extern  uint32_t	uart_get_rxlen(uint8_t handle);
 extern  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len);
 extern  uint32_t	uart_set_sentinel(uint8_t handle, uint8_t sentinel_start, uint8_t sentinel_end);

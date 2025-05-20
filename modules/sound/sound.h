@@ -59,7 +59,7 @@ typedef struct {
 	uint16_t			out_device;				/* from previous module : for dac is 32768 , for codec is 0 */
 	void 				(*effect)(uint32_t 	*effect_data , uint32_t start_sample);
 	void 				(*effect_init)(uint32_t *effect_data);
-	void 				(*effect_params_set)(void);
+	void 				(*effect_params_set)(uint32_t *effect_s,uint32_t *params);
 	uint32_t			*private_data;
 } Effect_TypeDef;
 #define SOUND_EFFECT_ENABLED	 		0x80
@@ -80,11 +80,17 @@ typedef struct {
 #include	"Effects/reverb.h"
 #include	"Effects/chorus.h"
 #include	"Effects/echo.h"
+#include	"Effects/iir.h"
+#include	"Effects/moog_filter.h"
+#include	"Effects/ringmod.h"
+#include	"Effects/tape_freak.h"
 
 extern void 	Sound_Delay_Line_Init(Sound_DelayLine_TypeDef *delay_line, uint32_t delay_length);
 extern q15_t 	Sound_Delay_Line(Sound_DelayLine_TypeDef *delay_line, q15_t input);
 extern uint8_t 	Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeDef *effect);
 extern Effect_TypeDef *Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample);
+extern uint8_t Sound_Set_Effect_Params(Effect_TypeDef *effect,uint32_t *params);
+
 #endif // #ifdef SOUND_ENABLED
 
 
