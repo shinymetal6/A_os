@@ -84,6 +84,7 @@ typedef struct {
 #include	"Effects/moog_filter.h"
 #include	"Effects/ringmod.h"
 #include	"Effects/tape_freak.h"
+#include	"USB_Audio/usb_audio.h"
 
 extern void 	Sound_Delay_Line_Init(Sound_DelayLine_TypeDef *delay_line, uint32_t delay_length);
 extern q15_t 	Sound_Delay_Line(Sound_DelayLine_TypeDef *delay_line, q15_t input);
@@ -92,6 +93,5 @@ extern Effect_TypeDef *Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_
 extern uint8_t Sound_Set_Effect_Params(Effect_TypeDef *effect,uint32_t *params);
 
 #endif // #ifdef SOUND_ENABLED
-
 
 #endif /* MODULES_SOUND_SOUND_H_ */

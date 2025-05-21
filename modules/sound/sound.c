@@ -27,33 +27,7 @@
 
 #ifdef SOUND_ENABLED
 #include "sound.h"
-/*
-#define	SOUND_DELAY_AREA	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
-SOUND_DELAY_AREA			q15_t sound_delay_buffer[ECHO_MAX_DELAY_LENGTH];
 
-// Initialize the delay line
-ITCM_AREA_CODE void Sound_Delay_Line_Init(Sound_DelayLine_TypeDef *delay_line, uint32_t delay_length)
-{
-	delay_line->buffer = sound_delay_buffer;
-    memset(delay_line->buffer, 0, SOUND_MAX_DELAY_LENGTH);
-    delay_line->write_index = 0;
-    delay_line->delay_length = delay_length;
-}
-
-// Process a sample through the delay line
-ITCM_AREA_CODE q15_t Sound_Delay_Line(Sound_DelayLine_TypeDef *delay_line, q15_t input)
-{
-    // Read from the delay line
-    uint32_t read_index = (delay_line->write_index + SOUND_MAX_DELAY_LENGTH - delay_line->delay_length) % SOUND_MAX_DELAY_LENGTH;
-    q15_t output = delay_line->buffer[read_index];
-
-    // Write to the delay line
-    delay_line->buffer[delay_line->write_index] = input;
-    delay_line->write_index = (delay_line->write_index + 1) % SOUND_MAX_DELAY_LENGTH;
-
-    return output;
-}
-*/
 uint32_t 			null_start_sample = 0;
 
 ITCM_AREA_CODE uint8_t Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeDef *effect)

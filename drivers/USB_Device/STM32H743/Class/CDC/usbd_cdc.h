@@ -128,11 +128,12 @@ uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev);
 uint8_t USBD_CDC_SetRxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff);
 uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
 
-#endif // #ifdef	USB_CDC
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef	USB_CDC
 
 #endif //#ifdef	STM32H743xx
 
