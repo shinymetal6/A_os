@@ -45,8 +45,6 @@ __weak void MX_USB_DEVICE_Init(void)
 {
 }
 
-
-
 __weak void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)
 {
 

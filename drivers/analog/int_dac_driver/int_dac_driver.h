@@ -36,7 +36,7 @@ typedef struct
 	uint16_t 			channel;
 	uint16_t 			len;
 	uint16_t 			alignment;
-	uint32_t			dac_sample_frequency;
+	float				dac_sample_frequency;
 	uint32_t			PSC;
 	uint32_t			ARR;
 	uint8_t				dac_wav_flags;
@@ -46,6 +46,9 @@ typedef struct
 	uint16_t			wav_volume_int;
 	uint8_t				wav_flags;
 	int16_t				wav_progressive_sample;
+	int16_t 			*usbaudio_buffer;
+	uint32_t 			usbaudio_index;
+	uint32_t 			usbaudio_size;
 }DAC_Drv_TypeDef;
 
 /* status */
@@ -56,6 +59,7 @@ typedef struct
 #define		DAC_STATUS_RUNNING		0x80
 /* flags */
 #define		DAC_FLAGS_WAKEUP			0x80
+#define		DAC_FLAGS_USE_USBMODULE		0x04
 #define		DAC_FLAGS_USE_SYNTHMODULE	0x02
 #define		DAC_FLAGS_USE_AUDIOMODULE	0x01
 /* wav_flags */

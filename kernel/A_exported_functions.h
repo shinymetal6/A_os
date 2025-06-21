@@ -43,7 +43,7 @@
 #ifdef NETWORKING_ENABLED
 #include "../libraries/lwip2.2/App/lwip.h"
 #ifdef MQTT_ENABLE
-	#include "../libraries/mqtt_client/mqtt_client.h"
+	#include "../modules/mqtt_client/mqtt_client.h"
 #endif // #ifdef MQTT_ENABLE
 #ifdef WIFI_ESP01S
 	#include "../libraries/WiFi/esp01_s.h"

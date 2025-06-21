@@ -28,8 +28,17 @@
 typedef struct {
 	uint8_t				status;
 	uint16_t			out_device;		/* for dac is 32768 , for codec is 0 */
+	uint8_t				*dac_drvstatus;
 	int16_t				*out_buf;
+	int16_t				*usbaudio_buf;
+	uint16_t 			len;
+	uint16_t 			buf_index;
 	uint8_t				i2s_handle;
+	uint32_t			(*play)(uint8_t *buf , uint32_t len);
+	uint32_t			(*periodic)( uint8_t* pData, uint32_t len, uint8_t cmd);
+	uint32_t			(*volume)(uint8_t vol);
+	uint32_t			(*mute)(uint8_t cmd);
+	uint32_t			(*init)(uint32_t *usb_audio);
 } USBAudio_TypeDef;
 /* status */
 #define		USBAUDIO_ENABLED		0x01
@@ -37,9 +46,13 @@ typedef struct {
 #define		USBAUDIO_DAC_OUT		32768
 #define		USBAUDIO_I2S_OUT		0
 
-extern	uint8_t Usb_AUDIO_OUT_Init(USBAudio_TypeDef *usb_audio);
-extern	uint8_t Usb_AUDIO_OUT_Start(USBAudio_TypeDef *usb_audio);
-extern	int32_t Usb_AUDIO_OUT_Play(uint8_t* pData, uint32_t len);
+extern	void AUDIO_TransferComplete_CallBack_FS(void);
+extern	void AUDIO_HalfTransfer_CallBack_FS(void);
+
+extern	uint8_t Usb_AUDIO_OUT_Init(USBAudio_TypeDef *usb_audio,uint8_t *dac_Drv_status);
+extern	uint32_t Usb_AUDIO_OUT_Start(USBAudio_TypeDef *usb_audio);
+extern	int16_t *Usb_AUDIO_GetUSBbuf_ptr(void);
+
 #endif //#ifdef	USB_AUDIO
 
 #endif /* MODULES_SOUND_USB_AUDIO_USB_AUDIO_H_ */

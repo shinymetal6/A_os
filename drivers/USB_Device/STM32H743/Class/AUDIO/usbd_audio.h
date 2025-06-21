@@ -34,10 +34,15 @@ extern "C" {
 #ifdef	USB_AUDIO
 
 #include  "../../Core/usbd_ioreq.h"
+#include "../../../../../modules/sound/sound.h"
 
 #ifndef USBD_AUDIO_FREQ
 /* AUDIO Class Config */
-#define USBD_AUDIO_FREQ                               48000U
+	#if defined DEFAULT_SAMPLE_FREQUENCY
+		#define USBD_AUDIO_FREQ                               DEFAULT_SAMPLE_FREQUENCY
+	#else
+		#define USBD_AUDIO_FREQ                               48000U
+	#endif /* USBD_AUDIO_FREQ */
 #endif /* USBD_AUDIO_FREQ */
 
 #ifndef USBD_MAX_NUM_INTERFACES
@@ -105,7 +110,8 @@ extern "C" {
 
 /* Number of sub-packets in the audio transfer buffer. You can modify this value but always make sure
   that it is an even number and higher than 3 */
-#define AUDIO_OUT_PACKET_NUM                          80U
+//#define AUDIO_OUT_PACKET_NUM                          80U
+#define AUDIO_OUT_PACKET_NUM                          16
 /* Total size of the audio transfer buffer */
 #define AUDIO_TOTAL_BUF_SIZE                          ((uint16_t)(AUDIO_OUT_PACKET * AUDIO_OUT_PACKET_NUM))
 

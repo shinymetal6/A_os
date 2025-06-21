@@ -14,30 +14,30 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * audio_fifo.h
  *
- *  Created on: Nov 16, 2024
+ *  Created on: May 23, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#ifndef MODULES_SOUND_USB_AUDIO_AUDIO_FIFO_H_
+#define MODULES_SOUND_USB_AUDIO_AUDIO_FIFO_H_
 
-typedef struct
-{
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-#include "sound/sound.h"
+#include <stdint.h>
 
-#endif /* MODULES_MODULES_H_ */
+// Define boolean replacements
+typedef uint8_t bool;
+#define true  1
+#define false 0
+
+typedef struct {
+    int16_t *buffer;
+    uint16_t head;
+    uint16_t tail;
+    uint16_t fifo_count;
+    uint16_t size;
+    uint8_t full; // 1 if full, 0 otherwise
+} AudioFifo_TypeDef;
+
+#endif /* MODULES_SOUND_USB_AUDIO_AUDIO_FIFO_H_ */

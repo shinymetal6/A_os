@@ -35,8 +35,9 @@
 #define USB_DEVICE_ENABLED	1
 #ifdef USB_DEVICE_ENABLED
 	//#define	USB_CDC				1
-	//#define	USB_AUDIO				1
-	#define	USB_MIDI			1
+	#define	USB_AUDIO				1
+	//#define	USB_MIDI			1
+#define USER_SAMPLE_RATE	48000
 
 #endif // #ifdef USB_ENABLED
 

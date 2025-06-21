@@ -37,7 +37,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_start(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
-	HAL_TIM_Base_Start(timer);
+	HAL_TIM_Base_Start_IT(timer);
 	dac_drv->status |= DAC_STATUS_RUNNING;
 	return 0;
 }
@@ -46,7 +46,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
-	HAL_TIM_Base_Stop(timer);
+	HAL_TIM_Base_Stop_IT(timer);
 	dac_drv->status &= ~DAC_STATUS_RUNNING;
 	return 0;
 }
@@ -65,20 +65,20 @@ DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].priva
 	return dac_drv->status;
 	return 0;
 }
-uint32_t			fdiv;
+float			fdiv;
+uint32_t		pkt_out=0;
+extern uint32_t	usb_pkt;
 
-ITCM_AREA_CODE  static uint32_t int_dac_timer_set(DAC_Drv_TypeDef *dac_drv,uint32_t frequency)
+ITCM_AREA_CODE  static uint32_t int_dac_timer_set(DAC_Drv_TypeDef *dac_drv,float frequency)
 {
 TIM_HandleTypeDef 	*dac_timer = dac_drv->dac_timer;
 
-	fdiv = (((HSI_CLOCK ) / frequency) / STD_DAC_PRESCALER) - 1;
+	dac_drv->dac_sample_frequency = frequency;
+	fdiv = ((float )HSI_CLOCK / 2.0F / frequency) - 1.0F;
 	__HAL_TIM_DISABLE(dac_timer);
 	dac_timer->Instance->CNT = 0;
-
-	dac_timer->Instance->PSC = STD_DAC_PRESCALER-1;
-	dac_timer->Instance->ARR = fdiv;
-	dac_drv->PSC = dac_timer->Instance->PSC;
-	dac_drv->ARR = dac_timer->Instance->ARR;
+	dac_drv->PSC = dac_timer->Instance->PSC = 0;
+	dac_drv->ARR = dac_timer->Instance->ARR = (uint32_t )fdiv;
 	__HAL_TIM_ENABLE(dac_timer);
 	return 0;
 }
@@ -104,7 +104,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop_wav(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
-	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
+	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency*2);
 	dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 	return 0;
 }
@@ -124,6 +124,16 @@ DAC_Drv_TypeDef	*dac_drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( dac_drv->dac_sample_frequency == 0)
 			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;// + 19000;
+		else
+			dac_drv->dac_sample_frequency /= 1000.0F;
+
+		if ( dac_drv->flags == DAC_FLAGS_USE_USBMODULE)
+		{
+			if ( dac_drv->usbaudio_buffer == NULL)
+				return DRIVER_REQUEST_FAILED;
+			if ( dac_drv->usbaudio_size == 0)
+				return DRIVER_REQUEST_FAILED;
+		}
 
 		int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
 
@@ -162,10 +172,15 @@ uint32_t	i,drv_ret=255;
 }
 
 #define DAC_WAV_ADAPTWND_SAMPLES_NUM	4096
-
+uint32_t	dac_time_usec;
+uint32_t	dac_samples=0;
+uint32_t limit_hi;
+uint32_t limit_lo;
 ITCM_AREA_CODE  static void dac_irq_common(DAC_Drv_TypeDef	*dac_drv,uint32_t handle)
 {
 uint32_t	i , start_sample;
+	dac_time_usec = A_get_timelapse_end();
+	A_get_timelapse_start();
 
 	start_sample = (dac_drv->status & DAC_STATUS_HALF) ? 0 : dac_drv->len/2;
 	if (( dac_drv->dac_wav_flags & DAC_WAV_FLAGS_DO_PLAY) == DAC_WAV_FLAGS_DO_PLAY)
@@ -201,17 +216,42 @@ uint32_t	i , start_sample;
 	}
 	else
 	{
-		/*
-		if (( dac_drv->flags & DAC_FLAGS_USE_AUDIOMODULE) == DAC_FLAGS_USE_AUDIOMODULE)
-		{
-			RunOscillator32();
-			effects_apply(dac_drv->status & DAC_STATUS_FULL,AUDIO_IS_MONO,dac_drv->dac_buffer);
-		}
-		*/
+#ifdef SOUND_ENABLED
 		if (( dac_drv->flags & DAC_FLAGS_USE_SYNTHMODULE) == DAC_FLAGS_USE_SYNTHMODULE)
 		{
 			Do_synth( start_sample);
 		}
+#ifdef	USB_AUDIO
+		if (( dac_drv->flags & DAC_FLAGS_USE_USBMODULE) == DAC_FLAGS_USE_USBMODULE)
+		{
+			__disable_irq();
+			limit_hi = dac_drv->len/2 + dac_drv->len/4;
+			limit_lo = dac_drv->len/4;
+			if ( usb_pkt > limit_hi)
+			{
+				int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency-1.0F);
+			}
+			if ( usb_pkt < limit_lo)
+			{
+				int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency+1.0F);
+			}
+	    	for(i=0;i<dac_drv->len/2;i++)
+			{
+				dac_drv->dac_buffer[i+start_sample] = dac_drv->usbaudio_buffer[dac_drv->usbaudio_index] + 32768;
+				dac_drv->usbaudio_index++;
+				if ( dac_drv->usbaudio_index >= dac_drv->usbaudio_size)
+					dac_drv->usbaudio_index= 0;
+			}
+			if ( start_sample == 0)
+				TransferComplete_CallBack_FS();
+			else
+				HalfTransfer_CallBack_FS();
+			dac_samples += dac_drv->len/2;
+			__enable_irq();
+		}
+#endif // #ifdef	USB_AUDIO
+#endif // #ifdef SOUND_ENABLED
+
 	}
 }
 

@@ -29,7 +29,7 @@
 
 // Precomputed sine wavetable (Q15 format)
 AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
-AUDIO_FAST_RAM	MidiSynth_TypeDef *Synth;
+AUDIO_FAST_RAM	MidiSynth_TypeDef *Synth = NULL;
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[SYNTH_MIDI_NOTES] =
 {
 		8.176,

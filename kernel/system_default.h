@@ -33,14 +33,17 @@
 	#ifdef	MEMBRANE_2412172_00
 		#include "../boards/AX_P2412172_00_MembraneConcentrator.h"
 	#endif
-#ifdef	NEVOL_2416176_01
+	#ifdef	NEVOL_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL.h"
 	#endif
-#ifdef	NEVOL_AUDIO_2416176_01
+	#ifdef	NEVOL_AUDIO_2416176_01
 		#include "../boards/AX_P2416176_01_NEVOL_AUDIO.h"
 	#endif
-#ifdef	FY_201023_01
+	#ifdef	FY_201023_01
 		#include "../boards/FY_201023_01.h"
+	#endif
+	#ifdef	FL_201023_02
+		#include "../boards/FL_201023_02.h"
 	#endif
 #endif	//#ifdef	STM32H743xx
 

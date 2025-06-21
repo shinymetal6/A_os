@@ -25,6 +25,7 @@
 
 #define	MQTT_MAX_TOPICS			32
 #define	MQTT_MAX_TOPIC_CHARS	32
+#include "../../libraries/lwip2.2/LwIp/src/include/lwip/apps/mqtt.h"
 typedef struct
 {
 	uint8_t		status;

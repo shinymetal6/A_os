@@ -80,7 +80,7 @@ uint8_t MX_USB_Device_Init(void)
 	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
 		  return 1;
 #endif
-	  HAL_PWREx_EnableUSBVoltageDetector();
+	  //HAL_PWREx_EnableUSBVoltageDetector();
 #endif
 	  return 0;
 

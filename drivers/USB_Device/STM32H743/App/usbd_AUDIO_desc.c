@@ -36,15 +36,53 @@
 #define USBD_LANGID_STRING     1033
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
 #define USBD_PID_FS     0x5730
-#define USBD_PRODUCT_STRING_FS     "STM32 USBAudio"
+#define USBD_PRODUCT_STRING_FS     "STM32 Audio Class"
 #define USBD_CONFIGURATION_STRING_FS     "AUDIO Config"
 #define USBD_INTERFACE_STRING_FS     "AUDIO Interface"
 
 #define USB_SIZ_BOS_DESC            0x0C
 
+/* USER CODE BEGIN PRIVATE_DEFINES */
+
+/* USER CODE END PRIVATE_DEFINES */
+
+/**
+  * @}
+  */
+
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+/** @defgroup USBD_DESC_Private_Macros USBD_DESC_Private_Macros
+  * @brief Private macros.
+  * @{
+  */
+
+/* USER CODE BEGIN PRIVATE_MACRO */
+
+/* USER CODE END PRIVATE_MACRO */
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Private_FunctionPrototypes USBD_DESC_Private_FunctionPrototypes
+  * @brief Private functions declaration.
+  * @{
+  */
 
 static void Get_SerialNum(void);
 static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len);
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Private_FunctionPrototypes USBD_DESC_Private_FunctionPrototypes
+  * @brief Private functions declaration for FS.
+  * @{
+  */
 
 uint8_t * USBD_FS_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 uint8_t * USBD_FS_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
@@ -54,6 +92,14 @@ uint8_t * USBD_FS_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 uint8_t * USBD_FS_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 uint8_t * USBD_FS_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 
+/**
+  * @}
+  */
+
+/** @defgroup USBD_DESC_Private_Variables USBD_DESC_Private_Variables
+  * @brief Private variables.
+  * @{
+  */
 
 USBD_DescriptorsTypeDef FS_Desc =
 {

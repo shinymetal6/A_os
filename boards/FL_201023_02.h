@@ -1,46 +1,47 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
 */
 /*
- * AX_P2416176_01_NEVOL.h
+ * FL_201023_02.h
  *
- *  Created on: May 23, 2024
+ *  Created on: Jun 20, 2025
  *      Author: fil
  */
 
-#ifndef BOARDS_AX_P2416176_01_NEVOL_H_
-#define BOARDS_AX_P2416176_01_NEVOL_H_
-
-/*
- * for this board define
- * NUCLEO_G491
- * in preprocessor defines
- */
+#ifndef BOARDS_FL_201023_02_H_
+#define BOARDS_FL_201023_02_H_
 
 #include "iodef_common.h"
 #include "memdef_common.h"
+
+#define	NETWORKING_ENABLED		1
+//#define	USB_DEVICE_ENABLED		1
+
+#ifdef NETWORKING_ENABLED
+	#define MQTT_ENABLE				1
+	//#define	NETWORKING_DHCP				1	/* 1 starts dhcp, 0 means fixed IP defined in A.c */
+#endif // #ifdef NETWORKING_ENABLED
 
 #define USB_DEVICE_ENABLED	1
 #ifdef USB_DEVICE_ENABLED
 	#define	USB_CDC				1
 	//#define	USB_MIDI			1
-	//#define	USB_AUDIO				1
 #endif // #ifdef USB_ENABLED
 
-//#define AUDIO_ENABLED	1
-#define SOUND_ENABLED	1
+#define LD1_Pin			LED_Pin
+#define LD1_GPIO_Port	LED_GPIO_Port
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))
@@ -61,9 +62,9 @@
 #define	DFU_BOOT_VERSION_PTR	0x1FF1E7FE
 #define	DFU_BOOT_VERSION		0x91
 
-#define	BOARD_NAME			"NEVOL-2416176-01"
-#define	MACHINE_NAME		"Nevol"
-#define	MACHINE_VERSION		"A"
+#define	BOARD_NAME			"FL_201023_02"
+#define	MACHINE_NAME		"Fyberloom"
+#define	MACHINE_VERSION		"B"
 
 
-#endif /* BOARDS_AX_P2416176_01_NEVOL_H_ */
+#endif /* BOARDS_FL_201023_02_H_ */

@@ -38,7 +38,14 @@
 #ifdef USE_USBD_COMPOSITE
 #define AUDIO_PACKET_SZE_WORD(frq)     (uint32_t)((((frq) * 2U * 2U)/1000U))
 #endif /* USE_USBD_COMPOSITE  */
+/**
+  * @}
+  */
 
+
+/** @defgroup USBD_AUDIO_Private_FunctionPrototypes
+  * @{
+  */
 static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
 static uint8_t USBD_AUDIO_DeInit(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
 
@@ -59,6 +66,14 @@ static uint8_t USBD_AUDIO_IsoOutIncomplete(USBD_HandleTypeDef *pdev, uint8_t epn
 static void AUDIO_REQ_GetCurrent(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 static void AUDIO_REQ_SetCurrent(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 static void *USBD_AUDIO_GetAudioHeaderDesc(uint8_t *pConfDesc);
+
+/**
+  * @}
+  */
+
+/** @defgroup USBD_AUDIO_Private_Variables
+  * @{
+  */
 
 USBD_ClassTypeDef USBD_AUDIO =
 {
@@ -711,7 +726,6 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
     /* Packet received Callback */
     ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData[pdev->classId])->PeriodicTC(&haudio->buffer[haudio->wr_ptr],
                                                                           PacketSize, AUDIO_OUT_TC);
-
     /* Increment the Buffer pointer or roll it back when all buffers are full */
     haudio->wr_ptr += PacketSize;
 
@@ -727,6 +741,14 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
                                                                             AUDIO_CMD_START);
         haudio->offset = AUDIO_OFFSET_NONE;
       }
+      /*
+      if (haudio->offset == AUDIO_OFFSET_NONE)
+      {
+          ((USBD_AUDIO_ItfTypeDef *)pdev->pUserData[pdev->classId])->AudioCmd(&haudio->buffer[0],
+                                                                              AUDIO_TOTAL_BUF_SIZE / 2U,
+																			  AUDIO_CMD_PLAY);
+      }
+      */
     }
 
     if (haudio->rd_enable == 0U)

@@ -25,8 +25,12 @@
 #include "../../../../kernel/system_default.h"
 
 #ifdef	USB_AUDIO
-/* Includes ------------------------------------------------------------------*/
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #include "usbd_audio_if.h"
+
+extern USBAudio_TypeDef	*usbaudio_user_struct;
+extern uint32_t Usb_AUDIO_OUT_Play(uint8_t* pData, uint32_t len);
 
 static int8_t AUDIO_Init_FS(uint32_t AudioFreq, uint32_t Volume, uint32_t options);
 static int8_t AUDIO_DeInit_FS(uint32_t options);
@@ -47,12 +51,20 @@ USBD_AUDIO_ItfTypeDef USBD_Interface_fops_FS =
   AUDIO_GetState_FS,
 };
 
+uint32_t	buf_index=0;
+
+uint32_t	usbaudio_time_usec;
+
+int16_t		*usbaudio_buffer;
+uint32_t	usbaudio_samples=0;
+
 static int8_t AUDIO_Init_FS(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
 {
   /* USER CODE BEGIN 0 */
   UNUSED(AudioFreq);
   UNUSED(Volume);
   UNUSED(options);
+  usbaudio_buffer = Usb_AUDIO_GetUSBbuf_ptr();
   return (USBD_OK);
   /* USER CODE END 0 */
 }
@@ -65,21 +77,38 @@ static int8_t AUDIO_DeInit_FS(uint32_t options)
   /* USER CODE END 1 */
 }
 
+//#define	AUDIO_TOTAL_BUF_SIZE	16384
+uint32_t	max_size=0;
+uint32_t	min_size=65535;
+uint32_t	usb_pkt=0;
+
 static int8_t AUDIO_AudioCmd_FS(uint8_t* pbuf, uint32_t size, uint8_t cmd)
 {
   /* USER CODE BEGIN 2 */
-	extern	DAC_HandleTypeDef hdac1;
-
+	uint32_t	i;
   switch(cmd)
   {
     case AUDIO_CMD_START:
     case AUDIO_CMD_PLAY:
-    	Usb_AUDIO_OUT_Play(pbuf, size);
+		__disable_irq();
+    	if ( size > max_size)
+    		max_size = size;
+    	if ( size < min_size)
+    		min_size = size;
+    	for(i=0;i<size;i+=4)
+    	{
+    		usbaudio_buffer[buf_index] = (pbuf[i+1] << 8) | pbuf[i];
+    		buf_index++;
+    		if ( buf_index >= AUDIO_TOTAL_BUF_SIZE)
+    			buf_index =0;
+    	}
+   		usb_pkt = size/2;
+    	usbaudio_samples += (size/2);
+
+		__enable_irq();
+    	//Usb_AUDIO_OUT_Play(pbuf,size);
     break;
   }
-  UNUSED(pbuf);
-  UNUSED(size);
-  UNUSED(cmd);
   return (USBD_OK);
   /* USER CODE END 2 */
 }
@@ -103,10 +132,7 @@ static int8_t AUDIO_MuteCtl_FS(uint8_t cmd)
 static int8_t AUDIO_PeriodicTC_FS(uint8_t *pbuf, uint32_t size, uint8_t cmd)
 {
   /* USER CODE BEGIN 5 */
-  UNUSED(pbuf);
-  UNUSED(size);
-  UNUSED(cmd);
-  return (USBD_OK);
+	return (USBD_OK);
   /* USER CODE END 5 */
 }
 
@@ -130,5 +156,6 @@ void HalfTransfer_CallBack_FS(void)
   USBD_AUDIO_Sync(&hUsbDeviceFS, AUDIO_OFFSET_HALF);
   /* USER CODE END 8 */
 }
+
 #endif // #ifdef	USB_AUDIO
 #endif // #ifdef	STM32H743xx
