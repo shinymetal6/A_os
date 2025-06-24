@@ -50,7 +50,10 @@ extern	void sample_process_1_i2csensors(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_I2CSENSORS
 #ifdef	SAMPLEPROCESS_1_USBAUDIO
 extern	void sample_process_1_usbaudio(uint32_t process_id);	//This is process1
-#endif // #define	SAMPLEPROCESS_I2CSENSORS
+#endif // #define	SAMPLEPROCESS_1_USBAUDIO
+#ifdef	SAMPLEPROCESS_1_CAN
+extern	void sample_process_1_can(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_CAN
 
 
 
@@ -103,6 +106,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_USBAUDIO
 				.user_process = sample_process_1_usbaudio,
 #endif // #define	SAMPLEPROCESS_1_USBAUDIO
+#ifdef	SAMPLEPROCESS_1_CAN
+				.user_process = sample_process_1_can,
+#endif // #define	SAMPLEPROCESS_1_CAN
 
 				.stack_size = 1024,
 		},

@@ -36,5 +36,6 @@
 #include "qspi/qspi.h"
 #include "spi/spi.h"
 #include "i2c/i2c.h"
+#include "fdcan/fdcan.h"
 
 #endif /* DRIVERS_DRIVERS_H_ */
