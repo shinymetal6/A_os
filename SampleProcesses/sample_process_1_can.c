@@ -28,12 +28,30 @@ uint8_t		led_cntr=0;
 #define	PRC1_TICK				10
 extern	FDCAN_HandleTypeDef hfdcan1;
 
-uint8_t can_txbuf[] = "Ciao";
+uint8_t can_txbuf[] = "CAN";
+uint8_t can_rxbuf[32];
+
+FDCAN_TxHeaderTypeDef FDCAN_TxHeader =
+{
+		.Identifier = 0x321,
+		.IdType = FDCAN_STANDARD_ID,
+		.TxFrameType = FDCAN_DATA_FRAME,
+		.DataLength = FDCAN_DLC_BYTES_2,
+		.ErrorStateIndicator = FDCAN_ESI_ACTIVE,
+		.BitRateSwitch = FDCAN_BRS_OFF,
+		.FDFormat = FDCAN_CLASSIC_CAN,
+		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
+		.MessageMarker = 0,
+};
+FDCAN_RxHeaderTypeDef	FDCAN_RxHeader;
 CAN_Drv_TypeDef	CAN_Drv =
 {
 		.channel = 1,
 		.hfdcan = &hfdcan1,
 		.TxData = can_txbuf,
+		.RxData = can_rxbuf,
+		.TxHeader = &FDCAN_TxHeader,
+		.RxHeader = &FDCAN_RxHeader,
 		.wakeup_id = WAKEUP_FROM_CAN_IRQ,
 		.flags = FDCAN_WAKEUP_ON_RX0 | FDCAN_WAKEUP_ON_RX1 | FDCAN_WAKEUP_ON_TX,
 };

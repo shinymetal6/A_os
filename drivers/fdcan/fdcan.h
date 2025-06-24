@@ -35,7 +35,8 @@ typedef struct
 	uint8_t				channel;
 	uint32_t 			wakeup_id;
 	FDCAN_HandleTypeDef	*hfdcan;
-	FDCAN_TxHeaderTypeDef TxHeader;
+	FDCAN_TxHeaderTypeDef *TxHeader;
+	FDCAN_RxHeaderTypeDef *RxHeader;
 	FDCAN_FilterTypeDef sFilterConfig;
 	uint8_t 			*TxData;
 	uint8_t 			tx_len;

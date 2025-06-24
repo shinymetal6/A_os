@@ -34,7 +34,7 @@ CAN_DriverStruct_t	CAN_DriverStruct[2];
 
 ITCM_AREA_CODE static uint32_t int_can_send(CAN_Drv_TypeDef *private_data)
 {
-	return HAL_FDCAN_AddMessageToTxFifoQ(private_data->hfdcan, &private_data->TxHeader, (const uint8_t *)&private_data->TxData);
+	return HAL_FDCAN_AddMessageToTxFifoQ(private_data->hfdcan, private_data->TxHeader, (const uint8_t *)&private_data->TxData);
 }
 
 
@@ -66,17 +66,6 @@ uint8_t channel = (private_data->hfdcan == &hfdcan1) ? 0 : 1;
 	   Bit_length                 = 40 tq = 1 \B5s
 	   Bit_rate                   = 1 MBit/s
 	 */
-
-	private_data->TxHeader.Identifier = 0x321;
-	private_data->TxHeader.IdType = FDCAN_STANDARD_ID;
-	private_data->TxHeader.TxFrameType = FDCAN_DATA_FRAME;
-	private_data->TxHeader.DataLength = FDCAN_DLC_BYTES_2;
-	private_data->TxHeader.ErrorStateIndicator = FDCAN_ESI_ACTIVE;
-	private_data->TxHeader.BitRateSwitch = FDCAN_BRS_OFF;
-	private_data->TxHeader.FDFormat = FDCAN_CLASSIC_CAN;
-	private_data->TxHeader.TxEventFifoControl = FDCAN_NO_TX_EVENTS;
-	private_data->TxHeader.MessageMarker = 0;
-
 	 /* Configure Rx filter */
 	private_data->sFilterConfig.IdType = FDCAN_STANDARD_ID;
 	private_data->sFilterConfig.FilterIndex = 0;
@@ -120,8 +109,9 @@ CAN_Drv_TypeDef		*can_Drv = (CAN_Drv_TypeDef	*)CAN_DriverStruct[channel].private
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
 uint8_t channel = (hfdcan == &hfdcan1) ? 0 : 1;
-CAN_Drv_TypeDef		*can_Drv = (CAN_Drv_TypeDef	*)CAN_DriverStruct[channel].private_data;
+CAN_Drv_TypeDef	*can_Drv = (CAN_Drv_TypeDef	*)CAN_DriverStruct[channel].private_data;
 
+	HAL_FDCAN_GetRxMessage(can_Drv->hfdcan, FDCAN_RX_FIFO0, can_Drv->RxHeader, can_Drv->RxData);
 	if (( can_Drv->flags & FDCAN_WAKEUP_ON_RX0) == FDCAN_WAKEUP_ON_RX0 )
 		activate_process(CAN_DriverStruct[channel].process,can_Drv->wakeup_id,FDCAN_WAKEUP_ON_RX0);
 }
