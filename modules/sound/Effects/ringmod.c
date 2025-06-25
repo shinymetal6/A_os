@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "ringmod.h"
 
@@ -61,3 +62,4 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect->private_data
 	}
 }
 
+#endif // #ifdef SOUND_ENABLED

@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_CHORUS_H_
 #define MODULES_SOUND_EFFECTS_CHORUS_H_
+#ifdef SOUND_ENABLED
 
 #define CHORUS_SAMPLE_RATE 		DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
 #define CHORUS_BLOCK_SIZE 		SOUND_BLOCK_SIZE         // Number of samples processed per block
@@ -48,5 +49,6 @@ extern void Effect_Chorus_Init(uint32_t *effect_s);
 extern void Effect_Chorus(uint32_t *effect_s, uint32_t start_sample);
 
 
+#endif // #ifdef SOUND_ENABLED
 
 #endif /* MODULES_SOUND_EFFECTS_CHORUS_H_ */

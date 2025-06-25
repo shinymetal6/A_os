@@ -37,7 +37,7 @@ typedef struct
 	FDCAN_HandleTypeDef	*hfdcan;
 	FDCAN_TxHeaderTypeDef *TxHeader;
 	FDCAN_RxHeaderTypeDef *RxHeader;
-	FDCAN_FilterTypeDef sFilterConfig;
+	FDCAN_FilterTypeDef *FilterConfig;
 	uint8_t 			*TxData;
 	uint8_t 			tx_len;
 	uint8_t 			*RxData;
@@ -51,10 +51,9 @@ typedef struct
 	uint8_t				flags;
 	uint8_t				handle;
 	uint32_t			*private_data;
-	uint32_t			(*can_start)  (uint8_t channel);
-	uint32_t			(*can_stop)  (uint8_t channel);
-	uint32_t			(*can_get_status) (uint8_t channel);
-	uint32_t			(*can_init) (uint8_t channel);
+	uint32_t			(*can_update_filter)  (CAN_Drv_TypeDef *private_data,FDCAN_FilterTypeDef *FDCAN_Filter);
+	uint32_t			(*can_stop)  (CAN_Drv_TypeDef *private_data);
+	uint32_t			(*can_get_status) (CAN_Drv_TypeDef *private_data);
 	uint32_t			(*can_send) (CAN_Drv_TypeDef *private_data);
 }CAN_DriverStruct_t;
 

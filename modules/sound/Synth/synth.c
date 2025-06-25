@@ -26,6 +26,7 @@
 #include "../sound.h"
 #include "synth.h"
 //#include "../../../kernel/kernel_opt.h"
+#ifdef SOUND_ENABLED
 
 // Precomputed sine wavetable (Q15 format)
 AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
@@ -444,5 +445,6 @@ Effect_TypeDef *last_effect;
 	}
 }
 
+#endif // #ifdef SOUND_ENABLED
 
 

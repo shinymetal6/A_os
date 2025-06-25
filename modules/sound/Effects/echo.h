@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_ECHO_H_
 #define MODULES_SOUND_EFFECTS_ECHO_H_
+#ifdef SOUND_ENABLED
 
 // Constants
 #define ECHO_SAMPLE_RATE DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
@@ -51,5 +52,6 @@ typedef struct {
 extern void Effect_Echo_Init(uint32_t *effect_s);
 extern void Effect_Echo(uint32_t *effect_s, uint32_t start_sample);
 
+#endif // #ifdef SOUND_ENABLED
 
 #endif /* MODULES_SOUND_EFFECTS_ECHO_H_ */

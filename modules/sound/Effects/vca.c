@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "vca.h"
 
@@ -43,3 +44,4 @@ q15_t gain = (q15_t)((private->amplitude / 127.0f) * 32768.0f);
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	}
 }
+#endif // #ifdef SOUND_ENABLED

@@ -31,6 +31,27 @@ extern	FDCAN_HandleTypeDef hfdcan1;
 uint8_t can_txbuf[] = "CAN";
 uint8_t can_rxbuf[32];
 
+/* Bit time configuration:
+  fdcan_ker_ck               = 40 MHz
+  Time_quantum (tq)          = 25 ns
+  Synchronization_segment    = 1 tq
+  Propagation_segment        = 23 tq
+  Phase_segment_1            = 8 tq
+  Phase_segment_2            = 8 tq
+  Synchronization_Jump_width = 8 tq
+  Bit_length                 = 40 tq = 1 \B5s
+  Bit_rate                   = 1 MBit/s
+*/
+
+FDCAN_FilterTypeDef	FDCAN_Filter =
+{
+		.IdType = FDCAN_STANDARD_ID,
+		.FilterIndex = 0,
+		.FilterType = FDCAN_FILTER_MASK,
+		.FilterConfig = FDCAN_FILTER_TO_RXFIFO0,
+		.FilterID1 = 0x321,
+		.FilterID2 = 0x7FF,
+};
 FDCAN_TxHeaderTypeDef FDCAN_TxHeader =
 {
 		.Identifier = 0x321,
@@ -43,6 +64,7 @@ FDCAN_TxHeaderTypeDef FDCAN_TxHeader =
 		.TxEventFifoControl = FDCAN_NO_TX_EVENTS,
 		.MessageMarker = 0,
 };
+
 FDCAN_RxHeaderTypeDef	FDCAN_RxHeader;
 CAN_Drv_TypeDef	CAN_Drv =
 {
@@ -52,6 +74,7 @@ CAN_Drv_TypeDef	CAN_Drv =
 		.RxData = can_rxbuf,
 		.TxHeader = &FDCAN_TxHeader,
 		.RxHeader = &FDCAN_RxHeader,
+		.FilterConfig = &FDCAN_Filter,
 		.wakeup_id = WAKEUP_FROM_CAN_IRQ,
 		.flags = FDCAN_WAKEUP_ON_RX0 | FDCAN_WAKEUP_ON_RX1 | FDCAN_WAKEUP_ON_TX,
 };

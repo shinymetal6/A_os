@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "tape_freak.h"
 
@@ -149,3 +150,4 @@ TAPE_FREAK_Effect_TypeDef *tape_freak = (TAPE_FREAK_Effect_TypeDef *)effect->pri
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	}
 }
+#endif // #ifdef SOUND_ENABLED

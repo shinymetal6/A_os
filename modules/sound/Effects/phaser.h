@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_PHASER_H_
 #define MODULES_SOUND_EFFECTS_PHASER_H_
+#ifdef SOUND_ENABLED
 
 
 #define PHASER_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
@@ -49,4 +50,5 @@ typedef struct
 extern void Effect_Phaser(uint32_t *effect_s, uint32_t start_sample);
 extern void Effect_Phaser_Init(uint32_t *effect_s);
 
+#endif // #ifdef SOUND_ENABLED
 #endif /* MODULES_SOUND_EFFECTS_PHASER_H_ */

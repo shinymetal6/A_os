@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_VCA_H_
 #define MODULES_SOUND_EFFECTS_VCA_H_
+#ifdef SOUND_ENABLED
 
 typedef struct
 {
@@ -30,4 +31,5 @@ typedef struct
 
 extern void Effect_VCA(uint32_t *effect_s, uint32_t start_sample);
 
+#endif // #ifdef SOUND_ENABLED
 #endif /* MODULES_SOUND_EFFECTS_VCA_H_ */

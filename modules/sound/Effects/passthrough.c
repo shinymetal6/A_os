@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "passthrough.h"
 
@@ -39,5 +40,6 @@ PASSTHROUGH_Effect_TypeDef *private = (PASSTHROUGH_Effect_TypeDef *)effect->priv
 		effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	private->call_counter++;
 }
+#endif // #ifdef SOUND_ENABLED
 
 

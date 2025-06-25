@@ -24,6 +24,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "phaser.h"
 ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser,float input, float feedback)
@@ -93,3 +94,4 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect->private_data;
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	}
 }
+#endif // #ifdef SOUND_ENABLED

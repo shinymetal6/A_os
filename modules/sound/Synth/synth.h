@@ -23,6 +23,8 @@
 #ifndef SRC_SYNTH_H_
 #define SRC_SYNTH_H_
 
+#ifdef SOUND_ENABLED
+
 #define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
 
 #define SYNTH_SAMPLE_RATE 		DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
@@ -83,5 +85,6 @@ extern void AllNoteOFF(void);
 
 extern void Do_synth(uint32_t start_sample);
 
+#endif // #ifdef SOUND_ENABLED
 
 #endif /* SRC_SYNTH_H_ */

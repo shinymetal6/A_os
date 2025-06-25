@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_TAPE_FREAK_H_
 #define MODULES_SOUND_EFFECTS_TAPE_FREAK_H_
+#ifdef SOUND_ENABLED
 
 #define TAPE_FREAK_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
 #define TAPE_FREAK_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
@@ -54,4 +55,5 @@ typedef struct
 extern void Effect_Tape_Freak_Init(uint32_t *effect_s);
 extern void Effect_Tape_Freak(uint32_t *effect_s, uint32_t start_sample);
 
+#endif // #ifdef SOUND_ENABLED
 #endif /* MODULES_SOUND_EFFECTS_TAPE_FREAK_H_ */

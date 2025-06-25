@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "chorus.h"
 #define	CHORUS_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
@@ -113,3 +114,4 @@ Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 	}
 
 }
+#endif // #ifdef SOUND_ENABLED

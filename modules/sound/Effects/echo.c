@@ -24,6 +24,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "echo.h"
 /*
@@ -97,3 +98,4 @@ Echo_Effect_TypeDef *echo = (Echo_Effect_TypeDef *)effect->private_data;
 
 }
 
+#endif // #ifdef SOUND_ENABLED

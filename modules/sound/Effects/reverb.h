@@ -22,6 +22,7 @@
 
 #ifndef MODULES_SOUND_EFFECTS_REVERB_H_
 #define MODULES_SOUND_EFFECTS_REVERB_H_
+#ifdef SOUND_ENABLED
 
 #define REVERB_SAMPLE_RATE 			DEFAULT_SAMPLE_FREQUENCY      // Sampling rate in Hz
 #define REVERB_BLOCK_SIZE 			SOUND_BLOCK_SIZE         // Number of samples processed per block
@@ -60,5 +61,6 @@ Reverb_DelayLine_TypeDef allpass_filters[REVERB_NUM_ALLPASS_FILTERS]; // All-pas
 extern void Effect_Reverb_Init(uint32_t *effect_s);
 extern void Effect_Reverb(uint32_t *effect_s, uint32_t start_sample);
 
+#endif // #ifdef SOUND_ENABLED
 
 #endif /* MODULES_SOUND_EFFECTS_REVERB_H_ */

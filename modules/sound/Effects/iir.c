@@ -24,6 +24,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "iir.h"
 
@@ -168,3 +169,4 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
 		iir->flags &= ~IIR_UPDATE_PARAMS;
 	}
 }
+#endif // #ifdef SOUND_ENABLED

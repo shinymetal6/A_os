@@ -31,12 +31,24 @@
 #include <string.h>
 CAN_DriverStruct_t	CAN_DriverStruct[2];
 
-
 ITCM_AREA_CODE static uint32_t int_can_send(CAN_Drv_TypeDef *private_data)
 {
 	return HAL_FDCAN_AddMessageToTxFifoQ(private_data->hfdcan, private_data->TxHeader, (const uint8_t *)&private_data->TxData);
 }
 
+ITCM_AREA_CODE static uint32_t int_can_update_filter(CAN_Drv_TypeDef *private_data,FDCAN_FilterTypeDef *FDCAN_Filter)
+{
+uint32_t	ret_val;
+	if ( (ret_val = HAL_FDCAN_Stop(private_data->hfdcan)) != HAL_OK)
+		return ret_val;
+	private_data->FilterConfig->FilterType = FDCAN_FILTER_DISABLE;
+	if ( (ret_val = HAL_FDCAN_ConfigFilter(&hfdcan1, private_data->FilterConfig)) != HAL_OK)
+		return ret_val;
+	private_data->FilterConfig->FilterType = FDCAN_FILTER_MASK;
+	if ( (ret_val = HAL_FDCAN_ConfigFilter(&hfdcan1, private_data->FilterConfig)) != HAL_OK)
+		return ret_val;
+	return HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
+}
 
 ITCM_AREA_CODE uint32_t	can_register(CAN_Drv_TypeDef *private_data)
 {
@@ -46,6 +58,12 @@ uint8_t channel = (private_data->hfdcan == &hfdcan1) ? 0 : 1;
 	{
 		if ( private_data->wakeup_id == 0)
 			return DRIVER_REQUEST_FAILED;
+		if ( private_data->FilterConfig == NULL)
+			return DRIVER_REQUEST_FAILED;
+		if ( private_data->TxHeader == NULL)
+			return DRIVER_REQUEST_FAILED;
+		if ( private_data->RxHeader == NULL)
+			return DRIVER_REQUEST_FAILED;
 	}
 	private_data->status |= FDCAN_DRIVER_STATUS_IN_USE;
 
@@ -54,26 +72,10 @@ uint8_t channel = (private_data->hfdcan == &hfdcan1) ? 0 : 1;
 
 	CAN_DriverStruct[channel].status = DRIVER_STATUS_IN_USE;
 	CAN_DriverStruct[channel].can_send = int_can_send;
+	CAN_DriverStruct[channel].can_update_filter = int_can_update_filter;
 
-	 /* Bit time configuration:
-	   fdcan_ker_ck               = 40 MHz
-	   Time_quantum (tq)          = 25 ns
-	   Synchronization_segment    = 1 tq
-	   Propagation_segment        = 23 tq
-	   Phase_segment_1            = 8 tq
-	   Phase_segment_2            = 8 tq
-	   Synchronization_Jump_width = 8 tq
-	   Bit_length                 = 40 tq = 1 \B5s
-	   Bit_rate                   = 1 MBit/s
-	 */
-	 /* Configure Rx filter */
-	private_data->sFilterConfig.IdType = FDCAN_STANDARD_ID;
-	private_data->sFilterConfig.FilterIndex = 0;
-	private_data->sFilterConfig.FilterType = FDCAN_FILTER_MASK;
-	private_data->sFilterConfig.FilterConfig = FDCAN_FILTER_TO_RXFIFO0;
-	private_data->sFilterConfig.FilterID1 = 0x321;
-	private_data->sFilterConfig.FilterID2 = 0x7FF;
-	if (HAL_FDCAN_ConfigFilter(&hfdcan1, &private_data->sFilterConfig) != HAL_OK)
+
+	if (HAL_FDCAN_ConfigFilter(&hfdcan1, private_data->FilterConfig) != HAL_OK)
 		return 1;
 	if ( HAL_FDCAN_Start(private_data->hfdcan) != HAL_OK )
 		return 1;
@@ -84,6 +86,13 @@ ITCM_AREA_CODE uint32_t can_send(CAN_Drv_TypeDef *private_data)
 {
 	if ( CAN_DriverStruct[private_data->channel-1].can_send != NULL )
 		return CAN_DriverStruct[private_data->channel-1].can_send(private_data);
+	return 1;
+}
+
+ITCM_AREA_CODE uint32_t can_update_filter(CAN_Drv_TypeDef *private_data, FDCAN_FilterTypeDef *FDCAN_Filter)
+{
+	if ( CAN_DriverStruct[private_data->channel-1].can_update_filter != NULL )
+		return CAN_DriverStruct[private_data->channel-1].can_update_filter(private_data,FDCAN_Filter);
 	return 1;
 }
 

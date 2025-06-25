@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
+#ifdef SOUND_ENABLED
 
 #include "moog_filter.h"
 
@@ -111,3 +112,4 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect->private_data;
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	}
 }
+#endif // #ifdef SOUND_ENABLED
