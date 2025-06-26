@@ -65,6 +65,7 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+			process_led();
 			if ( xmodem_rx_uart_enable_poll == 1 )
 			{
 				if ( xmodem_rx_timer_shift >= 100)

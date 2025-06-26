@@ -24,7 +24,6 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_CAN
-uint8_t		led_cntr=0;
 #define	PRC1_TICK				10
 extern	FDCAN_HandleTypeDef hfdcan1;
 
@@ -79,22 +78,6 @@ CAN_Drv_TypeDef	CAN_Drv =
 		.flags = FDCAN_WAKEUP_ON_RX0 | FDCAN_WAKEUP_ON_RX1 | FDCAN_WAKEUP_ON_TX,
 };
 
-void process_led(void)
-{
-	switch(led_cntr)
-	{
-	case 70 :
-	case 90 :
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
-		break;
-	default :
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
-		break;
-	}
-	led_cntr++;
-	if ( led_cntr == 100 )
-		led_cntr = 0;
-}
 uint8_t	can_pkt = 0;
 
 void sample_process_1_can(uint32_t process_id)
