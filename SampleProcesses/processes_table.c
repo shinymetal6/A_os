@@ -54,6 +54,9 @@ extern	void sample_process_1_usbaudio(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_CAN
 extern	void sample_process_1_can(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_CAN
+#ifdef	SAMPLEPROCESS_1_LORA
+extern	void sample_process_1_lora(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_CAN
 
 
 
@@ -109,6 +112,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_CAN
 				.user_process = sample_process_1_can,
 #endif // #define	SAMPLEPROCESS_1_CAN
+#ifdef	SAMPLEPROCESS_1_LORA
+				.user_process = sample_process_1_lora,
+#endif // #define	SAMPLEPROCESS_1_LORA
 
 				.stack_size = 1024,
 		},

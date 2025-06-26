@@ -14,31 +14,36 @@
  * Project : A_os
 */
 /*
- * spi.h
+ * ra01s.h
  *
- *  Created on: Nov 23, 2024
+ *  Created on: Jun 26, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_SPI_SPI_LCD_H_
-#define DRIVERS_SPI_SPI_LCD_H_
+#ifndef MODULES_LORA_RA01S_RA01S_H_
+#define MODULES_LORA_RA01S_RA01S_H_
 
-#ifdef A_OS_SPI_ENABLED
 typedef struct
 {
-	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
-	SPI_HandleTypeDef 	*bus;
-	uint32_t			*driver_private_data;
-}SPI_DriverStruct_t;
+	uint8_t				handle;
+	uint32_t 			wakeup_id;
+	SPI_HandleTypeDef	*spi;
+	uint32_t 			spi_timeout_ms;
+	uint16_t			CS_bit;
+	GPIO_TypeDef	 	*CS_port;
+	uint16_t			RESET_bit;
+	GPIO_TypeDef	 	*RESET_port;
+}RA01S_Drv_TypeDef;
 
-/* flags */
-#define	SPI_TX_DMA_COMPLETE	0x80
+#define	RA01S_DRIVER_STATUS_IN_USE		0x80
+#define	RA01S_DRIVER_STATUS_INITIALIZED	0x40
+#define	RA01S_DRIVER_STATUS_INITPEND	0x20
+#define	RA01S_DRIVER_STATUS_REQUESTED	0x10
+#define	RA01S_DRIVER_STATUS_FAILED		0x01
+#define	RA01S_DRIVER_STATUS_UNUSED		0
 
-#include "spi_lcd/spi_lcd.h"
-#include "RA01S/ra01s.h"
+extern uint32_t	ra01s_register(RA01S_Drv_TypeDef *driver_private_data);
 
-#endif // #ifdef A_OS_SPI_ENABLED
-
-#endif /* DRIVERS_SPI_LCD_SPI_LCD_H_ */
+#endif /* MODULES_LORA_RA01S_RA01S_H_ */
