@@ -40,6 +40,9 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+#define	LD1_GPIO_Port	LED_GPIO_Port
+#define	LD1_Pin			LED_Pin
+
 #define A_OS_CAN_ENABLED	1
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))

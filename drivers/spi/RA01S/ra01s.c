@@ -75,19 +75,6 @@ uint32_t timeout =  spi_struct->spi_timeout_ms;
 	return result;
 }
 
-/*
- * unused functions
-sx127x_result_t sx127x_read_registers(SPI_HandleTypeDef* spi, uint8_t address, int8_t* read_data, uint8_t read_size)
-{
-	return sx127x_read(spi, address & 0x7f, (uint8_t *)read_data, read_size, 2000);
-}
-
-sx127x_result_t sx127x_write_registers(SPI_HandleTypeDef* spi, const uint8_t address, uint8_t* write_data, uint8_t write_size)
-{
-	return sx127x_write(spi, address | 0x80, write_data, write_size, 2000);
-}
-*/
-
 ITCM_AREA_CODE static sx127x_result_t sx127x_read_register(sx127x_spi_hal_t* spi, const uint8_t address, uint8_t* result)
 {
 	return sx127x_read(spi, address & 0x7f, result, 1);

@@ -23,6 +23,8 @@
 #ifndef MODULES_LORA_RA01S_RA01S_H_
 #define MODULES_LORA_RA01S_RA01S_H_
 
+#include "sx127x.h"
+
 typedef struct
 {
 	uint8_t				status;
