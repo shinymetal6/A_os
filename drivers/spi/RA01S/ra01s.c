@@ -128,7 +128,23 @@ sx127x_spi_hal_t spi_hal;
 	sx127x_spi_conf.reset_function = &sx127x_reset;
 	sx127x_spi_conf.spi_hal = &spi_hal;
 
+
 	sx127x_conf.spi_conf = &sx127x_spi_conf;
+
+	sx127x_conf.op_mode_range = ra01s_Drv->RA01S_UserConfig->op_mode_range;
+	sx127x_conf.lna_boost_gain = ra01s_Drv->RA01S_UserConfig->lna_boost_gain;
+	sx127x_conf.is_rx_payload_crc_on = ra01s_Drv->RA01S_UserConfig->is_rx_payload_crc_on;
+	sx127x_conf.bandwidth_khz = ra01s_Drv->RA01S_UserConfig->bandwidth_khz;
+	sx127x_conf.header_mode = ra01s_Drv->RA01S_UserConfig->header_mode;
+	sx127x_conf.spreading_factor = ra01s_Drv->RA01S_UserConfig->spreading_factor;
+	sx127x_conf.coding_rate = ra01s_Drv->RA01S_UserConfig->coding_rate;
+	sx127x_conf.frequency_hz = ra01s_Drv->RA01S_UserConfig->frequency_hz;
+	sx127x_conf.frequency_mode = ra01s_Drv->RA01S_UserConfig->frequency_mode;
+	sx127x_conf.is_auto_agc_on = ra01s_Drv->RA01S_UserConfig->is_auto_agc_on;
+	sx127x_conf.tx_power_level_dbm = ra01s_Drv->RA01S_UserConfig->tx_power_level_dbm;
+	sx127x_conf.pa_output_pin = ra01s_Drv->RA01S_UserConfig->pa_output_pin;
+
+	/*
 	sx127x_conf.op_mode_range = SX127X_OP_MODE_RANGE_LORA;
 	sx127x_conf.lna_boost_gain = SX127X_LNA_GAIN_12DB;
 	sx127x_conf.is_rx_payload_crc_on = true;
@@ -141,6 +157,8 @@ sx127x_spi_hal_t spi_hal;
 	sx127x_conf.is_auto_agc_on = true;
 	sx127x_conf.tx_power_level_dbm = 17;
 	sx127x_conf.pa_output_pin = SX127X_PA_SELECT_PA_BOOST_PIN;
+	*/
+
 	sx127x_lora_init(&sx127x_conf);
 	return 0;
 }

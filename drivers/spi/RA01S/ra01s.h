@@ -27,6 +27,23 @@
 
 typedef struct
 {
+	sx127x_spi_configuration_t*		spi_conf;
+	sx127x_op_mode_range_t 			op_mode_range;
+	sx127x_lna_boost_gain_t 		lna_boost_gain;
+	sx127x_spreading_factor_t 		spreading_factor;
+	sx127x_bandwidth_khz_t 			bandwidth_khz;
+	sx127x_frequency_mode_t 		frequency_mode;
+	sx127x_coding_rate_t 			coding_rate;
+	sx127x_header_mode_t 			header_mode;
+	bool 							is_rx_payload_crc_on;
+	uint32_t 						frequency_hz;
+	bool 							is_auto_agc_on;
+	uint8_t 						tx_power_level_dbm;
+	sx127x_pa_select_t 				pa_output_pin;
+} RA01S_UserConfig_TypeDef;
+
+typedef struct
+{
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
@@ -37,6 +54,7 @@ typedef struct
 	GPIO_TypeDef	 	*CS_port;
 	uint16_t			RESET_bit;
 	GPIO_TypeDef	 	*RESET_port;
+	RA01S_UserConfig_TypeDef	*RA01S_UserConfig;
 }RA01S_Drv_TypeDef;
 
 #define	RA01S_DRIVER_STATUS_IN_USE		0x80
