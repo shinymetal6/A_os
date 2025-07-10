@@ -24,6 +24,9 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/kernel_opt.h"
+
+#ifdef A_OS_SPI_ENABLED
+
 #include "ra01s.h"
 #include "sx127x.h"
 
@@ -162,3 +165,4 @@ sx127x_spi_hal_t spi_hal;
 	sx127x_lora_init(&sx127x_conf);
 	return 0;
 }
+#endif // #ifdef A_OS_SPI_ENABLED

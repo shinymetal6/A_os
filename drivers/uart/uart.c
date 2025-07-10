@@ -71,6 +71,20 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].dri
 ITCM_AREA_CODE  uint32_t	uart_disable_receive(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+	uarts_Drv->uart->Instance->ICR = (
+		UART_CLEAR_PEF |
+		UART_CLEAR_FEF |
+		UART_CLEAR_NEF |
+		UART_CLEAR_OREF |
+		UART_CLEAR_IDLEF |
+		UART_CLEAR_TXFECF |
+		UART_CLEAR_TCF |
+		UART_CLEAR_LBDF |
+		UART_CLEAR_CTSF |
+		UART_CLEAR_CMF |
+		UART_CLEAR_WUF |
+		UART_CLEAR_RTOF);
+	HAL_UART_DMAPause(uarts_Drv->uart);
 	uarts_Drv->uart->Instance->ISR = 0;
 	uarts_Drv->uart->Instance->CR1 &= ~(USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
 	return 0;
@@ -79,6 +93,20 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].dri
 ITCM_AREA_CODE  uint32_t	uart_enable_receive(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
+	uarts_Drv->uart->Instance->ICR = (
+		UART_CLEAR_PEF |
+		UART_CLEAR_FEF |
+		UART_CLEAR_NEF |
+		UART_CLEAR_OREF |
+		UART_CLEAR_IDLEF |
+		UART_CLEAR_TXFECF |
+		UART_CLEAR_TCF |
+		UART_CLEAR_LBDF |
+		UART_CLEAR_CTSF |
+		UART_CLEAR_CMF |
+		UART_CLEAR_WUF |
+		UART_CLEAR_RTOF);
+	HAL_UART_DMAResume(uarts_Drv->uart);
 	uarts_Drv->uart->Instance->ISR = 0;
 	uarts_Drv->uart->Instance->CR1 |= (USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
 	return 0;

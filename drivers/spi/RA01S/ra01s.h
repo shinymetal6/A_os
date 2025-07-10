@@ -23,6 +23,8 @@
 #ifndef MODULES_LORA_RA01S_RA01S_H_
 #define MODULES_LORA_RA01S_RA01S_H_
 
+#ifdef A_OS_SPI_ENABLED
+
 #include "sx127x.h"
 
 typedef struct
@@ -65,5 +67,6 @@ typedef struct
 #define	RA01S_DRIVER_STATUS_UNUSED		0
 
 extern uint32_t	ra01s_register(RA01S_Drv_TypeDef *driver_private_data);
+#endif // #ifdef A_OS_SPI_ENABLED
 
 #endif /* MODULES_LORA_RA01S_RA01S_H_ */

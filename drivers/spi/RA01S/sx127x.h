@@ -22,6 +22,7 @@
 
 #ifndef MODULES_LORA_RA01S_SX127X_H_
 #define MODULES_LORA_RA01S_SX127X_H_
+#ifdef A_OS_SPI_ENABLED
 
 typedef enum
 {
@@ -191,5 +192,6 @@ sx127x_result_t sx127x_lora_send_data(sx127x_spi_configuration_t* spi_conf, uint
 sx127x_result_t sx127x_lora_get_packet_rssi(sx127x_configuration_t* sx127x_conf, uint8_t* rssi);
 sx127x_result_t sx127x_lora_get_packet_snr(sx127x_configuration_t* sx127x_conf, uint8_t* snr);
 
+#endif // #ifdef A_OS_SPI_ENABLED
 
 #endif /* MODULES_LORA_RA01S_SX127X_H_ */

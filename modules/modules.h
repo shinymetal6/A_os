@@ -38,6 +38,9 @@ typedef struct
 #include "hex_decoders/hex_decoders_common.h"
 #include "hex_decoders/s3_hex.h"
 #include "modbus/modbus.h"
-#include "sound/sound.h"
+
+#ifdef SOUND_ENABLED
+	#include "sound/sound.h"
+#endif //#ifdef SOUND_ENABLED
 
 #endif /* MODULES_MODULES_H_ */

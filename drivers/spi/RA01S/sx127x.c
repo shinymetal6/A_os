@@ -24,6 +24,8 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/kernel_opt.h"
+#ifdef A_OS_SPI_ENABLED
+
 #include "sx127x.h"
 
 sx127x_result_t sx127x_lora_set_ocp(sx127x_spi_configuration_t* spi_conf, uint8_t current_ma)
@@ -589,3 +591,4 @@ sx127x_result_t sx127x_lora_init(sx127x_configuration_t* sx127x_conf)
 
 	return result;
 }
+#endif // #ifdef A_OS_SPI_ENABLED

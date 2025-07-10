@@ -33,7 +33,7 @@
 
 #include "main.h"
 
-#include <arm_math.h>
+#include "arm_math.h"
 
 #define	NUMBER_OF_AUDIO_SAMPLES			1024
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
