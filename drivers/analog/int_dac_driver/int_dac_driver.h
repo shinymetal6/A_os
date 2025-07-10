@@ -43,9 +43,8 @@ typedef struct
 	int16_t				*wav_ptr;
 	uint32_t			wav_samples_counter;
 	uint32_t			wav_len;
-	uint16_t			wav_volume_int;
+	float				wav_volume;
 	uint8_t				wav_flags;
-	int16_t				wav_progressive_sample;
 	int16_t 			*usbaudio_buffer;
 	uint32_t 			usbaudio_index;
 	uint32_t 			usbaudio_size;

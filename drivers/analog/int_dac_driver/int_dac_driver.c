@@ -93,7 +93,7 @@ Wav_Header_TypeDef  *Wav = (Wav_Header_TypeDef *)wav_ptr;
 		dac_drv->wav_len = Wav->DataSize;
 		dac_drv->wav_samples_counter = 0;
 		int_dac_timer_set(dac_drv,Wav->Frequency);//
-		dac_drv->wav_volume_int = 2048;
+		dac_drv->wav_volume = 1.0F;
 		dac_drv->dac_wav_flags |= DAC_WAV_FLAGS_DO_PLAY;
 		return 0;
 	}
@@ -105,7 +105,6 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop_wav(uint8_t handle)
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
 	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
-	dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 	return 0;
 }
 
@@ -187,13 +186,12 @@ uint32_t	i , start_sample;
 	{
 		for(i=0;i<dac_drv->len/2;i++)
 		{
-			dac_drv->dac_buffer[i+start_sample] = (((dac_drv->wav_ptr[i] + 0x8000) >> 0) & 0xffff);
+			dac_drv->dac_buffer[i+start_sample] = (int16_t )((float )(dac_drv->wav_ptr[i] + 0x8000) * dac_drv->wav_volume);
 		}
 		dac_drv->wav_ptr += dac_drv->len/2;
 		dac_drv->wav_samples_counter += dac_drv->len;
 		if ( dac_drv->wav_samples_counter >= dac_drv->wav_len)
 		{
-			dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 			int_dac_stop_wav(handle);
 		}
 	}
