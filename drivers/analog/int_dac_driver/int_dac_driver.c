@@ -92,7 +92,7 @@ Wav_Header_TypeDef  *Wav = (Wav_Header_TypeDef *)wav_ptr;
 		dac_drv->wav_ptr = &Wav->first_audio_sample;
 		dac_drv->wav_len = Wav->DataSize;
 		dac_drv->wav_samples_counter = 0;
-		int_dac_timer_set(dac_drv,Wav->Frequency*2);
+		int_dac_timer_set(dac_drv,Wav->Frequency);//
 		dac_drv->wav_volume_int = 2048;
 		dac_drv->dac_wav_flags |= DAC_WAV_FLAGS_DO_PLAY;
 		return 0;
@@ -104,7 +104,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop_wav(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
-	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency*2);
+	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
 	dac_drv->wav_volume_int = dac_drv->wav_progressive_sample = 0;
 	return 0;
 }
@@ -123,7 +123,7 @@ DAC_Drv_TypeDef	*dac_drv;
 		if ( dac_drv->dac_timer == NULL)
 			return DRIVER_REQUEST_FAILED;
 		if ( dac_drv->dac_sample_frequency == 0)
-			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;// + 19000;
+			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
 		else
 			dac_drv->dac_sample_frequency /= 1000.0F;
 
@@ -187,24 +187,7 @@ uint32_t	i , start_sample;
 	{
 		for(i=0;i<dac_drv->len/2;i++)
 		{
-			if ( dac_drv->wav_samples_counter < DAC_WAV_ADAPTWND_SAMPLES_NUM)
-			{
-				if ( dac_drv->wav_progressive_sample < 2048 )
-					dac_drv->wav_progressive_sample ++;
-				dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_progressive_sample;
-			}
-			else if ( dac_drv->wav_samples_counter < dac_drv->wav_len - DAC_WAV_ADAPTWND_SAMPLES_NUM)
-			{
-				//dac_drv->dac_buffer[i+start_sample] = ((((dac_drv->wav_ptr[i] + 0x8000) >> 4) & 0xfff) * dac_drv->wav_volume_int) >> 12;
-				dac_drv->dac_buffer[i+start_sample] = (((dac_drv->wav_ptr[i] + 0x8000) >> 4) & 0xfff);
-				dac_drv->wav_progressive_sample = 2048;
-			}
-			else
-			{
-				dac_drv->dac_buffer[i+start_sample] = dac_drv->wav_progressive_sample;
-				if ( dac_drv->wav_progressive_sample )
-					dac_drv->wav_progressive_sample--;
-			}
+			dac_drv->dac_buffer[i+start_sample] = (((dac_drv->wav_ptr[i] + 0x8000) >> 0) & 0xffff);
 		}
 		dac_drv->wav_ptr += dac_drv->len/2;
 		dac_drv->wav_samples_counter += dac_drv->len;
