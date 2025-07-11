@@ -104,7 +104,7 @@ ITCM_AREA_CODE  static uint32_t int_dac_stop_wav(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
-	int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
+	int_dac_timer_set(dac_drv,DEFAULT_SAMPLE_FREQUENCY);
 	return 0;
 }
 
