@@ -196,4 +196,6 @@ extern	void supervisor_process4(void);
 
 extern	Asys_t		Asys;
 
+#include "kernel_opt.h"
+
 #endif /* KERNEL_A_H_ */

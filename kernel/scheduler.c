@@ -29,8 +29,6 @@
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
 
-//#pragma GCC optimize("Og")
-
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
     //1. initialize the PSP with TASK1 stack start address
@@ -97,8 +95,6 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 	schedule();
 }
 
-//#pragma GCC optimize("Ofast")
-
 ITCM_AREA_CODE uint32_t get_psp_value(void)
 {
 	return process[Asys.current_process].psp_value;
@@ -129,7 +125,6 @@ ITCM_AREA_CODE void update_next_task(void)
 	if((state & PROCESS_READY_STATE ) != PROCESS_READY_STATE)
 		Asys.current_process = 0;
 }
-
 
 ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags)
 {

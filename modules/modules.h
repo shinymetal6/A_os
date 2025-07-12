@@ -43,4 +43,6 @@ typedef struct
 	#include "sound/sound.h"
 #endif //#ifdef SOUND_ENABLED
 
+#include "../kernel/kernel_opt.h"
+
 #endif /* MODULES_MODULES_H_ */

@@ -25,7 +25,6 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-//#include "../../../kernel/kernel_opt.h"
 #ifdef A_OS_DAC_ENABLED
 
 #include "int_dac_driver.h"
