@@ -23,6 +23,41 @@
 #ifndef MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_
 #define MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_
 
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	uint8_t				nak;
+	uint8_t				ack;
+	uint8_t				xmodem_flags;
+	uint8_t				xmodem_to;
+	uint8_t				xmodem_rx_to;
+	uint8_t				xmodem_rx_reply;
+	uint8_t				*xmodem_buffer;
+	uint32_t 			xmodem_dev;
+	uint32_t 			xmodem_dev_handle;
+	uint32_t 			xmodem_rx_data_area;
+	uint32_t 			xmodem_rx_data_len;
+	uint32_t			(*rx_init)  (uint8_t *dest_data_ptr,uint32_t max_data_count);
+	uint32_t			(*rx_set_data_area)  (uint8_t *dest_data_ptr,uint32_t max_data_count );
+	uint32_t			(*rx_get_rxed_amount)  (void);
+	uint32_t			(*rx_line_parser)  (uint8_t *buf);
+	uint32_t			(*rx_enable_poll)  (uint32_t enable);
+	uint32_t			(*rx_send_ack)  (void);
+	uint32_t			(*rx_send_nack)  (void);
+	uint32_t			(*rx)  (uint32_t wakeup);
+	uint32_t 			wakeup_id;
+}XMODEM_Mod_TypeDef;
+/* xmodem_flags */
+#define	XMODEM_ENABLE_POLL	0x80
+#define	XMODEM_DISABLE_POLL	0x00
+#define	XMODEM_RXED_NACK	0x02
+#define	XMODEM_RXED_ACK		0x01
+/* xmodem_dev */
+#define	XMODEM_DEV_USB		0x01
+#define	XMODEM_DEV_UART		0x02
+
 #define X_SOH	0x01
 #define X_STX 	0x02
 #define X_EOT	0x04
@@ -53,13 +88,12 @@ typedef struct
 	uint32_t	session_received_bytes_count;
 }xmodem_rx_t;
 
-extern	void 		xmodem_rx_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
-extern	void 		xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count );
+#define	XMODEM_WAKEUP_TIMER		0
+#define	XMODEM_WAKEUP_DEVICE	1
 
-extern	uint8_t 	xmodem_rx_process(uint32_t wakeup);
-extern	uint32_t 	xmodem_rx_get_rxed_amount(void);
-extern	uint8_t 	xmodem_rx_send_ack(void);
-extern	uint8_t 	xmodem_rx_line_parser(uint8_t *buf);
-
+extern	uint32_t xmodem_rx_register(XMODEM_Mod_TypeDef *private_data);
+extern	uint32_t xmodem_rx_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
+extern	uint32_t xmodem_rx_enable_poll(uint32_t enable );
+extern	uint32_t xmodem_rx(uint32_t wakeup );
 
 #endif /* MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_ */

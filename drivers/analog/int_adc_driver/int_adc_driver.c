@@ -93,18 +93,28 @@ ITCM_AREA_CODE uint32_t	int_adc_register(ADC_Drv_TypeDef *private_data)
 ADC_Drv_TypeDef	*adc_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
+		__disable_irq();
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
 		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
 		adc_drv = (ADC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
 		if ( adc_drv->adc == NULL)
+		{
+			__enable_irq();
 			return DRIVER_REQUEST_FAILED;
+		}
 		if ( adc_drv->adc_timer == NULL)
+		{
+			__enable_irq();
 			return DRIVER_REQUEST_FAILED;
+		}
 		if ( adc_drv->flags != 0 )
 		{
 			if ( adc_drv->wakeup_id == 0)
+			{
+				__enable_irq();
 				return DRIVER_REQUEST_FAILED;
+			}
 		}
 
 		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
@@ -115,6 +125,7 @@ ADC_Drv_TypeDef	*adc_drv;
 
 		last_analog_used_handle++;
 		analog_driver_request++;
+
 		return last_analog_used_handle-1;
 	}
 	return DRIVER_REQUEST_FAILED;

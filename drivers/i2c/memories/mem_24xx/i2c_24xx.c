@@ -288,8 +288,12 @@ ITCM_AREA_CODE uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *private_data)
 I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 	if ( I2C_DriverStruct[last_i2c_used_handle].process == 0 )
 	{
+		__disable_irq();
 		if ( private_data->wakeup_id == 0 )
+		{
+			__enable_irq();
 			return DRIVER_REQUEST_FAILED;
+		}
 		I2C_DriverStruct[last_i2c_used_handle].process = get_current_process();
 		I2C_DriverStruct[last_i2c_used_handle].handle = last_i2c_used_handle;
 		I2C_DriverStruct[last_i2c_used_handle].private_data = (uint32_t *)private_data;
@@ -319,6 +323,8 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv;
 		i2c_24xx_init(last_i2c_used_handle);
 		I2C_DriverStruct[last_i2c_used_handle].status = DRIVER_STATUS_IN_USE;
 		last_i2c_used_handle++;
+		__enable_irq();
+
 		return last_i2c_used_handle-1;
 	}
 	return DRIVER_REQUEST_FAILED;

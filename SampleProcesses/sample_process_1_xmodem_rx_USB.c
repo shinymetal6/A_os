@@ -26,9 +26,6 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
 
-#define	xmodem_rx_data_area	0x30001000
-#define	xmodem_rx_data_len		0x2ffff
-
 #define	USB_BUF_LEN	XMODEM_LINE_LEN
 uint8_t	usb_rx_buffer[XMODEM_LINE_LEN];
 uint8_t	usb_tx_buffer[XMODEM_LINE_LEN];
@@ -42,21 +39,23 @@ USB_Drv_TypeDef	Usb_channel =
 };
 uint32_t	usb_handle;
 
-uint8_t		xmodem_rx_uart_reply;
-uint8_t		xmodem_rx_uart_enable_poll;
-uint8_t		xmodem_rx_timer_shift;
-
-uint8_t		nak=X_NAK,ack=X_ACK;
+XMODEM_Mod_TypeDef	XMODEM_Mod =
+{
+		.xmodem_rx_to = 100,
+		.xmodem_rx_data_area = 0x30001000,
+		.xmodem_rx_data_len = 0x2ffff,
+		.xmodem_buffer = usb_rx_buffer,
+		.xmodem_dev = XMODEM_DEV_USB,
+};
 
 void sample_process_1_xmodem_rx_USB(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-
-	xmodem_rx_uart_enable_poll = 1;
-	xmodem_rx_timer_shift = 0;
-
+uint8_t		cpoll_ena=0;
 	usb_handle = usb_device_driver_register(&Usb_channel);
-	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
+	XMODEM_Mod.xmodem_dev_handle = usb_handle;
+
+	xmodem_rx_register(&XMODEM_Mod);
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -66,43 +65,29 @@ uint32_t	wakeup,flags;
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			process_led();
-			if ( xmodem_rx_uart_enable_poll == 1 )
+			cpoll_ena++;
+			if ( cpoll_ena == 10 )
+				xmodem_rx_enable_poll(XMODEM_ENABLE_POLL);
+			if ( cpoll_ena > 10 )
 			{
-				if ( xmodem_rx_timer_shift >= 100)
-				{
-					xmodem_rx_set_data_area((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len );
-					usb_send(usb_handle,&nak,1);
-					xmodem_rx_timer_shift = 0;
-				}
-				else
-					xmodem_rx_timer_shift ++;
+				xmodem_rx(XMODEM_WAKEUP_TIMER);
+				cpoll_ena = 11;
 			}
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			xmodem_rx_uart_enable_poll = 0;
-			xmodem_rx_uart_reply = xmodem_rx_line_parser(usb_rx_buffer);
-			switch(xmodem_rx_uart_reply)
+			xmodem_rx_enable_poll(0);
+			if ( xmodem_rx(XMODEM_WAKEUP_DEVICE) == X_EOT )
+				xmodem_rx_enable_poll(XMODEM_ENABLE_POLL);
+			if ( xmodem_rx(XMODEM_WAKEUP_DEVICE) == X_DEL )
 			{
-			case	X_NAK:
-				usb_send(usb_handle,&nak,1);
-				break;
-			case	X_EOT:
-				usb_send(usb_handle,&ack,1);
-				xmodem_rx_uart_enable_poll = 1;
-				break;
-			case	X_ACK:
-				usb_send(usb_handle,&ack,1);
-				break;
-			default:
-				usb_send(usb_handle,&nak,1);
-				break;
+				xmodem_rx_init((uint8_t *)XMODEM_Mod.xmodem_rx_data_area,XMODEM_Mod.xmodem_rx_data_len);
+				xmodem_rx_enable_poll(XMODEM_ENABLE_POLL);
 			}
-
 		}
 	}
 }
+
 #else
 void sample_process_1_xmodem_rx_USB(uint32_t process_id)
 {

@@ -112,14 +112,21 @@ ITCM_AREA_CODE uint32_t	int_dac_register(DAC_Drv_TypeDef *private_data)
 DAC_Drv_TypeDef	*dac_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
 	{
+		__disable_irq();
 		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
 		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
 
 		dac_drv = (DAC_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
 		if ( dac_drv->dac == NULL)
+		{
+			__enable_irq();
 			return DRIVER_REQUEST_FAILED;
+		}
 		if ( dac_drv->dac_timer == NULL)
+		{
+			__enable_irq();
 			return DRIVER_REQUEST_FAILED;
+		}
 		if ( dac_drv->dac_sample_frequency == 0)
 			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
 		else
@@ -128,9 +135,15 @@ DAC_Drv_TypeDef	*dac_drv;
 		if ( dac_drv->flags == DAC_FLAGS_USE_USBMODULE)
 		{
 			if ( dac_drv->usbaudio_buffer == NULL)
+			{
+				__enable_irq();
 				return DRIVER_REQUEST_FAILED;
+			}
 			if ( dac_drv->usbaudio_size == 0)
+			{
+				__enable_irq();
 				return DRIVER_REQUEST_FAILED;
+			}
 		}
 
 		int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency);
@@ -144,6 +157,8 @@ DAC_Drv_TypeDef	*dac_drv;
 		ANALOG_DriverStruct[last_analog_used_handle].dac_stop_wav = int_dac_stop_wav;
 		last_analog_used_handle++;
 		analog_driver_request++;
+		__enable_irq();
+
 		return last_analog_used_handle-1;
 	}
 	return DRIVER_REQUEST_FAILED;
