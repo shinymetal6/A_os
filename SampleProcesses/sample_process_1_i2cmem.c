@@ -71,11 +71,6 @@ uint32_t	i;
 		}
 	}
 }
-#else
-void sample_process_1_i2cmem(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
-}
 #endif // #ifdef AOS_STM32H7xx_HAL_I2C_H
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 

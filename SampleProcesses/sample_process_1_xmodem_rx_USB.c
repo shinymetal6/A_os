@@ -42,18 +42,14 @@ USB_Drv_TypeDef	Usb_channel =
 };
 uint32_t	usb_handle;
 
-uint8_t		xmodem_rx_uart_reply;
-uint8_t		xmodem_rx_uart_enable_poll;
-uint8_t		xmodem_rx_timer_shift;
-
-uint8_t		nak=X_NAK,ack=X_ACK;
+uint8_t		xmodem_rx_usb_enable_poll;
+uint8_t		tim_downscale=0;
 
 void sample_process_1_xmodem_rx_USB(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
-	xmodem_rx_uart_enable_poll = 1;
-	xmodem_rx_timer_shift = 0;
+	xmodem_rx_usb_enable_poll = 1;
 
 	usb_handle = usb_device_driver_register(&Usb_channel);
 	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
@@ -65,51 +61,28 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			process_led();
-			if ( xmodem_rx_uart_enable_poll == 1 )
+			if ( xmodem_rx_usb_enable_poll	 == 1 )
 			{
-				if ( xmodem_rx_timer_shift >= 100)
+				tim_downscale ++;
+				if ( tim_downscale > 100 )
 				{
-					xmodem_rx_set_data_area((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len );
-					usb_send(usb_handle,&nak,1);
-					xmodem_rx_timer_shift = 0;
+					xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_handle,usb_rx_buffer);
+					tim_downscale = 0;
 				}
-				else
-					xmodem_rx_timer_shift ++;
 			}
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+			process_led();
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			xmodem_rx_uart_enable_poll = 0;
-			xmodem_rx_uart_reply = xmodem_rx_line_parser(usb_rx_buffer);
-			switch(xmodem_rx_uart_reply)
-			{
-			case	X_NAK:
-				usb_send(usb_handle,&nak,1);
-				break;
-			case	X_EOT:
-				usb_send(usb_handle,&ack,1);
-				xmodem_rx_uart_enable_poll = 1;
-				break;
-			case	X_ACK:
-				usb_send(usb_handle,&ack,1);
-				break;
-			default:
-				usb_send(usb_handle,&nak,1);
-				break;
-			}
-
+			if ( xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_handle,usb_rx_buffer) == X_EOT)
+				xmodem_rx_usb_enable_poll = 1;
+			else
+				xmodem_rx_usb_enable_poll = 0;
 		}
 	}
 }
-#else
-void sample_process_1_xmodem_rx_USB(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
-}
-#endif // #ifdef 	SAMPLEPROCESS_1_XMODEM
 
+#endif // #ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 

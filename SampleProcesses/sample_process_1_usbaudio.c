@@ -58,11 +58,6 @@ uint32_t	wakeup,flags;
 		}
 	}
 }
-#else
-void sample_process_1_usbaudio(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
-}
 #endif // #ifdef 	SAMPLEPROCESS_1_XMODEM
 
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED

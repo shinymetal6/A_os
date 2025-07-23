@@ -94,6 +94,88 @@ ITCM_AREA_CODE	void xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_
 {
 	xmodem_rx_allocate_area(dest_data_ptr,max_data_count);
 }
+uint8_t		xnak=X_NAK,xack=X_ACK;
+ITCM_AREA_CODE	uint8_t xmodem_uart_data_process(uint8_t mode,uint32_t uart_driver_handle,uint8_t *uart_rx_buffer)
+{
+uint8_t		xmodem_rx_uart_reply,rxlen;
+	if ( mode == 1 )
+	{
+		uart_send(uart_driver_handle,&xnak,1);
+		return 0;
+	}
+	if ( mode == 0 )
+	{
+		rxlen = uart_get_rxlen(uart_driver_handle);
+		if ( rxlen > 1 )
+		{
+			if (( uart_rx_buffer[0] == X_SOH ) || ( uart_rx_buffer[0] == X_EOT ))
+				xmodem_rx_uart_reply = xmodem_rx_line_parser(uart_rx_buffer);
+			else
+				xmodem_rx_uart_reply = xmodem_rx_line_parser(&uart_rx_buffer[1]);
+			switch(xmodem_rx_uart_reply)
+			{
+			case	X_NAK:
+				uart_send(uart_driver_handle,&xnak,1);
+				break;
+			case	X_EOT:
+				uart_send(uart_driver_handle,&xack,1);
+				break;
+			case	X_ACK:
+				uart_send(uart_driver_handle,&xack,1);
+				break;
+			default:
+				uart_send(uart_driver_handle,&xnak,1);
+				return 0xff;
+				break;
+			}
+			return xmodem_rx_uart_reply;
+		}
+	}
+	return 0xff;
+}
+
+ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(uint8_t mode,uint32_t usb_handle,uint8_t *usb_rx_buffer)
+{
+uint8_t		xmodem_usb_uart_reply;
+	if ( mode == 1 )
+	{
+		usb_send(usb_handle,&xnak,1);
+		return 0;
+	}
+	if ( mode == 0 )
+	{
+		xmodem_usb_uart_reply = xmodem_rx_line_parser(usb_rx_buffer);
+		switch(xmodem_usb_uart_reply)
+		{
+		case	X_NAK:
+			usb_send(usb_handle,&xnak,1);
+			break;
+		case	X_EOT:
+			usb_send(usb_handle,&xack,1);
+			break;
+		case	X_ACK:
+			usb_send(usb_handle,&xack,1);
+			break;
+		default:
+			usb_send(usb_handle,&xnak,1);
+			return 0xff;
+			break;
+		}
+		return xmodem_usb_uart_reply;
+	}
+	return 0xff;
+}
+
+ITCM_AREA_CODE	uint8_t xmodem_data_process(uint8_t mode,uint8_t type,uint32_t handle,uint8_t *rx_buffer)
+{
+	if ( type == XMODEM_IF_USB)
+		return xmodem_usb_data_process(mode,handle,rx_buffer);
+	if ( type == XMODEM_IF_UART)
+		return xmodem_uart_data_process(mode,handle,rx_buffer);
+	return 1;
+}
+
+
 
 
 

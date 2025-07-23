@@ -53,6 +53,9 @@ typedef struct
 	uint32_t	session_received_bytes_count;
 }xmodem_rx_t;
 
+#define	XMODEM_IF_USB		0
+#define	XMODEM_IF_UART		1
+
 extern	void 		xmodem_rx_init(uint8_t *dest_data_ptr,uint32_t max_data_count );
 extern	void 		xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_data_count );
 
@@ -60,6 +63,9 @@ extern	uint8_t 	xmodem_rx_process(uint32_t wakeup);
 extern	uint32_t 	xmodem_rx_get_rxed_amount(void);
 extern	uint8_t 	xmodem_rx_send_ack(void);
 extern	uint8_t 	xmodem_rx_line_parser(uint8_t *buf);
+extern	uint8_t 	xmodem_uart_data_process(uint8_t mode,uint32_t uart_driver_handle,uint8_t *uart_rx_buffer);
+extern	uint8_t 	xmodem_usb_data_process(uint8_t mode,uint32_t usb_handle,uint8_t *usb_rx_buffer);
+extern	uint8_t 	xmodem_data_process(uint8_t mode,uint8_t type,uint32_t handle,uint8_t *rx_buffer);
 
 
 #endif /* MODULES_SERIAL_TRANSFERS_XMODEM_RX_H_ */

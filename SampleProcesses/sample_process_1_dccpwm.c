@@ -85,7 +85,7 @@ uint32_t	pw=0 , dir = 0;
 	pwm_init(backlight_pwm_driver_handle);
 	pwm_start(backlight_pwm_driver_handle);
 
-	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
 		wait_event(EVENT_TIMER);
@@ -108,16 +108,11 @@ uint32_t	pw=0 , dir = 0;
 					dir = 1;
 				pwm_set_width(backlight_pwm_driver_handle,pw);
 			}
+			process_led();
 		}
 	}
 }
-#else
-void sample_process_1_dccpwm(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
-}
 #endif // #ifdef DCC_ENABLE_GPIO_Port
-
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 

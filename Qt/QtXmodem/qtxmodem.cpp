@@ -39,7 +39,7 @@ QByteArray reply;
     return 1;
 }
 
-int QtXmodem::serial_rx( void)
+int QtXmodem::serial_rx( void )
 {
 QPixmap redled (":/ledred.png");
 QPixmap greenled(":/ledgreen.png");
@@ -49,9 +49,11 @@ QByteArray reply;
     {
         reply = serial.readAll();
         const char *data = reply.data();
+        //qDebug() << QString::number(data[0], 8);
+
         return data[0];
     }
-    qDebug()<< "RX timeout";
+    //qDebug()<< "RX timeout";
     return 0x41;
 }
 
@@ -150,6 +152,10 @@ void QtXmodem::on_Download_pushButton_clicked()
     ui->download_progressBar->setValue(0);
 
     index=0;
+    while ( (rx_data = serial_rx()) != 0x15 );
+    qDebug()<<"Start command received, downloading";
+    QThread::msleep(5);
+
     while ( index < file_size)
     {
         retry=10;
@@ -172,6 +178,7 @@ void QtXmodem::on_Download_pushButton_clicked()
 
         serial.flush();
         create_buf_and_tx(data);
+        QThread::msleep(1);
         serial.flush();
         while ( (rx_data = serial_rx()) != 0x06 )
         {
@@ -194,9 +201,6 @@ void QtXmodem::on_Download_pushButton_clicked()
         else
             ui->Flashing_label->setPixmap(redled);
     }
-    data[0] = 0x04;
-    QByteArray ba1(QByteArray::fromRawData(data, 1));
-    serial_tx(ba1);
     QString retry_number_str;
     retry_number_str.setNum(retry_number);
     if (retry_number == 1 )
@@ -206,5 +210,18 @@ void QtXmodem::on_Download_pushButton_clicked()
 
     ui->download_progressBar->setValue(100);
     ui->Flashing_label->setPixmap(greenled);
+
+    data[0] = 0x04;
+    QByteArray ba1(QByteArray::fromRawData(data, 1));
+    QThread::msleep(20);
+    serial_tx(ba1);
+    QThread::msleep(20);
+    serial_tx(ba1);
+    QThread::msleep(20);
+    serial_tx(ba1);
+    rx_data = serial_rx();
+    qDebug()<<"Finished, received "<<rx_data;
+
+
 }
 

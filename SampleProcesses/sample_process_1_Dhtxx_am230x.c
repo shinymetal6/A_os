@@ -77,15 +77,10 @@ uint32_t	wakeup,flags;
 				}
 				dht_sm = 0;
 				break;
-
 			}
+			process_led();
 		}
 	}
-}
-#else
-void sample_process_1_Dhtxx_am230x(uint32_t process_id)
-{
-	wait_event(HW_SLEEP_FOREVER);
 }
 #endif // #ifdef 	SAMPLEPROCESS_1_DHTxx
 

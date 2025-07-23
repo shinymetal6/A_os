@@ -231,12 +231,12 @@ UART_Drv_TypeDef	*uarts_Drv;
 		{
 
 #ifdef   STM32_HAS_STREAM_DMA
-			uarts_Drv->rx_num_chars = ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 #else
-			uarts_Drv->rx_num_chars = ((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
 #endif
-			//uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len;
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
+			uarts_Drv->timeout_mask = 1;
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 			HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 			return;
@@ -357,8 +357,14 @@ UART_Drv_TypeDef	*uarts_Drv;
 						uarts_Drv->timeout--;
 					if ( uarts_Drv->timeout == 0 )
 					{
-						if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
-							activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+						if ( uarts_Drv->timeout_mask == 0 )
+						{
+							uarts_Drv->timeout_mask = 1;
+							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
+								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+						}
+						else
+							uarts_Drv->timeout_mask = 0;
 						/* a bit of unicorn dust here ... */
 						__HAL_DMA_DISABLE(uarts_Drv->uart->hdmarx);
 						#ifdef   STM32_HAS_STREAM_DMA

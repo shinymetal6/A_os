@@ -47,7 +47,7 @@ uint32_t	wakeup,flags;
 	adc_driver_handle = int_adc_register(&ADC_Drv);
 	adc_start(adc_driver_handle);
 
-	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
 	while(1)
 	{
@@ -55,8 +55,7 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
-
+			process_led();
 		}
 		if (( wakeup & WAKEUP_FROM_ADC1_IRQ) == WAKEUP_FROM_ADC1_IRQ)
 		{

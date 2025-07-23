@@ -11,7 +11,7 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class QtXmodem; }
 QT_END_NAMESPACE
-#define WAIT_REPLY              1000
+#define WAIT_REPLY              200
 #define MAX_RETRY               10
 
 class QtXmodem : public QMainWindow

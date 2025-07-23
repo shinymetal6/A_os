@@ -36,6 +36,7 @@ typedef struct
 	uint16_t			rx_num_chars;
 	uint8_t				*data;
 	uint16_t			timeout;
+	uint8_t				timeout_mask;
 	uint16_t			timeout_reload_value;
 	uint8_t				sentinel_start;
 	uint8_t				sentinel_end;
