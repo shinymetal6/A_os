@@ -1,5 +1,5 @@
 # A_os
-v2025.07.00-rc4<br>
+v2025.07.00 Master Branch<br>
 !!! NOTE !!!<br>
 Runs with <br>
 STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
