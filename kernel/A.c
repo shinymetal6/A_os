@@ -223,6 +223,26 @@ void A_initialize_onchip_peripherals(void)
 #endif // #ifdef USB_ENABLED
 }
 
+extern	void process_1_init(void);
+extern	void process_2_init(void);
+extern	void process_3_init(void);
+extern	void process_4_init(void);
+
+void user_processes_init(void)
+{
+	__enable_irq();
+	Asys.current_process = 1;
+	process_1_init();
+	Asys.current_process = 2;
+	process_2_init();
+	Asys.current_process = 3;
+	process_3_init();
+	Asys.current_process = 4;
+	process_4_init();
+	Asys.current_process = 0;
+	__disable_irq();
+
+}
 
 void A_start(void)
 {
@@ -240,6 +260,7 @@ void A_start(void)
 
 	init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
+	user_processes_init();
 	init_systick_timer(TICK_HZ);
 #ifdef POOL_ENABLE
 	//A_mem_init();

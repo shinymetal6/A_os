@@ -62,7 +62,10 @@ ITCM_AREA_CODE  static uint32_t int_i2s_get_status(uint8_t handle)
 ITCM_AREA_CODE int16_t	*get_codec_out_buf(uint8_t handle)
 {
 I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
-	return i2s_drv->dac_buffer;
+	if ( i2s_drv != NULL )
+		return i2s_drv->dac_buffer;
+	else
+		return (int16_t *)NULL;
 }
 
 ITCM_AREA_CODE int16_t	*get_codec_in_buf(uint8_t handle)

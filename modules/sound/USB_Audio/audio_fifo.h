@@ -27,7 +27,10 @@
 #include <stdint.h>
 
 // Define boolean replacements
+#ifndef bool
 typedef uint8_t bool;
+#endif
+
 #define true  1
 #define false 0
 

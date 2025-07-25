@@ -140,3 +140,23 @@ __weak void httpd_init(void)
 
 }
 
+__weak void process_1_init(void)
+{
+
+}
+
+__weak void process_2_init(void)
+{
+
+}
+
+__weak void process_3_init(void)
+{
+
+}
+
+__weak void process_4_init(void)
+{
+
+}
+

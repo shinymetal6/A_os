@@ -71,6 +71,7 @@ typedef struct {
 } MidiSynth_TypeDef;
 /* status */
 #define		SYNTH_ENABLED		0x01
+#define		SYNTH_DISABLED		0x00
 /* out_device */
 #define		SYNTH_DAC_OUT		32768
 #define		SYNTH_I2S_OUT		0

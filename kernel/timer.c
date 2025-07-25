@@ -122,6 +122,11 @@ ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 {
 uint32_t	i = 5;
 
+	if ( Asys.g_os_started == 0 )
+	{
+		HAL_Delay(tick_count);
+		return;
+	}
 	__disable_irq();
 	imem=i;
 	if(Asys.current_process)
@@ -130,10 +135,13 @@ uint32_t	i = 5;
 		process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
 		process[Asys.current_process].wait_event |= SUSPEND_ON_DELAY;
 		process[Asys.current_process].wakeup_rsn &= ~SUSPEND_ON_DELAY;
+		process[Asys.current_process].wakeup_flags &= ~SUSPEND_ON_DELAY;
 		while((process[Asys.current_process].wakeup_rsn & WAKEUP_FROM_DELAY) != WAKEUP_FROM_DELAY )
 			schedule();
+		/*
 		process[Asys.current_process].wakeup_rsn &= ~SUSPEND_ON_DELAY;
 		process[Asys.current_process].wakeup_flags &= ~SUSPEND_ON_DELAY;
+		*/
 	}
 	__enable_irq();
 }
@@ -148,6 +156,7 @@ register uint8_t	i,j;
 		{
 			if(Asys.g_tick_count >= process[i].delay_value)
 			{
+				process[Asys.current_process].wait_event &= ~SUSPEND_ON_DELAY;
 				activate_process(i,WAKEUP_FROM_DELAY,WAKEUP_FROM_DELAY);
 			}
 		}

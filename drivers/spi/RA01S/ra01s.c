@@ -127,7 +127,7 @@ sx127x_spi_hal_t spi_hal;
 
 	sx127x_spi_conf.spi_read_register_function = &sx127x_read_register;
 	sx127x_spi_conf.spi_write_register_function = &sx127x_write_register;
-	sx127x_spi_conf.delay_function = &HAL_Delay;
+	sx127x_spi_conf.delay_function = &task_delay;
 	sx127x_spi_conf.reset_function = &sx127x_reset;
 	sx127x_spi_conf.spi_hal = &spi_hal;
 

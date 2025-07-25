@@ -355,7 +355,6 @@ q15_t *output;
     }
 }
 
-
 ITCM_AREA_CODE uint8_t Synth_Init(MidiSynth_TypeDef *synth)
 {
 	Synth = synth;
@@ -418,8 +417,11 @@ ITCM_AREA_CODE void AllNoteOFF(void)
 ITCM_AREA_CODE static inline void audio_to_out(q15_t *out_buf,uint32_t start_sample)
 {
 uint32_t i;
-	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
-		Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = out_buf[i+start_sample];
+	if ( Synth->codec_buf != NULL )
+	{
+		for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+			Synth->codec_buf[i*2 + start_sample*2] = Synth->codec_buf[i*2 + start_sample*2 + 1] = out_buf[i+start_sample];
+	}
 }
 
 
