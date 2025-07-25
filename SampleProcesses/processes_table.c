@@ -61,8 +61,12 @@ extern	void sample_process_1_lora(uint32_t process_id);	//This is process1
 extern	void sample_process_1_mbxToPrc2(uint32_t process_id);	//This is process1
 extern	void sample_process_2_mbxFromPrc1(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_TIMDELAY_DEBUG
+#ifdef	SAMPLEPROCESS_1_LCD7735
+extern	void sample_process_1_lcd7735(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_LCD7735
 
 
+extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
 extern	void sample_process_4(uint32_t process_id);	//This is process4 of the application
 
@@ -120,6 +124,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_MBX
 				.user_process = sample_process_1_mbxToPrc2,
 #endif // #define	SAMPLEPROCESS_MBX
+#ifdef	SAMPLEPROCESS_1_LCD7735
+				.user_process = sample_process_1_lcd7735,
+#endif // #define	SAMPLEPROCESS_1_LCD7735
 
 				.stack_size = 1024,
 		},
