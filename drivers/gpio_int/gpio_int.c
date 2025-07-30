@@ -44,7 +44,7 @@ uint32_t	i;
 			if ( GPIO_Int_DriverStruct[i].hide_time_counter == 0 )
 			{
 				GPIO_Int_DriverStruct[i].flags &= ~GPIO_INT_HIDE_ENABLED;
-				activate_process(GPIO_Int_DriverStruct[i].process,GPIO_Int_DriverStruct[i].wakeup_id,GPIO_Int_DriverStruct[i].irq_bit);
+				activate_process(GPIO_Int_DriverStruct[i].process,GPIO_Int_DriverStruct[i].wakeup_id,GPIO_Int_DriverStruct[i].IRQ_bit);
 				GPIO_Int_DriverStruct[i].hide_time_counter = GPIO_Int_DriverStruct[i].hide_time;
 				HAL_NVIC_ClearPendingIRQ(GPIO_Int_DriverStruct[i].irq_index);
 				HAL_NVIC_EnableIRQ(GPIO_Int_DriverStruct[i].irq_index);
@@ -54,6 +54,22 @@ uint32_t	i;
 	__enable_irq();
 }
 
+ITCM_AREA_CODE uint32_t	gpio_int_allocate_from_driver(GPIO_Int_DriverStruct_t *driver_private_data)
+{
+uint32_t	i;
+	for(i=0;i<MAX_GPIOINT_DRIVERS;i++)
+	{
+		if ( GPIO_Int_DriverStruct[i].process == 0 )
+		{
+			GPIO_Int_DriverStruct[i].process = get_current_process();
+			GPIO_Int_DriverStruct[i].driver_private_data = (uint32_t *)driver_private_data;
+			return 0;
+		}
+	}
+	return DRIVER_REQUEST_FAILED;
+}
+
+
 ITCM_AREA_CODE uint32_t	gpio_int_register(GPIO_Int_DriverStruct_t *driver_private_data)
 {
 uint32_t	i;
@@ -61,22 +77,21 @@ uint32_t	i;
 	{
 		if ( GPIO_Int_DriverStruct[i].process == 0 )
 		{
-			if ( driver_private_data->irq_port == NULL )
+			if ( driver_private_data->IRQ_port == NULL )
 				return DRIVER_REQUEST_FAILED;
-			else
-				GPIO_Int_DriverStruct[i].irq_port = driver_private_data->irq_port;
-			if ((driver_private_data->irq_type == GPIO_INT_TYPE_RISING)  || (driver_private_data->irq_type == GPIO_INT_TYPE_FALLING))
-				GPIO_Int_DriverStruct[i].irq_type = driver_private_data->irq_type;
+			GPIO_Int_DriverStruct[i].IRQ_bit = driver_private_data->IRQ_bit;
+			GPIO_Int_DriverStruct[i].IRQ_port = driver_private_data->IRQ_port;
+			if ((driver_private_data->IRQ_type == GPIO_INT_TYPE_RISING)  || (driver_private_data->IRQ_type == GPIO_INT_TYPE_FALLING))
+				GPIO_Int_DriverStruct[i].IRQ_type = driver_private_data->IRQ_type;
 			else
 				return DRIVER_REQUEST_FAILED;
-			if ( driver_private_data->data_port != NULL )
+			if ( driver_private_data->DATA_port != NULL )
 			{
-				GPIO_Int_DriverStruct[i].data_port = driver_private_data->data_port;
-				GPIO_Int_DriverStruct[i].data_bit = driver_private_data->data_bit;
+				GPIO_Int_DriverStruct[i].DATA_port = driver_private_data->DATA_port;
+				GPIO_Int_DriverStruct[i].DATA_bit = driver_private_data->DATA_bit;
 			}
 			GPIO_Int_DriverStruct[i].driver_private_data = (uint32_t *)driver_private_data;
 			GPIO_Int_DriverStruct[i].flags = driver_private_data->flags;
-			GPIO_Int_DriverStruct[i].irq_bit = driver_private_data->irq_bit;
 			GPIO_Int_DriverStruct[i].wakeup_id = driver_private_data->wakeup_id;
 
 			GPIO_Int_DriverStruct[i].irq_exti_callback = driver_private_data->irq_exti_callback;
@@ -85,7 +100,7 @@ uint32_t	i;
 			{
 				GPIO_Int_DriverStruct[i].hide_time_counter = GPIO_Int_DriverStruct[i].hide_time;
 				set_before_check_timers_callback(gpio_int_Driver_RxTimeoutCheckCallback);
-				switch(GPIO_Int_DriverStruct[i].irq_bit)
+				switch(GPIO_Int_DriverStruct[i].IRQ_bit)
 				{
 				case GPIO_PIN_0 : GPIO_Int_DriverStruct[i].irq_index = EXTI0_IRQn;break;
 				case GPIO_PIN_1 : GPIO_Int_DriverStruct[i].irq_index = EXTI1_IRQn;break;
@@ -118,13 +133,13 @@ uint32_t	i;
 	{
 		if ( GPIO_Int_DriverStruct[i].irq_exti_callback == NULL)
 			return;
-		if ( GPIO_Int_DriverStruct[i].irq_bit == GPIO_Pin)
+		if ( GPIO_Int_DriverStruct[i].IRQ_bit == GPIO_Pin)
 		{
 			HAL_NVIC_DisableIRQ(GPIO_Int_DriverStruct[i].irq_index);
-			if ( GPIO_Int_DriverStruct[i].data_port != NULL )
+			if ( GPIO_Int_DriverStruct[i].DATA_port != NULL )
 			{
 				GPIO_Int_DriverStruct_t *driver_private_data = (GPIO_Int_DriverStruct_t *)GPIO_Int_DriverStruct[i].driver_private_data;
-				driver_private_data->sampled_bit = HAL_GPIO_ReadPin(GPIO_Int_DriverStruct[i].data_port,GPIO_Int_DriverStruct[i].data_bit);
+				driver_private_data->sampled_bit = HAL_GPIO_ReadPin(GPIO_Int_DriverStruct[i].DATA_port,GPIO_Int_DriverStruct[i].DATA_bit);
 			}
 
 			GPIO_Int_DriverStruct[i].flags &= ~GPIO_INT_HIDE_ENABLED;
@@ -134,7 +149,7 @@ uint32_t	i;
 			{
 				GPIO_Int_DriverStruct[i].irq_exti_callback(GPIO_Pin);
 				if ( GPIO_Int_DriverStruct[i].flags != 0 )
-					activate_process(GPIO_Int_DriverStruct[i].process,GPIO_Int_DriverStruct[i].wakeup_id,GPIO_Int_DriverStruct[i].irq_bit);
+					activate_process(GPIO_Int_DriverStruct[i].process,GPIO_Int_DriverStruct[i].wakeup_id,GPIO_Int_DriverStruct[i].IRQ_bit);
 				HAL_NVIC_ClearPendingIRQ(GPIO_Int_DriverStruct[i].irq_index);
 				HAL_NVIC_EnableIRQ(GPIO_Int_DriverStruct[i].irq_index);
 			}

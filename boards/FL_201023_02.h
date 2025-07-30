@@ -26,6 +26,18 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
+
+#define	LORA_ENABLED			1
+#ifdef LORA_ENABLED
+	#define	RA01S				1
+	#define	REGION_EU433		1
+	#define	NO_MAC_PRINTF		1
+	#define	RADIO_RESET_PORT	LORA_RESET_GPIO_Port
+	#define	RADIO_RESET_PIN		LORA_RESET_Pin
+	#define	RADIO_NSS_PORT		LORA_SS_GPIO_Port
+	#define	RADIO_NSS_PIN		LORA_SS_Pin
+#endif
+
 #define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1
 

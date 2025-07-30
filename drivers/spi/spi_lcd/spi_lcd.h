@@ -23,7 +23,6 @@
 #ifndef DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 #define DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 
-
 #define	LCD_IS_7735		0x7735
 #define	LCD_IS_9341		0x9341
 

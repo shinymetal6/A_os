@@ -37,7 +37,7 @@ typedef struct
 #define	SPI_TX_DMA_COMPLETE	0x80
 
 #include "spi_lcd/spi_lcd.h"
-#include "RA01S/ra01s.h"
+#include "LoRa/LoRa.h"
 
 #endif // #ifdef A_OS_SPI_ENABLED
 
