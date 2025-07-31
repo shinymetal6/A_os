@@ -44,23 +44,36 @@ typedef struct
 	uint16_t			RADIO_BUSY_bit;
 	GPIO_TypeDef	 	*RADIO_BUSY_port;
 	SX1262_STATE		State;
+	uint32_t			current_mode;
+
 	uint8_t				*TX_Buf;		// internal tx buffer
 	uint8_t				tx_payloadLen; 	// tx len
 	uint8_t				*RX_Buf;		// internal rx buffer
 	uint8_t				rx_payloadLen; 	// rx len
 	uint8_t				Packet_Buf[SX126X_MAX_PACKET_LENGTH];
-	void 				(*LoRa_Init)(void);
+	uint32_t			(*LoRa_Init)(void);
 	void 				(*LoRa_HandleCallback)(uint16_t GPIO_Pin);
 	void 				(*LoRa_Transmit)(uint8_t*, uint8_t);
-	void 				(*LoRa_Set_Command)(uint8_t *cmnd_, uint8_t *ans_, uint16_t Len,uint32_t Time_out ,uint16_t Delay);
-	void 				(*LoRa_setRX)(void);
-	uint8_t				(*LoRa_Check_Correct)(void);
 	void 				(*LoRa_setModeStandby)(void);
 	void 				(*LoRa_setModeReceive)(void);
 	uint8_t				(*LoRa_getstatus)(void);
+	void 				(*LoRa_SetFrequency)(uint32_t frequency);
+	uint32_t			(*LoRa_GetRSSI)(void);
+/*
+	void 				(*LoRa_setRX)(void);
+	uint8_t				(*LoRa_Check_Correct)(void);
 	uint16_t			(*LoRa_getdeverr)(void);
 	uint16_t			(*LoRa_cleardeverr)(void);
-	void 				(*LoRa_SetFrequency)(uint32_t frequency);
+	void 				(*LoRa_Set_Command)(uint8_t *cmnd_, uint8_t *ans_, uint16_t Len,uint32_t Time_out ,uint16_t Delay);
+*/
+	uint32_t		frequency;
+	uint8_t			spredingFactor;
+	uint8_t			bandWidth;
+	uint8_t			crcRate;
+	uint16_t		preamble;
+	uint8_t			power;
+	uint8_t			overCurrentProtection;
+
 }LORA_Drv_TypeDef;
 
 #define	LORA_DRIVER_STATUS_IN_USE		0x80
@@ -72,10 +85,13 @@ typedef struct
 
 #define	ID_SX1261	0x1261
 #define	ID_SX1262	0x1262
+#define	ID_SX1278	0x1278
 
 extern	uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data);
 extern	void LoRa_Init(void);
 extern	void LoRa_Tx(void);
-
+extern	void LoRa_SetModeReceive(void);
+extern	uint32_t LoRa_GetRSSI(void);
+extern	void LoRa_SetFrequency(uint32_t frequency);
 
 #endif /* DRIVERS_SPI_LORA_LORA_H_ */

@@ -29,6 +29,7 @@
 
 #include "LoRa.h"
 #include "LoRa_1262.h"
+#include "LoRa_1278.h"
 
 extern	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 extern	uint8_t				last_spi_used_handle,spi_driver_request;
@@ -41,6 +42,21 @@ void LoRa_Init(void)
 void LoRa_Tx(void)
 {
 	lora_Drv->LoRa_Transmit(lora_Drv->TX_Buf,lora_Drv->tx_payloadLen);
+}
+
+void LoRa_SetModeReceive(void)
+{
+	lora_Drv->LoRa_setModeReceive();
+}
+
+uint32_t LoRa_GetRSSI(void)
+{
+	return lora_Drv->LoRa_GetRSSI();
+}
+
+void LoRa_SetFrequency(uint32_t frequency)
+{
+	lora_Drv->LoRa_SetFrequency(frequency);
 }
 
 ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
@@ -68,22 +84,29 @@ ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
 	SPI_DriverStruct[last_spi_used_handle].process = get_current_process();
 	SPI_DriverStruct[last_spi_used_handle].driver_private_data = (uint32_t *)driver_private_data;
 	lora_Drv->device_id = driver_private_data->device_id;
-
+	lora_Drv->IRQ_number 			= driver_private_data->IRQ_number;
 	if (( lora_Drv->device_id == ID_SX1261 ) || ( lora_Drv->device_id == ID_SX1262 ))
 	{
-		lora_Drv->IRQ_number = driver_private_data->IRQ_number;
-		lora_Drv->LoRa_Init 					= LoRa_1262_Init;
-		lora_Drv->LoRa_HandleCallback 			= LoRa_1262_HandleCallback;
-		lora_Drv->LoRa_Set_Command 				= LoRa_1262_Set_Command;
-		lora_Drv->LoRa_Transmit 				= LoRa_1262_Transmit;
-		lora_Drv->LoRa_setRX 					= LoRa_1262_setRX;
-		lora_Drv->LoRa_Check_Correct 			= LoRa_1262_Check_Correct;
-		lora_Drv->LoRa_setModeStandby 			= LoRa_1262_setModeStandby;
-		lora_Drv->LoRa_setModeReceive 			= LoRa_1262_setModeReceive;
-		lora_Drv->LoRa_getstatus 				= LoRa_1262_getstatus;
-		lora_Drv->LoRa_getdeverr 				= LoRa_1262_getdeverr;
-		lora_Drv->LoRa_cleardeverr 				= LoRa_1262_cleardeverr;
-		lora_Drv->LoRa_SetFrequency 			= LoRa_1262_SetFrequency;
+		lora_Drv->LoRa_Init 			= LoRa_1262_Init;
+		lora_Drv->LoRa_HandleCallback 	= LoRa_1262_HandleCallback;
+		lora_Drv->LoRa_Transmit 		= LoRa_1262_Transmit;
+		lora_Drv->LoRa_setModeStandby 	= LoRa_1262_setModeStandby;
+		lora_Drv->LoRa_setModeReceive 	= LoRa_1262_setModeReceive;
+		lora_Drv->LoRa_getstatus 		= LoRa_1262_getstatus;
+		lora_Drv->LoRa_SetFrequency 	= LoRa_1262_SetFrequency;
+		lora_Drv->LoRa_GetRSSI		 	= LoRa_1262_getRSSI;
+		lora_Drv->status 				|= LORA_DRIVER_STATUS_IN_USE;
+	}
+	if ( lora_Drv->device_id == ID_SX1278 )
+	{
+		lora_Drv->LoRa_Init 			= LoRa_1278_init;
+		lora_Drv->LoRa_HandleCallback 	= LoRa_1278_HandleCallback;
+		lora_Drv->LoRa_Transmit 		= LoRa_1278_Transmit;
+		lora_Drv->LoRa_setModeStandby 	= LoRa_1278_setModeStandby;
+		lora_Drv->LoRa_setModeReceive 	= LoRa_1278_setModeReceive;
+		lora_Drv->LoRa_getstatus 		= LoRa_1278_getstatus;
+		lora_Drv->LoRa_SetFrequency 	= LoRa_1278_setFrequency;
+		lora_Drv->LoRa_GetRSSI		 	= LoRa_1278_getRSSI;
 		lora_Drv->status 				|= LORA_DRIVER_STATUS_IN_USE;
 	}
 

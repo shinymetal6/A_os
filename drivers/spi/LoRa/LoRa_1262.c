@@ -164,15 +164,20 @@ uint8_t LoRa_1262_Check_Correct(void)
 
 }
 
-void LoRa_1262_Init(void){
-
-	// Toggle reset
+void LoRa_1262_Reset(void)
+{
 	LoRa_1262_CSHigh();
-
 	HAL_GPIO_WritePin(lora_Drv->RESET_port,lora_Drv->RESET_bit, GPIO_PIN_RESET);
 	HAL_Delay(50);
 	HAL_GPIO_WritePin(lora_Drv->RESET_port, lora_Drv->RESET_bit, GPIO_PIN_SET);
 	HAL_Delay(100);
+}
+
+uint32_t LoRa_1262_Init(void)
+{
+
+	// Toggle reset
+	LoRa_1262_Reset();
 
 	//==================================================================
 	// SetDIO3asTCXOCtrl SPI Transaction
@@ -187,7 +192,11 @@ void LoRa_1262_Init(void){
 	//==================================================================
 
 	if(LoRa_1262_Check_Correct() == 0)
+	{
 		LoRa_1262_Radio_essental_Config();
+		return 0;
+	}
+	return 1;
 }
 
 //wait for module to execute commands
@@ -414,14 +423,21 @@ void LoRa_1262_SetFrequency(uint32_t frequency)
 {
   uint8_t buf[5];
 
-  uint32_t freq = (uint32_t)((double)frequency / (double)FREQ_STEP);
-  buf[0] = SX126X_CMD_SET_RF_FREQUENCY; //Opcode for set RF Frequencty
+	uint32_t freq = (uint32_t)((double)frequency / (double)FREQ_STEP);
+	buf[0] = SX126X_CMD_SET_RF_FREQUENCY; //Opcode for set RF Frequencty
 	buf[1] = ((freq >> 24) & 0xFF);
-  buf[2] = ((freq >> 16) & 0xFF);
-  buf[3] = ((freq >> 8) & 0xFF);
-  buf[4] = (freq & 0xFF);
-
+	buf[2] = ((freq >> 16) & 0xFF);
+	buf[3] = ((freq >> 8) & 0xFF);
+	buf[4] = (freq & 0xFF);
 	LoRa_1262_Set_Command(buf,answ,5,100,0);
+}
+
+uint32_t LoRa_1262_getRSSI(void)
+{
+uint8_t cmnd[3] = {SX126X_CMD_GET_RSSI_INST,0x00,0x00};          //Opcode for "getStatus" command
+uint8_t answ[3] = {0};          //Opcode for "getStatus" command
+	LoRa_1262_Set_Command(cmnd,answ,3,100,0);
+	return(answ[2]);
 }
 
 void LoRa_1262_HandleCallback(uint16_t GPIO_Pin)

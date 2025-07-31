@@ -14,22 +14,17 @@
  * Project : A_os
 */
 /*
- * sample_process_1_lora.c
+ * sample_process_1_lora_scanner.c
  *
- *  Created on: Jun 26, 2025
+ *  Created on: Jul 31, 2025
  *      Author: fil
- */
-
-/* Please note :
- * The pins DIO1 and DIO4 of the RA01S are programmed as input in the ioc.
- * No special functions ( irq ) are present, so they should be polled
  */
 
 #include "main.h"
 #include "A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_LORA
+#ifdef SAMPLEPROCESS_1_LORA_SCANNER
 
 #define	PRC1_TICK				10
 extern	SPI_HandleTypeDef 		hspi1;
@@ -38,8 +33,6 @@ extern	SPI_HandleTypeDef 		hspi1;
 
 uint8_t read_data[LORA_BUFSIZE];
 uint8_t send_data[LORA_BUFSIZE];
-
-int			RSSI;
 
 extern	SPI_HandleTypeDef hspi1;
 
@@ -71,17 +64,35 @@ GPIO_Int_DriverStruct_t	LoRa_Int_Driver =
 	.wakeup_id = WAKEUP_FROM_EXT_INT_IRQ,
 };
 
+uint8_t	usb_rx_buffer[64];
+uint8_t	usb_tx_buffer[64];
+
+USB_Drv_TypeDef	Usb_channel =
+{
+		.requested_len = XMODEM_LINE_LEN,
+		.data = usb_rx_buffer,
+		.timeout = 10,
+		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
+};
+uint32_t	usb_handle;
+
 uint32_t	irq_cntr = 0;
 uint32_t	lora_ok = 0;
+/*
+ * 433.175 to 434.665 with 250kHz width
+ * 433177000
+ */
+#define	MINFREQ		433000000
+#define	STEPFREQ	125000
+#define	MAXFREQ		(MINFREQ+(8*STEPFREQ))
 
-void sample_process_1_lora(uint32_t process_id)
+uint32_t	frequency = MINFREQ;
+uint32_t	rssi;
+uint32_t	banner = 0;
+void sample_process_1_lora_scanner(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	i;
-uint32_t	tcounter=0;
 
-	for(i=0;i<LORA_BUFSIZE;i++)
-		send_data[i] = i;
 	if ( LoRa_register(&LORA_Drv) == 0 )
 		lora_ok = 1;
 	if ( lora_ok == 1 )
@@ -92,8 +103,13 @@ uint32_t	tcounter=0;
 		// then register the driver
 		gpio_int_register(&LoRa_Int_Driver);
 	}
+	LoRa_SetFrequency(frequency);
+	LoRa_SetModeReceive();
+
+	usb_handle = usb_device_driver_register(&Usb_channel);
 
 	create_timer(TIMER_ID_0,PRC1_TICK,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_1,PRC1_TICK*800,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
 		wait_event(EVENT_TIMER | EVENT_EXT_INT_IRQ);
@@ -104,13 +120,24 @@ uint32_t	tcounter=0;
 			if (( flags & TIMER_ID_0) == TIMER_ID_0)
 			{
 				process_led();
-				tcounter++;
-				if ( tcounter >= 120 )
+				if ( banner <20 )
+					banner++;
+				if ( banner == 20 )
 				{
-					tcounter = 0;
-					if ( lora_ok == 1 )
-						LoRa_Tx();
+					sprintf((char *)usb_rx_buffer,"LoRa Scanner\n\r");
+					usb_send(usb_handle,usb_rx_buffer,strlen((char *)usb_rx_buffer));
+					banner = 21;
 				}
+			}
+			if (( flags & TIMER_ID_1) == TIMER_ID_1)
+			{
+				rssi = LoRa_GetRSSI();
+				sprintf((char *)usb_rx_buffer,"F : %d -> RSSI : %d\n\r",(int )frequency,(int )rssi);
+				usb_send(usb_handle,usb_rx_buffer,strlen((char *)usb_rx_buffer));
+				frequency += STEPFREQ;
+				if ( frequency > MAXFREQ)
+					frequency = MINFREQ;
+				LoRa_SetFrequency(frequency);
 			}
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
@@ -119,6 +146,7 @@ uint32_t	tcounter=0;
 		}
 	}
 }
-#endif // #ifdef SAMPLEPROCESS_1_LORA
+#endif // #ifdef SAMPLEPROCESS_1_LORA_SCANNER
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
+
 

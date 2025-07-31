@@ -56,7 +56,10 @@ extern	void sample_process_1_can(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_CAN
 #ifdef	SAMPLEPROCESS_1_LORA
 extern	void sample_process_1_lora(uint32_t process_id);	//This is process1
-#endif // #define	SAMPLEPROCESS_1_CAN
+#endif // #define	SAMPLEPROCESS_1_LORA
+#ifdef	SAMPLEPROCESS_1_LORA_SCANNER
+extern	void sample_process_1_lora_scanner(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_LORA_SCANNER
 #ifdef	SAMPLEPROCESS_MBX
 extern	void sample_process_1_mbxToPrc2(uint32_t process_id);	//This is process1
 extern	void sample_process_2_mbxFromPrc1(uint32_t process_id);	//This is process1
@@ -121,6 +124,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_LORA
 				.user_process = sample_process_1_lora,
 #endif // #define	SAMPLEPROCESS_1_LORA
+#ifdef	SAMPLEPROCESS_1_LORA_SCANNER
+				.user_process = sample_process_1_lora_scanner,
+#endif // #define	SAMPLEPROCESS_1_LORA_SCANNER
 #ifdef	SAMPLEPROCESS_MBX
 				.user_process = sample_process_1_mbxToPrc2,
 #endif // #define	SAMPLEPROCESS_MBX
