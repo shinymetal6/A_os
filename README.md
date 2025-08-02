@@ -1,5 +1,5 @@
 # A_os
-v2025.09.00.rc1<br>
+v2025.09.00.rc2<br>
 !!! NOTE !!!<br>
 Still this runs with <br>
 STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
