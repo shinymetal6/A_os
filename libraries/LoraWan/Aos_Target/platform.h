@@ -14,17 +14,16 @@
  * Project : A_os
 */
 /*
- * modules.c
+ * platform.h
  *
- *  Created on: Mar 4, 2025
+ *  Created on: Aug 1, 2025
  *      Author: fil
  */
 
-#include "../kernel/system_default.h"
-#include "../kernel/A.h"
-#include "../kernel/A_exported_functions.h"
-#include "../kernel/scheduler.h"
-#include "modules.h"
+#ifndef LIBRARIES_LORAWAN_TARGET_PLATFORM_H_
+#define LIBRARIES_LORAWAN_TARGET_PLATFORM_H_
 
-SYSTEM_RAM	MODULES_Struct_t	MODULES_Struct[MODULES_NUM];
-SYSTEM_RAM	uint8_t				last_module_used_handle=0,module_request = 0;
+#include "main.h"
+
+
+#endif /* LIBRARIES_LORAWAN_TARGET_PLATFORM_H_ */

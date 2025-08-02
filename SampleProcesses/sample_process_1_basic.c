@@ -25,6 +25,9 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_BASIC
+
+void	(*wku_error)  (void) = NULL;
+
 void sample_process_1_basic(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
@@ -39,6 +42,8 @@ uint32_t	wakeup,flags;
 		{
 			process_led();
 		}
+		if ( wakeup == 0 )
+			wku_error();
 	}
 }
 #endif // #ifdef SAMPLEPROCESS_1_BASIC

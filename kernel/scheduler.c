@@ -74,7 +74,9 @@ void schedule(void)
 	__DSB ();
 	__enable_irq();
 }
-
+#define SCHED_DISABLE_IRQS() uint32_t primask_bit= __get_PRIMASK();\
+  __disable_irq()
+#define SCHED_ENABLE_IRQS()  __set_PRIMASK(primask_bit)
 
 ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 {
@@ -130,23 +132,23 @@ ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rs
 {
 	if (( process[dest_process].current_state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 	{
-		__disable_irq();
+		SCHED_DISABLE_IRQS();
 		process[dest_process].wakeup_rsn |= rsn;
 		process[dest_process].wakeup_flags |= flags;
 		process[dest_process].current_state = 0;
 		process[dest_process].current_state |= PROCESS_READY_STATE;
-		__enable_irq();
+		SCHED_ENABLE_IRQS();
 	}
 	return 0;
 }
 
 ITCM_AREA_CODE uint32_t get_wakeup_flags(uint32_t *reason, uint32_t *flags )
 {
-	__disable_irq();
+	SCHED_DISABLE_IRQS();
 	*reason = process[Asys.current_process].wakeup_rsn;
 	*flags = process[Asys.current_process].wakeup_flags;
 	process[Asys.current_process].wakeup_rsn = process[Asys.current_process].wakeup_flags = 0;
-	__enable_irq();
+	SCHED_ENABLE_IRQS();
 	return 0;
 }
 

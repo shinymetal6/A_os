@@ -39,6 +39,12 @@ extern	void supervisor_callback(void);
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 extern	PCB_t 		process[MAX_PROCESS];
 
+__attribute__((section (".func0_start"))) void ReferenceToZero(void)
+{
+	while(1)
+		__disable_irq();
+}
+
 ITCM_AREA_CODE void supervisor(void)
 {
 	while(1)
