@@ -190,12 +190,9 @@ register uint8_t	i,j;
 	}
 }
 
-uint32_t	expcount=0;
 ITCM_AREA_CODE void  SysTick_Handler(void)
 {
 uint32_t	i;
-	expcount = SysTick->VAL;
-
 	__disable_irq();
 	if (( Asys.system_flags & SYS_FLAGS_OS_STARTED) == SYS_FLAGS_OS_STARTED )
 	//if ( Asys.g_os_started )

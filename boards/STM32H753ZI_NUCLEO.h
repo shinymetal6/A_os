@@ -32,7 +32,7 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define	AOS_USER_SHORT_INIT	1
+#define	AOS_USER_SHORT_INIT			1
 
 //#define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1
