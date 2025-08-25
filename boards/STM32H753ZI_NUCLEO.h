@@ -32,7 +32,9 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define	NETWORKING_ENABLED		1
+#define	AOS_USER_SHORT_INIT	1
+
+//#define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1
 
 #ifdef NETWORKING_ENABLED
@@ -45,6 +47,8 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+#define	LED_GPIO_Port	LD1_GPIO_Port
+#define	LED_Pin			LD1_Pin
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define XMODEM_DATA_AREA	__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))

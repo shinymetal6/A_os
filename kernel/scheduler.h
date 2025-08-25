@@ -54,6 +54,7 @@ typedef struct
 #define	TIMERFLAGS_USERMASK			0x0f
 
 #define MAX_TASKS   5
+
 /* the following is a nonsense, it's here just to clarify that a process with bit 0 @ 0 is waiting */
 #define PROCESS_WAITING_STATE		0x00
 #define PROCESS_READY_STATE			0x01
@@ -63,6 +64,7 @@ typedef struct
 #define PROCESS_HARDFAULT_FLAG		0X20
 #define PROCESS_FINISHED_FLAG		0X40
 #define PROCESS_KILLED_STATE		0X80
+
 
 extern	void 		switch_sp_to_psp(void);
 extern	uint32_t 	activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags);

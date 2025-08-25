@@ -86,6 +86,58 @@ void LoRa_1262_Set_Command(uint8_t *cmnd_, uint8_t *ans_, uint16_t Len,uint32_t 
 		HAL_Delay(Delay);
 }
 
+void LoRa_1262_WriteRegisters(uint16_t addr, uint8_t *buffer, uint8_t size)
+{
+	LoRa_1262_CSLow();
+
+	HAL_SPI_Transmit(lora_Drv->spi, (uint8_t *)&addr, 2, 1000);
+	while (HAL_SPI_GetState(lora_Drv->spi) != HAL_SPI_STATE_READY)
+		;
+	HAL_SPI_Transmit(lora_Drv->spi, buffer, size, 1000);
+	while (HAL_SPI_GetState(lora_Drv->spi) != HAL_SPI_STATE_READY)
+		;
+	LoRa_1262_CSHigh();
+}
+
+void LoRa_1262_WriteSingleRegister(uint16_t addr, uint8_t data)
+{
+	uint8_t wregs[3];
+	uint8_t rregs[3];
+	wregs[0] = addr >> 8;
+	wregs[1] = addr & 8;
+	wregs[2] = data;
+
+	LoRa_1262_CSLow();
+	err22 = HAL_SPI_TransmitReceive(lora_Drv->spi, wregs, rregs, 3, 1000); // 1 command byte, 1 wait, 2 response
+	LoRa_1262_CSHigh();
+}
+
+void LoRa_1262_ReadRegisters( uint16_t addr, uint8_t *buffer, uint8_t size )
+{
+	LoRa_1262_BusyWait();
+	bzero(lora_Drv->Packet_Buf,SX126X_MAX_PACKET_LENGTH);
+	lora_Drv->Packet_Buf[0] = addr >>8;
+	lora_Drv->Packet_Buf[1] = addr & 8;
+
+	LoRa_1262_CSLow();
+	err22 = HAL_SPI_TransmitReceive(lora_Drv->spi, lora_Drv->Packet_Buf, buffer, size, 1000); // 1 command byte, 1 wait, 2 response
+	LoRa_1262_CSHigh();
+}
+
+uint8_t LoRa_1262_ReadSingleRegister( uint16_t addr )
+{
+	uint8_t wregs[3];
+	uint8_t rregs[3];
+
+	wregs[0] = addr >> 8;
+	wregs[1] = addr & 8;
+	wregs[2] = 0;
+
+	LoRa_1262_CSLow();
+	err22 = HAL_SPI_TransmitReceive(lora_Drv->spi, wregs, rregs, 3, 1000); // 1 command byte, 1 wait, 2 response
+	LoRa_1262_CSHigh();
+	return rregs[2];
+}
 
 uint32_t flag_complete = 0;
 void LoRa_1262_Transmit(uint8_t* data, uint8_t len)

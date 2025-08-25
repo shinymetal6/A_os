@@ -32,21 +32,27 @@
 #ifdef SAMPLEPROCESS_1_LORA
 
 #define	PRC1_TICK				10
-extern	SPI_HandleTypeDef 		hspi1;
 
-#define	LORA_BUFSIZE			128
+#define	LORA_BUFSIZE			256
 
 uint8_t read_data[LORA_BUFSIZE];
 uint8_t send_data[LORA_BUFSIZE];
 
 int			RSSI;
-
-extern	SPI_HandleTypeDef hspi1;
+#ifdef	STM32H753xx
+	#ifdef STM32H753ZI_NUCLEO
+		extern	SPI_HandleTypeDef hspi3;
+		#define USE_SPI	hspi3
+	#endif
+#else
+		extern	SPI_HandleTypeDef hspi1;
+		#define USE_SPI	hspi1
+#endif
 
 LORA_Drv_TypeDef	LORA_Drv =
 {
 	.wakeup_id = 1,
-	.spi = &hspi1,
+	.spi = &USE_SPI,
 	.spi_timeout_ms = 100,
 	.device_id = ID_SX1262,
 	.CS_bit = LORA_SS_Pin,
@@ -77,11 +83,9 @@ uint32_t	lora_ok = 0;
 void sample_process_1_lora(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	i;
 uint32_t	tcounter=0;
 
-	for(i=0;i<LORA_BUFSIZE;i++)
-		send_data[i] = i;
+	sprintf((char *)send_data,"This is LoRa packet from STM32\n\r");
 	if ( LoRa_register(&LORA_Drv) == 0 )
 		lora_ok = 1;
 	if ( lora_ok == 1 )
@@ -91,6 +95,7 @@ uint32_t	tcounter=0;
 		LoRa_Int_Driver.irq_exti_callback = LORA_Drv.LoRa_HandleCallback,
 		// then register the driver
 		gpio_int_register(&LoRa_Int_Driver);
+		LoRaWAN_Init();
 	}
 
 	create_timer(TIMER_ID_0,PRC1_TICK,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
@@ -109,7 +114,7 @@ uint32_t	tcounter=0;
 				{
 					tcounter = 0;
 					if ( lora_ok == 1 )
-						LoRa_Tx();
+						LoRa_Tx(send_data,strlen((char *)send_data));
 				}
 			}
 		}

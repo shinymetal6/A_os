@@ -134,7 +134,6 @@ UTIL_TIMER_Status_t UTIL_TIMER_Create( UTIL_TIMER_Object_t *TimerObject, uint32_
     TimerObject->IsPending = 0U;
     TimerObject->IsRunning = 0U;
     TimerObject->IsReloadStopped = 0U;
-    TimerObject->Callback = Callback;
     TimerObject->argument = Argument;
     TimerObject->Mode = Mode;
     TimerObject->Next = NULL;

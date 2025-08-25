@@ -121,7 +121,8 @@ void init_systick_timer(uint32_t tick_hz)
 {
 uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
     SysTick_Config(ticks);
-    Asys.g_os_started = 1;
+    Asys.system_flags |= SYS_FLAGS_OS_STARTED;
+    //Asys.g_os_started = 1;
 }
 
 void A_init_mem(void)
@@ -223,6 +224,7 @@ void A_initialize_onchip_peripherals(void)
 #endif // #ifdef USB_ENABLED
 }
 
+#ifndef AOS_USER_SHORT_INIT
 extern	void process_1_init(void);
 extern	void process_2_init(void);
 extern	void process_3_init(void);
@@ -243,6 +245,7 @@ void user_processes_init(void)
 	__disable_irq();
 
 }
+#endif // #ifdef AOS_USER_LONG_INIT
 
 void A_start(void)
 {
@@ -260,7 +263,9 @@ void A_start(void)
 
 	init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
+#ifndef AOS_USER_SHORT_INIT
 	user_processes_init();
+#endif // #ifdef AOS_USER_LONG_INIT
 	init_systick_timer(TICK_HZ);
 #ifdef POOL_ENABLE
 	//A_mem_init();

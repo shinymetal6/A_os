@@ -85,7 +85,7 @@ typedef struct
 	uint32_t	*osSysRam_start;
 	uint32_t	osSysRam_size_word;
 	uint32_t	g_tick_count;
-	uint32_t	g_os_started;
+	//uint32_t	g_os_started;
 #ifdef	POOL_ENABLE
 	uint8_t		*first_mem;
 	uint32_t	num_buf_in_use;
@@ -95,8 +95,7 @@ typedef struct
 	MEMpool_t 	*first_of_list;
 	MEMpool_t 	*last_of_list;
 #endif // #ifdef	POOL_ENABLE
-	uint32_t	system_flags;
-	uint8_t		general_flags;
+	uint8_t		system_flags;
 	uint8_t		current_process;
 	uint8_t		failed_process;
 	uint8_t		fail_rsn;
@@ -116,7 +115,9 @@ typedef struct
 /* system_flags */
 /* this is set by a get_mem to signal the supervisor that
  * at least one buffer has been used, so defrag can start*/
-#define	SYS_MEM_DEFRAG_REQUEST	0x80000000
+#define	SYS_FLAGS_DEFRAG_REQUEST	0x80
+#define	SYS_FLAGS_SKIP_TICK			0x40
+#define	SYS_FLAGS_OS_STARTED		0x01
 /* qspi_status */
 #define	ASYS_QSPI_BUSY				0x01
 #define	ASYS_QSPI_WEL				0x02

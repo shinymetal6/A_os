@@ -46,6 +46,12 @@ extern	uint16_t 	LoRa_1262_cleardeverr(void);
 extern	void		LoRa_1262_Radio_essental_Config(void);
 extern	void		LoRa_1262_SetFrequency(uint32_t frequency);
 extern	uint32_t 	LoRa_1262_getRSSI(void);
+extern	void 		LoRa_1262_WriteRegisters(uint16_t addr, uint8_t *buffer, uint8_t size);
+extern	void 		LoRa_1262_ReadRegisters( uint16_t addr, uint8_t *buffer, uint8_t size );
+extern	uint8_t 	LoRa_1262_ReadSingleRegister( uint16_t addr );
+extern	void 		LoRa_1262_WriteSingleRegister(uint16_t addr, uint8_t data);
+
+
 
 
 #endif /* DRIVERS_SPI_LORA_LORA_1262_H_ */

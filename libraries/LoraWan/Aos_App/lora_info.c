@@ -65,6 +65,7 @@ static LoraInfo_t loraInfo = {0, 0};
 /* USER CODE END EV */
 
 /* Exported functions --------------------------------------------------------*/
+uint8_t lorainfo_buf[256];
 void LoraInfo_Init(void)
 {
   loraInfo.ContextManagement = 0;
@@ -108,12 +109,7 @@ void LoraInfo_Init(void)
 
   if (loraInfo.Region == 0)
   {
-    APP_PRINTF("error: At least one region shall be defined in the MW: check lorawan_conf.h \r\n");
-    while (1 != UTIL_ADV_TRACE_IsBufferEmpty())
-    {
-      /* Wait that all printfs are completed*/
-    }
-    while (1) {} /* At least one region shall be defined */
+    sprintf((char * )lorainfo_buf,"error: At least one region shall be defined in the MW: check lorawan_conf.h \r\n");
   }
 
 #if ( LORAMAC_CLASSB_ENABLED == 1 )

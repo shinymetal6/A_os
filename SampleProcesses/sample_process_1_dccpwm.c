@@ -23,7 +23,7 @@
 #include "A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef DCC_ENABLE_GPIO_Port
+#ifdef SAMPLEPROCESS_1_DCCPWM
 
 #define	CH1_DCC_TIMER			htim1
 #define	CH1_DCC_TIMER_PWM		TIM_CHANNEL_1
@@ -112,7 +112,7 @@ uint32_t	pw=0 , dir = 0;
 		}
 	}
 }
-#endif // #ifdef DCC_ENABLE_GPIO_Port
+#endif // #ifdef SAMPLEPROCESS_1_DCCPWM
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 

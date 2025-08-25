@@ -14,25 +14,22 @@
  * Project : A_os
 */
 /*
- * A_os_includes.h
+ * aos_lora_systimer.h
  *
- *  Created on: Dec 4, 2024
+ *  Created on: Aug 6, 2025
  *      Author: fil
  */
 
-#ifndef SAMPLEPROCESSES_A_OS_INCLUDES_H_
-#define SAMPLEPROCESSES_A_OS_INCLUDES_H_
+#ifndef LIBRARIES_LORAWAN_AOS_TARGET_AOS_LORA_SYSTIMER_H_
+#define LIBRARIES_LORAWAN_AOS_TARGET_AOS_LORA_SYSTIMER_H_
 
-#include "../kernel/A.h"
-#include "../kernel/system_default.h"
-#include "../kernel/A_exported_functions.h"
-#include <stdio.h>
-#include <string.h>
+#define RTC_N_PREDIV_S 1
+#define RTC_PREDIV_S ((1<<RTC_N_PREDIV_S)-1)
 
-//#define	SAMPLE_PROCESSES_ENABLED		1
+#define RTC_BKP_SECONDS    RTC_BKP_DR0
+#define RTC_BKP_SUBSECONDS RTC_BKP_DR1
+#define RTC_BKP_MSBTICKS   RTC_BKP_DR2
 
-#ifdef SAMPLE_PROCESSES_ENABLED
-extern void process_led(void);
-#endif // #ifdef SAMPLE_PROCESSES_ENABLED
+extern RTC_HandleTypeDef hrtc;
 
-#endif /* SAMPLEPROCESSES_A_OS_INCLUDES_H_ */
+#endif /* LIBRARIES_LORAWAN_AOS_TARGET_AOS_LORA_SYSTIMER_H_ */

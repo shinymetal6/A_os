@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    app_lorawan.c
+  * @file    systime.h
   * @author  MCD Application Team
-  * @brief   Application of the LRWAN Middleware
+  * @brief   Map middleware systime
   ******************************************************************************
   * @attention
   *
@@ -18,19 +18,19 @@
   */
 /* USER CODE END Header */
 
-/* Includes ------------------------------------------------------------------*/
-#include "app_lorawan.h"
-#include "lora_app.h"
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __SYSTIME_H__
+#define __SYSTIME_H__
 
-void MX_LoRaWAN_Init(void)
-{
-  LoRaWAN_Init();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "stm32_systime.h"
+
+
+#ifdef __cplusplus
 }
+#endif
 
-void MX_LoRaWAN_Process(void)
-{
-
-  //UTIL_SEQ_Run(UTIL_SEQ_DEFAULT);
-
-}
-
+#endif /*__SYSTIME_H__*/

@@ -28,8 +28,8 @@
 #ifdef A_OS_SPI_ENABLED
 
 #include "LoRa.h"
-#include "LoRa_1262.h"
-#include "LoRa_1278.h"
+#include "sx126x.h"
+#include "sx127x.h"
 
 extern	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 extern	uint8_t				last_spi_used_handle,spi_driver_request;
@@ -39,14 +39,21 @@ void LoRa_Init(void)
 {
 	lora_Drv->LoRa_Init();
 }
-void LoRa_Tx(void)
+void LoRa_Tx(uint8_t *buffer, uint8_t size)
 {
+	lora_Drv->TX_Buf = buffer;
+	lora_Drv->tx_payloadLen = size;
 	lora_Drv->LoRa_Transmit(lora_Drv->TX_Buf,lora_Drv->tx_payloadLen);
 }
 
-void LoRa_SetModeReceive(void)
+void LoRa_SetModeReceive(uint32_t timeoutMs)
 {
-	lora_Drv->LoRa_setModeReceive();
+	lora_Drv->LoRa_setModeReceive(timeoutMs);
+}
+
+void LoRa_SetModeStandby(void)
+{
+	lora_Drv->LoRa_setModeStandby();
 }
 
 uint32_t LoRa_GetRSSI(void)
@@ -58,6 +65,29 @@ void LoRa_SetFrequency(uint32_t frequency)
 {
 	lora_Drv->LoRa_SetFrequency(frequency);
 }
+
+void LoRa_WriteRegisters(uint16_t addr, uint8_t *buffer, uint8_t size)
+{
+	lora_Drv->LoRa_WriteRegisters(addr, buffer, size);
+}
+
+void LoRa_ReadRegisters(uint16_t addr, uint8_t *buffer, uint8_t size)
+{
+	lora_Drv->LoRa_ReadRegisters(addr, buffer, size);
+}
+
+void LoRa_WriteSingleRegister(uint16_t addr, uint8_t data)
+{
+	lora_Drv->LoRa_WriteRegisters(addr, &data,1);
+}
+
+uint8_t LoRa_ReadSingleRegister(uint16_t addr)
+{
+uint8_t buffer;
+	lora_Drv->LoRa_ReadRegisters(addr, &buffer, 1);
+	return buffer;
+}
+
 
 ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
 {
@@ -71,8 +101,11 @@ ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
 		return DRIVER_REQUEST_FAILED;
 	if ( driver_private_data->device_id == 0)
 		return DRIVER_REQUEST_FAILED;
-	if (( driver_private_data->IRQ_number < EXTI0_IRQn ) || ( driver_private_data->IRQ_number > EXTI4_IRQn ))
-		return DRIVER_REQUEST_FAILED;
+	if (( driver_private_data->IRQ_number != EXTI9_5_IRQn) || ( driver_private_data->IRQ_number != EXTI15_10_IRQn))
+	{
+		if (( driver_private_data->IRQ_number < EXTI0_IRQn ) || ( driver_private_data->IRQ_number > EXTI4_IRQn ))
+			return DRIVER_REQUEST_FAILED;
+	}
 	if ( driver_private_data->TX_Buf == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( driver_private_data->RX_Buf == NULL)
@@ -87,29 +120,34 @@ ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
 	lora_Drv->IRQ_number 			= driver_private_data->IRQ_number;
 	if (( lora_Drv->device_id == ID_SX1261 ) || ( lora_Drv->device_id == ID_SX1262 ))
 	{
-		lora_Drv->LoRa_Init 			= LoRa_1262_Init;
-		lora_Drv->LoRa_HandleCallback 	= LoRa_1262_HandleCallback;
-		lora_Drv->LoRa_Transmit 		= LoRa_1262_Transmit;
-		lora_Drv->LoRa_setModeStandby 	= LoRa_1262_setModeStandby;
-		lora_Drv->LoRa_setModeReceive 	= LoRa_1262_setModeReceive;
-		lora_Drv->LoRa_getstatus 		= LoRa_1262_getstatus;
-		lora_Drv->LoRa_SetFrequency 	= LoRa_1262_SetFrequency;
-		lora_Drv->LoRa_GetRSSI		 	= LoRa_1262_getRSSI;
+		lora_Drv->LoRa_Init 			= sx126x_init;
+		lora_Drv->LoRa_HandleCallback 	= sx126x_handle_dio1_irq;
+		lora_Drv->LoRa_Transmit 		= sx126x_transmit;
+		lora_Drv->LoRa_setModeStandby 	= sx126x_set_standby;
+		lora_Drv->LoRa_setModeReceive 	= sx126x_set_rx;
+		lora_Drv->LoRa_getstatus 		= sx126x_get_irq_status;
+		lora_Drv->LoRa_SetFrequency 	= sx126x_set_rf_frequency;
+		lora_Drv->LoRa_GetRSSI		 	= sx126x_getRSSI;
+		lora_Drv->LoRa_WriteRegisters	= sx126x_write_register;
+		lora_Drv->LoRa_ReadRegisters	= sx126x_read_register;
+		lora_Drv->LoRa_WriteSingleRegister	= sx126x_write_single_register;
+		lora_Drv->LoRa_ReadSingleRegister= sx126x_read_single_register;
 		lora_Drv->status 				|= LORA_DRIVER_STATUS_IN_USE;
 	}
+	/*
 	if ( lora_Drv->device_id == ID_SX1278 )
 	{
-		lora_Drv->LoRa_Init 			= LoRa_1278_init;
-		lora_Drv->LoRa_HandleCallback 	= LoRa_1278_HandleCallback;
-		lora_Drv->LoRa_Transmit 		= LoRa_1278_Transmit;
-		lora_Drv->LoRa_setModeStandby 	= LoRa_1278_setModeStandby;
+		lora_Drv->LoRa_Init 			= sx127x_init;
+		lora_Drv->LoRa_HandleCallback 	= sx127x_handle_dio0_irq;
+		lora_Drv->LoRa_Transmit 		= sx127x_transmit;
+		lora_Drv->LoRa_setModeStandby 	= sx127x_set_standby;
 		lora_Drv->LoRa_setModeReceive 	= LoRa_1278_setModeReceive;
 		lora_Drv->LoRa_getstatus 		= LoRa_1278_getstatus;
 		lora_Drv->LoRa_SetFrequency 	= LoRa_1278_setFrequency;
 		lora_Drv->LoRa_GetRSSI		 	= LoRa_1278_getRSSI;
 		lora_Drv->status 				|= LORA_DRIVER_STATUS_IN_USE;
 	}
-
+	*/
 	SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_IN_USE;
 	last_spi_used_handle++;
 	return 0;

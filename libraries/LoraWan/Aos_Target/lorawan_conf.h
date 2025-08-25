@@ -180,10 +180,12 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 #ifndef CRITICAL_SECTION_BEGIN
-#define CRITICAL_SECTION_BEGIN( )      UTILS_ENTER_CRITICAL_SECTION( )
+//#define CRITICAL_SECTION_BEGIN( )      UTILS_ENTER_CRITICAL_SECTION( )
+#define CRITICAL_SECTION_BEGIN( )
 #endif /* !CRITICAL_SECTION_BEGIN */
 #ifndef CRITICAL_SECTION_END
-#define CRITICAL_SECTION_END( )        UTILS_EXIT_CRITICAL_SECTION( )
+//#define CRITICAL_SECTION_END( )        UTILS_EXIT_CRITICAL_SECTION( )
+#define CRITICAL_SECTION_END( )
 #endif /* !CRITICAL_SECTION_END */
 
 /* USER CODE BEGIN EM */
@@ -192,7 +194,7 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 /* USER CODE BEGIN EFP */
-
+#include <stdio.h>
 /* USER CODE END EFP */
 
 #ifdef __cplusplus

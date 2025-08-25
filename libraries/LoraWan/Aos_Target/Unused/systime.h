@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    lora_app.c
+  * @file    systime.h
   * @author  MCD Application Team
-  * @brief   Application of the LRWAN Middleware
+  * @brief   Map middleware systime
   ******************************************************************************
   * @attention
   *
@@ -16,3 +16,21 @@
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
+
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __SYSTIME_H__
+#define __SYSTIME_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "stm32_systime.h"
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /*__SYSTIME_H__*/
