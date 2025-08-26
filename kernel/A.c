@@ -74,24 +74,14 @@ __attribute__((naked)) void init_scheduler_stack(uint32_t sched_top_of_stack)
      __asm volatile("BX LR");
 }
 
-static uint32_t	A_os_pstacks[MAX_TASKS];
-
 void init_processes_stacks(void)
 {
 uint32_t *pPSP,i,j;
-	process[0].current_state = PROCESS_READY_STATE;
-	process[1].current_state = PROCESS_READY_STATE;
-	process[2].current_state = PROCESS_READY_STATE;
-	process[3].current_state = PROCESS_READY_STATE;
-	process[4].current_state = PROCESS_READY_STATE;
-
-	A_os_pstacks[0] = process[0].psp_value = (uint32_t )IDLE_STACK_START;
-	A_os_pstacks[1] = process[1].psp_value = (uint32_t )FIRST_PRC_STACK_START;
-	A_os_pstacks[2] = process[2].psp_value = (uint32_t )(process[1].psp_value - UserProcesses[0].stack_size);
-	A_os_pstacks[3] = process[3].psp_value = (uint32_t )(process[2].psp_value - UserProcesses[1].stack_size);
-	A_os_pstacks[4] = process[4].psp_value = (uint32_t )(process[3].psp_value - UserProcesses[2].stack_size);
-
-	bzero((uint8_t *)(A_os_pstacks[4]-UserProcesses[3].stack_size),((A_os_pstacks[0]-A_os_pstacks[4])+UserProcesses[3].stack_size));
+	process[0].psp_value = (uint32_t )IDLE_STACK_START;
+	process[1].psp_value = (uint32_t )FIRST_PRC_STACK_START;
+	process[2].psp_value = (uint32_t )(process[1].psp_value - UserProcesses[0].stack_size);
+	process[3].psp_value = (uint32_t )(process[2].psp_value - UserProcesses[1].stack_size);
+	process[4].psp_value = (uint32_t )(process[3].psp_value - UserProcesses[2].stack_size);
 
 	process[0].task_handler = supervisor;
 	process[1].task_handler = supervisor_process1;
@@ -101,6 +91,7 @@ uint32_t *pPSP,i,j;
 
 	for(i = 0 ; i < MAX_TASKS ;i++)
 	{
+		process[i].current_state = PROCESS_READY_STATE;
 		pPSP = (uint32_t*) process[i].psp_value;
 		pPSP--;
 		*pPSP = DUMMY_XPSR;//0x00100000
@@ -122,7 +113,6 @@ void init_systick_timer(uint32_t tick_hz)
 uint32_t ticks = (SYSTICK_TIM_CLK/tick_hz)-1;
     SysTick_Config(ticks);
     Asys.system_flags |= SYS_FLAGS_OS_STARTED;
-    //Asys.g_os_started = 1;
 }
 
 void A_init_mem(void)

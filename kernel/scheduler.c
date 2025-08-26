@@ -29,6 +29,14 @@
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
 
+#ifdef sched_flag_GPIO_Port
+#define	__SCHED_PERF_SET()		sched_flag_GPIO_Port->BSRR = sched_flag_Pin
+#define	__SCHED_PERF_RESET()	sched_flag_GPIO_Port->BSRR = (uint32_t)sched_flag_Pin << 16
+#else
+#define __SCHED_PERF_SET()
+#define	__SCHED_PERF_RESET()
+#endif
+
 __attribute__((naked)) void switch_sp_to_psp(void)
 {
     //1. initialize the PSP with TASK1 stack start address
@@ -56,20 +64,12 @@ __attribute__((naked)) void PendSV_Handler(void)
 	/*Retrieve the context of next task */
 	//1. Decide next task to run
     __asm volatile("BL update_next_task");
-	//2. get its past PSP value
-	__asm volatile ("BL get_psp_value");
-	//3. Using that PSP value retrieve SF2(R4 to R11)
-	__asm volatile ("LDMIA R0!,{R4-R11}");
-	//4. update PSP and exit
-	__asm volatile("MSR PSP,R0");
-	__asm volatile("POP {LR}");
-	__asm volatile("BX LR");
 }
-
 
 void schedule(void)
 {
 	//pend the pendsv exception
+	__SCHED_PERF_SET();
 	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	__DSB ();
 	__enable_irq();
@@ -84,7 +84,6 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 	process[Asys.current_process].wait_event = events;
 	process[Asys.current_process].current_state &= ~PROCESS_READY_STATE;
 	Asys.system_flags |= SYS_FLAGS_SKIP_TICK;
-	Asys.started_processes |= 1 << Asys.current_process;
 	if ( process[Asys.current_process].wakeup_rsn == 0 )
 		schedule();
 	else
@@ -108,25 +107,26 @@ ITCM_AREA_CODE void save_psp_value(uint32_t current_psp_value)
 	process[Asys.current_process].psp_value = current_psp_value;
 }
 
-ITCM_AREA_CODE void update_next_task(void)
+ITCM_AREA_CODE __attribute__((naked)) void update_next_task(void)
 {
-	int state = 0;
-
 	for(int i= 0 ; i < (MAX_TASKS) ; i++)
 	{
 		Asys.current_process++;
 		Asys.current_process %= MAX_TASKS;
-		if ( Asys.current_process == 0 )	// run supervisor each time Asys.current_process rolls to 0
-			return;
-		state = process[Asys.current_process].current_state;
-		if (( state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
+		__DMB ();
+		if( ((process[Asys.current_process].current_state & PROCESS_READY_STATE ) == PROCESS_READY_STATE) )
 		{
-			if( ((state & PROCESS_READY_STATE )== PROCESS_READY_STATE) && (Asys.current_process != 0) )
-				break;
+			//2. get its past PSP value
+			__asm volatile ("BL get_psp_value");
+			//3. Using that PSP value retrieve SF2(R4 to R11)
+			__asm volatile ("LDMIA R0!,{R4-R11}");
+			//4. update PSP and exit
+			__asm volatile("MSR PSP,R0");
+			__asm volatile("POP {LR}");
+			__SCHED_PERF_RESET();
+			__asm volatile("BX LR");
 		}
 	}
-	if((state & PROCESS_READY_STATE ) != PROCESS_READY_STATE)
-		Asys.current_process = 0;
 }
 
 ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags)

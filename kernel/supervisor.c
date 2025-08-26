@@ -76,6 +76,8 @@ ITCM_AREA_CODE void supervisor(void)
 
 void supervisor_process1(void)
 {
+	__DMB ();
+	Asys.started_processes ++;
 	UserProcesses[0].user_process(1);
 	process[Asys.current_process].current_state = (PROCESS_KILLED_STATE | PROCESS_FINISHED_FLAG);
 	while(1);
@@ -83,6 +85,8 @@ void supervisor_process1(void)
 
 void supervisor_process2(void)
 {
+	__DMB ();
+	Asys.started_processes ++;
 	UserProcesses[1].user_process(2);
 	process[Asys.current_process].current_state = (PROCESS_KILLED_STATE | PROCESS_FINISHED_FLAG);
 	while(1);
@@ -90,6 +94,8 @@ void supervisor_process2(void)
 
 void supervisor_process3(void)
 {
+	__DMB ();
+	Asys.started_processes ++;
 	UserProcesses[2].user_process(3);
 	process[Asys.current_process].current_state = (PROCESS_KILLED_STATE | PROCESS_FINISHED_FLAG);
 	while(1);
@@ -97,6 +103,8 @@ void supervisor_process3(void)
 
 void supervisor_process4(void)
 {
+	__DMB ();
+	Asys.started_processes ++;
 	UserProcesses[3].user_process(4);
 	process[Asys.current_process].current_state = (PROCESS_KILLED_STATE | PROCESS_FINISHED_FLAG);
 	while(1);

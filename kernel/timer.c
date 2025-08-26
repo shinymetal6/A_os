@@ -111,7 +111,6 @@ ITCM_AREA_CODE uint32_t HAL_GetTick(void)
 {
 uint32_t	ret_val;
 	if (( Asys.system_flags & SYS_FLAGS_OS_STARTED) == SYS_FLAGS_OS_STARTED )
-	//if ( Asys.g_os_started )
 		ret_val =  Asys.g_tick_count;
 	else
 		ret_val =  uwTick;
@@ -123,7 +122,6 @@ ITCM_AREA_CODE void task_delay(uint32_t tick_count)
 {
 uint32_t	i = 5;
 
-	//if ( Asys.g_os_started == 0 )
 	if (( Asys.system_flags & SYS_FLAGS_OS_STARTED) == 0 )
 	{
 		HAL_Delay(tick_count);
@@ -140,10 +138,6 @@ uint32_t	i = 5;
 		process[Asys.current_process].wakeup_flags &= ~SUSPEND_ON_DELAY;
 		while((process[Asys.current_process].wakeup_rsn & WAKEUP_FROM_DELAY) != WAKEUP_FROM_DELAY )
 			schedule();
-		/*
-		process[Asys.current_process].wakeup_rsn &= ~SUSPEND_ON_DELAY;
-		process[Asys.current_process].wakeup_flags &= ~SUSPEND_ON_DELAY;
-		*/
 	}
 	__enable_irq();
 }
@@ -195,7 +189,6 @@ ITCM_AREA_CODE void  SysTick_Handler(void)
 uint32_t	i;
 	__disable_irq();
 	if (( Asys.system_flags & SYS_FLAGS_OS_STARTED) == SYS_FLAGS_OS_STARTED )
-	//if ( Asys.g_os_started )
 	{
 		update_global_tick_count();
 		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
@@ -211,14 +204,11 @@ uint32_t	i;
 			if ( after_check_timers_callback_array[i] != NULL )
 				after_check_timers_callback_array[i]();
 		}
-#ifndef AOS_USER_SHORT_INIT
-		if ( Asys.started_processes >= MAX_PROCESS_MASK )
-#endif // #ifdef AOS_USER_LONG_INIT
-			//pend the pendsv exception after all processes started
-			if (( Asys.system_flags & SYS_FLAGS_SKIP_TICK) == SYS_FLAGS_SKIP_TICK )
-				Asys.system_flags &= ~SYS_FLAGS_SKIP_TICK;
-			else
-				schedule();
+		//pend the pendsv exception after all processes started
+		if (( Asys.system_flags & SYS_FLAGS_SKIP_TICK) == SYS_FLAGS_SKIP_TICK )
+			Asys.system_flags &= ~SYS_FLAGS_SKIP_TICK;
+		else
+			schedule();
 	}
 	else
 	{
