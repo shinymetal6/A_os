@@ -37,7 +37,7 @@ extern	Asys_t		Asys;
 #define	__SCHED_PERF_RESET()
 #endif
 
-__attribute__((naked)) void switch_sp_to_psp(void)
+ITCM_AREA_CODE __attribute__((naked)) void switch_sp_to_psp(void)
 {
     //1. initialize the PSP with TASK1 stack start address
 	//get the value of psp of current_task
@@ -51,7 +51,7 @@ __attribute__((naked)) void switch_sp_to_psp(void)
 	__asm volatile ("BX LR");
 }
 
-__attribute__((naked)) void PendSV_Handler(void)
+ITCM_AREA_CODE __attribute__((naked)) void PendSV_Handler(void)
 {
 	/*Save the context of current task */
 	//1. Get current running task's PSP value
@@ -66,7 +66,7 @@ __attribute__((naked)) void PendSV_Handler(void)
     __asm volatile("BL update_next_task");
 }
 
-void schedule(void)
+ITCM_AREA_CODE void schedule(void)
 {
 	//pend the pendsv exception
 	__SCHED_PERF_SET();
@@ -157,6 +157,4 @@ ITCM_AREA_CODE uint8_t get_current_process(void)
 {
 	return Asys.current_process;
 }
-
-
 

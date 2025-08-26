@@ -54,7 +54,7 @@
 /* forward declaration */
 static void Transform (uint32_t *buf, uint32_t *in);
 
-static unsigned char PADDING[64] = {
+SYSTEM_RAM static unsigned char PADDING[64] = {
   0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -110,8 +110,7 @@ static unsigned char PADDING[64] = {
 /* The routine MD5Init initializes the message-digest context
    mdContext. All fields are set to zero.
  */
-void
-MD5Init (MD5_CTX *mdContext)
+ITCM_AREA_CODE void MD5Init (MD5_CTX *mdContext)
 {
   mdContext->i[0] = mdContext->i[1] = (uint32_t)0;
 
@@ -126,8 +125,7 @@ MD5Init (MD5_CTX *mdContext)
    account for the presence of each of the characters inBuf[0..inLen-1]
    in the message whose digest is being computed.
  */
-void
-MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen)
+ITCM_AREA_CODE void MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen)
 {
   uint32_t in[16];
   int mdi;
@@ -169,8 +167,7 @@ MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen)
 /* The routine MD5Final terminates the message-digest computation and
    ends with the desired message digest in mdContext->digest[0...15].
  */
-void
-MD5Final (unsigned char hash[], MD5_CTX *mdContext)
+ITCM_AREA_CODE void MD5Final (unsigned char hash[], MD5_CTX *mdContext)
 {
   uint32_t in[16];
   int mdi;
@@ -212,8 +209,7 @@ MD5Final (unsigned char hash[], MD5_CTX *mdContext)
 
 /* Basic MD5 step. Transforms buf based on in.
  */
-static void
-Transform (uint32_t *buf, uint32_t *in)
+ITCM_AREA_CODE static void Transform (uint32_t *buf, uint32_t *in)
 {
   uint32_t a = buf[0], b = buf[1], c = buf[2], d = buf[3];
 
@@ -312,7 +308,8 @@ Transform (uint32_t *buf, uint32_t *in)
 }
 
 MD5_CTX mdContext;
-uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
+
+ITCM_AREA_CODE uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
 {
 	MD5Init (&mdContext);
 	MD5Update(&mdContext, buf, len);
