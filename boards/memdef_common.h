@@ -53,6 +53,7 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define POOL_RAM				__attribute__((section(".osMemPoolStart"))) __attribute__ ((aligned (32)))
 #define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
 #define AOS_FLASH_END			__attribute__((section(".aos_flash_end"))) __attribute__ ((aligned (32))) const
-#define	ITCM_AREA_CODE			__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+//#define	ITCM_AREA_CODE			__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+#define	ITCM_AREA_CODE
 
 #endif /* BOARDS_MEMDEF_COMMON_H_ */

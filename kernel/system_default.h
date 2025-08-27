@@ -45,6 +45,9 @@
 	#ifdef	FL_201023_02
 		#include "../boards/FL_201023_02.h"
 	#endif
+	#ifdef	AU_100825_00
+		#include "../boards/AU_100825_00.h"
+	#endif
 #endif	//#ifdef	STM32H743xx
 
 

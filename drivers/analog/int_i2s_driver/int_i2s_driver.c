@@ -25,13 +25,13 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-//#include "../../../kernel/kernel_opt.h"
 
 #ifdef STM32H7xx_HAL_I2S_H
 
 #include "int_i2s_driver.h"
 #include "../../../modules/sound/sound.h"
 
+#ifdef SOUND_ENABLED
 extern	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 extern	uint8_t					last_analog_used_handle,analog_driver_request;
 
@@ -125,13 +125,11 @@ uint32_t	i,drv_ret=255;
 ITCM_AREA_CODE  static void i2s_irq_common(I2S_Drv_TypeDef	*i2s_drv,uint32_t handle)
 {
 uint32_t	start_sample;
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
 	start_sample = (i2s_drv->status & I2S_STATUS_HALF) ? 0 : i2s_drv->len/2;
 	if (( i2s_drv->flags & I2S_FLAGS_USE_SYNTHMODULE) == I2S_FLAGS_USE_SYNTHMODULE)
 	{
 		Do_synth(start_sample);
 	}
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
@@ -157,4 +155,6 @@ uint32_t handle;
 		i2s_irq_common(i2s_drv,handle);
 	}
 }
+#endif // #ifdef SOUND_ENABLED
+
 #endif // #ifdef STM32H7xx_HAL_I2S_H

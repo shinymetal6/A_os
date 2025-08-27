@@ -60,12 +60,14 @@ typedef struct
 #include "int_dac_driver/int_dac_driver.h"
 #endif
 
-#ifdef A_OS_I2S_ENABLED
-	#include "int_i2s_driver/int_i2s_driver.h"
-	#ifdef A_OS_I2C_ENABLED
-		#include "codec/nau88c22.h"
-	#endif // #ifdef A_OS_I2C_ENABLED
-#endif // #ifdef A_OS_I2S_ENABLED
+#ifdef SOUND_ENABLED
+	#ifdef A_OS_I2S_ENABLED
+		#include "int_i2s_driver/int_i2s_driver.h"
+		#ifdef A_OS_I2C_ENABLED
+			#include "codec/nau88c22.h"
+		#endif // #ifdef A_OS_I2C_ENABLED
+	#endif // #ifdef A_OS_I2S_ENABLED
+#endif // #ifdef SOUND_ENABLED
 
 extern	uint32_t adc_start(uint8_t handle);
 extern	uint32_t adc_stop(uint8_t handle);

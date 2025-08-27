@@ -29,14 +29,6 @@
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;
 
-#ifdef sched_flag_GPIO_Port
-#define	__SCHED_PERF_SET()		sched_flag_GPIO_Port->BSRR = sched_flag_Pin
-#define	__SCHED_PERF_RESET()	sched_flag_GPIO_Port->BSRR = (uint32_t)sched_flag_Pin << 16
-#else
-#define __SCHED_PERF_SET()
-#define	__SCHED_PERF_RESET()
-#endif
-
 ITCM_AREA_CODE __attribute__((naked)) void switch_sp_to_psp(void)
 {
     //1. initialize the PSP with TASK1 stack start address
@@ -69,7 +61,7 @@ ITCM_AREA_CODE __attribute__((naked)) void PendSV_Handler(void)
 ITCM_AREA_CODE void schedule(void)
 {
 	//pend the pendsv exception
-	__SCHED_PERF_SET();
+	__PERF_RESET();
 	SCB->ICSR |= SCB_ICSR_PENDSVSET_Msk;
 	__DSB ();
 	__enable_irq();
@@ -93,6 +85,7 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) wait_event(uint32_t events)
 ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 {
 	__disable_irq();
+	__PERF_RESET();
 	process[Asys.current_process].current_state = PROCESS_WAITING_STATE;
 	schedule();
 }
@@ -123,7 +116,8 @@ ITCM_AREA_CODE __attribute__((naked)) void update_next_task(void)
 			//4. update PSP and exit
 			__asm volatile("MSR PSP,R0");
 			__asm volatile("POP {LR}");
-			__SCHED_PERF_RESET();
+			if ( Asys.current_process )
+				__PERF_SET();
 			__asm volatile("BX LR");
 		}
 	}

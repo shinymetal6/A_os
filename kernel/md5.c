@@ -307,10 +307,11 @@ ITCM_AREA_CODE static void Transform (uint32_t *buf, uint32_t *in)
   buf[3] += d;
 }
 
-MD5_CTX mdContext;
+SYSTEM_RAM	MD5_CTX mdContext;
 
 ITCM_AREA_CODE uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
 {
+	bzero(&mdContext,sizeof(MD5_CTX));
 	MD5Init (&mdContext);
 	MD5Update(&mdContext, buf, len);
 	MD5Final (hash, &mdContext);

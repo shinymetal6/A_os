@@ -38,11 +38,12 @@ extern	void MX_USB_HOST_Process(void);
 extern	void supervisor_callback(void);
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];
 extern	PCB_t 		process[MAX_PROCESS];
-
+uint32_t	ref0_err=0;
 __attribute__((section (".func0_start"))) void ReferenceToZero(void)
 {
-	while(1)
-		__disable_irq();
+	ref0_err++;
+	__disable_irq();
+	while(1);
 }
 
 ITCM_AREA_CODE void supervisor(void)
@@ -68,9 +69,13 @@ ITCM_AREA_CODE void supervisor(void)
 #ifdef POWERSAVING_ENABLED
 		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
 #endif
-
+		__PERF_RESET();
 		supervisor_callback();
-		schedule();
+		for(int i= 1 ; i < (MAX_TASKS) ; i++)
+		{
+			if( ((process[i].current_state & PROCESS_READY_STATE ) == PROCESS_READY_STATE) )
+				schedule();
+		}
 	}
 }
 

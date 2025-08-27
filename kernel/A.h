@@ -199,4 +199,12 @@ extern	Asys_t		Asys;
 
 #include "kernel_opt.h"
 
+#ifdef PERF_FLAG_GPIO_Port
+#define	__PERF_SET()		PERF_FLAG_GPIO_Port->BSRR = PERF_FLAG_Pin
+#define	__PERF_RESET()	PERF_FLAG_GPIO_Port->BSRR = (uint32_t)PERF_FLAG_Pin << 16
+#else
+#define __PERF_SET()
+#define	__PERF_RESET()
+#endif
+
 #endif /* KERNEL_A_H_ */
