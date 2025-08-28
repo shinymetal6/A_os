@@ -83,9 +83,7 @@ ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].priva
 ITCM_AREA_CODE static uint32_t int_adc_init(uint8_t handle)
 {
 ADC_Drv_TypeDef		*adc_drv = (ADC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
-//ADC_HandleTypeDef	*adc = adc_drv->adc;
 	adc_drv->status &= ~(ADC_STATUS_HALF | ADC_STATUS_FULL);
-	//return HAL_ADC_Start_DMA(adc, (uint32_t *)adc_drv->adc_buffer, adc_drv->num_channels);
 	return 0;
 }
 

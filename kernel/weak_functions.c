@@ -31,7 +31,12 @@ extern	void Nau88c22_Init(void);
 
 extern	A_IpAddr_t	A_IpAddr;
 
-__weak void supervisor_callback(void)
+__weak void supervisor_entry_callback(void)
+{
+
+}
+
+__weak void supervisor_exit_callback(void)
 {
 
 }
