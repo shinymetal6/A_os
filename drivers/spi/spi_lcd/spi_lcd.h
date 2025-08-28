@@ -30,6 +30,7 @@
 #define MAX_HEIGHT 320
 
 #define	DEFAULT_RESET_TIME	100
+#define	SPI_LCD_DMA_TIMEOUT	250
 
 #include	"fonts.h"
 
@@ -57,11 +58,13 @@ typedef struct
 	void				(*lcd_init)(void);
 	void				(*lcd_reset)(void);
 	void				(*lcd_clear_screen)	(void);
+	void				(*lcd_fill_screen)	(uint16_t color);
 	uint32_t			(*lcd_invert_colors)(uint8_t invert);
 	uint32_t			(*lcd_write_char)	(uint16_t x, uint16_t y, char ch,    uint8_t font_index, uint16_t color, uint16_t bgcolor);
 	uint32_t			(*lcd_write_string)	(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
 	uint32_t			(*lcd_fill_rect)  	(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 	uint32_t			(*lcd_draw_image)  	(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
+	uint8_t				dma_timeout;
 }SPI_LCD_DriverStruct_t;
 
 /* flags */
@@ -77,6 +80,7 @@ extern	GPIO_TypeDef		*ST7735_dc_port;
 extern	uint16_t			ST7735_dc_bit;
 extern	SPI_HandleTypeDef 	*ST7735_spi_port;
 extern	uint8_t				*ST7735_flags;
+extern	uint8_t				*ST7735_dma_timeout;
 
 extern	GPIO_TypeDef		*ILI9341_cs_port;
 extern	uint16_t			ILI9341_cs_bit;
@@ -87,6 +91,7 @@ extern	GPIO_TypeDef		*ILI9341_dc_port;
 extern	uint16_t			ILI9341_dc_bit;
 extern	SPI_HandleTypeDef 	*ILI9341_spi_port;
 extern	uint8_t				*ILI9341_flags;
+extern	uint8_t				*ILI9341_dma_timeout;
 
 extern	uint16_t	framebuffer_rect[MAX_WIDTH*MAX_HEIGHT];
 
@@ -96,6 +101,7 @@ extern uint32_t	spi_lcd_off(uint8_t handle);
 extern uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *driver_private_data);
 extern uint32_t	spi_lcd_clear_screen(uint8_t handle);
 extern uint32_t	spi_lcd_fill_rect(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+extern uint32_t	spi_lcd_fill_screen(uint8_t handle, uint16_t color);
 extern uint32_t	spi_lcd_reset(uint8_t handle);
 extern uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness);
 extern uint32_t	spi_lcd_draw_image(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);

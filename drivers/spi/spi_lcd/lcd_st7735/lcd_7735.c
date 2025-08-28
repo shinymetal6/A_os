@@ -29,7 +29,6 @@
 #ifdef STM32H7xx_HAL_SPI_H
 #include "lcd_7735.h"
 
-//uint16_t		framebuffer_rect[ST7735_WIDTH*ST7735_HEIGHT];
 GPIO_TypeDef	*ST7735_cs_port;
 uint16_t		ST7735_cs_bit;
 GPIO_TypeDef	*ST7735_reset_port;
@@ -39,6 +38,7 @@ GPIO_TypeDef	*ST7735_dc_port;
 uint16_t		ST7735_dc_bit;
 SPI_HandleTypeDef 	*ST7735_spi_port;
 uint8_t			*ST7735_flags;
+uint8_t			*ST7735_dma_timeout;
 
 // based on Adafruit ST7735 library for Arduino
 __attribute__((section(".table"))) const uint8_t
@@ -119,16 +119,16 @@ __attribute__((section(".table"))) const uint8_t
     ST7735_DISPON ,    DELAY, //  4: Main screen turn on, no args w/delay
       100 };                  //     100 ms delay
 
-static void ST7735_Select()
+ITCM_AREA_CODE static void ST7735_Select()
 {
     HAL_GPIO_WritePin(ST7735_cs_port, ST7735_cs_bit, GPIO_PIN_RESET);
 }
 
-void ST7735_Unselect() {
+ITCM_AREA_CODE void ST7735_Unselect() {
     HAL_GPIO_WritePin(ST7735_cs_port, ST7735_cs_bit, GPIO_PIN_SET);
 }
 
-void ST7735_Reset(void)
+ITCM_AREA_CODE void ST7735_Reset(void)
 {
 uint8_t this_cmd[8] = {0,0,0,0,0x01,0,0,0};
     HAL_GPIO_WritePin(ST7735_reset_port, ST7735_reset_bit, GPIO_PIN_RESET);
@@ -139,13 +139,13 @@ uint8_t this_cmd[8] = {0,0,0,0,0x01,0,0,0};
     ST7735_Unselect();
 }
 
-static void ST7735_WriteCommand(uint8_t cmd)
+ITCM_AREA_CODE static void ST7735_WriteCommand(uint8_t cmd)
 {
     HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_RESET);
     HAL_SPI_Transmit(ST7735_spi_port, &cmd, sizeof(cmd), ST7735_SPI_TIMEOUT);
 }
 
-static void ST7735_WriteData(uint8_t* buff, uint32_t buff_size)
+ITCM_AREA_CODE static void ST7735_WriteData(uint8_t* buff, uint32_t buff_size)
 {
 	HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
 
@@ -159,23 +159,22 @@ static void ST7735_WriteData(uint8_t* buff, uint32_t buff_size)
     }
 }
 
-static void ST7735_WriteData_DMA(uint8_t* buff, size_t buff_size)
+ITCM_AREA_CODE static void ST7735_WriteData_DMA(uint8_t* buff, size_t buff_size)
 {
-	/*
-    HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
-	*ST7735_flags &= ~SPI_DMA_DONE;
-	HAL_SPI_Transmit_DMA(ST7735_spi_port, buff, buff_size);
-	while((*ST7735_flags & SPI_DMA_DONE) != SPI_DMA_DONE)
-		task_delay(1);
-	*/
+uint8_t tout = 	*ST7735_dma_timeout;
     HAL_GPIO_WritePin(ST7735_dc_port, ST7735_dc_bit, GPIO_PIN_SET);
     while(buff_size > 0)
     {
         uint16_t chunk_size = buff_size > 4095 ? 4096 : buff_size;
     	*ST7735_flags &= ~SPI_DMA_DONE;
-    	HAL_SPI_Transmit_DMA(ST7735_spi_port, buff, buff_size);
+    	HAL_SPI_Transmit_DMA(ST7735_spi_port, buff, chunk_size);
     	while((*ST7735_flags & SPI_DMA_DONE) != SPI_DMA_DONE)
+    	{
     		task_delay(1);
+    		tout--;
+    		if ( tout == 0 )
+    			return;
+    	}
         buff += chunk_size;
         buff_size -= chunk_size;
     }
@@ -183,7 +182,7 @@ static void ST7735_WriteData_DMA(uint8_t* buff, size_t buff_size)
 
 /* Rewritten to maintain alignment on smaller arm cores */
 uint8_t	__attribute__((aligned (16))) spi_buf[32];
-static void ST7735_ExecuteCommandList(const uint8_t *addr)
+ITCM_AREA_CODE static void ST7735_ExecuteCommandList(const uint8_t *addr)
 {
 uint8_t numCommands, numArgs,i;
 
@@ -203,7 +202,7 @@ uint8_t numCommands, numArgs,i;
     }
 }
 
-static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
+ITCM_AREA_CODE static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {
     // column address set
     ST7735_WriteCommand(ST7735_CASET);
@@ -220,7 +219,7 @@ static void ST7735_SetAddressWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t 
     ST7735_WriteCommand(ST7735_RAMWR);
 }
 
-void ST7735_Init(void)
+ITCM_AREA_CODE void ST7735_Init(void)
 {
     ST7735_Reset();
     ST7735_Select();
@@ -230,7 +229,7 @@ void ST7735_Init(void)
     ST7735_Unselect();
 }
 
-void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
+ITCM_AREA_CODE void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
 {
     if((x >= ST7735_WIDTH) || (y >= ST7735_HEIGHT))
         return;
@@ -244,7 +243,7 @@ void ST7735_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
     ST7735_Unselect();
 }
 
-void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)
+ITCM_AREA_CODE void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color)
 {
 int16_t	sw;
 int16_t steep = abs(y1 - y0) > abs(x1 - x0);
@@ -300,7 +299,7 @@ int16_t ystep;
 	}
 }
 
-static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor)
+ITCM_AREA_CODE static void ST7735_WriteChar(uint16_t x, uint16_t y, char ch, FontDef font, uint16_t color, uint16_t bgcolor)
 {
 uint32_t i, b, j;
 
@@ -323,7 +322,7 @@ uint32_t i, b, j;
     }
 }
 
-uint32_t ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor)
+ITCM_AREA_CODE uint32_t ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor)
 {
     ST7735_Select();
 
@@ -356,7 +355,7 @@ uint32_t ST7735_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, uin
 
 }
 
-uint32_t ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data)
+ITCM_AREA_CODE uint32_t ST7735_DrawImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* data)
 {
 uint32_t image_size = w*h*2;
 	if((x + w - 1) > ST7735_WIDTH)
@@ -376,28 +375,25 @@ uint32_t image_size = w*h*2;
 	return 0;
 }
 
-uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+ITCM_AREA_CODE uint32_t ST7735_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
 {
 uint32_t	i;
-	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT;i++)
+	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT*2;i++)
 		framebuffer_rect[i] = color;
 	return ST7735_DrawImage(x,y,w,h,framebuffer_rect);
 }
 
-void ST7735_FillScreen(uint16_t color)
-{
-uint32_t	i;
-	for(i=0;i<ST7735_WIDTH*ST7735_HEIGHT;i++)
-		framebuffer_rect[i] = color;
-	ST7735_DrawImage(0,0,ST7735_WIDTH,ST7735_HEIGHT,framebuffer_rect);
-}
-
-void ST7735_ClearScreen(void)
+ITCM_AREA_CODE void ST7735_FillScreen(uint16_t color)
 {
 	ST7735_FillRectangle(0,0,ST7735_WIDTH,ST7735_HEIGHT,ST7735_BLACK);
 }
 
-uint32_t ST7735_InvertColors(uint8_t invert)
+ITCM_AREA_CODE void ST7735_ClearScreen(void)
+{
+	ST7735_FillRectangle(0,0,ST7735_WIDTH,ST7735_HEIGHT,ST7735_BLACK);
+}
+
+ITCM_AREA_CODE uint32_t ST7735_InvertColors(uint8_t invert)
 {
     ST7735_Select();
     ST7735_WriteCommand(invert ? ST7735_INVON : ST7735_INVOFF);
@@ -405,12 +401,12 @@ uint32_t ST7735_InvertColors(uint8_t invert)
     return 0;
 }
 
-uint8_t ST7735_GetFontHeigth(FontDef font)
+ITCM_AREA_CODE uint8_t ST7735_GetFontHeigth(FontDef font)
 {
 	return font.height;
 }
 
-uint8_t ST7735_GetFontWidth(FontDef font)
+ITCM_AREA_CODE uint8_t ST7735_GetFontWidth(FontDef font)
 {
 	return font.width;
 }

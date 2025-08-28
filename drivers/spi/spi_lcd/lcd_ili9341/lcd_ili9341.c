@@ -40,6 +40,7 @@ GPIO_TypeDef	*ILI9341_dc_port;
 uint16_t		ILI9341_dc_bit;
 SPI_HandleTypeDef 	*ILI9341_spi_port;
 uint8_t			*ILI9341_flags;
+uint8_t			*ILI9341_dma_timeout;
 
 static void ILI9341_Select(void)
 {
@@ -314,6 +315,7 @@ uint32_t ILI9341_WriteString(uint16_t x, uint16_t y, char* str, FontDef font, ui
 
 static void ILI9341_WriteData_DMA(uint8_t* buff, size_t buff_size)
 {
+uint8_t tout = 	*ILI9341_dma_timeout;
     // split data in small chunks because HAL can't send more then 64K at once
     while(buff_size > 0)
     {
@@ -322,7 +324,12 @@ static void ILI9341_WriteData_DMA(uint8_t* buff, size_t buff_size)
         HAL_GPIO_WritePin(ILI9341_dc_port, ILI9341_dc_bit, GPIO_PIN_SET);
     	HAL_SPI_Transmit_DMA(ILI9341_spi_port, buff, buff_size);
     	while((*ILI9341_flags & SPI_DMA_DONE) != SPI_DMA_DONE)
+    	{
     		task_delay(1);
+    		tout--;
+    		if ( tout == 0 )
+    			return;
+    	}
         buff += chunk_size;
         buff_size -= chunk_size;
     }
