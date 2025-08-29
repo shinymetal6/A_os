@@ -53,6 +53,8 @@ __attribute__((section (".func0_start"))) void ReferenceToZero(void)
 }
 #endif
 
+uint32_t stat_prc[4] = {0,0,0,0};
+
 ITCM_AREA_CODE void supervisor(void)
 {
 	while(1)
@@ -84,6 +86,7 @@ ITCM_AREA_CODE void supervisor(void)
 			if( ((process[i].current_state & PROCESS_READY_STATE ) == PROCESS_READY_STATE) )
 			{
 				supervisor_exit_callback();
+				stat_prc[i-1]++;
 				schedule();
 			}
 		}

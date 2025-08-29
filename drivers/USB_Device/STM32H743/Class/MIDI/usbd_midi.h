@@ -67,7 +67,7 @@ extern "C" {
 #define MIDI_JACK_31   (MIDI_IN_PORTS_NUM * 2 + 0x0f)
 #define MIDI_JACK_32   (MIDI_IN_PORTS_NUM * 2 + 0x10)
 
-#define MIDI_IN_PORTS_NUM		8
+#define MIDI_IN_PORTS_NUM		1
 #define MIDI_OUT_PORTS_NUM		1
 #define USB_MIDI_CLASS_DESC_SHIFT      18
 #define USB_MIDI_DESC_SIZE             7

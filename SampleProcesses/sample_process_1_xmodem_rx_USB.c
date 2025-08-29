@@ -26,7 +26,7 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
 
-#define	xmodem_rx_data_area	0x30001000
+#define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
 
 #define	USB_BUF_LEN	XMODEM_LINE_LEN

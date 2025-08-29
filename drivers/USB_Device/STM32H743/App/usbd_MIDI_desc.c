@@ -35,12 +35,16 @@
 
 
 #define USBD_VID     1155
-#define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "BB2xxMidi"
 #define USBD_PID_FS     0x0136
-#define USBD_PRODUCT_STRING_FS     "BB2xx MIDI Port"
-#define USBD_CONFIGURATION_STRING_FS     "MIDI Config"
-#define USBD_INTERFACE_STRING_FS     "MIDI Interface"
+#define USBD_CONFIGURATION_STRING_FS		"MIDI Config"
+#define USBD_INTERFACE_STRING_FS     		"MIDI Interface"
+#define USBD_LANGID_STRING     1033
+#ifndef USBD_MANUFACTURER_STRING
+	#define USBD_MANUFACTURER_STRING		"BB"
+#endif
+#ifndef USBD_PRODUCT_STRING_FS
+	#define USBD_PRODUCT_STRING_FS			"MidiDev"
+#endif
 
 #define USB_SIZ_BOS_DESC            0x0C
 

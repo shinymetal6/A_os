@@ -28,8 +28,12 @@
 
 #define USB_DEVICE_ENABLED	1
 #ifdef USB_DEVICE_ENABLED
-	#define	USB_CDC				1
-	//#define	USB_MIDI			1
+	//#define	USB_CDC				1
+	#define	USB_MIDI
+	#ifdef USB_MIDI
+		#define USBD_MANUFACTURER_STRING		"BB"
+		#define USBD_PRODUCT_STRING_FS			"BB AU100825"
+	#endif
 #endif // #ifdef USB_ENABLED
 
 #define SOUND_ENABLED	1

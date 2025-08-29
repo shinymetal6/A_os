@@ -134,11 +134,6 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	}
 	return	Len;
 }
-#else
-ITCM_AREA_CODE void USB_Driver_RxTimeoutCheckCallback(void)
-{
-
-}
 #endif // #ifdef USB_CDC
 
 #endif // #ifdef USB_DEVICE_ENABLED

@@ -70,7 +70,7 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_wait_on_flag_timeout(I2C_24xx_Drv_TypeDe
 	i2c_24xx_Drv->timeout = I2C_24XX_TIMEOUT;
 	while ( (i2c_24xx_Drv->status & mask ) != mask )
 	{
-		task_delay(1);
+		task_delay(10);
 		i2c_24xx_Drv->timeout--;
 		if ( i2c_24xx_Drv->timeout == 0 )
 			return i2c_24xx_seterror(i2c_24xx_Drv);
