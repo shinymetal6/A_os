@@ -27,6 +27,7 @@
 #include "../../../kernel/scheduler.h"
 
 #ifdef A_OS_SPI_ENABLED
+#ifdef LORA_ENABLED
 
 #include "LoRa.h"
 #include "sx126x.h"
@@ -314,6 +315,7 @@ void sx126x_handle_dio1_irq(uint16_t GPIO_Pin) {
     // Always re-enable RX after TX or RX
     sx126x_start_receive();
 }
+#endif // #ifdef LORA_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 
 

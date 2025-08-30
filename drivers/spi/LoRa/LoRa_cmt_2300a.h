@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SPI_LORA_LORA_CMT_2300A_H_
 #define DRIVERS_SPI_LORA_LORA_CMT_2300A_H_
+#ifdef LORA_ENABLED
 
 // GPIO
 #define CMT2300A_GDO0_PORT  LORA1_IRQPD1_GPIO_Port
@@ -81,5 +82,6 @@ void LoRa_cmt2300a_SetCallbacks(LoRa_cmt2300a_RxCallback rx_cb, LoRa_cmt2300a_Tx
 void LoRa_cmt2300a_EXTI_IRQHandler(void);
 void LoRa_cmt2300a_ProcessInterrupt(void);
 
+#endif // #ifdef LORA_ENABLED
 
 #endif /* DRIVERS_SPI_LORA_LORA_CMT_2300A_H_ */

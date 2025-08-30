@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SPI_LORA_LORA_H_
 #define DRIVERS_SPI_LORA_LORA_H_
+#ifdef LORA_ENABLED
 
 #define	LORA_MAX_PACKET_LENGTH	255
 typedef struct
@@ -98,5 +99,6 @@ extern	uint32_t LoRa_GetRSSI(void);
 extern	void LoRa_SetFrequency(uint32_t frequency);
 extern	void LoRa_SetModeStandby(void);
 
+#endif // #ifdef LORA_ENABLED
 
 #endif /* DRIVERS_SPI_LORA_LORA_H_ */

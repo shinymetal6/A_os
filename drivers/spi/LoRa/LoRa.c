@@ -26,6 +26,7 @@
 #include "../../../kernel/kernel_opt.h"
 
 #ifdef A_OS_SPI_ENABLED
+#ifdef LORA_ENABLED
 
 #include "LoRa.h"
 #include "sx126x.h"
@@ -152,5 +153,6 @@ ITCM_AREA_CODE uint32_t	LoRa_register(LORA_Drv_TypeDef *driver_private_data)
 	last_spi_used_handle++;
 	return 0;
 }
+#endif // #ifdef LORA_ENABLED
 
 #endif // #ifdef A_OS_SPI_ENABLED

@@ -39,8 +39,8 @@
 	//#define	USB_AUDIO				1
 #endif // #ifdef USB_ENABLED
 
-//#define AUDIO_ENABLED	1
 #define SOUND_ENABLED	1
+//#define LORA_ENABLED	1
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))

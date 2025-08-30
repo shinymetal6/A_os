@@ -27,6 +27,7 @@
 #include "../../../kernel/scheduler.h"
 
 #ifdef A_OS_SPI_ENABLED
+#ifdef LORA_ENABLED
 
 #include "LoRa.h"
 #include "LoRa_cmt_2300a.h"
@@ -224,5 +225,6 @@ void LoRa_cmt2300a_Receive(void) {
     LoRa_cmt2300a_WriteReg(REG_STATE, MODE_RX);
 }
 
+#endif // #ifdef LORA_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 

@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SPI_LORA_SX126X_H_
 #define DRIVERS_SPI_LORA_SX126X_H_
+#ifdef LORA_ENABLED
 
 // --- Modify these to match your board ---
 /*
@@ -105,5 +106,6 @@ extern	uint32_t sx126x_getRSSI(void);
 // --- Call from EXTI ISR ---
 void sx126x_handle_dio1_irq(uint16_t GPIO_Pin);
 
+#endif // #ifdef LORA_ENABLED
 
 #endif /* DRIVERS_SPI_LORA_SX126X_H_ */

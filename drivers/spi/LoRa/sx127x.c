@@ -26,6 +26,7 @@
 #include "../../../kernel/scheduler.h"
 
 #ifdef A_OS_SPI_ENABLED
+#ifdef LORA_ENABLED
 
 #include "LoRa.h"
 #include "sx127x.h"
@@ -203,5 +204,6 @@ void sx127x_handle_dio0_irq(uint16_t GPIO_Pin) {
     // Optional: Restart RX if not called from loop
     sx127x_start_receive();
 }
+#endif // #ifdef LORA_ENABLED
 
 #endif // #ifdef A_OS_SPI_ENABLED

@@ -39,6 +39,7 @@
 #endif // #ifdef USB_ENABLED
 
 //#define AUDIO_ENABLED	1
+//#define LORA_ENABLED	1
 
 #define LD1_Pin			LED_Pin
 #define LD1_GPIO_Port	LED_GPIO_Port

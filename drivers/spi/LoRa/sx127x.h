@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SPI_LORA_SX127X_H_
 #define DRIVERS_SPI_LORA_SX127X_H_
+#ifdef LORA_ENABLED
 
 // --- SPI & GPIO Configuration (Update to match your board) ---
 /*
@@ -84,5 +85,6 @@ void sx127x_start_receive(void);  // Enable RX with interrupt
 // --- Called from EXTI ISR ---
 void sx127x_handle_dio0_irq(uint16_t GPIO_Pin);
 
+#endif // #ifdef LORA_ENABLED
 
 #endif /* DRIVERS_SPI_LORA_SX127X_H_ */
