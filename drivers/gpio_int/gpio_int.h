@@ -27,18 +27,8 @@ typedef struct
 	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
-	uint16_t			IRQ_bit;
-	GPIO_TypeDef	 	*IRQ_port;
-	uint16_t			IRQ_type;
-	uint16_t			DATA_bit;
-	GPIO_TypeDef	 	*DATA_port;
-	uint16_t			sampled_bit;
-	uint32_t			wakeup_id;
-	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
-	uint16_t			hide_time;
-	uint16_t			hide_time_counter;
-	uint16_t			irq_index;
-	uint32_t			*driver_private_data;
+	uint8_t				handle;
+	uint32_t			*private_data;
 }GPIO_Int_DriverStruct_t;
 /* flags */
 #define	GPIO_INT_HIDE_ENABLED		0x80
@@ -47,8 +37,26 @@ typedef struct
 #define	GPIO_INT_TYPE_RISING		0x80
 #define	GPIO_INT_TYPE_FALLING		0x40
 
+typedef struct
+{
+	uint8_t 			process;
+	uint16_t			IRQ_bit;
+	GPIO_TypeDef	 	*IRQ_port;
+	uint16_t			IRQ_type;
+	uint16_t			DATA_bit;
+	GPIO_TypeDef	 	*DATA_port;
+	uint16_t			sampled_bit;
+	uint32_t			wakeup_id;
+	uint8_t				debounce;
+	uint8_t				debounce_counter;
+	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
+	uint8_t				flags;
 
-extern uint32_t	gpio_int_register(GPIO_Int_DriverStruct_t *driver_private_data);
+}GPIO_Interrupt_DriverStruct_t;
+
+
+
+extern uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *driver_private_data);
 extern uint32_t	gpio_int_allocate_from_driver(GPIO_Int_DriverStruct_t *driver_private_data);
 
 #endif /* DRIVERS_GPIO_INT_GPIO_INT_H_ */
