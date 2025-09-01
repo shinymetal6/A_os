@@ -20,8 +20,10 @@
  *      Author: fil
  */
 #include "main.h"
-#include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
+#ifdef	XMODEM_ENABLE
+
+#include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/kernel_opt.h"
 
@@ -175,6 +177,7 @@ ITCM_AREA_CODE	uint8_t xmodem_data_process(uint8_t mode,uint8_t type,uint32_t ha
 	return 1;
 }
 
+#endif // #ifdef	XMODEM_ENABLE
 
 
 

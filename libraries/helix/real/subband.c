@@ -41,7 +41,9 @@
  * subband.c - subband transform (synthesis filterbank implemented via 32-point DCT
  *               followed by polyphase filter)
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 #include "assembly.h"
 
@@ -94,3 +96,4 @@ int Subband(MP3DecInfo *mp3DecInfo, short *pcmBuf)
 	return 0;
 }
 
+#endif // #ifdef HELIX_ENABLE

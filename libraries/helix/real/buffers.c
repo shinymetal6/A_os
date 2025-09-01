@@ -44,7 +44,9 @@
  *  to use other the default system malloc() and free() for heap management this is 
  *  the only file you'll need to change.
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include <stdlib.h>		/* for malloc, free */
 #include "coder.h"
 
@@ -191,3 +193,4 @@ void FreeBuffers(MP3DecInfo *mp3DecInfo)
 //
 //	SAFE_FREE(mp3DecInfo);
 }
+#endif // #ifdef HELIX_ENABLE

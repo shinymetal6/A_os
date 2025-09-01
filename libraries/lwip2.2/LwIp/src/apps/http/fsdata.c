@@ -1,3 +1,6 @@
+#include "../../../../../../A_os/kernel/A.h"
+#ifdef	LWIP_ENABLE
+
 static const unsigned char data_index_html[] = {
 	/* /index.html */
 	0x2f, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x2e, 0x68, 0x74, 0x6d, 0x6c, 0,
@@ -9883,3 +9886,4 @@ const struct fsdata_file file_img_aos_logo_png[] = {{file_img_aos_logo_gif, data
 #define FS_ROOT file_img_aos_logo_png
 
 #define FS_NUMFILES 4
+#endif // #ifdef	LWIP_ENABLE

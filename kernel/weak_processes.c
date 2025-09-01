@@ -23,6 +23,23 @@
 #include "../../A_os/kernel/A.h"
 
 /* These processes waste only time, they are defined to have something of useless to schedule */
+__weak void weak_process1_init(uint32_t process_id)
+{
+	while(1);
+}
+__weak void weak_process2_init(uint32_t process_id)
+{
+	while(1);
+}
+__weak void weak_process3_init(uint32_t process_id)
+{
+	while(1);
+}
+__weak void weak_process4_init(uint32_t process_id)
+{
+	while(1);
+}
+
 __weak void weak_process1(uint32_t process_id)
 {
 	while(1);
@@ -45,18 +62,22 @@ __weak USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 {
 		{
 				.user_process = weak_process1,
+				.user_init = weak_process1_init,
 				.stack_size = 256,
 		},
 		{
 				.user_process = weak_process2,
+				.user_init = weak_process2_init,
 				.stack_size = 256,
 		},
 		{
 				.user_process = weak_process3,
+				.user_init = weak_process3_init,
 				.stack_size = 256,
 		},
 		{
 				.user_process = weak_process4,
+				.user_init = weak_process4_init,
 				.stack_size = 256,
 		}
 };

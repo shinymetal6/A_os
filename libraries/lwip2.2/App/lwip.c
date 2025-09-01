@@ -22,7 +22,7 @@
 
 #include "../../../../A_os/kernel/A.h"
 
-#ifdef	NETWORKING_ENABLED
+#ifdef	LWIP_ENABLE
 #include <string.h>
 #include "lwip.h"
 #include "../LwIp/src/include/lwip/init.h"
@@ -210,5 +210,5 @@ static void ethernet_link_status_updated(struct netif *netif)
 	//__enable_irq();
 }
 
-#endif	//#ifdef	NETWORKING_ENABLED
+#endif	//#ifdef	LWIP_ENABLE
 

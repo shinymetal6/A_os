@@ -41,7 +41,9 @@
  * imdct.c - antialias, inverse transform (short/long/mixed), windowing, 
  *             overlap-add, frequency inversion
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 #include "assembly.h"
 
@@ -777,3 +779,4 @@ int IMDCT(MP3DecInfo *mp3DecInfo, int gr, int ch)
 	/* output has gained 2 int bits */
 	return 0;
 }
+#endif // #ifdef HELIX_ENABLE

@@ -41,6 +41,9 @@
  * mp3dec.c - platform-independent top level MP3 decoder API
  **************************************************************************************/
 
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef HELIX_ENABLE
 #include <string.h>		/* for memmove, memcpy (can replace with different implementations if desired) */
 #include "pub/mp3common.h"	/* includes mp3dec.h (public API) and internal, platform-independent API */
 //#include "hxthreadyield.h"
@@ -417,3 +420,4 @@ int MP3Decode(HMP3Decoder hMP3Decoder, unsigned char **inbuf, int *bytesLeft, sh
 	}
 	return ERR_MP3_NONE;
 }
+#endif // #ifdef HELIX_ENABLE

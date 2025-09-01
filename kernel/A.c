@@ -214,28 +214,19 @@ void A_initialize_onchip_peripherals(void)
 #endif // #ifdef USB_ENABLED
 }
 
-#ifndef AOS_USER_SHORT_INIT
-extern	void process_1_init(void);
-extern	void process_2_init(void);
-extern	void process_3_init(void);
-extern	void process_4_init(void);
-
 void user_processes_init(void)
 {
+uint32_t i;
 	__enable_irq();
-	Asys.current_process = 1;
-	process_1_init();
-	Asys.current_process = 2;
-	process_2_init();
-	Asys.current_process = 3;
-	process_3_init();
-	Asys.current_process = 4;
-	process_4_init();
+	for(i = 0 ; i < USR_PROCESS_NUMBER ;i++)
+	{
+		Asys.current_process = i+1;
+		if ( UserProcesses[i].user_init )
+			UserProcesses[i].user_init(i+1);
+	}
 	Asys.current_process = 0;
 	__disable_irq();
-
 }
-#endif // #ifdef AOS_USER_LONG_INIT
 
 void A_start(void)
 {

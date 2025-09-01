@@ -39,6 +39,12 @@
 #define SOUND_ENABLED	1
 //#define LORA_ENABLED	1
 
+#define HAS_LCD			1
+#ifdef HAS_LCD
+	#define	BOARD_LCD	LCD_IS_7735
+	//#define	BOARD_LCD	LCD_IS_9341
+#endif //#ifdef HAS_LCD
+
 #define LD1_Pin			LED_Pin
 #define LD1_GPIO_Port	LED_GPIO_Port
 

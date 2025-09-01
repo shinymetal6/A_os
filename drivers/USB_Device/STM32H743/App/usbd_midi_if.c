@@ -67,12 +67,13 @@ static int8_t MIDI_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 	return (USBD_OK);
 }
 
-extern	uint8_t MIDI_Receive_Callback(uint8_t* Buf, uint16_t Len);
+void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t MIDI_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
 uint16_t	len = *Len;
-	MIDI_Receive_Callback(Buf,len);
+	if ( Rx_CallbackPtr != NULL )
+		Rx_CallbackPtr(Buf,len);
 	USBD_MIDI_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
 	USBD_MIDI_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);

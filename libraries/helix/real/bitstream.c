@@ -41,6 +41,10 @@
  * bitstream.c - bitstream unpacking, frame header parsing, side info parsing
  **************************************************************************************/
 
+#include "../../../../../A_os/kernel/A.h"
+
+#ifdef HELIX_ENABLE
+
 #include "coder.h"
 #include "assembly.h"
 
@@ -387,3 +391,4 @@ int UnpackSideInfo(MP3DecInfo *mp3DecInfo, unsigned char *buf)
 	return nBytes;	
 }
 
+#endif // #ifdef HELIX_ENABLE

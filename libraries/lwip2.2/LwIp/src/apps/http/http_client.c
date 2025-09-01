@@ -44,7 +44,8 @@
  * - check request uri for invalid characters? (e.g. encode spaces)
  * - IPv6 support
  */
-
+#include "../../../../../../A_os/kernel/A.h"
+#ifdef	LWIP_ENABLE
 #include "../../include/lwip/apps/http_client.h"
 
 #include "../../include/lwip/altcp_tcp.h"
@@ -921,3 +922,4 @@ httpc_get_file_dns_to_disk(const char* server_name, u16_t port, const char* uri,
 #endif /* LWIP_HTTPC_HAVE_FILE_IO */
 
 #endif /* LWIP_TCP && LWIP_CALLBACK_API */
+#endif // #ifdef	LWIP_ENABLE

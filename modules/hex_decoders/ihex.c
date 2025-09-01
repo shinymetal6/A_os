@@ -21,11 +21,12 @@
  */
 
 #include "main.h"
-#include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
+#ifdef	HEX_DEC_ENABLE
+
+#include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
-//#include "../../kernel/kernel_opt.h"
 
 #include "ihex.h"
 #include "hex_decoders_common.h"
@@ -153,5 +154,6 @@ uint32_t	i;
 	return 2;
 }
 
+#endif // #ifdef	HEX_DEC_ENABLE
 
 

@@ -88,6 +88,8 @@
  * about an unknown extension, make sure to add it (and its doctype) to
  * the 'g_psHTTPHeaders' list.
  */
+#include "../../../../../../A_os/kernel/A.h"
+#ifdef	LWIP_ENABLE
 #include "../../include/lwip/init.h"
 #include "../../include/lwip/apps/httpd.h"
 #include "../../include/lwip/debug.h"
@@ -2782,3 +2784,4 @@ http_set_cgi_handlers(const tCGI *cgis, int num_handlers)
 #endif /* LWIP_HTTPD_CGI */
 
 #endif /* LWIP_TCP && LWIP_CALLBACK_API */
+#endif // #ifdef	LWIP_ENABLE

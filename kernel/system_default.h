@@ -27,17 +27,11 @@
 	#ifdef STM32H743ZI2_NUCLEO
 		#include "../boards/STM32H743ZI2_NUCLEO.h"
 	#endif
-	#ifdef	VB_10x
-		#include "../boards/VB_10x_00.h"
-	#endif
 	#ifdef	MEMBRANE_2412172_00
-		#include "../boards/AX_P2412172_00_MembraneConcentrator.h"
+		#include "../boards/MEMBRANE_AX_P2412172_00.h"
 	#endif
 	#ifdef	NEVOL_2416176_01
-		#include "../boards/AX_P2416176_01_NEVOL.h"
-	#endif
-	#ifdef	NEVOL_AUDIO_2416176_01
-		#include "../boards/AX_P2416176_01_NEVOL_AUDIO.h"
+		#include "../boards/NEVOL_AX_P2416176_01.h"
 	#endif
 	#ifdef	FY_201023_01
 		#include "../boards/FY_201023_01.h"
@@ -94,6 +88,6 @@
 #define	Exti1_PRIORITY			13
 #define	Exti2_PRIORITY			13
 // versioning
-#define	A_OS_VERSION			"v2025.09.00"
+#define	A_OS_VERSION			"v2025.10.00_rc0"
 
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

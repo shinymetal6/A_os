@@ -26,7 +26,6 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-
 #define	LORA_ENABLED			1
 #ifdef LORA_ENABLED
 	#define	RA01S				1

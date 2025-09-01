@@ -11,5 +11,11 @@ Java version: 21.0.3<br>
 <br><br>
 Latest 19.x has some severe bugs both on IDE and libraries.<br>
 DON'T USE 19.x<br>
+<br><br>
+# New settings for user processes<br>
+1 : added user include file for "project_lib_modules.h", so the settings can be defined in user space.
+2 : added 	void (*user_init)(uint32_t); in USRprcs_t called before starting a process. 
+
+
 
 

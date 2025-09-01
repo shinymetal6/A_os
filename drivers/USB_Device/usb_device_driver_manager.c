@@ -54,6 +54,9 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	}
 }
 
+extern	void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
+extern	void	usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
+
 ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data)
 {
 	if ( USB_DriverStruct.process == 0 )
@@ -68,6 +71,10 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_p
 			usb_Drv->timeout_reload_value = usb_Drv->timeout = 0;
 		usb_driver_request = 1;
 		set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback);
+		if ( usb_Drv->Rx_CallbackPtr != NULL)
+			Rx_CallbackPtr = usb_Drv->Rx_CallbackPtr;
+		else
+			Rx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
 		return 0;
 	}
 	return DRIVER_REQUEST_FAILED;
@@ -104,12 +111,12 @@ ITCM_AREA_CODE uint32_t usb_send(uint8_t handle,uint8_t* ptr, uint16_t len)
 }
 
 /* callback from CDC interface */
-ITCM_AREA_CODE uint32_t usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
+ITCM_AREA_CODE void usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
 {
 uint32_t	i;
 USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_private_data;
 	if ( usb_Drv->data == NULL )
-		return 0;
+		return;
 	usb_Drv->timeout = usb_Drv->timeout_reload_value;
 	if ( usb_Drv->requested_len )
 	{
@@ -132,7 +139,6 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 		usb_Drv->rx_num_chars = Len;
 		activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
 	}
-	return	Len;
 }
 #endif // #ifdef USB_CDC
 

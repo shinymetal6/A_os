@@ -29,6 +29,8 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
+#include "../../../../../../A_os/kernel/A.h"
+#ifdef	LWIP_ENABLE
 
 #include "../../include/lwip/apps/httpd_opts.h"
 #include "../../include/lwip/def.h"
@@ -159,3 +161,4 @@ fs_bytes_left(struct fs_file *file)
 {
   return file->len - file->index;
 }
+#endif // #ifdef	LWIP_ENABLE

@@ -25,7 +25,7 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
-//#include "../../kernel/kernel_opt.h"
+#ifdef	HEX_DEC_ENABLE
 
 uint32_t get_hex_crlflen(uint8_t *data_ptr)
 {
@@ -40,3 +40,4 @@ uint32_t	i;
 	return 0;
 }
 
+#endif // #ifdef	HEX_DEC_ENABLE

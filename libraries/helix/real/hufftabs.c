@@ -40,7 +40,9 @@
  *
  * hufftabs.c - compressed Huffman code tables
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 
 /* NOTE - regenerated tables to use shorts instead of ints 
@@ -753,3 +755,4 @@ const unsigned char quadTable[64+16] = {
 
 const int quadTabOffset[2] = {0, 64};
 const int quadTabMaxBits[2] = {6, 4};
+#endif // #ifdef HELIX_ENABLE

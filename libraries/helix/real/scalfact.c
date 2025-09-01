@@ -40,7 +40,9 @@
  *
  * scalfact.c - scalefactor unpacking functions
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 
 /* scale factor lengths (num bits) */
@@ -389,3 +391,4 @@ int UnpackScaleFactors(MP3DecInfo *mp3DecInfo, unsigned char *buf, int *bitOffse
 	return (buf - startBuf);
 }
 
+#endif // #ifdef HELIX_ENABLE

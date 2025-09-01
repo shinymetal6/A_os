@@ -40,7 +40,9 @@
  *
  * trigtabs.c - global ROM tables for pre-calculated trig coefficients
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 
 /* post-IMDCT window, win[blockType][i]
@@ -309,3 +311,4 @@ const int polyCoef[264] = {
 	0x000001a0, 0x0000187c, 0x000097fc, 0x0003e84c, 0xffff6424, 0xffffff4c, 0x00000248, 0xffffffec, 
 };
 
+#endif // #ifdef HELIX_ENABLE

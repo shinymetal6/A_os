@@ -41,7 +41,9 @@
  * dequant.c - dequantization, stereo processing (intensity, mid-side), short-block
  *               coefficient reordering
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 #include "assembly.h"
 
@@ -156,3 +158,4 @@ int Dequantize(MP3DecInfo *mp3DecInfo, int gr)
 	/* output format Q(DQ_FRACBITS_OUT) */
 	return 0;
 }
+#endif // #ifdef HELIX_ENABLE

@@ -41,7 +41,9 @@
  * dct32.c - optimized implementations of 32-point DCT for matrixing stage of 
  *             polyphase filter
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 #include "assembly.h"
 
@@ -276,3 +278,4 @@ void FDCT32(int *buf, int *dest, int offset, int oddBlock, int gb)
 		}
 	}
 }
+#endif // #ifdef HELIX_ENABLE

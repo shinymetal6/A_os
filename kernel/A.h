@@ -132,6 +132,7 @@ typedef struct
 typedef struct
 {
 	void 		(*user_process)(uint32_t);
+	void 		(*user_init)(uint32_t);
 	uint16_t	stack_size;
 	uint8_t		process_number;
 }USRprcs_t;

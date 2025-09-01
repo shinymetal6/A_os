@@ -41,6 +41,9 @@
  * mp3tabs.c - platform-independent tables for MP3 decoder (global, read-only)
  **************************************************************************************/
 
+#include "../../../../A_os/kernel/A.h"
+
+#ifdef HELIX_ENABLE
 #include "pub/mp3common.h"
 
 /* indexing = [version][samplerate index]
@@ -179,3 +182,4 @@ const SFBandTable sfBandTable[3][3] = {
 };
 
 
+#endif // #ifdef HELIX_ENABLE

@@ -21,8 +21,10 @@
  */
 
 #include "main.h"
-#include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
+#ifdef	HEX_DEC_ENABLE
+
+#include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 //#include "../../kernel/kernel_opt.h"
@@ -93,3 +95,4 @@ uint8_t decoded_len = 255;
 	return decoded_len;
 }
 
+#endif // #ifdef	HEX_DEC_ENABLE

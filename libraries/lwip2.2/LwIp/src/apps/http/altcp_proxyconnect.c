@@ -38,6 +38,9 @@
  *
  */
 
+#include "../../../../../../A_os/kernel/A.h"
+#ifdef	LWIP_ENABLE
+
 #include "../../include/lwip/apps/altcp_proxyconnect.h"
 
 #if LWIP_ALTCP /* don't build if not configured for use in lwipopts.h */
@@ -582,3 +585,5 @@ const struct altcp_functions altcp_proxyconnect_functions = {
 };
 
 #endif /* LWIP_ALTCP */
+#endif // #ifdef	LWIP_ENABLE
+

@@ -35,6 +35,7 @@ typedef struct
 	uint8_t				*data;
 	uint16_t			timeout;
 	uint16_t			timeout_reload_value;
+	void				(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 			wakeup_id;
 }USB_Drv_TypeDef;
 

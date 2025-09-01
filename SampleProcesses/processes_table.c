@@ -19,6 +19,7 @@ extern	void sample_process_1_basic(uint32_t process_id);	//This is process1
 extern	void sample_process_1_xmodem_rx_UART(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_UART
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX_USB
+extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_xmodem_rx_USB(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM
 #ifdef	SAMPLEPROCESS_1_DCCPWM
@@ -87,6 +88,7 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_UART
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX_USB
 				.user_process = sample_process_1_xmodem_rx_USB,
+				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_USB
 #ifdef	SAMPLEPROCESS_1_DCCPWM
 				.user_process = sample_process_1_dccpwm,
@@ -133,7 +135,6 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_LCD7735
 				.user_process = sample_process_1_lcd7735,
 #endif // #define	SAMPLEPROCESS_1_LCD7735
-
 				.stack_size = 1024,
 		},
 		{

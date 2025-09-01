@@ -1,33 +1,27 @@
-/*
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
  * the Free Software Foundation, version 3.
  *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * Project : A_os
 */
 /*
- * AX_P2416176_01_NEVOL.h
+ * NEVOL_AX_P2416176_01.h
  *
- *  Created on: May 23, 2024
+ *  Created on: Sep 1, 2025
  *      Author: fil
  */
 
-#ifndef BOARDS_AX_P2416176_01_NEVOL_H_
-#define BOARDS_AX_P2416176_01_NEVOL_H_
-
-/*
- * for this board define
- * NUCLEO_G491
- * in preprocessor defines
- */
+#ifndef BOARDS_NEVOL_AX_P2416176_01_H_
+#define BOARDS_NEVOL_AX_P2416176_01_H_
 
 #include "iodef_common.h"
 #include "memdef_common.h"
@@ -66,4 +60,4 @@
 #define	MACHINE_VERSION		"A"
 
 
-#endif /* BOARDS_AX_P2416176_01_NEVOL_H_ */
+#endif /* BOARDS_NEVOL_AX_P2416176_01_H_ */

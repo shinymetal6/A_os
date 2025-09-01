@@ -40,7 +40,9 @@
  *
  * huffman.c - Huffman decoding of transform coefficients
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 
 /* helper macros - see comments in hufftabs.c about the format of the huffman tables */
@@ -456,3 +458,4 @@ int DecodeHuffman(MP3DecInfo *mp3DecInfo, unsigned char *buf, int *bitOffset, in
 	return (buf - startBuf);
 }
 
+#endif // #ifdef HELIX_ENABLE

@@ -44,7 +44,9 @@
  * Look in the appropriate subdirectories for optimized asm implementations 
  *   (e.g. arm/asmpoly.s)
  **************************************************************************************/
+#include "../../../../../A_os/kernel/A.h"
 
+#ifdef HELIX_ENABLE
 #include "coder.h"
 #include "assembly.h"
 
@@ -293,3 +295,4 @@ void PolyphaseStereo(short *pcm, int *vbuf, const int *coefBase)
 		pcm += 2;
 	}
 }
+#endif // #ifdef HELIX_ENABLE

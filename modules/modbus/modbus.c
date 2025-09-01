@@ -65,13 +65,13 @@ uint32_t modbus_init(uint32_t uart,uint8_t address,uint8_t *data_ptr,uint16_t da
 	A_modbus.modbus_addr = address;
 	A_modbus.modbus_uart = uart;
 	A_modbus.modbus_rx_packet_ptr = data_ptr;
-	return hw_receive_uart_sentinel(uart,A_modbus.modbus_rx_packet_ptr,1024,address, address,MODBUS_TIMEOUT);
+	return uart_enable_receive(uart);
 }
 
 uint8_t modbus_process(void)
 {
 uint16_t len;
-	len = hw_get_uart_receive_len(A_modbus.modbus_uart);
+	len = uart_get_rxlen(A_modbus.modbus_uart);
 	return rtu_modbus_process(A_modbus.modbus_rx_packet_ptr,len);
 }
 
