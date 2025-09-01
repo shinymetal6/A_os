@@ -30,7 +30,11 @@
 
 #include "iodef_common.h"
 #include "memdef_common.h"
-
+#if __has_include("project_lib_modules.h")
+	#include "project_lib_modules.h"
+#else
+	#error "No user project_lib_modules.h found in user space"
+#endif
 #define DTCM_VECTORS_DATA
 #define DWNLD_DATA_AREA
 #define ETH_DATA_AREA

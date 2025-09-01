@@ -31,7 +31,11 @@
 
 #include "iodef_common.h"
 #include "memdef_common.h"
-
+#if __has_include("project_lib_modules.h")
+	#include "project_lib_modules.h"
+#else
+	#error "No user project_lib_modules.h found in user space"
+#endif
 //#define	NETWORKING_ENABLED		1
 //#define	USB_DEVICE_ENABLED		1
 

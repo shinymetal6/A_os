@@ -26,27 +26,12 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
-#define USB_DEVICE_ENABLED	1
-#ifdef USB_DEVICE_ENABLED
-	//#define	USB_CDC				1
-	#define	USB_MIDI
-	#ifdef USB_MIDI
-		#define USBD_MANUFACTURER_STRING		"BB"
-		#define USBD_PRODUCT_STRING_FS			"BB AU100825"
-	#endif
-#endif // #ifdef USB_ENABLED
+#if __has_include("project_lib_modules.h")
+	#include "project_lib_modules.h"
+#else
+	#error "No user project_lib_modules.h found in user space"
+#endif
 
-#define SOUND_ENABLED	1
-//#define LORA_ENABLED	1
-
-#define HAS_LCD			1
-#ifdef HAS_LCD
-	#define	BOARD_LCD	LCD_IS_7735
-	//#define	BOARD_LCD	LCD_IS_9341
-#endif //#ifdef HAS_LCD
-
-#define LD1_Pin			LED_Pin
-#define LD1_GPIO_Port	LED_GPIO_Port
 
 #define DTCM_VECTORS_DATA	__attribute__((section(".dtcm_data")))   __attribute__ ((aligned (32)))
 #define DWNLD_DATA_AREA		__attribute__((section(".d2ram")))   	 __attribute__ ((aligned (32)))

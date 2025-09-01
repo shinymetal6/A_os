@@ -457,11 +457,12 @@ void *USBD_static_malloc(uint32_t size)
   return mem;
 }
 #endif
+
 #ifdef	USB_MIDI
 void *USBD_static_malloc(uint32_t size)
 {
   UNUSED(size);
-  static uint32_t mem[(sizeof(USBD_MIDI_HandleTypeDef)/4)+1];/* On 32-bit boundary */
+  static uint32_t mem[(sizeof(USBD_MIDI_HandleTypeDef)/4)+1];// On 32-bit boundary
   return mem;
 }
 #endif
@@ -470,10 +471,11 @@ void *USBD_static_malloc(uint32_t size)
 void *USBD_static_malloc(uint32_t size)
 {
   UNUSED(size);
-  static uint32_t mem[(sizeof(USBD_AUDIO_HandleTypeDef)/4)+1];/* On 32-bit boundary */
+  static uint32_t mem[(sizeof(USBD_AUDIO_HandleTypeDef)/4)+1];// On 32-bit boundary
   return mem;
 }
 #endif
+
 
 void USBD_static_free(void *p)
 {
