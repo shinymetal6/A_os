@@ -51,4 +51,9 @@
 	//#define	USB_MIDI			1
 #endif // #ifdef USB_ENABLED
 
+/* Change below for your machine */
+#define	BOARD_NAME			"BOARD_NAME"
+#define	MACHINE_NAME		"MACHINE_NAME"
+#define	MACHINE_VERSION		"MACHINE_VERSION"
+
 #endif /* BOARDS_PROJECT_LIB_MODULES_TEMPLATE_H_ */
