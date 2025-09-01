@@ -14,23 +14,34 @@
  * Project : A_os
 */
 /*
- * A_os_includes.h
+ * sample_support_functions.c
  *
- *  Created on: Dec 4, 2024
+ *  Created on: Jun 26, 2025
  *      Author: fil
  */
 
-#ifndef SAMPLEPROCESSES_A_OS_INCLUDES_H_
-#define SAMPLEPROCESSES_A_OS_INCLUDES_H_
-
-#include "../kernel/A.h"
-#include "../kernel/system_default.h"
-#include "../kernel/A_exported_functions.h"
-#include <stdio.h>
-#include <string.h>
-
+#include "main.h"
+#include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
-	extern void process_led(void);
-#endif
 
-#endif /* SAMPLEPROCESSES_A_OS_INCLUDES_H_ */
+uint8_t 	led_cntr = 0;
+
+void process_led(void)
+{
+	switch(led_cntr)
+	{
+	case 7:
+	case 9:
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+		break;
+	default :
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+		break;
+	}
+	led_cntr++;
+	if ( led_cntr >= 10 )
+		led_cntr = 0;
+}
+
+#endif // #ifdef SAMPLE_PROCESSES_ENABLED
+

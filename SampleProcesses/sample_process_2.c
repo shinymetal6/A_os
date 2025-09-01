@@ -20,7 +20,7 @@
  *      Author: fil
  */
 #include "main.h"
-#include "A_os_includes.h"
+#include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 
