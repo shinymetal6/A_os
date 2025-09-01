@@ -24,6 +24,7 @@ USB can be initialized as usual.<br>
 If USB has a normal use there is no need to add the callback in the declaration.<br>
 Where the user needs a very quick response from the USB layer ( e.g. MIDI ) the callback can point directly<br>
 to the user function that manages MIDI messages.<br>
+This means the user code runs actually under interrupt routine, so should be quick enough to leave space to other processes.<br>
 
 
 
