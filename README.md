@@ -22,7 +22,7 @@ excluding some long call init functions like lcds or some I2C or SPI drivers.<br
 # New USB functionality<br>
 USB can be initialized as usual.<br>
 If USB has a normal use there is no need to add the callback in the declaration.<br>
-Where the user needs a very quick response from the USB layer ( e.g. MIDI )the callback can point directly<br>
+Where the user needs a very quick response from the USB layer ( e.g. MIDI ) the callback can point directly<br>
 to the user function that manages MIDI messages.<br>
 
 
