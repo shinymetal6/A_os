@@ -88,7 +88,7 @@
  * about an unknown extension, make sure to add it (and its doctype) to
  * the 'g_psHTTPHeaders' list.
  */
-#include "../../../../../../A_os/kernel/A.h"
+#include "../../../../../A_os/kernel/A.h"
 #ifdef	LWIP_ENABLE
 #include "../../include/lwip/init.h"
 #include "../../include/lwip/apps/httpd.h"

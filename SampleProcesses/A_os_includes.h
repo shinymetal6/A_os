@@ -29,10 +29,8 @@
 #include <stdio.h>
 #include <string.h>
 
-//#define	SAMPLE_PROCESSES_ENABLED		1
-
 #ifdef SAMPLE_PROCESSES_ENABLED
-extern void process_led(void);
-#endif // #ifdef SAMPLE_PROCESSES_ENABLED
+	extern void process_led(void);
+#endif
 
 #endif /* SAMPLEPROCESSES_A_OS_INCLUDES_H_ */

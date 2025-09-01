@@ -44,7 +44,7 @@
  * - check request uri for invalid characters? (e.g. encode spaces)
  * - IPv6 support
  */
-#include "../../../../../../A_os/kernel/A.h"
+#include "../../../../../A_os/kernel/A.h"
 #ifdef	LWIP_ENABLE
 #include "../../include/lwip/apps/http_client.h"
 

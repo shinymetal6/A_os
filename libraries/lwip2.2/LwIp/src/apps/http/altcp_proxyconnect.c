@@ -38,7 +38,7 @@
  *
  */
 
-#include "../../../../../../A_os/kernel/A.h"
+#include "../../../../../A_os/kernel/A.h"
 #ifdef	LWIP_ENABLE
 
 #include "../../include/lwip/apps/altcp_proxyconnect.h"

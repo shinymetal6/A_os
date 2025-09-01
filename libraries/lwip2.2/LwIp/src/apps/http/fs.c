@@ -29,7 +29,7 @@
  * Author: Adam Dunkels <adam@sics.se>
  *
  */
-#include "../../../../../../A_os/kernel/A.h"
+#include "../../../../../A_os/kernel/A.h"
 #ifdef	LWIP_ENABLE
 
 #include "../../include/lwip/apps/httpd_opts.h"

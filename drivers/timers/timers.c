@@ -26,6 +26,8 @@
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
 
+#ifdef A_OS_TIMERS_ENABLED
 SYSTEM_RAM	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
 SYSTEM_RAM	uint8_t				last_tim_used_handle=0,tim_driver_request = 0;
+#endif
 

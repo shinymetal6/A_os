@@ -32,7 +32,7 @@ void sample_process_1_basic(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
-	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
 	while(1)
 	{

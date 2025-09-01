@@ -23,6 +23,7 @@
 #ifndef KERNEL_SYSTEM_DEFAULT_H_
 #define KERNEL_SYSTEM_DEFAULT_H_
 
+#ifdef OLD
 #ifdef	STM32H743xx
 	#ifdef STM32H743ZI2_NUCLEO
 		#include "../boards/STM32H743ZI2_NUCLEO.h"
@@ -89,5 +90,22 @@
 #define	Exti2_PRIORITY			13
 // versioning
 #define	A_OS_VERSION			"v2025.10.00_rc0"
+#else
+#ifdef	STM32H743xx
+		#include "../processors/STM32H743xx.h"
+#endif
+#ifdef	STM32H753xx
+		#include "../processors/STM32H753xx.h"
+#endif
 
+#if __has_include("user_config.h") && __has_include(<stdint.h>)
+	#include "user_config.h"
+#else
+	#include "../SampleProcesses/sample_user_config.h"
+	#define	SAMPLE_PROCESSES_ENABLED		1
+#endif
+
+// versioning
+#define	A_OS_VERSION			"v2025.10.00_rc0"
+#endif
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */
