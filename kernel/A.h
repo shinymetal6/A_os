@@ -29,6 +29,7 @@
 #define MAX_PROCESS					5
 #define MAX_PROCESS_MASK			0x1e
 #define USR_PROCESS_NUMBER			(MAX_PROCESS-1)
+#define MAX_SVC						16
 #define MAX_TIMERS					8
 #define MAX_SEMAPHORES				8
 #define MAX_UARTS_DRIVERS			8
