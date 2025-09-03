@@ -41,8 +41,8 @@
  * stproc.c - mid-side and intensity (MPEG1 and MPEG2) stereo processing
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include "coder.h"
 #include "assembly.h"
 

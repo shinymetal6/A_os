@@ -42,8 +42,8 @@
  *             overlap-add, frequency inversion
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include "coder.h"
 #include "assembly.h"
 

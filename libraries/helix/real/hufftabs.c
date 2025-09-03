@@ -41,8 +41,8 @@
  * hufftabs.c - compressed Huffman code tables
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include "coder.h"
 
 /* NOTE - regenerated tables to use shorts instead of ints 

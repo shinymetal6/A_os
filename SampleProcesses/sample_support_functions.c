@@ -20,15 +20,21 @@
  *      Author: fil
  */
 
-#include "main.h"
+#include "../kernel/A.h"
+#include "../kernel/system_default.h"
+#include "../kernel/A_exported_functions.h"
+#include <stdio.h>
+#include <string.h>
 #include "sample_A_os_includes.h"
+
 #ifdef SAMPLE_PROCESSES_ENABLED
 
-uint8_t 	led_cntr = 0;
+uint8_t 	sample_led_cntr = 0;
 
 void process_led(void)
 {
-	switch(led_cntr)
+#ifdef LD1_GPIO_Port
+	switch(sample_led_cntr)
 	{
 	case 7:
 	case 9:
@@ -38,9 +44,10 @@ void process_led(void)
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
 		break;
 	}
-	led_cntr++;
-	if ( led_cntr >= 10 )
-		led_cntr = 0;
+	sample_led_cntr++;
+	if ( sample_led_cntr >= 10 )
+		sample_led_cntr = 0;
+#endif // #ifdef LD1_GPIO_Port
 }
 
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED

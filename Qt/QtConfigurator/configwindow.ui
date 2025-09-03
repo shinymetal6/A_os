@@ -6,25 +6,361 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>842</width>
+    <height>374</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>ConfigWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="SelectCreate_UserConfig_pushButton">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
+      <x>10</x>
+      <y>50</y>
+      <width>411</width>
+      <height>181</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="General">
+     <attribute name="title">
+      <string>General</string>
+     </attribute>
+     <widget class="QLineEdit" name="BoardName_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>20</y>
+        <width>321</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>set_board_name</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>20</y>
+        <width>121</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Board Name</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>50</y>
+        <width>131</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Machine Name</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="MachineName_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>50</y>
+        <width>321</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>set_machine_name</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>80</y>
+        <width>141</width>
+        <height>19</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Machine Version</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="MachineVersion_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>180</x>
+        <y>80</y>
+        <width>321</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>set_machine_version</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Libraries_tab">
+     <attribute name="title">
+      <string>Libraries</string>
+     </attribute>
+     <widget class="QCheckBox" name="Helix_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Helix</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="LoraWAN_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LoraWAN</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="LwIp_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LwIp</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="WiFi_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>WiFi</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="MQTT_checkBox">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>80</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MQTT</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Modules_tab">
+     <attribute name="title">
+      <string>Modules</string>
+     </attribute>
+     <widget class="QCheckBox" name="HEX_DEC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>HEX_DEC</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="XMODEM_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>XMODEM</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="MODBUS_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>MODBUS</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="SOUND_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SOUND</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Drivers_tab">
+     <attribute name="title">
+      <string>Drivers</string>
+     </attribute>
+     <widget class="QCheckBox" name="USB_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>USB</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="USB_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>20</y>
+        <width>93</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>CDC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>MIDI</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="LCD_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>60</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LCD</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="LCD_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>60</y>
+        <width>93</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>7735</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9341</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="LED_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>100</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has LED</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="LedName_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>100</y>
+        <width>141</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>set_led_name</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="Generate_UserConfig_pushButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>290</y>
       <width>241</width>
       <height>27</height>
      </rect>
     </property>
     <property name="text">
-     <string>Create/Select user_config.h</string>
+     <string>Generate user_config.h</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>10</y>
+      <width>161</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Qt Configurator 0.1</string>
     </property>
    </widget>
   </widget>
@@ -33,7 +369,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>842</width>
      <height>24</height>
     </rect>
    </property>

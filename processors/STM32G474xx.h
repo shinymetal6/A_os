@@ -14,34 +14,22 @@
  * Project : A_os
 */
 /*
- * system_default.h
+ * STM32G474xx.h
  *
- *  Created on: Sep 18, 2023
+ *  Created on: Sep 3, 2025
  *      Author: fil
  */
 
-#ifndef KERNEL_SYSTEM_DEFAULT_H_
-#define KERNEL_SYSTEM_DEFAULT_H_
+#ifndef PROCESSORS_STM32G474XX_H_
+#define PROCESSORS_STM32G474XX_H_
 
-#ifdef	STM32H743xx
-		#include "../processors/STM32H743xx.h"
-#endif
-#ifdef	STM32H753xx
-		#include "../processors/STM32H753xx.h"
-#endif
-#ifdef	STM32G474xx
-		#include "../processors/STM32G474xx.h"
-#endif
+#include "iodef_common.h"
+#include "memdef_common.h"
+/* Clock */
+#define TICK_HZ 				1000U
+#define HSI_CLOCK         		170000000U
+#define SYSTICK_TIM_CLK   		HSI_CLOCK
 
-#undef	SAMPLE_PROCESSES_ENABLED
-
-#if __has_include("user_config.h") && __has_include(<stdint.h>)
-	#include "user_config.h"
-#else
-	#include "../SampleProcesses/sample_user_config.h"
-	#define	SAMPLE_PROCESSES_ENABLED		1
-#endif
-
-// versioning
-#define	A_OS_VERSION			"v2025.10.00_rc0"
-#endif /* KERNEL_SYSTEM_DEFAULT_H_ */
+#define	PendSV_PRIORITY			15
+#define	SysTick_PRIORITY		12
+#endif /* PROCESSORS_STM32G474XX_H_ */

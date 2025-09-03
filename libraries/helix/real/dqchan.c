@@ -41,6 +41,9 @@
  * dqchan.c - dequantization of transform coefficients
  **************************************************************************************/
 
+#include "../../../../../A_os/kernel/A.h"
+#ifdef HELIX_ENABLE
+
 #include "coder.h"
 #include "assembly.h"
 
@@ -373,3 +376,4 @@ int DequantChannel(int *sampleBuf, int *workBuf, int *nonZeroBound, FrameHeader 
 	return CLZ(gbMask) - 1;
 }
 
+#endif // #ifdef HELIX_ENABLE

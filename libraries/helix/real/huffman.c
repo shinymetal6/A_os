@@ -41,8 +41,8 @@
  * huffman.c - Huffman decoding of transform coefficients
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include "coder.h"
 
 /* helper macros - see comments in hufftabs.c about the format of the huffman tables */

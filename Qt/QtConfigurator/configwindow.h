@@ -29,10 +29,17 @@ public:
 
 private slots:
 
-    void on_SelectCreate_UserConfig_pushButton_clicked();
+    void on_Generate_UserConfig_pushButton_clicked();
+
+    void on_LwIp_checkBox_toggled(bool checked);
 
 private:
     void create_config();
+    void Generate_Header();
+    void Generate_Libraries();
+    void Generate_Modules();
+    void Generate_Drivers();
+    void Generate_Footer();
 
     Ui::ConfigWindow *ui;
     QString filename,config_filename;

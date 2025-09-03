@@ -41,8 +41,8 @@
  * trigtabs.c - global ROM tables for pre-calculated trig coefficients
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include "coder.h"
 
 /* post-IMDCT window, win[blockType][i]

@@ -52,8 +52,10 @@
 #endif // #ifdef USB_ENABLED
 
 #ifndef LED_GPIO_Port
-#define LED_Pin			LD1_Pin
-#define LED_GPIO_Port	LD1_GPIO_Port
+	#ifdef LD1_GPIO_Port
+		#define LED_Pin			LD1_Pin
+		#define LED_GPIO_Port	LD1_GPIO_Port
+	#endif //#ifdef LD1_GPIO_Port
 #endif
 
 #define	BOARD_NAME			"Board"

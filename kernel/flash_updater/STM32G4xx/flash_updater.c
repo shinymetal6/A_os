@@ -119,7 +119,7 @@ uint32_t	i;
 	/* stops A_os schedule activities */
 	__disable_irq();
 
-	Asys.g_os_started = 0;
+	Asys.system_flags &= ~SYS_FLAGS_OS_STARTED;
 	/* leave only systick enabled */
 	for(i=0;i<128;i++)
 		HAL_NVIC_DisableIRQ(i);

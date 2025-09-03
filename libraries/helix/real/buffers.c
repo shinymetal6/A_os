@@ -45,8 +45,8 @@
  *  the only file you'll need to change.
  **************************************************************************************/
 #include "../../../../../A_os/kernel/A.h"
-
 #ifdef HELIX_ENABLE
+
 #include <stdlib.h>		/* for malloc, free */
 #include "coder.h"
 
