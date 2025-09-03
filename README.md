@@ -36,6 +36,7 @@ Just having a "user_config.h" in the user processes area disables the Sample Pro
 It's still under user responsibility to have a conveniently compiled "user_config.h".<br>
 # Added QtConfigurator<br>
 QtConfigurator is a simple tool to generate user_config.h file. Still in wip.<br>
+QtConfigurator is in Qt directory.<br>
 
 
 
