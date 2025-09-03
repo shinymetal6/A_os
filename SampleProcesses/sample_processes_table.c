@@ -34,6 +34,9 @@ extern	void sample_process_1_qspi(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_SERVO
 extern	void sample_process_1_servo(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_SERVO
+#ifdef	SAMPLEPROCESS_1_REF0
+extern	void sample_process_1_ref0(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_REF0
 #ifdef	SAMPLEPROCESS_1_I2CMEM
 extern	void sample_process_1_i2cmem(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_I2CMEM
@@ -102,6 +105,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_SERVO
 				.user_process = sample_process_1_servo,
 #endif // #define	SAMPLEPROCESS_1_SERVO
+#ifdef	SAMPLEPROCESS_1_REF0
+				.user_process = sample_process_1_ref0,
+#endif // #define	SAMPLEPROCESS_1_REF0
 #ifdef	SAMPLEPROCESS_1_I2CMEM
 				.user_process = sample_process_1_i2cmem,
 #endif // #define	SAMPLEPROCESS_1_I2CMEM

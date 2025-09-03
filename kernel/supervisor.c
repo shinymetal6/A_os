@@ -43,14 +43,35 @@ uint32_t	ref0_err=0;
 #ifdef	STM32H743xx
 __attribute__((section (".func0_start"))) void ReferenceToZero(void)
 {
+uint32_t	var=0;
 	ref0_err++;
 	__disable_irq();
-	while(1);
+	while(1)
+	{
+		var++;
+		if ( var >= 50000000 )
+		{
+#ifdef LED_GPIO_Port
+			  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+#endif
+			  var = 0;
+		}
+	}
 }
 #else
-__attribute__((section (".func0_start"))) void ReferenceToZero(void)
-{
-}
+	#ifdef	STM32H753xx
+	__attribute__((section (".func0_start"))) void ReferenceToZero(void)
+	{
+		ref0_err++;
+		__asm volatile("SVC #0X10");
+		__disable_irq();
+		while(1);
+	}
+	#else
+	__attribute__((section (".func0_start"))) void ReferenceToZero(void)
+	{
+	}
+	#endif
 #endif
 
 uint32_t stat_prc[4] = {0,0,0,0};

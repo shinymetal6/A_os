@@ -1,43 +1,30 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
 /*
- ***********************************************************************
- ** md5.c -- the source code for MD5 routines                         **
- ** RSA Data Security, Inc. MD5 Message-Digest Algorithm              **
- ** Created: 2/17/90 RLR                                              **
- ** Revised: 1/91 SRD,AJ,BSK,JT Reference C ver., 7/10 constant corr. **
- ***********************************************************************
+ * md5.c
+ *
+ *  Created on: Sep 3, 2025
+ *      Author: fil
  */
 
-/*
- ***********************************************************************
- ** Copyright (C) 1990, RSA Data Security, Inc. All rights reserved.  **
- **                                                                   **
- ** License to copy and use this software is granted provided that    **
- ** it is identified as the "RSA Data Security, Inc. MD5 Message-     **
- ** Digest Algorithm" in all material mentioning or referencing this  **
- ** software or this function.                                        **
- **                                                                   **
- ** License is also granted to make and use derivative works          **
- ** provided that such works are identified as "derived from the RSA  **
- ** Data Security, Inc. MD5 Message-Digest Algorithm" in all          **
- ** material mentioning or referencing the derived work.              **
- **                                                                   **
- ** RSA Data Security, Inc. makes no representations concerning       **
- ** either the merchantability of this software or the suitability    **
- ** of this software for any particular purpose.  It is provided "as  **
- ** is" without express or implied warranty of any kind.              **
- **                                                                   **
- ** These notices must be retained in any copies of any part of this  **
- ** documentation and/or software.                                    **
- ***********************************************************************
- */
-
-#include "main.h"
 #include "main.h"
 #include "A.h"
 #include "system_default.h"
 
 #include "md5.h"
-
 #include <string.h>
 
 /*
@@ -54,7 +41,7 @@
 /* forward declaration */
 static void Transform (uint32_t *buf, uint32_t *in);
 
-SYSTEM_RAM static unsigned char PADDING[64] = {
+static unsigned char PADDING[64] = {
   0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -110,7 +97,7 @@ SYSTEM_RAM static unsigned char PADDING[64] = {
 /* The routine MD5Init initializes the message-digest context
    mdContext. All fields are set to zero.
  */
-ITCM_AREA_CODE void MD5Init (MD5_CTX *mdContext)
+ void MD5Init (MD5_CTX *mdContext)
 {
   mdContext->i[0] = mdContext->i[1] = (uint32_t)0;
 
@@ -125,16 +112,11 @@ ITCM_AREA_CODE void MD5Init (MD5_CTX *mdContext)
    account for the presence of each of the characters inBuf[0..inLen-1]
    in the message whose digest is being computed.
  */
-ITCM_AREA_CODE void MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen)
+ void MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen)
 {
   uint32_t in[16];
   int mdi;
   unsigned int i, ii;
-
-#if 0
-  ppp_trace(LOG_INFO, "MD5Update: %u:%.*H\n", inLen, MIN(inLen, 20) * 2, inBuf);
-  ppp_trace(LOG_INFO, "MD5Update: %u:%s\n", inLen, inBuf);
-#endif
 
   /* compute number of bytes mod 64 */
   mdi = (int)((mdContext->i[0] >> 3) & 0x3F);
@@ -167,7 +149,7 @@ ITCM_AREA_CODE void MD5Update(MD5_CTX *mdContext, unsigned char *inBuf, unsigned
 /* The routine MD5Final terminates the message-digest computation and
    ends with the desired message digest in mdContext->digest[0...15].
  */
-ITCM_AREA_CODE void MD5Final (unsigned char hash[], MD5_CTX *mdContext)
+ void MD5Final (unsigned char hash[], MD5_CTX *mdContext)
 {
   uint32_t in[16];
   int mdi;
@@ -209,7 +191,7 @@ ITCM_AREA_CODE void MD5Final (unsigned char hash[], MD5_CTX *mdContext)
 
 /* Basic MD5 step. Transforms buf based on in.
  */
-ITCM_AREA_CODE static void Transform (uint32_t *buf, uint32_t *in)
+ static void Transform (uint32_t *buf, uint32_t *in)
 {
   uint32_t a = buf[0], b = buf[1], c = buf[2], d = buf[3];
 
@@ -307,9 +289,9 @@ ITCM_AREA_CODE static void Transform (uint32_t *buf, uint32_t *in)
   buf[3] += d;
 }
 
-SYSTEM_RAM	MD5_CTX mdContext;
+MD5_CTX mdContext;
 
-ITCM_AREA_CODE uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
+ uint8_t md5_hash(uint8_t *buf,uint32_t len,uint8_t *hash)
 {
 	bzero(&mdContext,sizeof(MD5_CTX));
 	MD5Init (&mdContext);
@@ -317,3 +299,4 @@ ITCM_AREA_CODE uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash)
 	MD5Final (hash, &mdContext);
 	return 0;
 }
+

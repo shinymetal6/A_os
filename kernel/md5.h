@@ -1,6 +1,34 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * md5.h
+ *
+ *  Created on: Sep 3, 2025
+ *      Author: fil
+ */
 
+#ifndef KERNEL_MD5_H_
+#define KERNEL_MD5_H_
+
+// md5.h
 #ifndef MD5_H
 #define MD5_H
+
+#include <stdint.h>
+#include <stddef.h>
 
 /* Data structure for MD5 (Message-Digest) computation */
 typedef struct {
@@ -10,9 +38,8 @@ typedef struct {
 	unsigned char digest[16]; /* actual digest after MD5Final call */
 } MD5_CTX;
 
-void MD5Init  ( MD5_CTX *mdContext);
-void MD5Update( MD5_CTX *mdContext, unsigned char *inBuf, unsigned int inLen);
-void MD5Final ( unsigned char hash[], MD5_CTX *mdContext);
-extern	uint8_t md5(uint8_t *buf,uint32_t len,uint8_t *hash);
+extern	uint8_t md5_hash(uint8_t *buf,uint32_t len,uint8_t *hash);
 
-#endif /* MD5_H */
+#endif
+
+#endif /* KERNEL_MD5_H_ */
