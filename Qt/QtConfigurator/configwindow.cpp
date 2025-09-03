@@ -192,8 +192,7 @@ void ConfigWindow::Generate_Footer()
 void ConfigWindow::on_Generate_UserConfig_pushButton_clicked()
 {
     QString filters = "H files (*.h)";
-    filename = QFileDialog::getSaveFileName(this, tr("Open user_config.h File"), "",filters);
-    QFile file(filename);
+    filename = QFileDialog::getSaveFileName(this, tr("Open user_config.h File"), PROGRAMS_PATH,filters);
     if (filename.isEmpty())
     {
             qDebug() << "Save operation canceled.";
