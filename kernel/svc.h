@@ -23,7 +23,7 @@
 #ifndef KERNEL_SVC_H_
 #define KERNEL_SVC_H_
 
-extern int32_t call_svc(int8_t svc_index,int32_t param1 , int32_t param2 , int32_t param3);
-
+extern void SVC_Handler_init(void (*function),uint8_t idx);
+extern void svc_call(uint8_t svc_num);
 
 #endif /* KERNEL_SVC_H_ */

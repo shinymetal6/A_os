@@ -27,34 +27,37 @@
 #include "scheduler.h"
 #include "A_exported_functions.h"
 
-__attribute__((naked)) void svc_call(uint8_t svc_num)
-{
-	switch(svc_num)
-	{
-	case 0 :	__asm volatile("SVC #0"); break;
-	case 1 :	__asm volatile("SVC #1"); break;
-	case 2 :	__asm volatile("SVC #2"); break;
-	case 3 :	__asm volatile("SVC #3"); break;
-	case 4 :	__asm volatile("SVC #4"); break;
-	case 5 :	__asm volatile("SVC #5"); break;
-	case 6 :	__asm volatile("SVC #6"); break;
-	case 7 :	__asm volatile("SVC #7"); break;
-	case 8 :	__asm volatile("SVC #8"); break;
-	case 9 :	__asm volatile("SVC #9"); break;
-	case 10 :	__asm volatile("SVC #10"); break;
-	case 11 :	__asm volatile("SVC #11"); break;
-	case 12 :	__asm volatile("SVC #12"); break;
-	case 13 :	__asm volatile("SVC #13"); break;
-	case 14 :	__asm volatile("SVC #14"); break;
-	case 15 :	__asm volatile("SVC #15"); break;
-	}
-	__asm volatile("bx lr");
-}
-
 SYSTEM_RAM	uint8_t	opcode;
 SYSTEM_RAM	void 	(*svc_call_array[MAX_SVC])(void);
 
-void SVC_Handler_init(uint32_t *function,uint8_t idx)
+__attribute__((naked)) void svc_call(uint8_t svc_num)
+{
+	if ( svc_call_array[svc_num] == NULL )
+		__asm volatile("bx lr");
+	if ( svc_num >= MAX_SVC )
+		__asm volatile("bx lr");
+	switch(svc_num)
+	{
+	case 0 :	__asm volatile("SVC #0"); __asm volatile("bx lr");
+	case 1 :	__asm volatile("SVC #1"); __asm volatile("bx lr");
+	case 2 :	__asm volatile("SVC #2"); __asm volatile("bx lr");
+	case 3 :	__asm volatile("SVC #3"); __asm volatile("bx lr");
+	case 4 :	__asm volatile("SVC #4"); __asm volatile("bx lr");
+	case 5 :	__asm volatile("SVC #5"); __asm volatile("bx lr");
+	case 6 :	__asm volatile("SVC #6"); __asm volatile("bx lr");
+	case 7 :	__asm volatile("SVC #7"); __asm volatile("bx lr");
+	case 8 :	__asm volatile("SVC #8"); __asm volatile("bx lr");
+	case 9 :	__asm volatile("SVC #9"); __asm volatile("bx lr");
+	case 10 :	__asm volatile("SVC #10"); __asm volatile("bx lr");
+	case 11 :	__asm volatile("SVC #11"); __asm volatile("bx lr");
+	case 12 :	__asm volatile("SVC #12"); __asm volatile("bx lr");
+	case 13 :	__asm volatile("SVC #13"); __asm volatile("bx lr");
+	case 14 :	__asm volatile("SVC #14"); __asm volatile("bx lr");
+	case 15 :	__asm volatile("SVC #15"); __asm volatile("bx lr");
+	}
+}
+
+void SVC_Handler_init(void (*function),uint8_t idx)
 {
 	if ( idx < MAX_SVC )
 		svc_call_array[idx] = (void *)function;
