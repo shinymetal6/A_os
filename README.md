@@ -12,4 +12,7 @@ Java version: 21.0.3<br>
 Latest 19.x has some severe bugs both on IDE and libraries.<br>
 DON'T USE 19.x<br>
 
+# Update
+Fixed supervisor lock up due to interrupt disabled.
+
 
