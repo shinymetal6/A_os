@@ -88,6 +88,7 @@ ITCM_AREA_CODE void __attribute__ ((noinline)) suspend(void)
 	__PERF_RESET();
 	process[Asys.current_process].current_state = PROCESS_WAITING_STATE;
 	schedule();
+	__enable_irq();
 }
 
 ITCM_AREA_CODE uint32_t get_psp_value(void)

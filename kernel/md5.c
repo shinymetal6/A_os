@@ -291,7 +291,7 @@ static unsigned char PADDING[64] = {
 
 MD5_CTX mdContext;
 
- uint8_t md5_hash(uint8_t *buf,uint32_t len,uint8_t *hash)
+uint8_t md5_hash(uint8_t *buf,uint32_t len,uint8_t *hash)
 {
 	bzero(&mdContext,sizeof(MD5_CTX));
 	MD5Init (&mdContext);
@@ -299,4 +299,5 @@ MD5_CTX mdContext;
 	MD5Final (hash, &mdContext);
 	return 0;
 }
+
 

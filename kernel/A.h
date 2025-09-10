@@ -25,6 +25,7 @@
 
 #include "main.h"
 #include "system_default.h"
+#include "system_functions.h"
 
 #define MAX_PROCESS					5
 #define MAX_PROCESS_MASK			0x1e

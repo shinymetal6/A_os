@@ -43,6 +43,7 @@ USB_Drv_TypeDef	USB_Drv =
 };
 uint32_t		usb_driver_handle;
 
+uint8_t		xmodem_rx_usb_enable;
 uint8_t		xmodem_rx_usb_enable_poll;
 uint8_t		tim_downscale=0;
 
@@ -55,6 +56,7 @@ void sample_process_1_xmodem_rx_USB(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
+	xmodem_rx_usb_enable = 0;
 	xmodem_rx_usb_enable_poll = 1;
 
 	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
@@ -66,23 +68,40 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			if ( xmodem_rx_usb_enable_poll	 == 1 )
+			if ( xmodem_rx_usb_enable == 1 )
 			{
-				tim_downscale ++;
-				if ( tim_downscale > 100 )
+				if ( xmodem_rx_usb_enable_poll	 == 1 )
 				{
-					xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer);
-					tim_downscale = 0;
+					tim_downscale ++;
+					if ( tim_downscale > 100 )
+					{
+						xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer);
+						tim_downscale = 0;
+					}
 				}
 			}
 			process_led();
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			if ( xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer) == X_EOT)
+			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'h'))
+			{
+				xmodem_rx_usb_enable = 1;
 				xmodem_rx_usb_enable_poll = 1;
+			}
 			else
-				xmodem_rx_usb_enable_poll = 0;
+			{
+				if ( xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer) == X_EOT)
+				{
+					xmodem_rx_usb_enable = 0;
+					xmodem_rx_usb_enable_poll = 0;
+				}
+				else
+				{
+					xmodem_rx_usb_enable = 1;
+					xmodem_rx_usb_enable_poll = 0;
+				}
+			}
 		}
 	}
 }

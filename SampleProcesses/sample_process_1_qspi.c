@@ -34,30 +34,33 @@ extern	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 W25Qxx_Drv_TypeDef W25Qxx_Drv =
 {
 		.qspi_bus = &hqspi,
-		//.flags = QSPI_USES_DMA,
+		.flags = QSPI_USES_DMA,
 		.FlashSize = 128,
 		.wakeup_id = WAKEUP_FROM_QSPI_IRQ,
 };
 uint32_t	w25_handle;
-#define		DATALEN			1024
+
+#define D2_QSPI_RAM				__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
+
+#define		DATALEN			32768
 #define		DATAOFFSET		0
-uint8_t		w25_bufw[DATALEN];
-uint8_t		w25_bufr[DATALEN];
+D2_QSPI_RAM	uint8_t		w25_bufw[DATALEN];
+D2_QSPI_RAM	uint8_t		w25_bufr[DATALEN];
 uint32_t	qspi_state = 0 , qspi_irqs = 0 , done = 0 , qspi_address = 0 , qspi_len = 0;
 uint32_t	qspi_error = 0;
 
 void sample_process_1_qspi(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	i;
+uint32_t	i,j=1;
 
-	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	w25_handle = w25qxx_register(&W25Qxx_Drv);
 	qspi_address = 0+DATAOFFSET;
 	qspi_len = DATALEN-DATAOFFSET;
 	qspi_error = 0;
 	for(i=0;i<DATALEN;i++)
-		w25_bufw[i] = i >> 8;
+		w25_bufw[i] = j;
 
 	while(1)
 	{
@@ -66,7 +69,6 @@ uint32_t	i;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 			switch(qspi_state)
 			{
 			case 0 :
@@ -79,12 +81,15 @@ uint32_t	i;
 				qspi_state++;
 				break;
 			case 2 :
-				qspi_error += qspi_write(w25_handle,0,&w25_bufw[16],1024-16);
+				qspi_error += qspi_write(w25_handle,0,w25_bufw,DATALEN);
 				qspi_state++;
 				break;
 			case 3 :
-				qspi_error += qspi_read(w25_handle,0,w25_bufr,1024);
-				qspi_state++;
+				qspi_error += qspi_read(w25_handle,0,w25_bufr,DATALEN);
+				qspi_state = 0;
+				j++;
+				for(i=0;i<DATALEN;i++)
+					w25_bufw[i] = j;
 				break;
 			default :
 				break;

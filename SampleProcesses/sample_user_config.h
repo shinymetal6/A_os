@@ -39,7 +39,7 @@
 
 /* Modules */
 //#define	HEX_DEC_ENABLE	1
-//#define	XMODEM_ENABLE	1
+#define	XMODEM_ENABLE	1
 //#define	MODBUS_ENABLE	1
 //#define	SOUND_ENABLED	1
 

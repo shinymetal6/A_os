@@ -73,11 +73,21 @@ uint8_t	packed_byte;
 	if ( byte1 <= '9' )
 		packed_byte = (byte1 - '0') << 4;
 	else
-		packed_byte = ((byte1 - 'A')+10) << 4;
+	{
+		if (( byte1 >= 'A' ) && ( byte1 <= 'Z' ))
+			packed_byte = ((byte1 - 'A')+10) << 4;
+		else
+			packed_byte = ((byte1 - 'a')+10) << 4;
+	}
 	if ( byte2 <= '9' )
 		packed_byte |= (byte2 - '0');
 	else
-		packed_byte |= ((byte2 - 'A')+10);
+	{
+		if (( byte2 >= 'A' ) && ( byte2 <= 'Z' ))
+			packed_byte |= ((byte2 - 'A')+10);
+		else
+			packed_byte |= ((byte2 - 'a')+10);
+	}
 	return packed_byte;
 }
 

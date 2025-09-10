@@ -38,6 +38,9 @@ typedef struct {
 	unsigned char digest[16]; /* actual digest after MD5Final call */
 } MD5_CTX;
 
+#define	HASH_STD_LEN	16
+#define	HASH_ASCII_LEN	(HASH_STD_LEN*2)
+
 extern	uint8_t md5_hash(uint8_t *buf,uint32_t len,uint8_t *hash);
 
 #endif

@@ -139,12 +139,12 @@ uint8_t		xmodem_rx_uart_reply,rxlen;
 ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(uint8_t mode,uint32_t usb_handle,uint8_t *usb_rx_buffer)
 {
 uint8_t		xmodem_usb_uart_reply;
-	if ( mode == 1 )
+	if ( mode )
 	{
 		usb_send(usb_handle,&xnak,1);
 		return 0;
 	}
-	if ( mode == 0 )
+	else
 	{
 		xmodem_usb_uart_reply = xmodem_rx_line_parser(usb_rx_buffer);
 		switch(xmodem_usb_uart_reply)

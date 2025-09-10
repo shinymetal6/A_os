@@ -125,18 +125,22 @@ uint8_t decoded_len = 255;
 	return decoded_len;
 }
 
-uint32_t ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr)
-{
 uint32_t	linelen;
 uint8_t		ihex_result;
 uint32_t	ihex_len;
+uint8_t 	*ihex_data_ptr_fail;
+uint32_t ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr)
+{
 uint32_t	i;
 
 	IHex.decoded_length = 0;
 	while(1)
 	{
 		if ((linelen = get_hex_crlflen(ihex_data_ptr)) == 0 )
-			return 0;	// no more lines
+		{
+			ihex_data_ptr_fail = ihex_data_ptr;
+			return 3;	// no more lines
+		}
 
 		ihex_result = ihex_decode_line(ihex_data_ptr,linelen);
 		if ( ihex_result == 255 )

@@ -53,7 +53,7 @@ QByteArray reply;
 
         return data[0];
     }
-    //qDebug()<< "RX timeout";
+    qDebug()<< "RX timeout";
     return 0x41;
 }
 
@@ -225,3 +225,13 @@ void QtXmodem::on_Download_pushButton_clicked()
 
 }
 
+
+void QtXmodem::on_SetTargetRX_pushButton_clicked()
+{
+    char    command[128];
+
+    sprintf(command,"<h %d %s %s >",file_size,filename.toLatin1(),"0");
+    QByteArray ba1(QByteArray::fromRawData(command, strlen(command)));
+    serial_tx(ba1);
+
+}

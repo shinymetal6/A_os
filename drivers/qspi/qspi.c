@@ -29,14 +29,14 @@
 SYSTEM_RAM	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 SYSTEM_RAM	uint8_t					last_qspi_used_handle=0;
 
-uint32_t qspi_read(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
+uint32_t qspi_read(uint8_t handle, uint32_t address,uint8_t *data,uint32_t data_len)
 {
 	if ( ExtFlashDriverStruct[handle].read != NULL )
 		return ExtFlashDriverStruct[handle].read(handle,address,data,data_len);
 	return 1;
 }
 
-uint32_t qspi_write(uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len)
+uint32_t qspi_write(uint8_t handle, uint32_t address,uint8_t *data,uint32_t data_len)
 {
 	if ( ExtFlashDriverStruct[handle].write != NULL )
 		return ExtFlashDriverStruct[handle].write(handle,address,data,data_len);
