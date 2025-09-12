@@ -49,6 +49,8 @@ typedef struct
 	uint16_t			rx_bit;
 	uint32_t			param0;
 	uint32_t 			wakeup_id;
+	uint32_t			char_rxed;
+	uint32_t			char_txed;
 	uint32_t			rx_errors;
 }UART_Drv_TypeDef;
 /* status */
@@ -92,6 +94,8 @@ extern  uint32_t	uart_set_rxlen(uint8_t handle,uint16_t rx_max_len);
 extern  uint32_t	uart_set_sentinel(uint8_t handle, uint8_t sentinel_start, uint8_t sentinel_end);
 extern	uint32_t	uart_reinit_on_error(uint8_t handle);
 extern	uint32_t	uart_get_rxerrors_number(uint8_t handle);
+extern	uint32_t	uart_get_txed_number(uint8_t handle);
+extern	uint32_t	uart_get_rxed_number(uint8_t handle);
 
 extern 	uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data);
 extern 	void 		UART_Driver_RxTimeoutCheckCallback(void);
