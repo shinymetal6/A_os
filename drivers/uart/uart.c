@@ -157,6 +157,12 @@ UART_HandleTypeDef *huart = uarts_Drv->uart;
 		return 0;
 }
 
+ITCM_AREA_CODE uint32_t uart_get_rxerrors_number(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+	return uarts_Drv->rx_errors;
+}
+
 extern void UART_Driver_RxTimeoutCheckCallback(void);
 
 ITCM_AREA_CODE uint32_t	uart_register(UART_Drv_TypeDef *driver_private_data)
@@ -179,7 +185,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 			/* disable dma if they are not configured in hw */
 			uarts_Drv->flags &= ~UART_USES_DMA_TX;
 		}
-
+		uarts_Drv->rx_errors = 0;
 		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_IN_USE;
 		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback);
 
@@ -221,6 +227,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
 		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
+		uarts_Drv->rx_errors ++;
 	}
 }
 
