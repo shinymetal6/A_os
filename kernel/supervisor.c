@@ -85,6 +85,7 @@ ITCM_AREA_CODE void supervisor(void)
 #ifdef POWERSAVING_ENABLED
 		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
 #endif
+#ifdef NEW_SUPERVISOR
 		__PERF_RESET();
 		__enable_irq();
 		supervisor_entry_callback();
@@ -99,6 +100,10 @@ ITCM_AREA_CODE void supervisor(void)
 				schedule();
 			}
 		}
+#else // #ifdef NEW_SUPERVISOR
+		__enable_irq();
+		schedule();
+#endif //#ifdef NEW_SUPERVISOR
 	}
 }
 

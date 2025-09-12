@@ -68,50 +68,6 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].dri
 		return HAL_UART_Receive_IT(uarts_Drv->uart, &uarts_Drv->rx_char, 1);
 }
 
-ITCM_AREA_CODE  uint32_t	uart_disable_receive(uint8_t handle)
-{
-UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
-	uarts_Drv->uart->Instance->ICR = (
-		UART_CLEAR_PEF |
-		UART_CLEAR_FEF |
-		UART_CLEAR_NEF |
-		UART_CLEAR_OREF |
-		UART_CLEAR_IDLEF |
-		UART_CLEAR_TXFECF |
-		UART_CLEAR_TCF |
-		UART_CLEAR_LBDF |
-		UART_CLEAR_CTSF |
-		UART_CLEAR_CMF |
-		UART_CLEAR_WUF |
-		UART_CLEAR_RTOF);
-	HAL_UART_DMAPause(uarts_Drv->uart);
-	uarts_Drv->uart->Instance->ISR = 0;
-	uarts_Drv->uart->Instance->CR1 &= ~(USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
-	return 0;
-}
-
-ITCM_AREA_CODE  uint32_t	uart_enable_receive(uint8_t handle)
-{
-UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
-	uarts_Drv->uart->Instance->ICR = (
-		UART_CLEAR_PEF |
-		UART_CLEAR_FEF |
-		UART_CLEAR_NEF |
-		UART_CLEAR_OREF |
-		UART_CLEAR_IDLEF |
-		UART_CLEAR_TXFECF |
-		UART_CLEAR_TCF |
-		UART_CLEAR_LBDF |
-		UART_CLEAR_CTSF |
-		UART_CLEAR_CMF |
-		UART_CLEAR_WUF |
-		UART_CLEAR_RTOF);
-	HAL_UART_DMAResume(uarts_Drv->uart);
-	uarts_Drv->uart->Instance->ISR = 0;
-	uarts_Drv->uart->Instance->CR1 |= (USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_PEIE);
-	return 0;
-}
-
 ITCM_AREA_CODE  uint32_t	uart_get_rxlen(uint8_t handle)
 {
 UART_Drv_TypeDef	*uarts_Drv;
@@ -135,6 +91,70 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].dri
 	if ( sentinel_end)
 		uarts_Drv->sentinel_end   = sentinel_end;
 	return 0;
+}
+
+ITCM_AREA_CODE  uint32_t	uart_disable_receive(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+UART_HandleTypeDef *huart = uarts_Drv->uart;
+	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		if (huart->hdmarx != NULL)
+			HAL_DMA_Abort(huart->hdmarx);  // Force-stop DMA channel
+	__HAL_UART_DISABLE(huart);
+
+	__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
+	__HAL_UART_CLEAR_FEFLAG(huart);   // Framing error
+	__HAL_UART_CLEAR_NEFLAG(huart);   // Noise error
+	__HAL_UART_CLEAR_OREFLAG(huart);  // Overrun error — MOST IMPORTANT!
+
+	huart->RxState = HAL_UART_STATE_RESET;
+	huart->ErrorCode = HAL_UART_ERROR_NONE;
+	return 0;
+}
+
+ITCM_AREA_CODE  uint32_t	uart_enable_receive(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+UART_HandleTypeDef *huart = uarts_Drv->uart;
+	__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
+	__HAL_UART_CLEAR_FEFLAG(huart);   // Framing error
+	__HAL_UART_CLEAR_NEFLAG(huart);   // Noise error
+	__HAL_UART_CLEAR_OREFLAG(huart);  // Overrun error — MOST IMPORTANT!
+
+	huart->RxState = HAL_UART_STATE_READY;
+	huart->ErrorCode = HAL_UART_ERROR_NONE;
+
+	__HAL_UART_ENABLE(huart);
+
+	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		return HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t uart_reinit_on_error(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+UART_HandleTypeDef *huart = uarts_Drv->uart;
+	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		if (huart->hdmarx != NULL)
+			HAL_DMA_Abort(huart->hdmarx);  // Force-stop DMA channel
+
+	__HAL_UART_DISABLE(huart);
+
+	__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
+	__HAL_UART_CLEAR_FEFLAG(huart);   // Framing error
+	__HAL_UART_CLEAR_NEFLAG(huart);   // Noise error
+	__HAL_UART_CLEAR_OREFLAG(huart);  // Overrun error — MOST IMPORTANT!
+
+	huart->RxState = HAL_UART_STATE_READY;
+	huart->ErrorCode = HAL_UART_ERROR_NONE;
+
+	__HAL_UART_ENABLE(huart);
+
+	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		return HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
+	else
+		return 0;
 }
 
 extern void UART_Driver_RxTimeoutCheckCallback(void);
