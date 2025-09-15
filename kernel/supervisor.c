@@ -82,14 +82,9 @@ ITCM_AREA_CODE void supervisor(void)
 #ifdef USB_HOST_ENABLED
 		MX_USB_HOST_Process();
 #endif
-#ifdef POWERSAVING_ENABLED
-		HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFE);
-#endif
-#ifdef NEW_SUPERVISOR
 		__PERF_RESET();
 		__enable_irq();
 		supervisor_entry_callback();
-
 		for(int i= 1 ; i < (MAX_TASKS) ; i++)
 		{
 			if( ((process[i].current_state & PROCESS_READY_STATE ) == PROCESS_READY_STATE) )
@@ -100,10 +95,6 @@ ITCM_AREA_CODE void supervisor(void)
 				schedule();
 			}
 		}
-#else // #ifdef NEW_SUPERVISOR
-		__enable_irq();
-		schedule();
-#endif //#ifdef NEW_SUPERVISOR
 	}
 }
 

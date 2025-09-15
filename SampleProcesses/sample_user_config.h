@@ -29,6 +29,8 @@
 //#define	LWIP_ENABLE		1
 //#define	WIFI_ENABLE		1
 
+#define	POWERSAVING_ENABLED	1
+
 #ifdef LWIP_ENABLE
 	#define	NETWORKING_ENABLED		1
 	//#define	MQTT_ENABLE	1
