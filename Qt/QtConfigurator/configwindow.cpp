@@ -148,26 +148,39 @@ void ConfigWindow::Generate_Drivers()
     {
         out << "/* Drivers that need a specific enable */\n";
         out << "\n";
-        if ( ui->USB_checkBox->isChecked())
+        if (( ui->Process1_HasUSB_checkBox->isChecked()) || ( ui->Process1_HasUSB_checkBox->isChecked()))
             out << "#define USB_DEVICE_ENABLED	1\n";
         else
             out << "//#define USB_DEVICE_ENABLED	1\n";
         out << "#ifdef USB_DEVICE_ENABLED\n";
-        out << "    #define USB_"  << ui->USB_comboBox->currentText() << " 1\n";
+        if ( ui->Process1_HasUSB_checkBox->isChecked())
+            out << "    #define USB_"  << ui->Process1_USB_comboBox->currentText() << " 1\n";
+        if ( ui->Process2_HasUSB_checkBox->isChecked())
+            out << "    #define USB_"  << ui->Process2_USB_comboBox->currentText() << " 1\n";
         out << "#endif // #ifdef USB_ENABLED\n";
 
-        if ( ui->LCD_checkBox->isChecked())
+        if (( ui->Process1_HasLCD__checkBox->isChecked()) || ( ui->Process1_HasLCD__checkBox->isChecked()))
             out << "#define HAS_LCD 1\n";
         else
             out << "//#define HAS_LCD 1\n";
         out << "#ifdef HAS_LCD\n";
-        out << "    #define LCD_IS_"  << ui->LCD_comboBox->currentText() << " 1\n";
+        if ( ui->Process1_HasLCD__checkBox->isChecked())
+            out << "    #define LCD_IS_"  << ui->Process1_LCD_comboBox->currentText() << " 1\n";
+        if ( ui->Process2_HasLCD__checkBox->isChecked())
+            out << "    #define LCD_IS_"  << ui->Process2_LCD_comboBox->currentText() << " 1\n";
         out << "#endif // #ifdef HAS_LCD\n";
-        if ( ui->LED_checkBox->isChecked())
+        if ( ui->Process1_HasLED_checkBox->isChecked())
         {
             out << "#ifndef LED_GPIO_Port\n";
-            out << "    #define LED_Pin         "       << ui->LedName_lineEdit->text() << "_Pin \n";
-            out << "    #define LED_GPIO_Port   " << ui->LedName_lineEdit->text() << "_GPIO_Port \n";
+            out << "    #define LED_Pin         "       << ui->Process1_LedPinName_lineEdit->text() << "_Pin \n";
+            out << "    #define LED_GPIO_Port   " << ui->Process1_LedPinName_lineEdit->text() << "_GPIO_Port \n";
+            out << "#endif\n";
+        }
+        if ( ui->Process2_HasLED_checkBox->isChecked())
+        {
+            out << "#ifndef LED_GPIO_Port\n";
+            out << "    #define LED_Pin         "       << ui->Process2_LedPinName_lineEdit->text() << "_Pin \n";
+            out << "    #define LED_GPIO_Port   " << ui->Process2_LedPinName_lineEdit->text() << "_GPIO_Port \n";
             out << "#endif\n";
         }
         out << "\n";

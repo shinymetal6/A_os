@@ -129,10 +129,13 @@ ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rs
 	if (( process[dest_process].current_state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 	{
 		SCHED_DISABLE_IRQS();
-		process[dest_process].wakeup_rsn |= rsn;
-		process[dest_process].wakeup_flags |= flags;
-		process[dest_process].current_state = 0;
-		process[dest_process].current_state |= PROCESS_READY_STATE;
+		if ( process[dest_process].wait_event & rsn )
+		{
+			process[dest_process].wakeup_rsn |= rsn;
+			process[dest_process].wakeup_flags |= flags;
+			process[dest_process].current_state = 0;
+			process[dest_process].current_state |= PROCESS_READY_STATE;
+		}
 		SCHED_ENABLE_IRQS();
 	}
 	return 0;

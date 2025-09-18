@@ -163,6 +163,12 @@ UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].dri
 	return uarts_Drv->rx_errors;
 }
 
+ITCM_AREA_CODE uint32_t uart_get_timeouts_number(uint8_t handle)
+{
+UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+	return uarts_Drv->to_errors;
+}
+
 extern void UART_Driver_RxTimeoutCheckCallback(void);
 
 ITCM_AREA_CODE uint32_t	uart_register(UART_Drv_TypeDef *driver_private_data)
@@ -228,7 +234,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 		uarts_Drv->uart_error++;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
+		{
+			clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
+		}
 		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 		uarts_Drv->rx_errors ++;
 	}
@@ -244,7 +253,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 	{
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_TX) == UART_WAKEUP_ON_TX)
+		{
+			clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TX);
+		}
 	}
 	__enable_irq();
 }
@@ -267,6 +279,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 #endif
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 			uarts_Drv->timeout_mask = 1;
+			clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 			HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 			return;
@@ -284,10 +297,16 @@ UART_Drv_TypeDef	*uarts_Drv;
 					uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
 					uarts_Drv->rx_index = 0;
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
+					{
+						clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
+					}
 				}
 				if (( uarts_Drv->flags & UART_WAKEUP_ON_RXCHAR) == UART_WAKEUP_ON_RXCHAR)
+				{
+					clear_hw_flag();
 					activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
+				}
 			}
 			else if ((uarts_Drv->sentinel_start != 0) && ( uarts_Drv->sentinel_end == 0 ))
 			{
@@ -302,10 +321,16 @@ UART_Drv_TypeDef	*uarts_Drv;
 						uarts_Drv->rx_index = 0;
 						uarts_Drv->sentinel_flags &= ~UART_SENTINEL_START_FOUND;
 						if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
+						{
+							clear_hw_flag();
 							activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
+						}
 					}
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXCHAR) == UART_WAKEUP_ON_RXCHAR)
+					{
+						clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
+					}
 				}
 				else
 				{
@@ -340,6 +365,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 						uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
 						uarts_Drv->rx_index = 0;
 						uarts_Drv->sentinel_flags &= ~(UART_SENTINEL_START_FOUND | UART_SENTINEL_END_FOUND);
+						clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 					}
 				}
@@ -390,7 +416,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 						{
 							uarts_Drv->timeout_mask = 1;
 							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
+							{
+								clear_hw_flag();
 								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+							}
 						}
 						else
 							uarts_Drv->timeout_mask = 0;
@@ -421,7 +450,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 							uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
 							uarts_Drv->rx_index = 0;
 							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
+							{
+								clear_hw_flag();
 								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
+							}
 						}
 					}
 				}

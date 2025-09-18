@@ -26,6 +26,7 @@
 #include "main.h"
 #include "system_default.h"
 #include "system_functions.h"
+#include "weak_functions.h"
 
 #define MAX_PROCESS					5
 #define MAX_PROCESS_MASK			0x1e
@@ -119,6 +120,7 @@ typedef struct
  * at least one buffer has been used, so defrag can start*/
 #define	SYS_FLAGS_DEFRAG_REQUEST	0x80
 #define	SYS_FLAGS_SKIP_TICK			0x40
+#define	SYS_FLAGS_WAKEUP_ALL		0x02
 #define	SYS_FLAGS_OS_STARTED		0x01
 /* qspi_status */
 #define	ASYS_QSPI_BUSY				0x01

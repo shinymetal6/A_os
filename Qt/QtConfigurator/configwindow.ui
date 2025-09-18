@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>842</width>
-    <height>374</height>
+    <height>664</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,12 +19,12 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>411</width>
+      <width>291</width>
       <height>181</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="General">
      <attribute name="title">
@@ -33,9 +33,9 @@
      <widget class="QLineEdit" name="BoardName_lineEdit">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>160</x>
         <y>20</y>
-        <width>321</width>
+        <width>251</width>
         <height>27</height>
        </rect>
       </property>
@@ -46,7 +46,7 @@
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>20</y>
         <width>121</width>
         <height>19</height>
@@ -59,7 +59,7 @@
      <widget class="QLabel" name="label_2">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>50</y>
         <width>131</width>
         <height>19</height>
@@ -72,9 +72,9 @@
      <widget class="QLineEdit" name="MachineName_lineEdit">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>160</x>
         <y>50</y>
-        <width>321</width>
+        <width>251</width>
         <height>27</height>
        </rect>
       </property>
@@ -85,7 +85,7 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>30</x>
+        <x>10</x>
         <y>80</y>
         <width>141</width>
         <height>19</height>
@@ -98,9 +98,9 @@
      <widget class="QLineEdit" name="MachineVersion_lineEdit">
       <property name="geometry">
        <rect>
-        <x>180</x>
+        <x>160</x>
         <y>80</y>
-        <width>321</width>
+        <width>251</width>
         <height>27</height>
        </rect>
       </property>
@@ -239,109 +239,12 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="Drivers_tab">
-     <attribute name="title">
-      <string>Drivers</string>
-     </attribute>
-     <widget class="QCheckBox" name="USB_checkBox">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>20</y>
-        <width>105</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>USB</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="USB_comboBox">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>20</y>
-        <width>93</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>CDC</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>MIDI</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="QCheckBox" name="LCD_checkBox">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>60</y>
-        <width>105</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>LCD</string>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="LCD_comboBox">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>60</y>
-        <width>93</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>7735</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>9341</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="QCheckBox" name="LED_checkBox">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>100</y>
-        <width>105</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Has LED</string>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="LedName_lineEdit">
-      <property name="geometry">
-       <rect>
-        <x>150</x>
-        <y>100</y>
-        <width>141</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>set_led_name</string>
-      </property>
-     </widget>
-    </widget>
    </widget>
    <widget class="QPushButton" name="Generate_UserConfig_pushButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>290</y>
+      <y>310</y>
       <width>241</width>
       <height>27</height>
      </rect>
@@ -362,6 +265,691 @@
     <property name="text">
      <string>Qt Configurator 0.1</string>
     </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>50</y>
+      <width>451</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
+    </property>
+    <widget class="QWidget" name="Process1">
+     <attribute name="title">
+      <string>Process 1</string>
+     </attribute>
+     <widget class="QCheckBox" name="Process1_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Process 1</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasTimer_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has Timer</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasUSB_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>30</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has USB</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasUARTS_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>50</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has UARTS</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="Process1_TimerInterval_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>10</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasLCD__checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>70</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has LCD</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasLED_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>90</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has LED</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasFDCAN_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>110</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has FDCAN</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process1_USB_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>30</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>CDC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>MIDI</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QComboBox" name="Process1_LCD_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>70</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>7735</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9341</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLineEdit" name="Process1_LedPinName_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>90</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>led_pin_name</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasTIMERS_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>130</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has TIMERS</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasQSPI_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>150</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has QSPI</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasIC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>170</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has I2C</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasSPI_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>190</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has SPI</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasDMX_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>210</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has DMX</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasADC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>230</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has ADC</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process1_HasDAC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>250</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has DAC</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>338</x>
+        <y>10</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>mSec. Tick</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process1_UARTS_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>50</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>5</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>6</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QComboBox" name="Process1_TIMERS_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>130</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>dcc</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>pwm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>servo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ws2812</string>
+       </property>
+      </item>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="Process2">
+     <attribute name="title">
+      <string>Process 2</string>
+     </attribute>
+     <widget class="QCheckBox" name="Process2_HasUSB_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>30</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has USB</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasTimer_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has Timer</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process2_UARTS_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>50</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>5</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>6</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasDAC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>250</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has DAC</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="Process2_TimerInterval_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>10</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>100</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process2_LCD_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>70</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>7735</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>9341</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasLED_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>90</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has LED</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="Process2_LedPinName_lineEdit">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>90</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>led_pin_name</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasUARTS_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>50</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has UARTS</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process2_TIMERS_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>130</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>dcc</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>pwm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>servo</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>ws2812</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasIC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>170</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has I2C</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Process 2</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>338</x>
+        <y>10</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>mSec. Tick</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasLCD__checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>70</y>
+        <width>105</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has LCD</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasADC_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>230</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has ADC</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasSPI_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>190</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has SPI</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="Process2_USB_comboBox">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>30</y>
+        <width>93</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>CDC</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>MIDI</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasDMX_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>210</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has DMX</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasFDCAN_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>110</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has FDCAN</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasTIMERS_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>130</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has TIMERS</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="Process2_HasQSPI_checkBox">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>150</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Has QSPI</string>
+      </property>
+     </widget>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

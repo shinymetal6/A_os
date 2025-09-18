@@ -146,6 +146,20 @@ __weak void httpd_init(void)
 
 }
 
+__weak void set_hw_flag(void)
+{
+#ifdef HW_FLAG_GPIO_Port
+	HAL_GPIO_WritePin(HW_FLAG_GPIO_Port, HW_FLAG_Pin, GPIO_PIN_SET);
+#endif
+}
+
+__weak void clear_hw_flag(void)
+{
+#ifdef HW_FLAG_GPIO_Port
+	HAL_GPIO_WritePin(HW_FLAG_GPIO_Port, HW_FLAG_Pin, GPIO_PIN_RESET);
+#endif
+}
+
 __weak void process_1_init(void)
 {
 
