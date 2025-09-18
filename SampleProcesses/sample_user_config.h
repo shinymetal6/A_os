@@ -23,6 +23,15 @@
 #ifndef PROJECT_LIB_MODULES_H_
 #define PROJECT_LIB_MODULES_H_
 
+/* OS settings */
+/* SCHED_STD set means the activate_process function checks if the process is waiting on a specific flag
+ * If SCHED_STD is not set then all the wakeup flags will wake up the process
+ */
+#define	SCHED_STD		1
+#ifndef SCHED_STD
+	#define	SCHED_NO_MASK		1
+#endif // #ifdef SCHED_STD
+
 /* Libraries */
 //#define	HELIX_ENABLE	1
 //#define	LORAWAN_ENABLE	1

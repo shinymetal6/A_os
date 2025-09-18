@@ -129,7 +129,11 @@ ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rs
 	if (( process[dest_process].current_state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 	{
 		SCHED_DISABLE_IRQS();
+#ifdef SCHED_STD
+		// SCHED_STD is defined in user_config.h in user space if exists or in sample_user_config.h in SampleProcesses
+		// If  SCHED_STD is not set then SCHED_NO_MASK should be set
 		if ( process[dest_process].wait_event & rsn )
+#endif
 		{
 			process[dest_process].wakeup_rsn |= rsn;
 			process[dest_process].wakeup_flags |= flags;
