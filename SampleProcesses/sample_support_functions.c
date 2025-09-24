@@ -33,7 +33,7 @@ uint8_t 	sample_led_cntr = 0;
 
 void process_led(void)
 {
-#ifdef LD1_GPIO_Port
+#ifdef LED_GPIO_Port
 	switch(sample_led_cntr)
 	{
 	case 7:
@@ -47,7 +47,7 @@ void process_led(void)
 	sample_led_cntr++;
 	if ( sample_led_cntr >= 10 )
 		sample_led_cntr = 0;
-#endif // #ifdef LD1_GPIO_Port
+#endif // #ifdef LED_GPIO_Port
 }
 
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED

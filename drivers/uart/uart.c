@@ -136,26 +136,31 @@ ITCM_AREA_CODE uint32_t uart_reinit_on_error(uint8_t handle)
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 UART_HandleTypeDef *huart = uarts_Drv->uart;
 	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+	{
 		if (huart->hdmarx != NULL)
 			HAL_DMA_Abort(huart->hdmarx);  // Force-stop DMA channel
 
-	__HAL_UART_DISABLE(huart);
+		__HAL_UART_DISABLE(huart);
 
-	__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
-	__HAL_UART_CLEAR_FEFLAG(huart);   // Framing error
-	__HAL_UART_CLEAR_NEFLAG(huart);   // Noise error
-	__HAL_UART_CLEAR_OREFLAG(huart);  // Overrun error — MOST IMPORTANT!
+		__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
+		__HAL_UART_CLEAR_FEFLAG(huart);   // Framing error
+		__HAL_UART_CLEAR_NEFLAG(huart);   // Noise error
+		__HAL_UART_CLEAR_OREFLAG(huart);  // Overrun error — MOST IMPORTANT!
 
-	huart->RxState = HAL_UART_STATE_READY;
-	huart->ErrorCode = HAL_UART_ERROR_NONE;
+		huart->RxState = HAL_UART_STATE_READY;
+		huart->ErrorCode = HAL_UART_ERROR_NONE;
 
-	__HAL_UART_ENABLE(huart);
-
-	if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		__HAL_UART_ENABLE(huart);
 		return HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
-	else
-		return 0;
+	}
+	return 0;
 }
+
+ITCM_AREA_CODE uint32_t uart_restart_DMA_on_RX(uint8_t handle)
+{
+	return uart_reinit_on_error(handle);
+}
+
 
 ITCM_AREA_CODE uint32_t uart_get_rxerrors_number(uint8_t handle)
 {
@@ -235,7 +240,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv->uart_error++;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_ERRORS) == UART_WAKEUP_ON_ERRORS)
 		{
-			clear_hw_flag();
+			// // clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_ERR);
 		}
 		uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
@@ -254,7 +259,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
 		if (( uarts_Drv->flags & UART_WAKEUP_ON_TX) == UART_WAKEUP_ON_TX)
 		{
-			clear_hw_flag();
+			// // clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TX);
 		}
 	}
@@ -279,7 +284,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 #endif
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 			uarts_Drv->timeout_mask = 1;
-			clear_hw_flag();
+			// clear_hw_flag();
 			activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 			HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 			return;
@@ -298,13 +303,13 @@ UART_Drv_TypeDef	*uarts_Drv;
 					uarts_Drv->rx_index = 0;
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
 					{
-						clear_hw_flag();
+						// clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 					}
 				}
 				if (( uarts_Drv->flags & UART_WAKEUP_ON_RXCHAR) == UART_WAKEUP_ON_RXCHAR)
 				{
-					clear_hw_flag();
+					// clear_hw_flag();
 					activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 				}
 			}
@@ -322,13 +327,13 @@ UART_Drv_TypeDef	*uarts_Drv;
 						uarts_Drv->sentinel_flags &= ~UART_SENTINEL_START_FOUND;
 						if (( uarts_Drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
 						{
-							clear_hw_flag();
+							// clear_hw_flag();
 							activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 						}
 					}
 					if (( uarts_Drv->flags & UART_WAKEUP_ON_RXCHAR) == UART_WAKEUP_ON_RXCHAR)
 					{
-						clear_hw_flag();
+						// clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 					}
 				}
@@ -365,7 +370,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 						uarts_Drv->rx_num_chars = uarts_Drv->rx_index;
 						uarts_Drv->rx_index = 0;
 						uarts_Drv->sentinel_flags &= ~(UART_SENTINEL_START_FOUND | UART_SENTINEL_END_FOUND);
-						clear_hw_flag();
+						// clear_hw_flag();
 						activate_process(UARTS_DriverStruct[handle].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
 					}
 				}
@@ -407,6 +412,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - ((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
 				#endif
 				if (( uarts_Drv->rx_num_chars ) && ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len))
+				//if ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len)
 				{
 					if ( uarts_Drv->timeout )
 						uarts_Drv->timeout--;
@@ -417,21 +423,31 @@ UART_Drv_TypeDef	*uarts_Drv;
 							uarts_Drv->timeout_mask = 1;
 							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
 							{
-								clear_hw_flag();
+								// clear_hw_flag();
 								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
 							}
 						}
 						else
 							uarts_Drv->timeout_mask = 0;
+
 						/* a bit of unicorn dust here ... */
 						__HAL_DMA_DISABLE(uarts_Drv->uart->hdmarx);
 						#ifdef   STM32_HAS_STREAM_DMA
-						__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF0_4);
+						if (( ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->FCR & DMA_FLAG_TCIF0_4) == DMA_FLAG_TCIF0_4)// ->BDMA->IFCR & DMA_FLAG_TCIF0_4) == DMA_FLAG_TCIF0_4)
+							__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF0_4);
+						if (( ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->FCR & DMA_FLAG_TCIF1_5) == DMA_FLAG_TCIF1_5)// ->BDMA->IFCR & DMA_FLAG_TCIF0_4) == DMA_FLAG_TCIF0_4)
+							__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF1_5);
+						if (( ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->FCR & DMA_FLAG_TCIF2_6) == DMA_FLAG_TCIF2_6)// ->BDMA->IFCR & DMA_FLAG_TCIF0_4) == DMA_FLAG_TCIF0_4)
+							__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF2_6);
+						if (( ((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->FCR & DMA_FLAG_TCIF3_7) == DMA_FLAG_TCIF3_7)// ->BDMA->IFCR & DMA_FLAG_TCIF0_4) == DMA_FLAG_TCIF0_4)
+							__HAL_DMA_CLEAR_FLAG(uarts_Drv->uart->hdmarx,DMA_FLAG_TCIF3_7);
 						((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR = uarts_Drv->rx_max_len;
 						#else
 						((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR = uarts_Drv->rx_max_len;
 						#endif
 						__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
+						/* end of unicorn dust */
+
 						uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 						HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 					}
@@ -451,7 +467,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 							uarts_Drv->rx_index = 0;
 							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
 							{
-								clear_hw_flag();
+								// clear_hw_flag();
 								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
 							}
 						}

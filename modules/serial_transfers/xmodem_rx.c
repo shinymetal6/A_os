@@ -114,6 +114,7 @@ uint8_t		xmodem_rx_uart_reply,rxlen;
 				xmodem_rx_uart_reply = xmodem_rx_line_parser(uart_rx_buffer);
 			else
 				xmodem_rx_uart_reply = xmodem_rx_line_parser(&uart_rx_buffer[1]);
+			uart_restart_DMA_on_RX(uart_driver_handle);
 			switch(xmodem_rx_uart_reply)
 			{
 			case	X_NAK:

@@ -11,7 +11,8 @@
 QT_BEGIN_NAMESPACE
 namespace Ui { class QtXmodem; }
 QT_END_NAMESPACE
-#define WAIT_REPLY              1200
+#define WAIT_POLL               1000
+#define WAIT_REPLY              (WAIT_POLL/10)
 #define MAX_RETRY               10
 
 class QtXmodem : public QMainWindow
@@ -43,6 +44,7 @@ private:
     int serial_started;
     QString filename,bin_filename;
     int file_size;
+    int serial_timeout;
 
     QByteArray blob;
 

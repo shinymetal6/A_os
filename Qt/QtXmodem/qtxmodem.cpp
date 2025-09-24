@@ -41,11 +41,9 @@ QByteArray reply;
 
 int QtXmodem::serial_rx( void )
 {
-QPixmap redled (":/ledred.png");
-QPixmap greenled(":/ledgreen.png");
 QByteArray reply;
 
-    if(serial.waitForReadyRead(WAIT_REPLY))
+    if(serial.waitForReadyRead(serial_timeout))
     {
         reply = serial.readAll();
         const char *data = reply.data();
@@ -102,7 +100,6 @@ void QtXmodem:: create_buf_and_tx(char    *data)
 {
 #define SLEEP_HERE   10
     QByteArray ba4(QByteArray::fromRawData(data, 132));
-    serial.flush();
     serial_tx(ba4);
 }
 
@@ -137,20 +134,24 @@ void QtXmodem::on_Download_pushButton_clicked()
     QPixmap redled (":/ledred.png");
     QPixmap greenled(":/ledgreen.png");
     char    data[132];
-    QByteArray reply;
-    int i,retry=MAX_RETRY,rx_data;
+    int i,rx_data;
     int s_unit;
     int index=0;
     int block_number;
     int csum;
     int retry_number=0;
+    QString danger = "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #FF0350,stop: 0.4999 #FF0020,stop: 0.5 #FF0019,stop: 1 #FF0000 );border-bottom-right-radius: 5px;border-bottom-left-radius: 5px;border: .px solid black;}";
+    QString safe= "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #78d,stop: 0.4999 #46a,stop: 0.5 #45a,stop: 1 #238 );border-bottom-right-radius: 7px;border-bottom-left-radius: 7px;border: 1px solid black;}";
+    QString done= "QProgressBar::chunk {background: QLinearGradient( x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #00FF00,stop: 0.4999 #00FF00,stop: 0.5 #00FF00,stop: 1 #238 );border-bottom-right-radius: 7px;border-bottom-left-radius: 7px;border: 1px solid black;}";
 
     ui->statusbar->showMessage("Downloading "+bin_filename);
     block_number = 1;
     ui->Flashing_label->setPixmap(redled);
     s_unit = file_size/100;
+    ui->download_progressBar->setStyleSheet(safe);
     ui->download_progressBar->setValue(0);
 
+    serial_timeout = WAIT_POLL;
     index=0;
     while ( (rx_data = serial_rx()) != 0x15 );
     qDebug()<<"Start command received, downloading";
@@ -158,7 +159,6 @@ void QtXmodem::on_Download_pushButton_clicked()
 
     while ( index < file_size)
     {
-        retry=10;
         data[0] = 0x01;
         data[1] = block_number;
         data[2] = 255 - block_number;
@@ -178,8 +178,6 @@ void QtXmodem::on_Download_pushButton_clicked()
 
         serial.flush();
         create_buf_and_tx(data);
-        QThread::msleep(1);
-        serial.flush();
         while ( (rx_data = serial_rx()) != 0x06 )
         {
             ui->statusbar->showMessage("Retry");
@@ -187,19 +185,16 @@ void QtXmodem::on_Download_pushButton_clicked()
             serial.flush();
             create_buf_and_tx(data);
             retry_number++;
-            retry--;
-            if ( retry == 0 )
-            {
-                ui->statusbar->showMessage(bin_filename+" aborted download");
-                return;
-            }
         }
-        ui->statusbar->showMessage("Downloading");
-        ui->download_progressBar->setValue(index/s_unit);
+        serial_timeout = WAIT_REPLY;
+
         if ((( index/s_unit) & 1 ) == 0)
             ui->Flashing_label->setPixmap(greenled);
         else
             ui->Flashing_label->setPixmap(redled);
+        ui->download_progressBar->setStyleSheet(safe);
+        ui->download_progressBar->setValue(index/s_unit);
+
     }
     QString retry_number_str;
     retry_number_str.setNum(retry_number);
@@ -208,6 +203,7 @@ void QtXmodem::on_Download_pushButton_clicked()
     else
         ui->statusbar->showMessage(bin_filename+" downloaded, "+retry_number_str+" retries");
 
+    ui->download_progressBar->setStyleSheet(done);
     ui->download_progressBar->setValue(100);
     ui->Flashing_label->setPixmap(greenled);
 
