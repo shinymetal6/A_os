@@ -26,8 +26,13 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
 
+#ifdef	STM32H743xx
 #define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
+#else
+#define	xmodem_rx_data_len		0x17fff
+uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
+#endif
 
 #define	USB_BUF_LEN	XMODEM_LINE_LEN
 uint8_t	usb_rx_buffer[XMODEM_LINE_LEN];

@@ -25,8 +25,13 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_UART
 
-#define	xmodem_rx_data_area	0x30001000
+#ifdef	STM32H743xx
+#define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
+#else
+#define	xmodem_rx_data_len		0x17fff
+uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
+#endif
 
 extern	UART_HandleTypeDef	huart3;
 
