@@ -29,6 +29,9 @@
 #ifdef	STM32H753xx
 		#include "../processors/STM32H753xx.h"
 #endif
+#ifdef	STM32F722xx
+		#include "../processors/STM32F722xx.h"
+#endif
 #ifdef	STM32G474xx
 		#include "../processors/STM32G474xx.h"
 #endif
@@ -43,5 +46,5 @@
 #endif
 
 // versioning
-#define	A_OS_VERSION			"v2025.10.00_rc0"
+#define	A_OS_VERSION			"v2025.10.00_rc1"
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */
