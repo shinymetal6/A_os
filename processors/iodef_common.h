@@ -205,7 +205,9 @@
 #endif
 
 #ifdef	STM32U575xx
-	#ifdef STM32U575xx_HAL_UART_H
+	#define STM32_HAS_STREAM_DMA	1
+
+	#ifdef HAL_UART_MODULE_ENABLED
 		#define A_OS_UART_ENABLED	1
 	#endif
 	#ifdef STM32G4xx_HAL_TIM_H

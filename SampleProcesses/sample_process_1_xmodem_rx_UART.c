@@ -32,12 +32,17 @@
 #define	xmodem_rx_data_len		0x17fff
 uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
 #endif
-
+#ifdef	STM32U575xx
+extern	UART_HandleTypeDef	huart1;
+#define	UART				huart1
+#define	UART_WAKEUP			WAKEUP_FROM_UART1_IRQ
+#define	UART_EVENT			EVENT_UART1_IRQ
+#else
 extern	UART_HandleTypeDef	huart3;
-
 #define	UART				huart3
 #define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
 #define	UART_EVENT			EVENT_UART3_IRQ
+#endif
 
 #define	UART_RX_BUF_SIZE	512
 #define	UART_TX_BUF_SIZE	512
@@ -51,8 +56,8 @@ UART_Drv_TypeDef Uart_Drv =
 	.uart = &UART,
 	.wakeup_id = UART_WAKEUP,
 	.timeout = 100,
-	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	//.flags = UART_USES_DMA_TX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	//.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
 uint32_t	uart_driver_handle;
