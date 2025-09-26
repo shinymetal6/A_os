@@ -97,6 +97,7 @@ ITCM_AREA_CODE	void xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_
 	xmodem_rx_allocate_area(dest_data_ptr,max_data_count);
 }
 uint8_t		xnak=X_NAK,xack=X_ACK;
+#ifdef A_OS_UART_ENABLED
 ITCM_AREA_CODE	uint8_t xmodem_uart_data_process(uint8_t mode,uint32_t uart_driver_handle,uint8_t *uart_rx_buffer)
 {
 uint8_t		xmodem_rx_uart_reply,rxlen;
@@ -136,6 +137,7 @@ uint8_t		xmodem_rx_uart_reply,rxlen;
 	}
 	return 0xff;
 }
+#endif // #ifdef A_OS_UART_ENABLED
 
 ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(uint8_t mode,uint32_t usb_handle,uint8_t *usb_rx_buffer)
 {
@@ -173,8 +175,10 @@ ITCM_AREA_CODE	uint8_t xmodem_data_process(uint8_t mode,uint8_t type,uint32_t ha
 {
 	if ( type == XMODEM_IF_USB)
 		return xmodem_usb_data_process(mode,handle,rx_buffer);
+#ifdef A_OS_UART_ENABLED
 	if ( type == XMODEM_IF_UART)
 		return xmodem_uart_data_process(mode,handle,rx_buffer);
+#endif // #ifdef A_OS_UART_ENABLED
 	return 1;
 }
 

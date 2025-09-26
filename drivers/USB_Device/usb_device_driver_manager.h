@@ -47,10 +47,10 @@ typedef struct
 	USB_Drv_TypeDef		*usb_driver_private_data;
 }USB_DriverStruct_t;
 
-
-extern	void MX_USB_DEVICE_Init(void);
+/*
+extern	uint8_t MX_USB_DEVICE_Init(void);
 extern	uint8_t MX_USB_Device_Init(void);
-
+*/
 
 extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data);
 extern	uint32_t 	usb_device_driver_set_rx_buffer(uint8_t handle,uint8_t *rx_buf);

@@ -18,10 +18,9 @@
   */
 /* USER CODE END Header */
 #include "main.h"
-#include "../../../../kernel/system_default.h"
-#include "../../../../kernel/A_exported_functions.h"
-
 #ifdef	STM32U575xx
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Core/usbd_core.h"
@@ -239,4 +238,5 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
     pbuf[2 * idx + 1] = 0;
   }
 }
-#endif
+#endif //#ifdef USB_DEVICE_ENABLED
+#endif //#ifdef	STM32U575xx

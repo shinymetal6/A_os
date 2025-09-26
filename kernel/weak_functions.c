@@ -43,12 +43,12 @@ __weak void supervisor_exit_callback(void)
 
 __weak uint8_t MX_USB_Device_Init(void)
 {
-	return 1;
+	return 1; // MX_USB_Device_Init
 }
 
-__weak void MX_USB_DEVICE_Init(void)
+__weak uint8_t MX_USB_DEVICE_Init(void)
 {
-	MX_USB_Device_Init();
+	return MX_USB_Device_Init();
 }
 
 __weak void MX_LWIP_Init(A_IpAddr_t *A_IpAddr)

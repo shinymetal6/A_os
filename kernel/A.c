@@ -232,7 +232,12 @@ void A_start(void)
 {
 	HAL_Delay(2);	// wait some ticks so system will correctly fires some irqs
 	sprintf(Asys.version,"%s",A_OS_VERSION);
-	//A_initialize_onchip_peripherals();
+#ifdef USB_DEVICE_ENABLED
+#ifdef	STM32U575xx
+	HAL_Delay(1000);
+	MX_USB_Device_Init();
+#endif
+#endif // #ifdef USB_ENABLED
 	A_PreOS_Init();
 	__disable_irq();
 

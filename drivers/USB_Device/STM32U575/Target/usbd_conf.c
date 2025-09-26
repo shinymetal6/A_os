@@ -14,24 +14,21 @@
  * Project : A_os
 */
 /*
- * usbd_cdc_conf.c
+ * usbd_conf.c
  *
- *  Created on: Feb 14, 2024
+ *  Created on: Sep 26, 2025
  *      Author: fil
  */
 #include "main.h"
-#include "../../../../kernel/system_default.h"
-#include "../../../../kernel/A_exported_functions.h"
 
 #ifdef	STM32U575xx
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
 #include "stm32u5xx.h"
 #include "stm32u5xx_hal.h"
 #include "../Core/usbd_def.h"
 #include "../Core/usbd_core.h"
 #include "../Class/CDC/usbd_cdc.h"
-
-#ifdef	USB_ENABLED
-
 
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
@@ -659,4 +656,6 @@ USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status)
 #endif // #ifdef	USB_ENABLED
 
 #endif
+
+
 

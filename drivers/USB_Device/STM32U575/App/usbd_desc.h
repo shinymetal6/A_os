@@ -25,8 +25,11 @@
  extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
-#include "../Core/usbd_def.h"
+#ifdef	STM32U575xx
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
+
+ #include "../Core/usbd_def.h"
 
 #define         DEVICE_ID1          (UID_BASE)
 #define         DEVICE_ID2          (UID_BASE + 0x4)
@@ -40,6 +43,7 @@ extern USBD_DescriptorsTypeDef HS_Desc;
 #ifdef __cplusplus
 }
 #endif
-
+#endif // #ifdef USB_DEVICE_ENABLED
+#endif // #ifdef	STM32U575xx
 #endif /* __USBD_DESC__C__ */
 

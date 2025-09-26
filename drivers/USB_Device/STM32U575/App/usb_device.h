@@ -22,20 +22,26 @@
 #ifndef __USB_DEVICE__H__
 #define __USB_DEVICE__H__
 
+#ifdef	STM32U575xx
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
+#include "../Class/CDC/usbd_cdc.h"
+
 #ifdef __cplusplus
  extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
 #include "stm32u5xx.h"
 #include "stm32u5xx_hal.h"
 #include "../Core/usbd_def.h"
-
-void MX_USB_Device_Init(void);
 
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef USB_DEVICE_ENABLED
+#endif // #ifdef	STM32U575xx
+
 
 #endif /* __USB_DEVICE__H__ */

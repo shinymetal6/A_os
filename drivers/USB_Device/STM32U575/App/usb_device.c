@@ -20,11 +20,12 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#ifdef	STM32U575xx
 
 #include "main.h"
+
+#ifdef	STM32U575xx
 #include "../../../../kernel/system_default.h"
-#include "../../../../kernel/A_exported_functions.h"
+#ifdef USB_DEVICE_ENABLED
 
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
@@ -34,23 +35,20 @@
 
 USBD_HandleTypeDef hUsbDeviceHS;
 
-void MX_USB_Device_Init(void)
+uint8_t MX_USB_Device_Init(void)
 {
   if (USBD_Init(&hUsbDeviceHS, &HS_Desc, DEVICE_HS) != USBD_OK)
-  {
-    Error_Handler();
-  }
+	  return 1;
+
   if (USBD_RegisterClass(&hUsbDeviceHS, &USBD_CDC) != USBD_OK)
-  {
-    Error_Handler();
-  }
+	  return 1;
+
   if (USBD_CDC_RegisterInterface(&hUsbDeviceHS, &USBD_Interface_fops_HS) != USBD_OK)
-  {
-    Error_Handler();
-  }
+	  return 1;
+
   if (USBD_Start(&hUsbDeviceHS) != USBD_OK)
-  {
-    Error_Handler();
-  }
+	  return 1;
+  return 0;
 }
-#endif
+#endif // #ifdef USB_DEVICE_ENABLED
+#endif // #ifdef	STM32U575xx

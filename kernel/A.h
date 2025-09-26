@@ -190,8 +190,9 @@ extern	void defrag_mem(void);
 extern	void reset_orphaned_chunks(uint8_t process);
 #endif // #ifdef	POOL_ENABLE
 
-extern	void MX_USB_DEVICE_Init(void);
+extern	uint8_t MX_USB_DEVICE_Init(void);
 extern	uint8_t MX_USB_Device_Init(void);
+
 extern	void MX_LWIP_Init(A_IpAddr_t *A_IpAddr);
 
 extern	void supervisor(void);

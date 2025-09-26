@@ -203,4 +203,32 @@
 		#define A_OS_SPI_ENABLED	1
 	#endif
 #endif
+
+#ifdef	STM32U575xx
+	#ifdef STM32U575xx_HAL_UART_H
+		#define A_OS_UART_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_TIM_H
+		#define A_OS_TIMERS_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_ADC_H
+		#define A_OS_ADC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_DAC_H
+		#define A_OS_DAC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2S_H
+		#define A_OS_I2S_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_RTC_H
+		#define A_OS_RTC_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_I2C_H
+		#define A_OS_I2C_ENABLED	1
+	#endif
+	#ifdef STM32G4xx_HAL_SPI_H
+		#define A_OS_SPI_ENABLED	1
+	#endif
+#endif // #ifdef	STM32U575xx
+
 #endif /* BOARDS_IODEF_COMMON_H_ */

@@ -18,11 +18,9 @@
   */
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
-#include "../../../../kernel/A_exported_functions.h"
-
 #ifdef	STM32U575xx
-#ifdef USB_ENABLED
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
 #ifdef USB_CDC
 
 #include "usbd_cdc_if.h"
@@ -133,12 +131,13 @@ static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* USER CODE END 10 */
 }
 
-extern	uint32_t hw_UsbPktReceived(uint8_t* Buf, uint32_t Len);
+void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 {
-	//CDC_Transmit_HS(Buf,len);
-	hw_UsbPktReceived(Buf,*Len);
+uint16_t	len = *Len;
+	if ( Rx_CallbackPtr != NULL )
+		Rx_CallbackPtr(Buf,len);
 
 	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 	USBD_CDC_ReceivePacket(&hUsbDeviceHS);
@@ -173,5 +172,5 @@ static int8_t CDC_TransmitCplt_HS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
 }
 
 #endif // #ifdef USB_CDC
-#endif // #ifdef USB_ENABLED
+#endif // #ifdef USB_DEVICE_ENABLED
 #endif // #ifdef	STM32U575xx

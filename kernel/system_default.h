@@ -35,6 +35,9 @@
 #ifdef	STM32G474xx
 		#include "../processors/STM32G474xx.h"
 #endif
+#ifdef	STM32U575xx
+		#include "../processors/STM32U575xx.h"
+#endif
 
 #undef	SAMPLE_PROCESSES_ENABLED
 

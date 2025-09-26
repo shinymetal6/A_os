@@ -21,12 +21,14 @@
 #ifndef __USBD_CDC_IF_H__
 #define __USBD_CDC_IF_H__
 
+#ifdef	STM32U575xx
+#include "../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
+#include "../Class/CDC/usbd_cdc.h"
+
 #ifdef __cplusplus
  extern "C" {
 #endif
-
-/* Includes ------------------------------------------------------------------*/
-#include "../Class/CDC/usbd_cdc.h"
 
 #define APP_RX_DATA_SIZE  2048
 #define APP_TX_DATA_SIZE  2048
@@ -40,6 +42,7 @@ uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
 #ifdef __cplusplus
 }
 #endif
-
+#endif // #ifdef USB_DEVICE_ENABLED
+#endif // #ifdef	STM32U575xx
 #endif /* __USBD_CDC_IF_H__ */
 

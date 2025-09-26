@@ -54,12 +54,11 @@
 - "stm32xxxxx_{eval}{discovery}{nucleo_144}.c"
 - "stm32xxxxx_{eval}{discovery}_io.c"
 EndBSPDependencies */
-#ifdef	STM32U575xx
 #include "main.h"
-#include "../../../../../kernel/system_default.h"
-#include "../../../../../kernel/A_exported_functions.h"
 
-#ifdef	USB_ENABLED
+#ifdef	STM32U575xx
+#include "../../../../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc.h"
@@ -717,6 +716,7 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
 
   return (uint8_t)USBD_OK;
 }
+
+#endif // #ifdef	STM32U575xx
 #endif // #ifdef	USB_ENABLED
 
-#endif
