@@ -49,7 +49,7 @@
 	#include "../SampleProcesses/sample_user_config.h"
 	#define		SAMPLE_PROCESSES_ENABLED		1
 	#undef		USER_PROCESSES
-	#warning 	"Sample processes enabled"
+	//#warning 	"Sample processes enabled"
 #endif
 
 // versioning
