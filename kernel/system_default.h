@@ -23,6 +23,8 @@
 #ifndef KERNEL_SYSTEM_DEFAULT_H_
 #define KERNEL_SYSTEM_DEFAULT_H_
 
+#include <stdint.h>
+
 #ifdef	STM32H743xx
 		#include "../processors/STM32H743xx.h"
 #endif
@@ -39,15 +41,17 @@
 		#include "../processors/STM32U575xx.h"
 #endif
 
-#undef	SAMPLE_PROCESSES_ENABLED
-
 #if __has_include("user_config.h") && __has_include(<stdint.h>)
 	#include "user_config.h"
+	#define		USER_PROCESSES	1
+	#undef		SAMPLE_PROCESSES_ENABLED
 #else
 	#include "../SampleProcesses/sample_user_config.h"
-	#define	SAMPLE_PROCESSES_ENABLED		1
+	#define		SAMPLE_PROCESSES_ENABLED		1
+	#undef		USER_PROCESSES
+	#warning 	"Sample processes enabled"
 #endif
 
 // versioning
-#define	A_OS_VERSION			"v2025.10.00_rc1"
+#define	A_OS_VERSION			"v2025.11.00_rc0"
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

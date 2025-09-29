@@ -34,6 +34,7 @@ If there is no "user_config.h" file the system defaults to sample processes.<br>
 This leaves A_os untouched when switching from Sample Processes to user processes.<br>
 Just having a "user_config.h" in the user processes area disables the Sample Processes<br>
 It's still under user responsibility to have a conveniently compiled "user_config.h".<br>
+Please note : the path of the user processes tree MUST be explicitly declared in the "Include File" tab in Compiler Settings
 # Added QtConfigurator<br>
 QtConfigurator is a simple tool to generate user_config.h file. Still in wip.<br>
 QtConfigurator is in Qt directory.<br>
