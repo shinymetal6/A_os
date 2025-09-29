@@ -186,7 +186,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[last_uart_used_handle].driver_private_data;
 		uarts_Drv->timeout_reload_value = uarts_Drv->timeout;
-#ifdef	STM32U575xx
+#ifdef	STM32U575xxA
 		uarts_Drv->flags &= ~UART_USES_DMA_RX;
 		uarts_Drv->flags &= ~UART_USES_DMA_TX;
 #else
@@ -429,7 +429,6 @@ UART_Drv_TypeDef	*uarts_Drv;
 				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
 #endif //#ifdef   STM32_HAS_STREAM_DMA
 				if (( uarts_Drv->rx_num_chars ) && ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len))
-				//if ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len)
 				{
 					if ( uarts_Drv->timeout )
 						uarts_Drv->timeout--;
@@ -438,9 +437,13 @@ UART_Drv_TypeDef	*uarts_Drv;
 						if ( uarts_Drv->timeout_mask == 0 )
 						{
 							uarts_Drv->timeout_mask = 1;
+#ifdef	STM32U575xx
+							uarts_Drv->uart->hdmarx->Instance->CCR &= ~DMA_CCR_EN;
+							 __HAL_DMA_SET_COUNTER(uarts_Drv->uart->hdmarx,uarts_Drv->rx_max_len);
+							uarts_Drv->uart->hdmarx->Instance->CCR |= DMA_CCR_EN;
+#endif
 							if (( uarts_Drv->flags & UART_WAKEUP_ON_TIMEOUT) == UART_WAKEUP_ON_TIMEOUT)
 							{
-								// clear_hw_flag();
 								activate_process(UARTS_DriverStruct[i].process,uarts_Drv->wakeup_id,WAKEUP_FLAGS_UART_TO | WAKEUP_FLAGS_UART_RX);
 							}
 						}
@@ -463,8 +466,8 @@ UART_Drv_TypeDef	*uarts_Drv;
 						#endif // 						#ifndef	STM32U575xx
 						#else
 						((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR = uarts_Drv->rx_max_len;
-						#endif
 						__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
+						#endif
 						/* end of unicorn dust */
 
 						uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
