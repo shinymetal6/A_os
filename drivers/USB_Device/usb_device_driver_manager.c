@@ -109,6 +109,7 @@ ITCM_AREA_CODE uint32_t usb_send(uint8_t handle,uint8_t* ptr, uint16_t len)
 	return (uint32_t )CDC_Transmit_FS(ptr, len);
 #endif
 }
+#endif // #ifdef USB_CDC
 
 /* callback from CDC interface */
 ITCM_AREA_CODE void usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
@@ -140,7 +141,6 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 		activate_process(USB_DriverStruct.process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
 	}
 }
-#endif // #ifdef USB_CDC
 
 #endif // #ifdef USB_DEVICE_ENABLED
 
