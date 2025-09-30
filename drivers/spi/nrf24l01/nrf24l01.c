@@ -327,13 +327,13 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 
 	if ( private_data->MHz == 0)
 		private_data->MHz = DEFAULT_FREQ;
+	if ( private_data->spi_timeout_ms == 0 )
+		private_data->spi_timeout_ms = NRF24L01_SPI_TIMEOUT;
 
 	SPI_DriverStruct[last_spi_used_handle].driver_private_data = (uint32_t *)private_data;
 	SPI_DriverStruct[last_spi_used_handle].process = get_current_process();
 	SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_IN_USE;
 	nrf24l01_init(last_spi_used_handle);
-	if ( private_data->spi_timeout_ms == 0 )
-		private_data->spi_timeout_ms = NRF24L01_SPI_TIMEOUT;
 	last_spi_used_handle++;
 	return 0;
 }
