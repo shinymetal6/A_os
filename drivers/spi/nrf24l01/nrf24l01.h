@@ -81,6 +81,8 @@ typedef struct
 
 }nrf24l01_Drv_TypeDef;
 
+#define	DEFAULT_FREQ	2410
+#define	DEFAULT_BPS		0
 
 typedef enum
 {

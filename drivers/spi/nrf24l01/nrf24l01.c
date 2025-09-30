@@ -277,7 +277,6 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf24l01_Drv->nrf_address,5);
 	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_address,5);
 	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_address,5);
-	/* */
 
 	nrf24l01_flush_rx_fifo(handle);
 	nrf24l01_flush_tx_fifo(handle);
@@ -325,6 +324,9 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 		return DRIVER_REQUEST_FAILED;
 	if ( private_data->RX_Buf == NULL)
 		return DRIVER_REQUEST_FAILED;
+
+	if ( private_data->MHz == 0)
+		private_data->MHz = DEFAULT_FREQ;
 
 	SPI_DriverStruct[last_spi_used_handle].driver_private_data = (uint32_t *)private_data;
 	SPI_DriverStruct[last_spi_used_handle].process = get_current_process();
