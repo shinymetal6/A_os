@@ -142,30 +142,6 @@ DCC_Drv_Pkt_TypeDef	DCC_CutOutExtendedPkt =
 	.endpacket_long = DCC_CTF_1
 };
 
-ITCM_AREA_CODE uint32_t driver_get_handle_from_dcc_dma_channel(uint32_t *handle_ch0 , uint32_t *handle_ch1)
-{
-uint32_t	i,drv_ret=0;
-DCC_Control_Drv_TypeDef	*dcc_driver_data;
-	for(i=0;i<MAX_TIM_DRIVERS;i++)
-	{
-		if ( TIM_DriverStruct[i].process != 0 )
-		{
-			dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[i].private_data;
-			if ( dcc_driver_data->hdma[0] != NULL)
-			{
-				*handle_ch0 = i;
-				drv_ret++;
-			}
-			if ( dcc_driver_data->hdma[1] != NULL)
-			{
-				*handle_ch1 = i;
-				drv_ret++;
-			}
-		}
-	}
-	return drv_ret;
-}
-
 ITCM_AREA_CODE uint8_t dcc_TIM_PWM_Start_DMA(uint8_t handle)
 {
 DCC_Control_Drv_TypeDef	*dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;
@@ -377,6 +353,30 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 }
 
 /* Interrupt */
+
+ITCM_AREA_CODE uint32_t driver_get_handle_from_dcc_dma_channel(uint32_t *handle_ch0 , uint32_t *handle_ch1)
+{
+uint32_t	i,drv_ret=0;
+DCC_Control_Drv_TypeDef	*dcc_driver_data;
+	for(i=0;i<MAX_TIM_DRIVERS;i++)
+	{
+		if ( TIM_DriverStruct[i].process != 0 )
+		{
+			dcc_driver_data = (DCC_Control_Drv_TypeDef *)TIM_DriverStruct[i].private_data;
+			if ( dcc_driver_data->hdma[0] != NULL)
+			{
+				*handle_ch0 = i;
+				drv_ret++;
+			}
+			if ( dcc_driver_data->hdma[1] != NULL)
+			{
+				*handle_ch1 = i;
+				drv_ret++;
+			}
+		}
+	}
+	return drv_ret;
+}
 
 ITCM_AREA_CODE void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 {
