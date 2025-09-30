@@ -25,6 +25,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
 
+#ifdef A_OS_SPI_ENABLED
 #ifdef	WIRELESS_NRF24L01
 
 #include "nrf24l01.h"
@@ -336,5 +337,6 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 }
 
 #endif	//#ifdef	WIRELESS_NRF24L01
+#endif // #ifdef A_OS_SPI_ENABLED
 
 
