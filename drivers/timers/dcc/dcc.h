@@ -52,8 +52,8 @@ typedef struct
 	uint8_t					status;
 	uint8_t					flags;
 	uint8_t					handle;
-	uint8_t					repetition;
-	uint8_t					repetition_counter;
+	uint8_t					command_repeat_number;
+	uint8_t					command_repeat_counter;
 	uint32_t				dma_dcc_value;
 	uint32_t				dma_cutout_value;
 	uint32_t				dma_dcc_index;
@@ -74,6 +74,7 @@ typedef struct
 #define	DCC_INITIALIZED			0x01
 #define	DCC_RUNNING				0x02
 #define	DCC_ON					0x04
+#define	DCC_RESET_SENT			0x08
 #define	DCC_PACKET_INPROGRESS	0x20
 #define	DCC_PACKET_EXTENDED		0x40
 #define	DCC_PACKET_PENDING		0x80
@@ -95,7 +96,6 @@ extern	uint32_t	dcc_init(uint8_t handle);
 extern	uint32_t	dcc_start(uint8_t handle);
 extern	uint32_t	dcc_stop(uint8_t handle);
 extern	uint32_t	dcc_get_status(uint8_t handle);
-extern	uint32_t	dcc_get_values(uint8_t handle,uint8_t *values,uint16_t values_number);
-extern	uint32_t	dcc_set_values(uint8_t handle,uint8_t *values,uint16_t values_number);
+extern	uint32_t	dcc_commands(uint8_t handle,uint8_t *values,uint16_t values_number);
 
 #endif /* DRIVERS_ACTUATORS_DCC_DCC_H_ */

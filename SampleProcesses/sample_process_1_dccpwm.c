@@ -34,8 +34,8 @@
  * Please note : on nucleo 743 cube generates wrong led pins, those are the corrected ones
  */
 #define	CH1_DCC_TIMER			htim1
-#define	CH1_DCC_TIMER_PWM		TIM_CHANNEL_1
-#define	CH1_DCC_TIMER_CUTOUT	TIM_CHANNEL_2
+#define	CH1_DCC_TIMER_PWM		TIM_CHANNEL_3
+#define	CH1_DCC_TIMER_CUTOUT	TIM_CHANNEL_4
 extern	TIM_HandleTypeDef 		CH1_DCC_TIMER;
 
 #ifdef DCC_CH2_ENABLE
@@ -56,6 +56,8 @@ DCC_Control_Drv_TypeDef	DCC_Control_ch1 =
 	.dcc_timer = &CH1_DCC_TIMER,
 	.timer_dcc_channel = CH1_DCC_TIMER_PWM,
 	.timer_cutout_channel = CH1_DCC_TIMER_CUTOUT,
+	.flags = DCC_TIMER_DUAL_PHASE,
+	//.command_repeat_number = 3,
 	.enable_port = DCC_ENABLE_GPIO_Port,
 	.enable_bit = DCC_ENABLE_Pin,
 };
@@ -82,6 +84,9 @@ Pwm_Control_TypeDef	Pwm_Backlight_Control =
 };
 uint32_t		backlight_pwm_driver_handle;
 #endif //#ifdef BACKLIGHT_PWM_ENABLE
+
+uint8_t	reset_time=0;
+uint8_t	commands[5];
 
 void sample_process_1_dccpwm(uint32_t process_id)
 {
@@ -130,6 +135,35 @@ uint32_t	dir = 0, pw=0;
 				pwm_set_width(backlight_pwm_driver_handle,pw);
 			}
 #endif //#ifdef BACKLIGHT_PWM_ENABLE
+			reset_time++;
+			if ( reset_time == 5)
+			{
+				commands[0] = 'R';
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_SET);
+				dcc_commands(dcc_ch1_driver_handle,commands,1);
+			}
+			if ( reset_time == 10)
+			{
+				commands[0] = 'A';
+				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_SET);
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_RESET);
+				dcc_commands(dcc_ch1_driver_handle,commands,1);
+			}
+			if ( reset_time == 15)
+			{
+				commands[0] = 'R';
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_SET);
+				dcc_commands(dcc_ch1_driver_handle,commands,1);
+			}
+			if ( reset_time == 20)
+			{
+				commands[0] = 'a';
+				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
+				dcc_commands(dcc_ch1_driver_handle,commands,1);
+			}
+			if ( reset_time > 25)
+				reset_time = 0;
+
 			process_led();
 		}
 	}
