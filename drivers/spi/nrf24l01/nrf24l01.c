@@ -31,7 +31,6 @@
 
 extern	SPI_DriverStruct_t	SPI_DriverStruct[MAX_SPI_DEVICES];
 extern	uint8_t				last_spi_used_handle,spi_driver_request;
-//nrf24l01_Drv_TypeDef		*nrf24l01_Drv;
 
 extern	void task_delay(uint32_t tick_count);
 
@@ -302,7 +301,6 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 
 ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 {
-//nrf24l01_Drv_TypeDef		*nrf24l01_Drv;
 	if ( SPI_DriverStruct[last_spi_used_handle].process != 0 )
 		return DRIVER_REQUEST_FAILED;
 	if ( private_data->spi == NULL)
