@@ -11,12 +11,12 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Project : fy-201023-00 
+ * Project : A_os
 */
 /*
  * nrf24l01.c
  *
- *  Created on: Dec 28, 2023
+ *  Created on: Sep 30, 2025
  *      Author: fil
  */
 #include "main.h"
@@ -24,7 +24,6 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-//#include "../../../kernel/kernel_opt.h"
 
 #ifdef	WIRELESS_NRF24L01
 
@@ -36,27 +35,27 @@ nrf24l01_Drv_TypeDef		*nrf24l01_Drv;
 
 extern	void task_delay(uint32_t tick_count);
 
-void nrf24l01_cs_high(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
+ITCM_AREA_CODE void nrf24l01_cs_high(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
 {
 	HAL_GPIO_WritePin(nrf24l01_Drv->CS_port,nrf24l01_Drv->CS_bit, GPIO_PIN_SET);
 }
 
-void nrf24l01_cs_low(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
+ITCM_AREA_CODE void nrf24l01_cs_low(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
 {
 	HAL_GPIO_WritePin(nrf24l01_Drv->CS_port,nrf24l01_Drv->CS_bit, GPIO_PIN_RESET);
 }
 
-void nrf24l01_ce_high(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
+ITCM_AREA_CODE void nrf24l01_ce_high(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
 {
 	HAL_GPIO_WritePin(nrf24l01_Drv->CE_port,nrf24l01_Drv->CE_bit, GPIO_PIN_SET);
 }
 
-void nrf24l01_ce_low(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
+ITCM_AREA_CODE void nrf24l01_ce_low(nrf24l01_Drv_TypeDef	*nrf24l01_Drv)
 {
 	HAL_GPIO_WritePin(nrf24l01_Drv->CE_port,nrf24l01_Drv->CE_bit, GPIO_PIN_RESET);
 }
 
-uint8_t nrf24l01_read_register(uint8_t handle,uint8_t reg)
+ITCM_AREA_CODE uint8_t nrf24l01_read_register(uint8_t handle,uint8_t reg)
 {
 uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
 uint8_t status;
@@ -74,7 +73,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return read_val;
 }
 
-uint8_t nrf24l01_write_register(uint8_t handle,uint8_t reg, uint8_t value)
+ITCM_AREA_CODE uint8_t nrf24l01_write_register(uint8_t handle,uint8_t reg, uint8_t value)
 {
 uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
 uint8_t status;
@@ -91,7 +90,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return write_val;
 }
 
-uint8_t nrf24l01_read_multiple_register(uint8_t handle,uint8_t reg, uint8_t *values,uint8_t reg_num)
+ITCM_AREA_CODE uint8_t nrf24l01_read_multiple_register(uint8_t handle,uint8_t reg, uint8_t *values,uint8_t reg_num)
 {
 uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
 uint8_t status;
@@ -108,7 +107,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return status;
 }
 
-uint8_t nrf24l01_write_multiple_register(uint8_t handle,uint8_t reg, uint8_t *values,uint8_t reg_num)
+ITCM_AREA_CODE uint8_t nrf24l01_write_multiple_register(uint8_t handle,uint8_t reg, uint8_t *values,uint8_t reg_num)
 {
 uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
 uint8_t status;
@@ -125,7 +124,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return NRF24L01_SUCCESS;
 }
 
-uint8_t nrf24l01_flush_rx_fifo(uint8_t handle)
+ITCM_AREA_CODE uint8_t nrf24l01_flush_rx_fifo(uint8_t handle)
 {
 uint8_t command = NRF24L01_CMD_FLUSH_RX;
 uint8_t status;
@@ -141,7 +140,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return NRF24L01_SUCCESS;
 }
 
-uint8_t nrf24l01_flush_tx_fifo(uint8_t handle)
+ITCM_AREA_CODE uint8_t nrf24l01_flush_tx_fifo(uint8_t handle)
 {
 uint8_t command = NRF24L01_CMD_FLUSH_TX;
 uint8_t status;
@@ -157,7 +156,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return NRF24L01_SUCCESS;
 }
 
-uint8_t nrf24l01_read_rx_fifo(uint8_t handle,uint8_t* rx_payload)
+ITCM_AREA_CODE uint8_t nrf24l01_read_rx_fifo(uint8_t handle,uint8_t* rx_payload)
 {
 uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 uint8_t status;
@@ -173,7 +172,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return status;
 }
 
-uint8_t nrf24l01_write_tx_fifo(uint8_t handle,uint8_t* tx_payload)
+ITCM_AREA_CODE uint8_t nrf24l01_write_tx_fifo(uint8_t handle,uint8_t* tx_payload)
 {
 uint8_t command = NRF24L01_CMD_W_TX_PAYLOAD;
 uint8_t status;
@@ -190,7 +189,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return status;
 }
 
-uint8_t nrf24l01_rx(uint8_t handle,uint8_t* rx_payload )
+ITCM_AREA_CODE uint8_t nrf24l01_rx(uint8_t handle,uint8_t* rx_payload )
 {
 uint8_t status;
 
@@ -203,7 +202,7 @@ uint8_t status;
 	return status;
 }
 
-uint8_t nrf24l01_set_rx_address(uint8_t handle,uint8_t* rx_address )
+ITCM_AREA_CODE uint8_t nrf24l01_set_rx_address(uint8_t handle,uint8_t* rx_address )
 {
 uint8_t nrf24l01_status;
 
@@ -216,7 +215,7 @@ uint8_t nrf24l01_status;
 	return nrf24l01_status;
 }
 
-uint8_t nrf24l01_get_tx_irq_goto_rx(uint8_t handle)
+ITCM_AREA_CODE uint8_t nrf24l01_get_tx_irq_goto_rx(uint8_t handle)
 {
 uint8_t nrf24l01_status;
 nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[handle].driver_private_data;
@@ -233,12 +232,12 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return nrf24l01_status;
 }
 
-uint8_t nrf24l01_get_status(uint8_t handle)
+ITCM_AREA_CODE uint8_t nrf24l01_get_status(uint8_t handle)
 {
 	return nrf24l01_read_register(handle,NRF24L01_REG_STATUS);
 }
 
-uint8_t nrf24l01_tx(uint8_t handle,uint8_t* tx_payload , uint8_t* tx_address)
+ITCM_AREA_CODE uint8_t nrf24l01_tx(uint8_t handle,uint8_t* tx_payload , uint8_t* tx_address)
 {
 uint8_t nrf24l01_status;
 nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[handle].driver_private_data;
@@ -260,7 +259,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	return nrf24l01_read_register(handle,NRF24L01_REG_STATUS);
 }
 
-uint8_t nrf24l01_init(uint8_t handle,uint16_t MHz, uint8_t bps , uint8_t mode , uint8_t* nrf_address)
+ITCM_AREA_CODE uint8_t nrf24l01_init(uint8_t handle )
 {
 uint8_t nrf24l01_status;
 nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[handle].driver_private_data;
@@ -275,14 +274,14 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_write_register(handle,NRF24L01_REG_EN_RXADDR, 0x3f);
 	nrf24l01_write_register(handle,NRF24L01_REG_SETUP_AW, 0x03);
 	nrf24l01_write_register(handle,NRF24L01_REG_SETUP_RETR, 0xff);	// 4000 uS , 15 retransmit
-	nrf24l01_write_register(handle,NRF24L01_REG_RF_CH, MHz - 2400);
-	nrf24l01_write_register(handle,NRF24L01_REG_RF_SETUP, 0x07 | ((bps << 3) & 0x08 ));
+	nrf24l01_write_register(handle,NRF24L01_REG_RF_CH, nrf24l01_Drv->MHz - 2400);
+	nrf24l01_write_register(handle,NRF24L01_REG_RF_SETUP, 0x07 | ((nrf24l01_Drv->bps << 3) & 0x08 ));
 	nrf24l01_write_register(handle,NRF24L01_REG_DYNPD, 0x00);
 	nrf24l01_write_register(handle,NRF24L01_REG_FEATURE, 0x00);
 
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf24l01_Drv->nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_address,5);
 
 	/* */
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P0, 32);
@@ -292,19 +291,19 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P4, 32);
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P5, 32);
 
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf24l01_Drv->nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_address,5);
 	/* */
 
 	nrf24l01_flush_rx_fifo(handle);
 	nrf24l01_flush_tx_fifo(handle);
 
-	if ( mode == NRF24L01_MODE_TX )
+	if ( nrf24l01_Drv->mode == NRF24L01_MODE_TX )
 	{
 		nrf24l01_write_register(handle,NRF24L01_REG_CONFIG, 0x4a);						// pup, crc en 1 bytes,tx, rx dr irq disabled
 	}
-	if ( mode == NRF24L01_MODE_RX )
+	if ( nrf24l01_Drv->mode == NRF24L01_MODE_RX )
 	{
 		nrf24l01_write_register(handle,NRF24L01_REG_CONFIG, 0x3b);						// pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
 	}
@@ -313,7 +312,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 
 	nrf24l01_status = nrf24l01_read_register(handle,NRF24L01_REG_STATUS);
 
-	if ( mode == NRF24L01_MODE_RX )
+	if ( nrf24l01_Drv->mode == NRF24L01_MODE_RX )
 		nrf24l01_ce_high(nrf24l01_Drv);
 	return nrf24l01_status;
 }
@@ -352,8 +351,11 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *driver_private_d
 	nrf24l01_Drv->device_id = driver_private_data->device_id;
 	nrf24l01_Drv->IRQ_number 			= driver_private_data->IRQ_number;
 	SPI_DriverStruct[last_spi_used_handle].status = DRIVER_STATUS_IN_USE;
+	nrf24l01_init(last_spi_used_handle);
 	last_spi_used_handle++;
 	return 0;
 }
 
 #endif	//#ifdef	WIRELESS_NRF24L01
+
+

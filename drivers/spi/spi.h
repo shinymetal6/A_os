@@ -38,6 +38,7 @@ typedef struct
 
 #include "spi_lcd/spi_lcd.h"
 #include "LoRa/LoRa.h"
+#include "nrf24l01/nrf24l01.h"
 
 #endif // #ifdef A_OS_SPI_ENABLED
 
