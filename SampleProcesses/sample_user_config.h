@@ -37,6 +37,7 @@
 //#define	LORAWAN_ENABLE	1
 //#define	LWIP_ENABLE		1
 //#define	WIFI_ENABLE		1
+#define	WIRELESS_NRF24L01		1
 
 #define	POWERSAVING_ENABLED	1
 

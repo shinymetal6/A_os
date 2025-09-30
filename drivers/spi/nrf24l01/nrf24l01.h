@@ -51,6 +51,32 @@
  */
 
 #define NRF24L01_PAYLOAD_LENGTH				32     // 1 - 32bytes
+typedef struct
+{
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t				handle;
+	uint32_t 			wakeup_id;
+	SPI_HandleTypeDef	*spi;
+	uint32_t 			spi_timeout_ms;
+	uint32_t 			device_id;
+	uint16_t			CS_bit;
+	GPIO_TypeDef	 	*CS_port;
+	uint16_t			CE_bit;
+	GPIO_TypeDef	 	*CE_port;
+	uint16_t			RESET_bit;
+	GPIO_TypeDef	 	*RESET_port;
+	uint16_t			IRQ_bit;
+	GPIO_TypeDef	 	*IRQ_port;
+	IRQn_Type		 	IRQ_number;
+	uint8_t				*TX_Buf;		// internal tx buffer
+	uint8_t				tx_payloadLen; 	// tx len
+	uint8_t				*RX_Buf;		// internal rx buffer
+	uint8_t				rx_payloadLen; 	// rx len
+	uint8_t				Packet_Buf[NRF24L01_PAYLOAD_LENGTH];
+
+}nrf24l01_Drv_TypeDef;
+
 
 typedef enum
 {
@@ -118,11 +144,14 @@ typedef enum
 #define NRF24L01_ERROR					0xff
 #define NRF24L01_SUCCESS				0x00
 
+#define	NRF24L01_SPI_TIMEOUT		100
+/*
 extern	uint8_t nrf24l01_init(uint16_t MHz, uint8_t bps , uint8_t mode,uint8_t* nrf_address);
 extern	uint8_t nrf24l01_tx(uint8_t* tx_payload , uint8_t* tx_address);
 extern	uint8_t nrf24l01_get_tx_irq_goto_rx(void);
 extern	uint8_t nrf24l01_set_rx_address(uint8_t* rx_address );
 extern	uint8_t nrf24l01_rx(uint8_t* rx_payload);
 extern	uint8_t nrf24l01_get_status(void);
+*/
 
 #endif /* DRIVERS_NRF24L01_NRF24L01_H_ */

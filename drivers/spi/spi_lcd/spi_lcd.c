@@ -27,7 +27,7 @@
 #include "../../../kernel/scheduler.h"
 //#include "../../../kernel/kernel_opt.h"
 
-#ifdef STM32H7xx_HAL_SPI_H
+#ifdef A_OS_SPI_ENABLED
 
 #include "spi_lcd.h"
 #include <string.h>
@@ -212,5 +212,5 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 	return DRIVER_REQUEST_FAILED;
 }
 
-#endif // #ifdef STM32H7xx_HAL_SPI_H
+#endif // #ifdef A_OS_SPI_ENABLED
 
