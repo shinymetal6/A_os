@@ -13,7 +13,7 @@ Latest 19.x has some severe bugs both on IDE and libraries.<br>
 DON'T USE 19.x<br>
 <br><br>
 # New tree<br>
-The directory "board" has been replaced with the directory "processors" with a different logic<br>
+From v2025.10.00 onward, the directory "board" has been replaced with the directory "processors" with a different logic<br>
 The "processors" directory contains one include file for each supported processor.<br>
 # New settings for user processes<br>
 1 : added user include file for "user_config.h", so the settings can be defined in user space.<br>
