@@ -26,7 +26,7 @@
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
 
-#ifdef STM32H7xx_HAL_SPI_H
+#ifdef A_OS_SPI_ENABLED
 #include "lcd_7735.h"
 
 GPIO_TypeDef	*ST7735_cs_port;
@@ -411,5 +411,5 @@ ITCM_AREA_CODE uint8_t ST7735_GetFontWidth(FontDef font)
 	return font.width;
 }
 
-#endif // #ifdef STM32H7xx_HAL_SPI_H
+#endif // #ifdef A_OS_SPI_ENABLED
 

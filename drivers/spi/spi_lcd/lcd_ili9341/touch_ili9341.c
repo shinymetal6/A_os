@@ -29,7 +29,7 @@
 #include "../../../../kernel/A_exported_functions.h"
 #ifdef TOUCH_ENABLED
 
-#ifdef STM32H7xx_HAL_SPI_H
+#ifdef A_OS_SPI_ENABLED
 
 #define READ_X 0xD0
 #define READ_Y 0x90
@@ -122,6 +122,6 @@ uint32_t ret_val = 0;
 	return ret_val;
 }
 
-#endif // #ifdef	STM32H7xx_HAL_SPI_H
+#endif // #ifdef	A_OS_SPI_ENABLED
 
 #endif // #ifdef TOUCH_ENABLED

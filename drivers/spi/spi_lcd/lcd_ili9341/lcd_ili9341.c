@@ -27,7 +27,9 @@
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
 
-#ifdef STM32H7xx_HAL_SPI_H
+#ifdef A_OS_SPI_ENABLED
+#ifdef A_OS_LCD_ENABLED
+
 #include "lcd_ili9341.h"
 
 //uint16_t		framebuffer_rect[ILI9341_WIDTH*ILI9341_HEIGHT];
@@ -386,4 +388,5 @@ uint32_t ILI9341_InvertColors(uint8_t invert)
 	return LCD_OK;
 }
 
-#endif // #ifdef STM32H7xx_HAL_SPI_H
+#endif // #ifdef A_OS_LCD_ENABLED
+#endif // #ifdef A_OS_SPI_ENABLED

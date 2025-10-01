@@ -209,7 +209,15 @@ UART_Drv_TypeDef	*uarts_Drv;
 #ifdef	STM32U575xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - (uarts_Drv->uart->hdmarx->Instance->CBR1 & DMA_CBR1_BNDT);
 #else
+#ifdef	STM32F446xx
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->NDTR;
+#else
+#ifdef	STM32L152xE
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
+#else
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
+#endif
+#endif
 #endif
 		last_uart_used_handle++;
 		uart_driver_request++;
@@ -292,7 +300,11 @@ UART_Drv_TypeDef	*uarts_Drv;
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 #endif	//#ifdef	STM32U575xx
 #else	//#ifdef   STM32_HAS_STREAM_DMA
+#ifdef	STM32F446xx
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->NDTR;
+#else
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+#endif //#ifdef   STM32_HAS_STREAM_DMA
 #endif //#ifdef   STM32_HAS_STREAM_DMA
 
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
@@ -426,7 +438,11 @@ UART_Drv_TypeDef	*uarts_Drv;
 				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 #endif	//#ifdef	STM32U575xx
 #else	//#ifdef   STM32_HAS_STREAM_DMA
-				uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+#ifdef	STM32F446xx
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->NDTR;
+#else
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR;
+#endif
 #endif //#ifdef   STM32_HAS_STREAM_DMA
 				if (( uarts_Drv->rx_num_chars ) && ( uarts_Drv->rx_num_chars != uarts_Drv->rx_max_len))
 				{
@@ -465,7 +481,11 @@ UART_Drv_TypeDef	*uarts_Drv;
 						((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR = uarts_Drv->rx_max_len;
 						#endif // 						#ifndef	STM32U575xx
 						#else
+#ifdef	STM32F446xx
+						uarts_Drv->uart->hdmarx->Instance->NDTR = uarts_Drv->rx_max_len;
+#else
 						((DMA_Channel_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->CNDTR = uarts_Drv->rx_max_len;
+#endif
 						__HAL_DMA_ENABLE(uarts_Drv->uart->hdmarx);
 						#endif
 						/* end of unicorn dust */

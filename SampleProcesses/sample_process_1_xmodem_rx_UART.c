@@ -21,6 +21,7 @@
  */
 #include "main.h"
 #include "sample_A_os_includes.h"
+
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_UART
@@ -29,19 +30,38 @@
 #define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
 #else
-#define	xmodem_rx_data_len		0x17fff
+#ifdef	STM32F446xx
+#define	xmodem_rx_data_len		0xffff
+uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
+#else
+#define	xmodem_rx_data_len		0x3fff
 uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
 #endif
+#endif
+
 #ifdef	STM32U575xx
 extern	UART_HandleTypeDef	huart1;
 #define	UART				huart1
 #define	UART_WAKEUP			WAKEUP_FROM_UART1_IRQ
 #define	UART_EVENT			EVENT_UART1_IRQ
+#endif
+#ifdef	STM32F446xx
+extern	UART_HandleTypeDef	huart2;
+#define	UART				huart2
+#define	UART_WAKEUP			WAKEUP_FROM_UART2_IRQ
+#define	UART_EVENT			EVENT_UART2_IRQ
+#else
+#ifdef	STM32L152xE
+extern	UART_HandleTypeDef	huart2;
+#define	UART				huart2
+#define	UART_WAKEUP			WAKEUP_FROM_UART2_IRQ
+#define	UART_EVENT			EVENT_UART2_IRQ
 #else
 extern	UART_HandleTypeDef	huart3;
 #define	UART				huart3
 #define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
 #define	UART_EVENT			EVENT_UART3_IRQ
+#endif
 #endif
 
 #define	UART_RX_BUF_SIZE	512
@@ -56,8 +76,8 @@ UART_Drv_TypeDef Uart_Drv =
 	.uart = &UART,
 	.wakeup_id = UART_WAKEUP,
 	.timeout = 100,
-	//.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
 uint32_t	uart_driver_handle;

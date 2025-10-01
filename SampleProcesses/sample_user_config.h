@@ -58,6 +58,14 @@
 /* drivers */
 
 #define USB_DEVICE_ENABLED		1
+#ifdef	STM32F446xx
+#undef USB_DEVICE_ENABLED
+#endif
+#ifdef	STM32L152xE
+#undef USB_DEVICE_ENABLED
+#endif
+
+
 #ifdef USB_DEVICE_ENABLED
 	#define	USB_CDC				1
 	//#define	USB_MIDI			1

@@ -40,6 +40,12 @@
 #ifdef	STM32U575xx
 		#include "../processors/STM32U575xx.h"
 #endif
+#ifdef	STM32F446xx
+		#include "../processors/STM32F446xx.h"
+#endif
+#ifdef	STM32L152xE
+		#include "../processors/STM32L152xE.h"
+#endif
 
 #if __has_include("user_config.h") && __has_include(<stdint.h>)
 	#include "user_config.h"

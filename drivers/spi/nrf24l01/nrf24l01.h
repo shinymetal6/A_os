@@ -24,14 +24,14 @@
 #define DRIVERS_SPI_NRF24L01_NRF24L01_H_
 
 /* nucleo L053
- * nrf24_irq	CN10-34
- * spi2_sck		CN10-30
- * spi2_miso	CN10-28
- * spi2-mosi	CN10-26
- * spi2-ss		CN10-24
- * nrf_ce		CN10-22
- * pwr_3.3V		 CN7-16
- * gnd			 CN7-20
+ * nrf24_irq	CN10-34		PC4
+ * spi2_sck		CN10-30		PB13
+ * spi2_miso	CN10-28		PB14
+ * spi2-mosi	CN10-26		PB15
+ * spi2-ss		CN10-24		PB1
+ * nrf_ce		CN10-22		PB2
+ * pwr_3.3V		CN7-16
+ * gnd			CN7-20
  *
  * lnrf24l01+pa+lna module or lnrf24l01 module
  * gnd			1	2		vcc
@@ -51,6 +51,7 @@
  */
 
 #define NRF24L01_PAYLOAD_LENGTH				32     // 1 - 32bytes
+#define NRF24L01_ADDRESS_LENGTH				5
 typedef struct
 {
 	uint8_t				status;
@@ -60,7 +61,7 @@ typedef struct
 	uint16_t 			MHz;
 	uint8_t 			bps;
 	uint8_t 			mode;
-	uint8_t				nrf_address[5];
+	uint8_t				nrf_address[NRF24L01_ADDRESS_LENGTH];
 	SPI_HandleTypeDef	*spi;
 	uint32_t 			spi_timeout_ms;
 	uint32_t 			device_id;
@@ -68,8 +69,6 @@ typedef struct
 	GPIO_TypeDef	 	*CS_port;
 	uint16_t			CE_bit;
 	GPIO_TypeDef	 	*CE_port;
-	uint16_t			RESET_bit;
-	GPIO_TypeDef	 	*RESET_port;
 	uint16_t			IRQ_bit;
 	GPIO_TypeDef	 	*IRQ_port;
 	IRQn_Type		 	IRQ_number;
@@ -78,7 +77,7 @@ typedef struct
 	uint8_t				*RX_Buf;		// internal rx buffer
 	uint8_t				rx_payloadLen; 	// rx len
 	uint8_t				Packet_Buf[NRF24L01_PAYLOAD_LENGTH];
-
+	void 				(*nrf24l01_HandleCallback)(uint16_t GPIO_Pin);
 }nrf24l01_Drv_TypeDef;
 
 #define	DEFAULT_FREQ	2410

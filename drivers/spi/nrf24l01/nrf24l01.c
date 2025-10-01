@@ -231,7 +231,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_ce_low(nrf24l01_Drv);
 	nrf24l01_write_register(handle,NRF24L01_REG_CONFIG, 0x00);						// power down
 	nrf24l01_write_register(handle,NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
-	task_delay(1);															// need to wait at least 130uSec for radio switch
+	task_delay(1);																	// need to wait at least 130uSec for radio switch
 	nrf24l01_write_register(handle,NRF24L01_REG_STATUS, 0x70);						// clear irqs
 	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,tx_address,5);
 	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,tx_address,5);
@@ -309,8 +309,6 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 		return DRIVER_REQUEST_FAILED;
 	if ( private_data->CE_port == NULL)
 		return DRIVER_REQUEST_FAILED;
-	if ( private_data->RESET_port == NULL)
-		return DRIVER_REQUEST_FAILED;
 	if ( private_data->IRQ_port == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( private_data->device_id == 0)
@@ -324,6 +322,7 @@ ITCM_AREA_CODE uint32_t	nrf24l01_register(nrf24l01_Drv_TypeDef *private_data)
 		return DRIVER_REQUEST_FAILED;
 	if ( private_data->RX_Buf == NULL)
 		return DRIVER_REQUEST_FAILED;
+	//private_data->nrf24l01_HandleCallback 	= sx126x_handle_dio1_irq;
 
 	if ( private_data->MHz == 0)
 		private_data->MHz = DEFAULT_FREQ;
