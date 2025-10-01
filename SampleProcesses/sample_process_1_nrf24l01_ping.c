@@ -67,10 +67,17 @@ GPIO_Interrupt_DriverStruct_t	nrf24l01_Int_Driver =
 	.irq_exti_callback = nrf24l01_handle_dio1_irq,
 };
 
-uint8_t irq_count=0;
+uint8_t irq_txcount=0,irq_rxcount=0;
+uint8_t nrf_status=0;
+uint8_t nrf_mode=0;
 void nrf24l01_handle_dio1_irq(uint16_t GPIO_Pin)
 {
-	irq_count++;
+	nrf_status = nrf24l01_get_status(nrf24l01_handle);
+	nrf_mode = nrf24l01_get_mode(nrf24l01_handle);
+	if ( nrf_mode == NRF24L01_MODE_TX)
+		irq_txcount++;
+	else
+		irq_rxcount++;
 }
 
 void sample_process_1_init(uint32_t process_id)

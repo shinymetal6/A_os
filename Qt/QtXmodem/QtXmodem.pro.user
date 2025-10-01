@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.11.0, 2025-09-26T17:23:39. -->
+<!-- Written by QtCreator 4.11.0, 2025-10-01T10:25:20. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -282,9 +282,8 @@
     </valuelist>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">QtXmodem2</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/Devel/Stm32_18.1_A_os_2025.10-rc/A_os/Qt/QtXmodem/QtXmodem.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Devel/Stm32_18.1_A_os_2025.10-rc/A_os/Qt/QtXmodem/QtXmodem.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/Devel/Stm32_18.1_A_os_2025.11-rc/A_os/Qt/QtXmodem/QtXmodem.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/Devel/Stm32_18.1_A_os_2025.11-rc/A_os/Qt/QtXmodem/QtXmodem.pro</value>
     <value type="QString" key="RunConfiguration.Arguments"></value>
     <value type="bool" key="RunConfiguration.Arguments.multi">false</value>
     <value type="QString" key="RunConfiguration.OverrideDebuggerStartup"></value>
@@ -295,7 +294,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Devel/Stm32_18.1_A_os_2025.10-rc/A_os/Qt/build-QtXmodem-Desktop-Debug</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/Devel/Stm32_18.1_A_os_2025.11-rc/A_os/Qt/build-QtXmodem-Desktop-Debug</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

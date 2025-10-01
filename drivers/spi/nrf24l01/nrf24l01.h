@@ -61,6 +61,8 @@ typedef struct
 	uint16_t 			MHz;
 	uint8_t 			bps;
 	uint8_t 			mode;
+	uint8_t 			nrf_status;
+	uint8_t 			nrf_command;
 	uint8_t				nrf_address[NRF24L01_ADDRESS_LENGTH];
 	SPI_HandleTypeDef	*spi;
 	uint32_t 			spi_timeout_ms;
@@ -157,6 +159,6 @@ extern uint8_t nrf24l01_get_tx_irq_goto_rx(uint8_t handle);
 extern uint8_t nrf24l01_set_rx_address(uint8_t handle,uint8_t* rx_address );
 extern uint8_t nrf24l01_rx(uint8_t handle,uint8_t* rx_payload );
 extern uint8_t nrf24l01_get_status(uint8_t handle);
-
+extern uint8_t nrf24l01_get_mode(uint8_t handle);
 
 #endif /* DRIVERS_SPI_NRF24L01_NRF24L01_H_ */
