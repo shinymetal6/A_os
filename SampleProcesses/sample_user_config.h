@@ -57,6 +57,8 @@
 
 /* drivers */
 
+//#define	LCD_ENABLED		1
+
 #define USB_DEVICE_ENABLED		1
 #ifdef	STM32F446xx
 #undef USB_DEVICE_ENABLED

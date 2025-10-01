@@ -26,15 +26,23 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_PING_NRF24L01
 
+//#define		RX_MODE		1
+#define		TX_MODE		1
+
 #ifdef	STM32L152xE
 		extern	SPI_HandleTypeDef hspi2;
 #endif // #ifdef	STM32L152xE
+#ifdef	STM32F446xx
+		extern	SPI_HandleTypeDef hspi2;
+#endif // #ifdef	STM32L152xE
+
+
 uint8_t txbuf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t rxbuf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t Packet_Buf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t address[NRF24L01_ADDRESS_LENGTH] = {11,22,33,44,55};
 
-nrf24l01_Drv_TypeDef	nrf24l01_Drv =
+static nrf24l01_Drv_TypeDef	nrf24l01_Drv =
 {
 		.wakeup_id = 1,
 		.MHz = 2420,
@@ -72,31 +80,32 @@ uint8_t nrf_status=0;
 uint8_t nrf_mode=0;
 void nrf24l01_handle_dio1_irq(uint16_t GPIO_Pin)
 {
-	nrf_status = nrf24l01_get_status(nrf24l01_handle);
-	nrf_mode = nrf24l01_get_mode(nrf24l01_handle);
-	if ( nrf_mode == NRF24L01_MODE_TX)
-		irq_txcount++;
-	else
-		irq_rxcount++;
+
 }
 
 void sample_process_1_init(uint32_t process_id)
 {
-uint8_t i;
 	nrf24l01_handle = nrf24l01_register(&nrf24l01_Drv);
-	//nrf24l01_Int_Driver.irq_exti_callback = LORA_Drv.nrf24l01_HandleCallback,
-	// then register the driver
 	gpio_int_register(&nrf24l01_Int_Driver);
-	for(i=0;i<NRF24L01_PAYLOAD_LENGTH; i++)
-		txbuf[i] = i;
+#ifdef TX_MODE
+	sprintf((char *)txbuf,"Message from NRF2401L");
+#endif // #ifdef TX_MODE
 }
+
+
+#ifdef TX_MODE
 uint8_t	tx_result;
+#endif // #ifdef TX_MODE
+
 void sample_process_1_ping_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+#ifdef TX_MODE
 	create_timer(TIMER_ID_1,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+#else
+	nrf24l01_set_rx_address(nrf24l01_handle,address);
+#endif // #ifdef TX_MODE
 
 	while(1)
 	{
@@ -106,9 +115,24 @@ uint32_t	wakeup,flags;
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			if (( flags & TIMER_ID_0) == TIMER_ID_0)
-				process_led();
+			{
+				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+			}
+#ifdef TX_MODE
 			if (( flags & TIMER_ID_1) == TIMER_ID_1)
+			{
+				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
 				tx_result = nrf24l01_tx(nrf24l01_handle,txbuf,address);
+			}
+#endif // #ifdef RX_MODE
+		}
+		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
+		{
+#ifdef RX_MODE
+			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+			nrf24l01_rx(nrf24l01_handle,nrf24l01_Drv.RX_Buf);
+			bzero(rxbuf,NRF24L01_PAYLOAD_LENGTH);
+#endif // #ifdef RX_MODE
 		}
 	}
 }

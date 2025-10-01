@@ -23,6 +23,8 @@
 #ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
 #define DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
 
+#ifdef LCD_ENABLED
+
 #include "../fonts.h"
 #include <stdlib.h>
 #include <stdbool.h>
@@ -287,5 +289,6 @@ void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t co
 extern	void 	ST7735_ClearScreen(void);
 extern	void 	A_os_7735_SPI_TxCpltCallback(void);
 
+#endif // #ifdef LCD_ENABLED
 
 #endif /* DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_ */

@@ -28,7 +28,7 @@
 #include "../../../../kernel/A_exported_functions.h"
 
 #ifdef A_OS_SPI_ENABLED
-#ifdef A_OS_LCD_ENABLED
+#ifdef LCD_ENABLED
 
 #include "lcd_ili9341.h"
 
@@ -388,5 +388,5 @@ uint32_t ILI9341_InvertColors(uint8_t invert)
 	return LCD_OK;
 }
 
-#endif // #ifdef A_OS_LCD_ENABLED
+#endif // #ifdef LCD_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED

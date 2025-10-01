@@ -82,7 +82,7 @@ ITCM_AREA_CODE uint8_t flash_Lock(void)
 		return 0;
 	return 1;
 }
-
+/*
 ITCM_AREA_CODE	static void flash_Program_Byte(uint32_t Address, uint8_t Data)
 {
 	CLEAR_BIT(FLASH->CR, FLASH_CR_PSIZE);
@@ -98,7 +98,7 @@ ITCM_AREA_CODE	static void flash_Program_HalfWord(uint32_t Address, uint16_t Dat
 	FLASH->CR |= FLASH_CR_PG;
 	*(__IO uint16_t*)Address = Data;
 }
-
+*/
 ITCM_AREA_CODE	static void flash_Program_Word(uint32_t Address, uint32_t Data)
 {
 	CLEAR_BIT(FLASH->CR, FLASH_CR_PSIZE);
@@ -205,7 +205,7 @@ uint32_t FlashAddress = (uint32_t)dst;
 		FlashAddress = FLASH_BASE_ADDR;
 		while (FlashAddress < FLASH_END_ADDR)
 		{
-			if ( HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, FlashAddress, (uint64_t )src) == 0 )
+			if ( HAL_FLASH_Program(FLASH_TYPEPROGRAM_DOUBLEWORD, FlashAddress, (uint64_t )*src) == 0 )
 				FlashAddress = FlashAddress + (FLASH_ROW_SIZE*sizeof(uint64_t));
 			else
 				return 1;

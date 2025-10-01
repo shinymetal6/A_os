@@ -25,7 +25,7 @@
 #include "../../../../kernel/A_exported_functions.h"
 
 #ifdef TOUCH_ENABLED
-#ifdef A_OS_SPI_ENABLED
+#ifdef LCD_ENABLED
 
 #include "lcd_ili9341.h"
 #include <string.h>
@@ -98,5 +98,5 @@ char		calibration_string[CALIBRATION_STRING_LEN];
 
 }
 
-#endif // #ifdef	A_OS_SPI_ENABLED
+#endif // #ifdef LCD_ENABLED
 #endif // #ifdef TOUCH_ENABLED

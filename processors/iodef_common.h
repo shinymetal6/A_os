@@ -255,7 +255,7 @@
 	#ifdef STM32G4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
-	#ifdef STM32G4xx_HAL_SPI_H
+	#ifdef HAL_SPI_MODULE_ENABLED
 		#define A_OS_SPI_ENABLED	1
 	#endif
 #endif // #ifdef	STM32F446xx

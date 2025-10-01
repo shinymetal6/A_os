@@ -27,6 +27,8 @@
 #include "../../../../kernel/A_exported_functions.h"
 
 #ifdef A_OS_SPI_ENABLED
+#ifdef LCD_ENABLED
+
 #include "lcd_7735.h"
 
 GPIO_TypeDef	*ST7735_cs_port;
@@ -410,6 +412,7 @@ ITCM_AREA_CODE uint8_t ST7735_GetFontWidth(FontDef font)
 {
 	return font.width;
 }
+#endif // #ifdef LCD_ENABLED
 
 #endif // #ifdef A_OS_SPI_ENABLED
 

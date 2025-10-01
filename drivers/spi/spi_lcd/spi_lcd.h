@@ -23,6 +23,12 @@
 #ifndef DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 #define DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+
+#ifdef LCD_ENABLED
+
 #define	LCD_IS_7735		0x7735
 #define	LCD_IS_9341		0x9341
 
@@ -114,5 +120,6 @@ extern uint32_t	spi_lcd_draw_logo(uint8_t handle,uint16_t* image);
 
 #include	"lcd_st7735/lcd_7735.h"
 #include	"lcd_ili9341/lcd_ili9341.h"
+#endif // #ifdef LCD_ENABLED
 
 #endif /* DRIVERS_SPI_SPI_LCD_SPI_LCD_H_ */

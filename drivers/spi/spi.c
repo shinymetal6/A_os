@@ -45,8 +45,10 @@ uint32_t	i;
 		{
 			if ( SPI_DriverStruct[i].bus  == hspi )
 			{
+#ifdef LCD_ENABLED
 				SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[i].driver_private_data;
 				spi_lcd_Drv->flags  |= SPI_DMA_DONE;
+#endif // #ifdef LCD_ENABLED
 			}
 		}
 	}

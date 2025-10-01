@@ -26,7 +26,7 @@
 #include "main.h"
 #include "../../../../kernel/system_default.h"
 #ifdef A_OS_SPI_ENABLED
-#ifdef A_OS_LCD_ENABLED
+#ifdef LCD_ENABLED
 
 #include "lcd_ili9341.h"
 #include "../fonts.h"
@@ -106,7 +106,7 @@ extern	void ILI9341_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2,
 extern	void ILI9341_Reset(void);
 extern	void ILI9341_ClearScreen(void);
 
-#endif // #ifdef A_OS_LCD_ENABLED
+#endif // #ifdef LCD_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 
 #endif /* DRIVERS_LCD_ILI9341_LCD_ILI9341_H_ */

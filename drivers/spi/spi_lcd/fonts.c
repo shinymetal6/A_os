@@ -21,6 +21,12 @@
  */
 
 #include "main.h"
+#include "../../../kernel/system_default.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+
+#ifdef LCD_ENABLED
+
 #include "fonts.h"
 
 __attribute__((section(".table"))) static const uint16_t Font7x10 [] = {
@@ -423,4 +429,5 @@ FontDef Font_7x11 = {7,11,Font7x11};
 FontDef Font_11x18 = {11,18,Font11x18};
 FontDef Font_16x26 = {16,26,Font16x26};
 
+#endif // #ifdef LCD_ENABLED
 

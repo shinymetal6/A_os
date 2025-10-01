@@ -22,6 +22,8 @@
 #ifndef DRIVERS_SPI_SPI_LCD_FONTS_H_
 #define DRIVERS_SPI_SPI_LCD_FONTS_H_
 
+#ifdef LCD_ENABLED
+
 typedef struct {
     const uint8_t width;
     const uint8_t height;
@@ -33,5 +35,7 @@ extern  FontDef Font_7x10;
 extern 	FontDef Font_7x11;
 extern  FontDef Font_11x18;
 extern 	FontDef Font_16x26;
+
+#endif // #ifdef LCD_ENABLED
 
 #endif /* DRIVERS_SPI_SPI_LCD_FONTS_H_ */

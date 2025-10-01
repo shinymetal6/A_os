@@ -28,7 +28,7 @@
 //#include "../../../kernel/kernel_opt.h"
 
 #ifdef A_OS_SPI_ENABLED
-#ifdef A_OS_LCD_ENABLED
+#ifdef LCD_ENABLED
 
 #include "spi_lcd.h"
 #include <string.h>
@@ -213,6 +213,6 @@ SPI_LCD_DriverStruct_t	*spi_lcd_Drv;
 	return DRIVER_REQUEST_FAILED;
 }
 
-#endif // #ifdef A_OS_LCD_ENABLED
+#endif // #ifdef LCD_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 
