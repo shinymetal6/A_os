@@ -23,12 +23,15 @@
 #ifndef DRIVERS_USB_STM32H743_CLASS_MIDI_USBD_MIDI_H_
 #define DRIVERS_USB_STM32H743_CLASS_MIDI_USBD_MIDI_H_
 
+#include "main.h"
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "main.h"
-#include "../../../../../kernel/system_default.h"
+
 
 #include  "../../Core/usbd_ioreq.h"
 
@@ -183,5 +186,6 @@ uint8_t USBD_MIDI_ReceivePacket(USBD_HandleTypeDef *pdev);
 }
 #endif
 
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif /* DRIVERS_USB_STM32H743_CLASS_MIDI_USBD_MIDI_H_ */

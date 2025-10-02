@@ -23,17 +23,13 @@
 
 #include "main.h"
 #ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
 
 #include "../Core/usbd_core.h"
 #include "../Core/usbd_def.h"
 #include "../Target/usbd_conf.h"
-
-#include "../../../../kernel/system_default.h"
-
-//#ifdef	USB_CDC
-
 #include "usbd_CDC_desc.h"
-
 
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1033
@@ -334,6 +330,5 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
     pbuf[2 * idx + 1] = 0;
   }
 }
-//#endif //#ifdef	USB_CDC
-
+#endif //#ifdef	USB_DEVICE_ENABLED
 #endif //#ifdef	STM32H743xx

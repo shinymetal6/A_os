@@ -24,7 +24,9 @@
 #define DRIVERS_USB_STM32H743_CORE_USBD_CTLREQ_H_
 
 #ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
 
+#ifdef	USB_DEVICE_ENABLED
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -44,6 +46,7 @@ void USBD_GetString(uint8_t *desc, uint8_t *unicode, uint16_t *len);
 }
 #endif
 
+#endif // #ifdef	USB_DEVICE_ENABLED
 #endif // #ifdef	STM32H743xx
 
 #endif /* DRIVERS_USB_STM32H743_CORE_USBD_CTLREQ_H_ */

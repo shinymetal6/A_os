@@ -24,13 +24,11 @@
 #define DRIVERS_USB_STM32H743_APP_USBD_CDC_IF_H_
 
 #ifdef	STM32H743xx
-
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
 #ifdef __cplusplus
  extern "C" {
 #endif
-
-#include "main.h"
-#include "../../../../kernel/system_default.h"
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Class/CDC/usbd_cdc.h"
@@ -47,6 +45,7 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 }
 #endif
 
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif //#ifdef	STM32H743xx
 

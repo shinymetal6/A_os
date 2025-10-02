@@ -32,16 +32,8 @@
 #include "../Core/usbd_def.h"
 #include "../Core/usbd_core.h"
 
-#ifdef	USB_CDC
 #include "../Class/CDC/usbd_cdc.h"
-#endif
-#ifdef	USB_MIDI
 #include "../Class/MIDI/usbd_midi.h"
-#endif
-#ifdef	USB_AUDIO
-#include "../Class/AUDIO/usbd_audio.h"
-#endif
-
 
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 void Error_Handler(void);

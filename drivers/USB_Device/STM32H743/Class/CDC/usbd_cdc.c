@@ -24,7 +24,7 @@
 #ifdef	STM32H743xx
 
 #include "../../../../../kernel/system_default.h"
-//#ifdef	USB_CDC
+#ifdef	USB_DEVICE_ENABLED
 
 #include "usbd_cdc.h"
 #include "../../Core/usbd_ctlreq.h"
@@ -693,7 +693,7 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
 
   return (uint8_t)USBD_OK;
 }
-//#endif // #ifdef	USB_CDC
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx
 

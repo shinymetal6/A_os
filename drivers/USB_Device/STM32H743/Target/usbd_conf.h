@@ -24,7 +24,9 @@
 #define DRIVERS_USB_STM32H743_TARGET_USBD_CONF_H_
 
 #ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
 
+#ifdef	USB_DEVICE_ENABLED
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -99,6 +101,8 @@ void USBD_static_free(void *p);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx
 

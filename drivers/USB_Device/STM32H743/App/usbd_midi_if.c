@@ -23,8 +23,8 @@
 
 #include "main.h"
 #ifdef	STM32H743xx
-
 #include "../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
 
 #include "usbd_midi_if.h"
 
@@ -97,6 +97,7 @@ static int8_t MIDI_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(epnum);
   return result;
 }
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx
 

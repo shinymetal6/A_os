@@ -24,7 +24,9 @@
 #define DRIVERS_USB_STM32H743_CORE_USBD_CORE_H_
 
 #ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
 
+#ifdef	USB_DEVICE_ENABLED
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -114,6 +116,8 @@ USBD_DescHeaderTypeDef *USBD_GetNextDesc(uint8_t *pbuf, uint16_t *ptr);
 #ifdef __cplusplus
 }
 #endif
+
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif //#ifdef	STM32H743xx
 

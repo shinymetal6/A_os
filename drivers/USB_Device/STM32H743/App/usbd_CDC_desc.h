@@ -24,7 +24,8 @@
 #define DRIVERS_USB_STM32H743_APP_USBD_CDC_DESC_H_
 
 #ifdef	STM32H743xx
-//#ifdef	USB_CDC
+#include "../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
 
 #ifdef __cplusplus
  extern "C" {
@@ -48,7 +49,8 @@ extern USBD_DescriptorsTypeDef FS_Desc;
 }
 #endif
 
-//#endif // #ifdef	USB_CDC
+#endif // #ifdef	USB_DEVICE_ENABLED
+
 #endif // #ifdef	STM32H743xx
 
 #endif /* DRIVERS_USB_STM32H743_APP_USBD_CDC_DESC_H_ */

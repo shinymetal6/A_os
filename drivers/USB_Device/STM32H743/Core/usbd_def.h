@@ -24,7 +24,9 @@
 #define DRIVERS_USB_STM32H743_CORE_USBD_DEF_H_
 
 #ifdef	STM32H743xx
+#include "../../../../kernel/system_default.h"
 
+#ifdef	USB_DEVICE_ENABLED
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -460,6 +462,8 @@ __STATIC_INLINE uint16_t SWAPBYTE(uint8_t *addr)
 }
 #endif
 
+
+#endif // #ifdef	USB_DEVICE_ENABLED
 #endif // #ifdef	STM32H743xx
 
 #endif /* DRIVERS_USB_STM32H743_CORE_USBD_DEF_H_ */

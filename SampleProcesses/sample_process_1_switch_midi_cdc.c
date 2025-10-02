@@ -75,6 +75,7 @@ uint32_t	wakeup,flags;
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
+			/* wait for <MIDI> command */
 			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'M') && ( usb_rx_buffer[2] == 'I') && ( usb_rx_buffer[3] == 'D') && ( usb_rx_buffer[4] == 'I'))
 			{
 				switch2midi = 1;

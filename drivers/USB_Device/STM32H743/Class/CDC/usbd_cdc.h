@@ -25,12 +25,14 @@
 
 #ifdef	STM32H743xx
 
+#include "main.h"
+#include "../../../../../kernel/system_default.h"
+#ifdef	USB_DEVICE_ENABLED
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "main.h"
-#include "../../../../../kernel/system_default.h"
 
 /* Includes ------------------------------------------------------------------*/
 #include  "../../Core/usbd_ioreq.h"
@@ -132,6 +134,7 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
 }
 #endif
 
+#endif // #ifdef	USB_DEVICE_ENABLED
 #endif //#ifdef	STM32H743xx
 
 #endif /* DRIVERS_USB_STM32H743_CLASS_CDC_USBD_CDC_H_ */

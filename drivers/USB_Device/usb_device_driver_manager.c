@@ -22,12 +22,11 @@
 
 #include "main.h"
 #include "../../kernel/system_default.h"
+#ifdef USB_DEVICE_ENABLED
+
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 #include "../../kernel/scheduler.h"
-//#include "../../kernel/kernel_opt.h"
-#ifdef USB_DEVICE_ENABLED
-
 #include <string.h>
 #include "usb_device_driver_manager.h"
 

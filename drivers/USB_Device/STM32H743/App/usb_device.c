@@ -21,15 +21,11 @@
  */
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
-#include "../../../../kernel/A.h"
-#include "../../../../kernel/A_exported_functions.h"
-#include "../../../../kernel/scheduler.h"
-
 #ifdef	STM32H743xx
 #include "../../../../kernel/system_default.h"
-#ifdef	USB_DEVICE_ENABLED
 
+#ifdef	USB_DEVICE_ENABLED
+#include "../../../../kernel/A_exported_functions.h"
 #include "../../usb_device_driver_manager.h"
 
 #include "usb_device.h"

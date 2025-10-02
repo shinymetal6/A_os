@@ -17,10 +17,11 @@
   ******************************************************************************
   */
 #include "main.h"
+
 #ifdef	STM32H743xx
 
 #include "../../../../kernel/system_default.h"
-/* Includes ------------------------------------------------------------------*/
+#ifdef	USB_DEVICE_ENABLED
 #include "usbd_cdc_if.h"
 
 uint8_t UserCDCRxBufferFS[APP_CDC_RX_DATA_SIZE];
@@ -222,5 +223,6 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   /* USER CODE END 13 */
   return result;
 }
+#endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx
