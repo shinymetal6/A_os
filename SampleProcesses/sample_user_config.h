@@ -23,6 +23,8 @@
 #ifndef PROJECT_LIB_MODULES_H_
 #define PROJECT_LIB_MODULES_H_
 
+#include "sample_processes_includes.h"
+
 /* OS settings */
 /* SCHED_STD set means the activate_process function checks if the process is waiting on a specific flag
  * If SCHED_STD is not set then all the wakeup flags will wake up the process
@@ -37,7 +39,12 @@
 //#define	LORAWAN_ENABLE	1
 //#define	LWIP_ENABLE		1
 //#define	WIFI_ENABLE		1
-#define	WIRELESS_NRF24L01		1
+#ifdef	SAMPLEPROCESS_1_PING_NRF24L01
+	#define	WIRELESS_NRF24L01		1
+#endif
+#ifdef SAMPLEPROCESS_1_MIDI
+	#define	MIDI_ENABLED	1
+#endif
 
 #define	POWERSAVING_ENABLED	1
 
@@ -59,7 +66,10 @@
 
 //#define	LCD_ENABLED		1
 
+#ifdef SAMPLEPROCESS_1_MIDI
 #define USB_DEVICE_ENABLED		1
+#endif
+
 #ifdef	STM32F446xx
 #undef USB_DEVICE_ENABLED
 #endif
@@ -69,8 +79,13 @@
 
 
 #ifdef USB_DEVICE_ENABLED
+#ifdef SAMPLEPROCESS_1_MIDI
+	#define	USB_MIDI			1
+	#define USBD_MANUFACTURER_STRING		"BB"
+	#define USBD_PRODUCT_STRING_FS			"H743_Midi"
+#else
 	#define	USB_CDC				1
-	//#define	USB_MIDI			1
+#endif
 #endif // #ifdef USB_ENABLED
 
 #ifndef LED_GPIO_Port

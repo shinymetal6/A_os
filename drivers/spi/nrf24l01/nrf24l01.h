@@ -63,7 +63,8 @@ typedef struct
 	uint8_t 			mode;
 	uint8_t 			nrf_status;
 	uint8_t 			nrf_command;
-	uint8_t				nrf_address[NRF24L01_ADDRESS_LENGTH];
+	uint8_t				nrf_tx_address[NRF24L01_ADDRESS_LENGTH];
+	uint8_t				nrf_rx_address[NRF24L01_ADDRESS_LENGTH];
 	SPI_HandleTypeDef	*spi;
 	uint32_t 			spi_timeout_ms;
 	uint32_t 			device_id;

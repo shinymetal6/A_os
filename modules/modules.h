@@ -39,6 +39,7 @@ typedef struct
 #include "hex_decoders/s3_hex.h"
 #include "modbus/modbus.h"
 #include "sound/sound.h"
+#include "midi_decoder/midi_decoder.h"
 
 #include "../kernel/kernel_opt.h"
 

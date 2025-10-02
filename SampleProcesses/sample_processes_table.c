@@ -82,6 +82,13 @@ extern	void sample_process_2_mbxFromPrc1(uint32_t process_id);	//This is process
 #ifdef	SAMPLEPROCESS_1_LCD7735
 extern	void sample_process_1_lcd7735(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_LCD7735
+#ifdef	SAMPLEPROCESS_1_MIDI
+extern	void sample_process_1_midi(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+
+#endif // #define	SAMPLEPROCESS_1_MIDI
+
+#define	SAMPLEPROCESS_1_MIDI	1
 
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
@@ -163,6 +170,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_LCD7735
 				.user_process = sample_process_1_lcd7735,
 #endif // #define	SAMPLEPROCESS_1_LCD7735
+#ifdef	SAMPLEPROCESS_1_MIDI
+				.user_process = sample_process_1_midi,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_MIDI
 				.stack_size = 1024,
 		},
 		{

@@ -26,8 +26,8 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_PING_NRF24L01
 
-//#define		RX_MODE		1
-#define		TX_MODE		1
+#define		RX_MODE		1
+//#define		TX_MODE		1
 
 #ifdef	STM32L152xE
 		extern	SPI_HandleTypeDef hspi2;
@@ -40,14 +40,14 @@
 uint8_t txbuf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t rxbuf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t Packet_Buf[NRF24L01_PAYLOAD_LENGTH];
-uint8_t address[NRF24L01_ADDRESS_LENGTH] = {11,22,33,44,55};
 
 static nrf24l01_Drv_TypeDef	nrf24l01_Drv =
 {
 		.wakeup_id = 1,
 		.MHz = 2420,
 		.bps = 0,
-		.nrf_address = {11,22,33,44,55},
+		.nrf_tx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
+		.nrf_rx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
 		.spi = &hspi2,
 		.spi_timeout_ms = 100,
 		.device_id = 0x01,
@@ -104,7 +104,7 @@ uint32_t	wakeup,flags;
 #ifdef TX_MODE
 	create_timer(TIMER_ID_1,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 #else
-	nrf24l01_set_rx_address(nrf24l01_handle,address);
+	nrf24l01_set_rx_address(nrf24l01_handle,nrf24l01_Drv.nrf_rx_address);
 #endif // #ifdef TX_MODE
 
 	while(1)
@@ -122,7 +122,7 @@ uint32_t	wakeup,flags;
 			if (( flags & TIMER_ID_1) == TIMER_ID_1)
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
-				tx_result = nrf24l01_tx(nrf24l01_handle,txbuf,address);
+				tx_result = nrf24l01_tx(nrf24l01_handle,txbuf,nrf24l01_Drv.nrf_tx_address);
 			}
 #endif // #ifdef RX_MODE
 		}

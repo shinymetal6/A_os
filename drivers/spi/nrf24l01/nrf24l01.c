@@ -165,7 +165,7 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	if ( SPI_DriverStruct[handle].process  != Asys.current_process )
 		return NRF24L01_ERROR;
 
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,rx_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,rx_address,5);
 	nrf24l01_Drv->nrf_status = nrf24l01_read_register(handle,NRF24L01_REG_STATUS);
 	nrf24l01_write_register(handle,NRF24L01_REG_STATUS, nrf24l01_Drv->nrf_status |= 0x40);
 	return nrf24l01_Drv->nrf_status;
@@ -237,11 +237,6 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_write_register(handle,NRF24L01_REG_DYNPD, 0x00);
 	nrf24l01_write_register(handle,NRF24L01_REG_FEATURE, 0x00);
 
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf24l01_Drv->nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_address,5);
-
-	/* */
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P0, 32);
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P1, 32);
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P2, 32);
@@ -249,9 +244,9 @@ nrf24l01_Drv_TypeDef	*nrf24l01_Drv = (nrf24l01_Drv_TypeDef *)SPI_DriverStruct[ha
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P4, 32);
 	nrf24l01_write_register(handle,NRF24L01_REG_RX_PW_P5, 32);
 
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,nrf24l01_Drv->nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_address,5);
-	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_TX_ADDR,   nrf24l01_Drv->nrf_tx_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P0,nrf24l01_Drv->nrf_rx_address,5);
+	nrf24l01_write_multiple_register(handle,NRF24L01_REG_RX_ADDR_P5,nrf24l01_Drv->nrf_rx_address,5);
 
 	nrf24l01_flush_rx_fifo(handle);
 	nrf24l01_flush_tx_fifo(handle);
