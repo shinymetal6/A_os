@@ -76,13 +76,14 @@
 #define USB_DEVICE_ENABLED		1
 #endif
 
+/*
 #ifdef	STM32F446xx
 #undef USB_DEVICE_ENABLED
 #endif
 #ifdef	STM32L152xE
 #undef USB_DEVICE_ENABLED
 #endif
-
+*/
 
 #ifdef USB_DEVICE_ENABLED
 	#define USBD_MIDI_MANUFACTURER_STRING		"BB"

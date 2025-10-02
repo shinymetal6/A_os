@@ -54,6 +54,8 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	}
 }
 
+__weak void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
+
 extern	void	usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
 extern	void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 extern	void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
