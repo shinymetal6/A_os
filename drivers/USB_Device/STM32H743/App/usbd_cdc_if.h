@@ -31,12 +31,11 @@
 
 #include "main.h"
 #include "../../../../kernel/system_default.h"
-#ifdef	USB_CDC
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Class/CDC/usbd_cdc.h"
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
+#define APP_CDC_RX_DATA_SIZE  2048
+#define APP_CDC_TX_DATA_SIZE  2048
 
 /** CDC Interface callback. */
 extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
@@ -48,7 +47,6 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 }
 #endif
 
-#endif //ifdef	USB_CDC
 
 #endif //#ifdef	STM32H743xx
 

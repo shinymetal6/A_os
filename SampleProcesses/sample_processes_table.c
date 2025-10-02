@@ -11,6 +11,7 @@
 
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
+#include "sample_user_config.h"
 
 #ifdef	SAMPLEPROCESS_1_BASIC
 extern	void sample_process_1_basic(uint32_t process_id);	//This is process1
@@ -29,6 +30,10 @@ extern	void sample_process_1_xmodem_rx_UART(uint32_t process_id);	//This is proc
 extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_xmodem_rx_USB(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM
+#ifdef	SAMPLEPROCESS_1_SWITCH_MIDI_CDC
+extern	void sample_process_1_init(uint32_t process_id);
+extern	void sample_process_1_switch_midi_cdc(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_SWITCH_MIDI_CDC
 #ifdef	SAMPLEPROCESS_1_USB_ECHO
 extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_usbecho(uint32_t process_id);	//This is process1
@@ -85,11 +90,7 @@ extern	void sample_process_1_lcd7735(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_MIDI
 extern	void sample_process_1_midi(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
-
 #endif // #define	SAMPLEPROCESS_1_MIDI
-
-#define	SAMPLEPROCESS_1_MIDI	1
-
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -118,6 +119,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_xmodem_rx_USB,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_USB
+#ifdef	SAMPLEPROCESS_1_SWITCH_MIDI_CDC
+				.user_process = sample_process_1_switch_midi_cdc,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_SWITCH_MIDI_CDC
 #ifdef	SAMPLEPROCESS_1_USB_ECHO
 				.user_process = sample_process_1_usbecho,
 				.user_init = sample_process_1_init,

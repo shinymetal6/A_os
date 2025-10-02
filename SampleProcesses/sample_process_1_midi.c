@@ -50,6 +50,7 @@ USB_Drv_TypeDef	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,
+		.usb_interface_class = USB_MIDI_CLASS,
 		.requested_len = USB_BUF_LEN,
 		.timeout = 100,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
@@ -87,7 +88,7 @@ void sample_process_1_midi(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 
-	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	midi_initialized = MidiInit(&MIDI);
 
 	while(1)

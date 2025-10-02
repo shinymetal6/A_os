@@ -29,24 +29,21 @@
 
 #include "../../../../kernel/system_default.h"
 
-#ifdef	USB_MIDI
-
 #include "usbd_MIDI_desc.h"
 
-
-#define USBD_VID     1155
-#define USBD_PID_FS     0x0136
-#define USBD_CONFIGURATION_STRING_FS		"MIDI Config"
-#define USBD_INTERFACE_STRING_FS     		"MIDI Interface"
-#define USBD_LANGID_STRING     1033
-#ifndef USBD_MANUFACTURER_STRING
-	#define USBD_MANUFACTURER_STRING		"BB"
+#define USBD_MIDI_VID     1155
+#define USBD_MIDI_PID_FS     0x0136
+#define USBD_MIDI_CONFIGURATION_STRING_FS		"MIDI Config"
+#define USBD_MIDI_INTERFACE_STRING_FS     		"MIDI Interface"
+#define USBD_MIDI_LANGID_STRING     1033
+#ifndef USBD_MIDI_MANUFACTURER_STRING
+	#define USBD_MIDI_MANUFACTURER_STRING		"BB"
 #endif
-#ifndef USBD_PRODUCT_STRING_FS
-	#define USBD_PRODUCT_STRING_FS			"MidiDev"
+#ifndef USBD_MIDI_PRODUCT_STRING_FS
+	#define USBD_MIDI_PRODUCT_STRING_FS			"MidiDev"
 #endif
 
-#define USB_SIZ_BOS_DESC            0x0C
+#define USB_MIDI_SIZ_BOS_DESC            0x0C
 
 static void Get_SerialNum(void);
 static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len);
@@ -59,7 +56,7 @@ uint8_t * USBD_MIDI_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *lengt
 uint8_t * USBD_MIDI_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 uint8_t * USBD_MIDI_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length);
 
-USBD_DescriptorsTypeDef FS_Desc =
+USBD_DescriptorsTypeDef FS_MIDI_Desc =
 {
   USBD_MIDI_DeviceDescriptor
 , USBD_MIDI_LangIDStrDescriptor
@@ -90,10 +87,10 @@ __ALIGN_BEGIN uint8_t USBD_MIDI_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   0x00,                       /*bDeviceProtocol*/
 #endif
   USB_MAX_EP0_SIZE,           /*bMaxPacketSize*/
-  LOBYTE(USBD_VID),           /*idVendor*/
-  HIBYTE(USBD_VID),           /*idVendor*/
-  LOBYTE(USBD_PID_FS),        /*idProduct*/
-  HIBYTE(USBD_PID_FS),        /*idProduct*/
+  LOBYTE(USBD_MIDI_VID),           /*idVendor*/
+  HIBYTE(USBD_MIDI_VID),           /*idVendor*/
+  LOBYTE(USBD_MIDI_PID_FS),        /*idProduct*/
+  HIBYTE(USBD_MIDI_PID_FS),        /*idProduct*/
   0x00,                       /*bcdDevice rel. 2.00*/
   0x02,
   USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
@@ -108,7 +105,7 @@ __ALIGN_BEGIN uint8_t USBD_MIDI_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
 #if defined ( __ICCARM__ ) /* IAR Compiler */
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
-__ALIGN_BEGIN uint8_t USBD_MIDI_BOSDesc[USB_SIZ_BOS_DESC] __ALIGN_END =
+__ALIGN_BEGIN uint8_t USBD_MIDI_BOSDesc[USB_MIDI_SIZ_BOS_DESC] __ALIGN_END =
 {
   0x5,
   USB_DESC_TYPE_BOS,
@@ -140,24 +137,24 @@ __ALIGN_BEGIN uint8_t USBD_MIDI_BOSDesc[USB_SIZ_BOS_DESC] __ALIGN_END =
 #endif /* defined ( __ICCARM__ ) */
 
 /** USB lang identifier descriptor. */
-__ALIGN_BEGIN uint8_t USBD_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
+__ALIGN_BEGIN uint8_t USBD_MIDI_LangIDDesc[USB_LEN_LANGID_STR_DESC] __ALIGN_END =
 {
      USB_LEN_LANGID_STR_DESC,
      USB_DESC_TYPE_STRING,
-     LOBYTE(USBD_LANGID_STRING),
-     HIBYTE(USBD_LANGID_STRING)
+     LOBYTE(USBD_MIDI_LANGID_STRING),
+     HIBYTE(USBD_MIDI_LANGID_STRING)
 };
 
 #if defined ( __ICCARM__ ) /* IAR Compiler */
   #pragma data_alignment=4
 #endif /* defined ( __ICCARM__ ) */
 /* Internal string descriptor. */
-__ALIGN_BEGIN uint8_t USBD_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
+__ALIGN_BEGIN uint8_t USBD_MIDI_StrDesc[USBD_MAX_STR_DESC_SIZ] __ALIGN_END;
 
 #if defined ( __ICCARM__ ) /*!< IAR Compiler */
   #pragma data_alignment=4
 #endif
-__ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
+__ALIGN_BEGIN uint8_t USBD_MIDI_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
   USB_SIZ_STRING_SERIAL,
   USB_DESC_TYPE_STRING,
 };
@@ -193,8 +190,8 @@ uint8_t * USBD_MIDI_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 uint8_t * USBD_MIDI_LangIDStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   UNUSED(speed);
-  *length = sizeof(USBD_LangIDDesc);
-  return USBD_LangIDDesc;
+  *length = sizeof(USBD_MIDI_LangIDDesc);
+  return USBD_MIDI_LangIDDesc;
 }
 
 /**
@@ -207,13 +204,13 @@ uint8_t * USBD_MIDI_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 {
   if(speed == 0)
   {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_PRODUCT_STRING_FS, USBD_MIDI_StrDesc, length);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_PRODUCT_STRING_FS, USBD_MIDI_StrDesc, length);
   }
-  return USBD_StrDesc;
+  return USBD_MIDI_StrDesc;
 }
 
 /**
@@ -225,8 +222,8 @@ uint8_t * USBD_MIDI_ProductStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *leng
 uint8_t * USBD_MIDI_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *length)
 {
   UNUSED(speed);
-  USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
-  return USBD_StrDesc;
+  USBD_GetString((uint8_t *)USBD_MIDI_MANUFACTURER_STRING, USBD_MIDI_StrDesc, length);
+  return USBD_MIDI_StrDesc;
 }
 
 /**
@@ -246,7 +243,7 @@ uint8_t * USBD_MIDI_SerialStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *lengt
   /* USER CODE BEGIN USBD_MIDI_SerialStrDescriptor */
 
   /* USER CODE END USBD_MIDI_SerialStrDescriptor */
-  return (uint8_t *) USBD_StringSerial;
+  return (uint8_t *) USBD_MIDI_StringSerial;
 }
 
 /**
@@ -259,13 +256,13 @@ uint8_t * USBD_MIDI_ConfigStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *lengt
 {
   if(speed == USBD_SPEED_HIGH)
   {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_CONFIGURATION_STRING_FS, USBD_MIDI_StrDesc, length);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_CONFIGURATION_STRING_FS, USBD_MIDI_StrDesc, length);
   }
-  return USBD_StrDesc;
+  return USBD_MIDI_StrDesc;
 }
 
 /**
@@ -278,13 +275,13 @@ uint8_t * USBD_MIDI_InterfaceStrDescriptor(USBD_SpeedTypeDef speed, uint16_t *le
 {
   if(speed == 0)
   {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_INTERFACE_STRING_FS, USBD_MIDI_StrDesc, length);
   }
   else
   {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING_FS, USBD_StrDesc, length);
+    USBD_GetString((uint8_t *)USBD_MIDI_INTERFACE_STRING_FS, USBD_MIDI_StrDesc, length);
   }
-  return USBD_StrDesc;
+  return USBD_MIDI_StrDesc;
 }
 
 /**
@@ -306,8 +303,8 @@ static void Get_SerialNum(void)
 
   if (deviceserial0 != 0)
   {
-    IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
-    IntToUnicode(deviceserial1, &USBD_StringSerial[18], 4);
+    IntToUnicode(deviceserial0, &USBD_MIDI_StringSerial[2], 8);
+    IntToUnicode(deviceserial1, &USBD_MIDI_StringSerial[18], 4);
   }
 }
 
@@ -338,7 +335,6 @@ static void IntToUnicode(uint32_t value, uint8_t * pbuf, uint8_t len)
     pbuf[2 * idx + 1] = 0;
   }
 }
-#endif //#ifdef	USB_MIDI
 #endif // #ifdef	STM32H743xx
 
 

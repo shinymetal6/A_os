@@ -32,15 +32,13 @@
 #include "main.h"
 #include "../../../../kernel/system_default.h"
 
-#ifdef	USB_MIDI
-
 /* Includes ------------------------------------------------------------------*/
 #include "../Class/MIDI/usbd_midi.h"
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
+#define APP_MIDI_RX_DATA_SIZE  2048
+#define APP_MIDI_TX_DATA_SIZE  2048
 
 /** CDC Interface callback. */
-extern USBD_MIDI_ItfTypeDef USBD_Interface_fops_FS;
+//extern USBD_MIDI_ItfTypeDef USBD_Interface_fops_FS;
 
 uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 
@@ -48,8 +46,6 @@ uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 #ifdef __cplusplus
 }
 #endif
-
-#endif //ifdef	USB_CDC
 
 #endif // #ifdef	STM32H743xx
 

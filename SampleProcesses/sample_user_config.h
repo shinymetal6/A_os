@@ -69,6 +69,12 @@
 #ifdef SAMPLEPROCESS_1_MIDI
 #define USB_DEVICE_ENABLED		1
 #endif
+#ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
+#define USB_DEVICE_ENABLED		1
+#endif
+#ifdef SAMPLEPROCESS_1_SWITCH_MIDI_CDC
+#define USB_DEVICE_ENABLED		1
+#endif
 
 #ifdef	STM32F446xx
 #undef USB_DEVICE_ENABLED
@@ -79,13 +85,13 @@
 
 
 #ifdef USB_DEVICE_ENABLED
-#ifdef SAMPLEPROCESS_1_MIDI
-	#define	USB_MIDI			1
-	#define USBD_MANUFACTURER_STRING		"BB"
-	#define USBD_PRODUCT_STRING_FS			"H743_Midi"
-#else
-	#define	USB_CDC				1
-#endif
+	#define USBD_MIDI_MANUFACTURER_STRING		"BB"
+	#define USBD_MIDI_PRODUCT_STRING_FS			"H743_Midi"
+	#ifdef SAMPLEPROCESS_1_MIDI
+		#define	USB_MIDI			1
+	#else
+		#define	USB_CDC				1
+	#endif
 #endif // #ifdef USB_ENABLED
 
 #ifndef LED_GPIO_Port

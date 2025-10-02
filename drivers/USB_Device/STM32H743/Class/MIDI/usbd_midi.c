@@ -26,8 +26,6 @@
 
 #include "../../../../../kernel/system_default.h"
 
-#ifdef	USB_MIDI
-
 #include "usbd_midi.h"
 #include "../../Core/usbd_ctlreq.h"
 
@@ -1058,7 +1056,6 @@ uint8_t USBD_MIDI_ReceivePacket(USBD_HandleTypeDef *pdev)
 
   return (uint8_t)USBD_OK;
 }
-#endif // #ifdef	USB_MIDI
 
 #endif // #ifdef	STM32H743xx
 

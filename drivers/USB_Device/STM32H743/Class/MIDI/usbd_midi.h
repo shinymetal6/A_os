@@ -29,7 +29,6 @@ extern "C" {
 
 #include "main.h"
 #include "../../../../../kernel/system_default.h"
-#ifdef	USB_MIDI
 
 #include  "../../Core/usbd_ioreq.h"
 
@@ -179,8 +178,6 @@ uint8_t USBD_MIDI_TransmitPacket(USBD_HandleTypeDef *pdev);
 uint8_t USBD_MIDI_SetRxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff);
 uint8_t USBD_MIDI_ReceivePacket(USBD_HandleTypeDef *pdev);
 
-
-#endif // #ifdef	USB_MIDI
 
 #ifdef __cplusplus
 }

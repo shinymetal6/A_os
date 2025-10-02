@@ -26,12 +26,10 @@
 
 #include "../../../../kernel/system_default.h"
 
-#ifdef	USB_MIDI
-
 #include "usbd_midi_if.h"
 
-uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
-uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
+uint8_t UserMIDIRxBufferFS[APP_MIDI_RX_DATA_SIZE];
+uint8_t UserMIDITxBufferFS[APP_MIDI_TX_DATA_SIZE];
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -41,7 +39,7 @@ static int8_t MIDI_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t MIDI_Receive_FS(uint8_t* pbuf, uint32_t *Len);
 static int8_t MIDI_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
-USBD_MIDI_ItfTypeDef USBD_Interface_fops_FS =
+USBD_MIDI_ItfTypeDef USBD_MIDI_Interface_fops_FS =
 {
   MIDI_Init_FS,
   MIDI_DeInit_FS,
@@ -52,8 +50,8 @@ USBD_MIDI_ItfTypeDef USBD_Interface_fops_FS =
 
 static int8_t MIDI_Init_FS(void)
 {
-  USBD_MIDI_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_MIDI_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+  USBD_MIDI_SetTxBuffer(&hUsbDeviceFS, UserMIDITxBufferFS, 0);
+  USBD_MIDI_SetRxBuffer(&hUsbDeviceFS, UserMIDIRxBufferFS);
   return (USBD_OK);
 }
 
@@ -67,13 +65,13 @@ static int8_t MIDI_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
 	return (USBD_OK);
 }
 
-void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
+void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t MIDI_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
 uint16_t	len = *Len;
-	if ( Rx_CallbackPtr != NULL )
-		Rx_CallbackPtr(Buf,len);
+	if ( MidiRx_CallbackPtr != NULL )
+		MidiRx_CallbackPtr(Buf,len);
 	USBD_MIDI_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
 	USBD_MIDI_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);
@@ -99,8 +97,6 @@ static int8_t MIDI_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   UNUSED(epnum);
   return result;
 }
-
-#endif // #ifdef	USB_MIDI
 
 #endif // #ifdef	STM32H743xx
 

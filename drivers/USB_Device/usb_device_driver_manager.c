@@ -54,8 +54,15 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	}
 }
 
-extern	void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 extern	void	usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
+extern	void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
+extern	void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
+
+ITCM_AREA_CODE uint32_t	usb_device_driver_unregister(void)
+{
+	USB_DriverStruct.process = 0;
+	return 0;
+}
 
 ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data)
 {
@@ -72,9 +79,18 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_p
 		usb_driver_request = 1;
 		set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback);
 		if ( usb_Drv->Rx_CallbackPtr != NULL)
-			Rx_CallbackPtr = usb_Drv->Rx_CallbackPtr;
+		{
+			if ( usb_Drv->usb_interface_class == USB_CDC_CLASS )
+				CDCRx_CallbackPtr = usb_Drv->Rx_CallbackPtr;
+			if ( usb_Drv->usb_interface_class == USB_MIDI_CLASS )
+				MidiRx_CallbackPtr = usb_Drv->Rx_CallbackPtr;
+		}
 		else
-			Rx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
+		{
+			CDCRx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
+			MidiRx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
+		}
+		MX_Aos_USB_Device_Init(usb_Drv->usb_interface_class);
 		return 0;
 	}
 	return DRIVER_REQUEST_FAILED;
@@ -93,7 +109,6 @@ USB_Drv_TypeDef	*usb_Drv = (USB_Drv_TypeDef	*)USB_DriverStruct.usb_driver_privat
 	return usb_Drv->rx_num_chars;
 }
 
-#ifdef USB_CDC
 
 #ifdef	STM32U575xx
 extern	uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
@@ -109,7 +124,6 @@ ITCM_AREA_CODE uint32_t usb_send(uint8_t handle,uint8_t* ptr, uint16_t len)
 	return (uint32_t )CDC_Transmit_FS(ptr, len);
 #endif
 }
-#endif // #ifdef USB_CDC
 
 /* callback from CDC interface */
 ITCM_AREA_CODE void usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)

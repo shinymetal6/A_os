@@ -21,70 +21,88 @@
  */
 
 #include "main.h"
+#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
+#include "../../../../kernel/scheduler.h"
 
 #ifdef	STM32H743xx
 #include "../../../../kernel/system_default.h"
 #ifdef	USB_DEVICE_ENABLED
 
+#include "../../usb_device_driver_manager.h"
+
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
 
-#ifdef	USB_CDC
 #include "usbd_CDC_desc.h"
 #include "../Class/CDC/usbd_cdc.h"
 #include "usbd_cdc_if.h"
-#endif
 
-#ifdef	USB_MIDI
 #include "usbd_MIDI_desc.h"
 #include "../Class/MIDI/usbd_midi.h"
 #include "usbd_midi_if.h"
-#endif
-
-#ifdef	USB_AUDIO
-#include "usbd_AUDIO_desc.h"
-#include "../Class/AUDIO/usbd_audio.h"
-#include "usbd_audio_if.h"
-#endif
 
 /* USB Device Core handle declaration. */
 USBD_HandleTypeDef hUsbDeviceFS;
 
+extern	USBD_DescriptorsTypeDef FS_CDC_Desc;
+extern	USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_FS;
+
+extern	USBD_DescriptorsTypeDef FS_MIDI_Desc;
+extern	USBD_MIDI_ItfTypeDef USBD_MIDI_Interface_fops_FS;
+
+uint8_t usb_initialized = 0;
+
+uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
+{
+	/* Init Device Library, add supported class and start the library. */
+	if (( Asys.system_flags & SYS_FLAGS_USB_INITIALIZED) == SYS_FLAGS_USB_INITIALIZED )
+		USBD_DeInit(&hUsbDeviceFS);
+	switch ( usb_classdev )
+	{
+	case USB_CDC_CLASS:
+		if (USBD_Init(&hUsbDeviceFS, &FS_CDC_Desc, DEVICE_FS) != USBD_OK)
+			return 1;
+		if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK)
+			return 1;
+		if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_CDC_Interface_fops_FS) != USBD_OK)
+			return 1;
+		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
+			return 1;
+		break;
+	case USB_MIDI_CLASS:
+		if (USBD_Init(&hUsbDeviceFS, &FS_MIDI_Desc, DEVICE_FS) != USBD_OK)
+			return 1;
+		if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_MIDI) != USBD_OK)
+			return 1;
+		if (USBD_MIDI_RegisterInterface(&hUsbDeviceFS, &USBD_MIDI_Interface_fops_FS) != USBD_OK)
+			return 1;
+		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
+			return 1;
+		break;
+	}
+	Asys.system_flags |= SYS_FLAGS_USB_INITIALIZED;
+	return 0;
+}
+
 uint8_t MX_USB_Device_Init(void)
 {
-	  /* Init Device Library, add supported class and start the library. */
-#ifdef	USB_DEVICE_ENABLED
-	  if (USBD_Init(&hUsbDeviceFS, &FS_Desc, DEVICE_FS) != USBD_OK)
-		  return 1;
+#ifdef OLD_USB
+	/* Init Device Library, add supported class and start the library. */
 #ifdef	USB_CDC
-	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK)
-		  return 1;
-	  if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
-		  return 1;
-	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
-		  return 1;
+	MX_Aos_USB_Device_Init(0);
 #endif
 #ifdef	USB_MIDI
-	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_MIDI) != USBD_OK)
-		  return 1;
-	  if (USBD_MIDI_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
-		  return 1;
-	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
-		  return 1;
+	MX_Aos_USB_Device_Init(1);
 #endif
 #ifdef	USB_AUDIO
-	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_AUDIO) != USBD_OK)
-		  return 1;
-	  if (USBD_AUDIO_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
-		  return 1;
-	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
-		  return 1;
+	MX_Aos_USB_Device_Init(2);
 #endif
-	  //HAL_PWREx_EnableUSBVoltageDetector();
 #endif
-	  return 0;
-
+	return 0;
 }
+
 #endif // #ifdef	USB_ENABLED
 
 #endif // #ifdef	STM32H743xx

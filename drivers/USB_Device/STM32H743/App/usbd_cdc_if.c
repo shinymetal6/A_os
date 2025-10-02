@@ -20,15 +20,11 @@
 #ifdef	STM32H743xx
 
 #include "../../../../kernel/system_default.h"
-#ifdef	USB_CDC
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if.h"
 
-uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
-
-/** Data to send over USB CDC are stored in this buffer   */
-uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
-
+uint8_t UserCDCRxBufferFS[APP_CDC_RX_DATA_SIZE];
+uint8_t UserCDCTxBufferFS[APP_CDC_TX_DATA_SIZE];
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -38,7 +34,7 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_FS(uint8_t* pbuf, uint32_t *Len);
 static int8_t CDC_TransmitCplt_FS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
-USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
+USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_FS =
 {
   CDC_Init_FS,
   CDC_DeInit_FS,
@@ -56,8 +52,8 @@ static int8_t CDC_Init_FS(void)
 {
   /* USER CODE BEGIN 3 */
   /* Set Application Buffers */
-  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserTxBufferFS, 0);
-  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserRxBufferFS);
+  USBD_CDC_SetTxBuffer(&hUsbDeviceFS, UserCDCTxBufferFS, 0);
+  USBD_CDC_SetRxBuffer(&hUsbDeviceFS, UserCDCRxBufferFS);
   return (USBD_OK);
   /* USER CODE END 3 */
 }
@@ -163,14 +159,14 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   */
 //extern	uint32_t usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
 
-void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
+void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
 uint16_t	len = *Len;
-	if ( Rx_CallbackPtr != NULL )
-		Rx_CallbackPtr(Buf,len);
+	if ( CDCRx_CallbackPtr != NULL )
+		CDCRx_CallbackPtr(Buf,len);
 
 	//usb_device_driver_pktreceived_callback(Buf,*Len);
 	USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
@@ -227,5 +223,4 @@ static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum)
   return result;
 }
 
-#endif // #ifdef	USB_CDC
 #endif // #ifdef	STM32H743xx

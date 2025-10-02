@@ -37,8 +37,7 @@
 #include "stm32h7xx_hal.h"
 #include "../Core/usbd_def.h"
 
-/** USB Device initialization function. */
-void MX_USB_DEVICE_Init(void);
+ extern	uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev);
 
 #ifdef __cplusplus
 }

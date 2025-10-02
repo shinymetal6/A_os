@@ -31,7 +31,6 @@ extern "C" {
 
 #include "main.h"
 #include "../../../../../kernel/system_default.h"
-#ifdef	USB_CDC
 
 /* Includes ------------------------------------------------------------------*/
 #include  "../../Core/usbd_ioreq.h"
@@ -132,8 +131,6 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
 #ifdef __cplusplus
 }
 #endif
-
-#endif // #ifdef	USB_CDC
 
 #endif //#ifdef	STM32H743xx
 

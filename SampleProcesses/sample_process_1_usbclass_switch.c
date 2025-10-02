@@ -14,59 +14,41 @@
  * Project : A_os
 */
 /*
- * sample_process_1_xmodem_rx_USB.c
+ * sample_process_1_usbclass_switch.c
  *
- *  Created on: Feb 12, 2025
+ *  Created on: Oct 2, 2025
  *      Author: fil
  */
-
 #include "main.h"
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
+#ifdef SAMPLEPROCESS_1_SWITCH_CLASS
 
-#ifdef	STM32H743xx
-#define	xmodem_rx_data_area	0x30000000
-#define	xmodem_rx_data_len		0x2ffff
-#else
-#define	xmodem_rx_data_len		0x17fff
-uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
-#endif
-
-#define	USB_BUF_LEN	XMODEM_LINE_LEN
-uint8_t	usb_rx_buffer[XMODEM_LINE_LEN];
-uint8_t	usb_tx_buffer[XMODEM_LINE_LEN];
-
+#define	USB_BUF_LEN	64
+uint8_t	usb_rx_buffer[USB_BUF_LEN];
+uint8_t	usb_tx_buffer[USB_BUF_LEN];
 USB_Drv_TypeDef	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,
-		.requested_len = XMODEM_LINE_LEN,
+		.requested_len = USB_BUF_LEN,
 		.usb_interface_class = USB_CDC_CLASS,
 		.timeout = 250,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
 };
 uint32_t		usb_driver_handle;
 
-uint8_t		xmodem_rx_usb_enable;
-uint8_t		xmodem_rx_usb_enable_poll;
-uint8_t		tim_downscale=0;
-
 void sample_process_1_init(uint32_t process_id)
 {
 	usb_driver_handle = usb_device_driver_register(&USB_Drv);
 }
 
-void sample_process_1_xmodem_rx_USB(uint32_t process_id)
+uint8_t	switch2midi = 0, tim_downscale = 0;
+
+void sample_process_1_usbclass_switch(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-
-	xmodem_rx_usb_enable = 0;
-	xmodem_rx_usb_enable_poll = 1;
-
-	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
-
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
@@ -74,46 +56,34 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			if ( xmodem_rx_usb_enable == 1 )
+			process_led();
+			if ( switch2midi == 1 )
 			{
-				if ( xmodem_rx_usb_enable_poll	 == 1 )
+				if ( tim_downscale == 0 )
 				{
-					tim_downscale ++;
-					if ( tim_downscale > 10 )
-					{
-						xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer);
-						tim_downscale = 0;
-					}
+					USB_Drv.usb_interface_class = USB_MIDI_CLASS;
+					usb_device_driver_unregister();
+				}
+				tim_downscale ++;
+				if ( tim_downscale > 5 )
+				{
+					usb_driver_handle = usb_device_driver_register(&USB_Drv);
+					tim_downscale = 0;
+					switch2midi = 0;
 				}
 			}
-			process_led();
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'h'))
+			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'M') && ( usb_rx_buffer[2] == 'I') && ( usb_rx_buffer[3] == 'D') && ( usb_rx_buffer[4] == 'I'))
 			{
-				xmodem_rx_usb_enable = 1;
-				xmodem_rx_usb_enable_poll = 1;
-			}
-			else
-			{
-				if ( xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer) == X_EOT)
-				{
-					xmodem_rx_usb_enable = 0;
-					xmodem_rx_usb_enable_poll = 0;
-				}
-				else
-				{
-					xmodem_rx_usb_enable = 1;
-					xmodem_rx_usb_enable_poll = 0;
-				}
+				switch2midi = 1;
 			}
 		}
 	}
 }
 
-#endif // #ifdef SAMPLEPROCESS_1_XMODEM_RX_USB
+#endif // #ifdef SAMPLEPROCESS_1_SWITCH_CLASS
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
-
 
 
