@@ -208,16 +208,17 @@ UART_Drv_TypeDef	*uarts_Drv;
 		if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 #ifdef	STM32U575xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - (uarts_Drv->uart->hdmarx->Instance->CBR1 & DMA_CBR1_BNDT);
-#else
+#endif
 #ifdef	STM32F446xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->NDTR;
-#else
+#endif
 #ifdef	STM32L152xE
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
+#endif
+#ifdef	STM32G474xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
 #else
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
-#endif
-#endif
 #endif
 		last_uart_used_handle++;
 		uart_driver_request++;

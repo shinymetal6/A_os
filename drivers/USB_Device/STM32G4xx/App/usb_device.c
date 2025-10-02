@@ -25,6 +25,8 @@
 #ifdef A_OS_STM32G4xx_PROCESSOR
 #ifdef USB_DEVICE_ENABLED
 
+#include "../../../../kernel/A_exported_functions.h"
+
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
 #include "usbd_desc.h"
@@ -68,8 +70,28 @@ extern USBD_DescriptorsTypeDef CDC_Desc;
   * Init USB device Library, add supported class and start the library
   * @retval None
   */
+uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
+{
+	/* Init Device Library, add supported class and start the library. */
+	if (( Asys.system_flags & SYS_FLAGS_USB_INITIALIZED) == SYS_FLAGS_USB_INITIALIZED )
+		USBD_DeInit(&hUsbDeviceFS);
+	  if (USBD_Init(&hUsbDeviceFS, &CDC_Desc, DEVICE_FS) != USBD_OK)
+		  return 1;
+
+	  if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_CDC) != USBD_OK)
+		  return 1;
+
+	  if (USBD_CDC_RegisterInterface(&hUsbDeviceFS, &USBD_Interface_fops_FS) != USBD_OK)
+		  return 1;
+
+	  if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
+		  return 1;
+	  return 0;
+}
+
 uint8_t MX_USB_Device_Init(void)
 {
+#ifdef OLDUSB
   /* USER CODE BEGIN USB_Device_Init_PreTreatment */
 
   /* USER CODE END USB_Device_Init_PreTreatment */
@@ -88,6 +110,7 @@ uint8_t MX_USB_Device_Init(void)
 	  return 1;
 
   /* USER CODE BEGIN USB_Device_Init_PostTreatment */
+#endif
   return 0;
   /* USER CODE END USB_Device_Init_PostTreatment */
 }

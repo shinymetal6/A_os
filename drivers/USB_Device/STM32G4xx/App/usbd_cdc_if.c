@@ -261,12 +261,14 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   * @param  Len: Number of data received (in bytes)
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
-extern	uint32_t usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
+void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
 {
   /* USER CODE BEGIN 6 */
-	usb_device_driver_pktreceived_callback(Buf,*Len);
+uint16_t	len = *Len;
+	if ( CDCRx_CallbackPtr != NULL )
+		CDCRx_CallbackPtr(Buf,len);
 	USBD_CDC_SetRxBuffer(&hUsbDeviceFS, &Buf[0]);
 	USBD_CDC_ReceivePacket(&hUsbDeviceFS);
 	return (USBD_OK);
