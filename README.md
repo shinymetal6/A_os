@@ -59,7 +59,7 @@ STM32L152xE : Nucleo and other hardware<br>
 STM32H563xx : Nucleo<br>
 <br>
 Please note:<br>
-The iodef_common.h file is not yet complete, so some definitions are yet not correct<br>
+The iodef_common.h file is not yet complete, so some definitions are not correct<br>
 
 
 
