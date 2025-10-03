@@ -23,7 +23,7 @@
 #include "system_default.h"
 #include "A.h"
 #include "A_exported_functions.h"
-#include "kernel_opt.h"
+#include "../processors/iodef_common.h"
 
 #ifdef CODEC_NAU88C22
 extern	void Nau88c22_Init(void);
@@ -61,13 +61,15 @@ __weak void MX_LWIP_Process(void)
 
 }
 
+#ifndef A_OS_STM32G4xx_PROCESSOR
+
 __weak PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 __weak void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
 {
 
 }
-
+#endif
 __weak void MX_USB_HOST_Process(void)
 {
 

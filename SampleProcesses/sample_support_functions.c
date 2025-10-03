@@ -31,7 +31,19 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 
 uint8_t 	sample_led_cntr = 0;
+#ifdef	STM32U575xx
+#undef LED_GPIO_Port
+#undef LED_Pin
+/*
+#define	LED_GPIO_Port	LED_GREEN_GPIO_Port
+#define	LED_Pin			LED_GREEN_Pin
+#define	LED_GPIO_Port	LED_RED_GPIO_Port
+#define	LED_Pin			LED_RED_Pin
+*/
+#define	LED_GPIO_Port	LED_BLUE_GPIO_Port
+#define	LED_Pin			LED_BLUE_Pin
 
+#endif
 void process_led(void)
 {
 #ifdef LED_GPIO_Port
@@ -43,21 +55,6 @@ void process_led(void)
 		break;
 	default :
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
-		break;
-	}
-	sample_led_cntr++;
-	if ( sample_led_cntr >= 10 )
-		sample_led_cntr = 0;
-#endif // #ifdef LED_GPIO_Port
-#ifdef LED_RED_GPIO_Port
-	switch(sample_led_cntr)
-	{
-	case 7:
-	case 9:
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,GPIO_PIN_SET);
-		break;
-	default :
-		HAL_GPIO_WritePin(LED_RED_GPIO_Port, LED_RED_Pin,GPIO_PIN_RESET);
 		break;
 	}
 	sample_led_cntr++;

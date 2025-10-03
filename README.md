@@ -57,6 +57,7 @@ STM32U575xx : Nucleo and other hardware ( still DMA on uart RX not running )<br>
 STM32F446xx : Nucleo<br>
 STM32L152xE : Nucleo and other hardware<br>
 STM32H563xx : Nucleo<br>
+STM32G431RB : Nucleo<br>
 <br>
 Please note:<br>
 The iodef_common.h file is not yet complete, so some definitions are not correct<br>

@@ -48,8 +48,6 @@ extern	USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_FS;
 extern	USBD_DescriptorsTypeDef FS_MIDI_Desc;
 extern	USBD_MIDI_ItfTypeDef USBD_MIDI_Interface_fops_FS;
 
-uint8_t usb_initialized = 0;
-
 uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
 {
 	/* Init Device Library, add supported class and start the library. */

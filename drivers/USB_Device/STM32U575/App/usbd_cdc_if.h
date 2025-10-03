@@ -34,7 +34,7 @@
 #define APP_TX_DATA_SIZE  2048
 
 
-extern USBD_CDC_ItfTypeDef USBD_Interface_fops_HS;
+extern USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_HS;
 
 
 uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);

@@ -34,6 +34,9 @@
 #ifdef	STM32F722xx
 		#include "../processors/STM32F722xx.h"
 #endif
+#ifdef	STM32G431xx
+		#include "../processors/STM32G431xx.h"
+#endif
 #ifdef	STM32G474xx
 		#include "../processors/STM32G474xx.h"
 #endif

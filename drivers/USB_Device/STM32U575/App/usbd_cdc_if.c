@@ -39,7 +39,7 @@ static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t CDC_Receive_HS(uint8_t* pbuf, uint32_t *Len);
 static int8_t CDC_TransmitCplt_HS(uint8_t *pbuf, uint32_t *Len, uint8_t epnum);
 
-USBD_CDC_ItfTypeDef USBD_Interface_fops_HS =
+USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_HS =
 {
   CDC_Init_HS,
   CDC_DeInit_HS,
@@ -131,13 +131,13 @@ static int8_t CDC_Control_HS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /* USER CODE END 10 */
 }
 
-void	(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
+void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
 static int8_t CDC_Receive_HS(uint8_t* Buf, uint32_t *Len)
 {
 uint16_t	len = *Len;
-	if ( Rx_CallbackPtr != NULL )
-		Rx_CallbackPtr(Buf,len);
+	if ( CDCRx_CallbackPtr != NULL )
+		CDCRx_CallbackPtr(Buf,len);
 
 	USBD_CDC_SetRxBuffer(&hUsbDeviceHS, &Buf[0]);
 	USBD_CDC_ReceivePacket(&hUsbDeviceHS);

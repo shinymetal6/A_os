@@ -30,7 +30,7 @@
 #define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
 #else
-#define	xmodem_rx_data_len		0x17fff
+#define	xmodem_rx_data_len		0xffff
 uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
 #endif
 
