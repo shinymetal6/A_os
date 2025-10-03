@@ -957,18 +957,6 @@ uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev)
 
   return (uint8_t)USBD_OK;
 }
-/**
-  * @}
-  */
 
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 #endif // #ifdef A_OS_STM32G4xx_PROCESSOR
 #endif // #ifdef USB_DEVICE_ENABLED

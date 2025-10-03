@@ -25,7 +25,9 @@
 extern "C" {
 #endif
 
-/* Includes ------------------------------------------------------------------*/
+#include "../../../../../kernel/system_default.h"
+#ifdef A_OS_STM32G4xx_PROCESSOR
+#ifdef USB_DEVICE_ENABLED
 #include "../../Core/usbd_ioreq.h"
 
 /** @addtogroup STM32_USB_DEVICE_LIBRARY
@@ -155,21 +157,11 @@ uint8_t USBD_CDC_SetTxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff,
 uint8_t USBD_CDC_SetRxBuffer(USBD_HandleTypeDef *pdev, uint8_t *pbuff);
 uint8_t USBD_CDC_ReceivePacket(USBD_HandleTypeDef *pdev);
 uint8_t USBD_CDC_TransmitPacket(USBD_HandleTypeDef *pdev);
-/**
-  * @}
-  */
 
+#endif // #ifdef A_OS_STM32G4xx_PROCESSOR
+#endif // #ifdef USB_DEVICE_ENABLED
 #ifdef __cplusplus
 }
 #endif
 
 #endif  /* __USB_CDC_H */
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

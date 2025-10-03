@@ -61,6 +61,13 @@ __weak void MX_LWIP_Process(void)
 
 }
 
+__weak PCD_HandleTypeDef hpcd_USB_OTG_FS;
+
+__weak void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
+{
+
+}
+
 __weak void MX_USB_HOST_Process(void)
 {
 

@@ -189,7 +189,14 @@ UART_Drv_TypeDef	*uarts_Drv;
 #ifdef	STM32U575xxA
 		uarts_Drv->flags &= ~UART_USES_DMA_RX;
 		uarts_Drv->flags &= ~UART_USES_DMA_TX;
-#else
+		#define	SKIP_DMA_UART 1
+#endif
+#ifdef	STM32H563xx
+		uarts_Drv->flags &= ~UART_USES_DMA_RX;
+		uarts_Drv->flags &= ~UART_USES_DMA_TX;
+		#define	SKIP_DMA_UART 1
+#endif
+#ifndef	SKIP_DMA_UART
 		if ( uarts_Drv->uart->hdmarx == NULL )
 		{
 			/* disable dma if they are not configured in hw */
@@ -205,21 +212,32 @@ UART_Drv_TypeDef	*uarts_Drv;
 		UARTS_DriverStruct[last_uart_used_handle].status = DRIVER_STATUS_IN_USE;
 		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback);
 
+#ifndef	SKIP_DMA_UART
 		if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 #ifdef	STM32U575xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len - (uarts_Drv->uart->hdmarx->Instance->CBR1 & DMA_CBR1_BNDT);
+			#define	DMA_UART_FOUND 1
 #endif
 #ifdef	STM32F446xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->NDTR;
+			#define	DMA_UART_FOUND 1
 #endif
 #ifdef	STM32L152xE
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
+			#define	DMA_UART_FOUND 1
 #endif
 #ifdef	STM32G474xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
-#else
+			#define	DMA_UART_FOUND 1
+#endif
+#ifdef	STM32H563xx
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_NodeTypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
+			#define	DMA_UART_FOUND 1
+#endif
+#ifndef	DMA_UART_FOUND
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_Stream_TypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 #endif
+#endif // #ifndef	SKIP_DMA_UART
 		last_uart_used_handle++;
 		uart_driver_request++;
 		return last_uart_used_handle-1;
@@ -291,6 +309,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 	if ( (handle = find_handle_from_uart(huart)) != 255)
 	{
 		uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[handle].driver_private_data;
+#ifdef	STM32H563xx
+		#define	SKIP_DMA_UART 1
+#endif
+#ifndef	SKIP_DMA_UART
 		if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 		{
 
@@ -308,6 +330,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 #endif //#ifdef   STM32_HAS_STREAM_DMA
 #endif //#ifdef   STM32_HAS_STREAM_DMA
 
+
 			uarts_Drv->timeout = uarts_Drv->timeout_reload_value;
 			uarts_Drv->timeout_mask = 1;
 			// clear_hw_flag();
@@ -315,6 +338,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 			HAL_UART_Receive_DMA(uarts_Drv->uart, uarts_Drv->data, uarts_Drv->rx_max_len);
 			return;
 		}
+#endif // #ifndef	SKIP_DMA_UART
 
 		if (uarts_Drv->data != NULL )
 		{
@@ -429,7 +453,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 		if ( UARTS_DriverStruct[i].process != 0 )
 		{
 			uarts_Drv = (UART_Drv_TypeDef *)UARTS_DriverStruct[i].driver_private_data;
-
+#ifdef	STM32H563xx
+		#define	SKIP_DMA_UART 1
+#endif
+#ifndef	SKIP_DMA_UART
 			if ( (uarts_Drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 			{
 #ifdef   STM32_HAS_STREAM_DMA
@@ -497,6 +524,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 				}
 			}
 			else
+#endif //#ifndef	SKIP_DMA_UART
 			{
 				if ( uarts_Drv->timeout )
 				{
