@@ -64,7 +64,6 @@ Please note:<br>
 The iodef_common.h file is not yet complete, so some definitions maybe not correct<br>
 
 # Samples : <br>
-sample_A_os_includes.h<br>
 sample_process_1_adc.c<br>
 sample_process_1_basic.c<br>
 sample_process_1_can.c<br>
