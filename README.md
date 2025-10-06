@@ -42,7 +42,7 @@ QtConfigurator is in Qt directory.<br>
 # Quick start<br>
 1) Copy processor ld file from LdFiles folder in kernel overwiriting the .ld file from Cube<br>
 2) Disable compilation of the USB Cube generated files if USB is used<br>
-3) Disable the appropriate entries in stm32h7xx_it.c<br>
+3) Disable the appropriate entries in stm32h7xx_it.c. Use stm32g4xx_it.c.Example in SampleProcesses as example<br>
 4) Add void A_init_mem(void); and void A_start(void); in main.h<br>
 5) Add the call to A_init_mem(); in main.c just before peripheral initialization<br>
 6) Add the call to A_start(); just after the peripherals initializations.<br>
