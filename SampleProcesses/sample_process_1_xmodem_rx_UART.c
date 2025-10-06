@@ -50,18 +50,19 @@ extern	UART_HandleTypeDef	huart2;
 #define	UART				huart2
 #define	UART_WAKEUP			WAKEUP_FROM_UART2_IRQ
 #define	UART_EVENT			EVENT_UART2_IRQ
-#else
+#endif
 #ifdef	STM32L152xE
 extern	UART_HandleTypeDef	huart2;
 #define	UART				huart2
 #define	UART_WAKEUP			WAKEUP_FROM_UART2_IRQ
 #define	UART_EVENT			EVENT_UART2_IRQ
-#else
-extern	UART_HandleTypeDef	huart3;
-#define	UART				huart3
-#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
-#define	UART_EVENT			EVENT_UART3_IRQ
 #endif
+
+#ifdef	STM32G491xx
+extern	UART_HandleTypeDef	hlpuart1;
+#define	UART				hlpuart1
+#define	UART_WAKEUP			WAKEUP_FROM_UART1_IRQ
+#define	UART_EVENT			EVENT_UART1_IRQ
 #endif
 
 #define	UART_RX_BUF_SIZE	512

@@ -40,6 +40,9 @@
 #ifdef	STM32G474xx
 		#include "../processors/STM32G474xx.h"
 #endif
+#ifdef	STM32G491xx
+		#include "../processors/STM32G491xx.h"
+#endif
 #ifdef	STM32U575xx
 		#include "../processors/STM32U575xx.h"
 #endif
