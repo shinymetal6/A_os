@@ -59,7 +59,7 @@ c - Use cases:
 				sprintf((char *)uart_tx_buffer,"Event Encoder : %d DOWN\n\r",(int )Encoder_Drv.encoder_value);
 		}	
 Notes:
-	The appropriate example is in sample_process_1_encoder.c
+	An appropriate example is in sample_process_1_encoder.c
 
   
  

@@ -45,6 +45,6 @@ typedef struct
 	uint32_t 				ws2812_channel;
 }WS2812_Drv_TypeDef;
 
-extern uint32_t	ws2812_register(Pwm_Control_TypeDef *private_data);
+extern uint32_t	ws2812_register(WS2812_Drv_TypeDef *private_data);
 
 #endif /* DRIVERS_TIMERS_WS2812_WS2812_H_ */

@@ -56,6 +56,8 @@ At now the driver handles standard 1-2 mSec. pulses servos.
 There are no flags associated with this driver.
 The driver will never wake up the calling process.
 
+An appropriate example is in sample_process_1_servo.c
+
   
  
 

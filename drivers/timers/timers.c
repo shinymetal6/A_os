@@ -38,7 +38,7 @@ ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 Encoder_Drv_TypeDef			*encoder_driver_data;
 
-uint32_t handle_dht,handle_encoder,i;
+uint32_t handle_dht,i;
 	if ( last_sensor_used_handle )
 	{
 		for(i=0;i<MAX_DHT11_DEVICES;i++)

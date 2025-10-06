@@ -81,6 +81,7 @@ The timeout field is the timeout after which even if the packet len has not reac
  
  Remember to enable uart global irqs, as this initialization is not intended for circular buffers
   
+  There are several examples in SampleProcesses
  
 
 

@@ -58,6 +58,7 @@ The driver will never wake up the calling process.
 
 The pictures from DCC_Timer_Settings_1.png to DCC_Timer_Settings_5.png gives an example on how to set the timer 1 for dcc.
 
+An appropriate example is in sample_process_1_dccpwm.c
   
  
 

@@ -55,6 +55,7 @@ static void gpio_int_Driver_RxTimeoutCheckCallback(void)
 {
 uint32_t	i;
 GPIO_Interrupt_DriverStruct_t *private_data;
+uint8_t bit_active = 0;
 
 	__disable_irq();
 	for(i=0;i<MAX_GPIOINT_DRIVERS;i++)
@@ -62,22 +63,44 @@ GPIO_Interrupt_DriverStruct_t *private_data;
 		private_data = (GPIO_Interrupt_DriverStruct_t	*)GPIO_Int_DriverStruct[i].private_data;
 		if ( private_data != NULL )
 		{
-			if ( private_data->debounce )
+			if (( private_data->debounce ) && (private_data->debounce_counter ))
 			{
-				if ( private_data->debounce_counter )
-					private_data->debounce_counter --;
-				if ( private_data->debounce_counter == 0 )
+				if (( private_data->IRQ_type & GPIO_INT_TYPE_FALLING) == GPIO_INT_TYPE_FALLING)
 				{
-					private_data->debounce_counter = private_data->debounce;
+					if (HAL_GPIO_ReadPin(private_data->IRQ_port,private_data->IRQ_bit) == 0 )
+						bit_active = 1;
+				}
+				if (( private_data->IRQ_type & GPIO_INT_TYPE_RISING) == GPIO_INT_TYPE_RISING)
+				{
+					if (HAL_GPIO_ReadPin(private_data->IRQ_port,private_data->IRQ_bit) == 1 )
+						bit_active = 1;
+				}
+			}
+
+			if ( bit_active )
+			{
+				private_data->debounce_counter --;
+				if (( private_data->debounce ) && (private_data->debounce_counter == 0 ))
+				{
+					private_data->status |= GPIO_INT_EVENT;
+					if ( private_data->wakeup_id != 0 )
+						activate_process(private_data->process,private_data->wakeup_id,private_data->IRQ_bit);
 					HAL_NVIC_ClearPendingIRQ(private_data->IRQ_bit);
 					HAL_NVIC_EnableIRQ(private_data->IRQ_bit);
+					if ( private_data->irq_exti_callback != NULL )
+						private_data->irq_exti_callback(private_data->IRQ_bit);
 				}
+			}
+			else
+			{
+				private_data->debounce_counter = 0;
+				HAL_NVIC_ClearPendingIRQ(private_data->IRQ_bit);
+				HAL_NVIC_EnableIRQ(private_data->IRQ_bit);
 			}
 		}
 	}
 	__enable_irq();
 }
-
 ITCM_AREA_CODE uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *private_data)
 {
 uint32_t	i;
@@ -87,13 +110,8 @@ uint32_t	i;
 		{
 			if ( private_data->IRQ_port == NULL )
 				return DRIVER_REQUEST_FAILED;
-			if ( private_data->irq_exti_callback == NULL )
+			if (( private_data->wakeup_id == 0 ) && (private_data->irq_exti_callback == NULL ))
 				return DRIVER_REQUEST_FAILED;
-			if ( private_data->flags )
-			{
-				if ( private_data->wakeup_id == 0 )
-					return DRIVER_REQUEST_FAILED;
-			}
 			if ( private_data->debounce )
 			{
 				private_data->debounce_counter = private_data->debounce;
@@ -109,33 +127,28 @@ uint32_t	i;
 	return 1;
 }
 
-
-uint32_t ret_flag;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	GPIO_Interrupt_DriverStruct_t *private_data = get_private_from_gpio_int(GPIO_Pin);
 	if ( private_data != NULL )
 	{
-		HAL_NVIC_DisableIRQ(private_data->IRQ_bit);
-		if ( private_data->DATA_port != NULL )
-			private_data->sampled_bit = HAL_GPIO_ReadPin(private_data->DATA_port,private_data->DATA_bit);
-		if ( private_data->flags != 0 )
+		if (( private_data->IRQ_bit == GPIO_Pin) && ( private_data->IRQ_port != NULL ))
 		{
-			if ( private_data->debounce )
+			HAL_NVIC_DisableIRQ(private_data->IRQ_bit);
+			private_data->sampled_bit = HAL_GPIO_ReadPin(private_data->IRQ_port,private_data->IRQ_bit);
+			if ( private_data->debounce == 0 )
 			{
-				if ( private_data->debounce_counter == private_data->debounce )
-					ret_flag = 1 << private_data->sampled_bit;
+				private_data->status |= GPIO_INT_EVENT;
+				if (( private_data->flags  & GPIO_INT_WAKEUP_ON_EVENT ) == GPIO_INT_WAKEUP_ON_EVENT )
+					if ( private_data->wakeup_id != 0 )
+						activate_process(private_data->process,private_data->wakeup_id,private_data->IRQ_bit);
+				HAL_NVIC_ClearPendingIRQ(private_data->IRQ_bit);
+				HAL_NVIC_EnableIRQ(private_data->IRQ_bit);
+				if ( private_data->irq_exti_callback != NULL )
+					private_data->irq_exti_callback(private_data->IRQ_bit);
 			}
-			else if ( private_data->debounce == 0)
-				ret_flag = 1 << private_data->sampled_bit;
-			activate_process(private_data->process,private_data->wakeup_id,ret_flag);
-		}
-		if ( private_data->irq_exti_callback != NULL )
-			private_data->irq_exti_callback(GPIO_Pin);
-		if ( private_data->debounce == 0)
-		{
-			HAL_NVIC_ClearPendingIRQ(private_data->IRQ_bit);
-			HAL_NVIC_EnableIRQ(private_data->IRQ_bit);
+			else
+				private_data->debounce_counter = private_data->debounce;
 		}
 	}
 }

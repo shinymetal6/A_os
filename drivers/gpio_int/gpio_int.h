@@ -31,28 +31,27 @@ typedef struct
 	uint32_t			*private_data;
 }GPIO_Int_DriverStruct_t;
 /* flags */
-#define	GPIO_INT_HIDE_ENABLED		0x80
 #define GPIO_INT_WAKEUP_ON_EVENT	0x01
-/* irq_type */
-#define	GPIO_INT_TYPE_RISING		0x80
-#define	GPIO_INT_TYPE_FALLING		0x40
 
 typedef struct
 {
+	uint8_t				status;
 	uint8_t 			process;
 	uint16_t			IRQ_bit;
 	GPIO_TypeDef	 	*IRQ_port;
 	uint16_t			IRQ_type;
-	uint16_t			DATA_bit;
-	GPIO_TypeDef	 	*DATA_port;
 	uint16_t			sampled_bit;
 	uint32_t			wakeup_id;
 	uint8_t				debounce;
 	uint8_t				debounce_counter;
 	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
 	uint8_t				flags;
-
 }GPIO_Interrupt_DriverStruct_t;
+/* status */
+#define GPIO_INT_EVENT				0x01
+/* irq_type */
+#define	GPIO_INT_TYPE_RISING		0x80
+#define	GPIO_INT_TYPE_FALLING		0x40
 
 
 

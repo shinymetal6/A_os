@@ -36,7 +36,6 @@ extern	uint8_t				last_tim_used_handle,tim_driver_request;
 
 __attribute__	((aligned (16)))	uint16_t	ws2812_FrameBuffer[BUFLEN][LEDBPP]; /* 0GRB */
 
-
 ITCM_AREA_CODE static void ws2812_compile_sync(void)
 {
 int16_t	i,k,location;
@@ -84,7 +83,7 @@ WS2812_Drv_TypeDef	*ws2812_drv = (WS2812_Drv_TypeDef *)TIM_DriverStruct[last_tim
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	ws2812_register(Pwm_Control_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_Drv_TypeDef *private_data)
 {
 	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
 	{

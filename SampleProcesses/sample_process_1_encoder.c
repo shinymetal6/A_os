@@ -33,10 +33,11 @@ extern	UART_HandleTypeDef huart3;
 #define	UART_EVENT			EVENT_UART3_IRQ
 #define	UART				huart3
 
-#define	USE_CALLBACK	1
+//#define	USE_CALLBACK	1
 
 #ifdef USE_CALLBACK
 extern	void irq_encoder_callback(uint32_t value);
+extern	void irq_encoderbtn_callback(uint16_t value);
 #endif // #ifdef USE_CALLBACK
 
 Encoder_Drv_TypeDef	Encoder_Drv =
@@ -49,6 +50,21 @@ Encoder_Drv_TypeDef	Encoder_Drv =
 #endif // #ifdef USE_CALLBACK
 };
 uint32_t encoder_driver_handle;
+
+GPIO_Interrupt_DriverStruct_t Button_Driver =
+{
+	.IRQ_bit = ENC_BTN_Pin,
+	.IRQ_port = ENC_BTN_GPIO_Port,
+	.IRQ_type = GPIO_INT_TYPE_FALLING,
+	.debounce = 100,
+	.flags = GPIO_INT_WAKEUP_ON_EVENT,
+#ifdef USE_CALLBACK
+	.irq_exti_callback = irq_encoderbtn_callback,
+#else
+	.wakeup_id = WAKEUP_FROM_EXT_INT_IRQ,
+#endif // #ifdef USE_CALLBACK
+};
+uint32_t button_driver_handle;
 
 #define	UART_RX_BUF_SIZE	512
 #define	UART_TX_BUF_SIZE	512
@@ -68,10 +84,14 @@ UART_Drv_TypeDef Uart_Drv =
 uint32_t	uart_driver_handle;
 
 #ifdef USE_CALLBACK
-uint32_t	enc_val,ready=0;;
+uint32_t	enc_val,btn_val,ready=0;;
 void irq_encoder_callback(uint32_t value)
 {
 	enc_val = value;
+}
+void irq_encoderbtn_callback(uint16_t value)
+{
+	btn_val = value;
 }
 #endif // #ifdef USE_CALLBACK
 
@@ -81,6 +101,7 @@ uint32_t	wakeup,flags;
 uint8_t	logo_cnt=0;
 
 	encoder_driver_handle = encoder_register(&Encoder_Drv);
+	button_driver_handle = gpio_int_register(&Button_Driver);
 	uart_driver_handle = uart_register(&Uart_Drv);
 	uart_start_receive(uart_driver_handle);
 #ifdef USE_CALLBACK
@@ -91,7 +112,7 @@ uint8_t	logo_cnt=0;
 
 	while(1)
 	{
-		wait_event(EVENT_TIMER | WAKEUP_FROM_TIM_IRQ);
+		wait_event(EVENT_TIMER | EVENT_TIM_IRQ | EVENT_EXT_INT_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & EVENT_TIMER) == EVENT_TIMER)
 		{
@@ -114,16 +135,28 @@ uint8_t	logo_cnt=0;
 					sprintf((char *)uart_tx_buffer,"Callback Encoder : %d DOWN\n\r",(int )Encoder_Drv.encoder_value);
 				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 			}
+			if (( Button_Driver.status & GPIO_INT_EVENT) == GPIO_INT_EVENT)
+			{
+				Button_Driver.status &= ~GPIO_INT_EVENT;
+				sprintf((char *)uart_tx_buffer,"Callback Button\n\r");
+				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
+			}
+
 #endif // #ifdef USE_CALLBACK
 		}
 
 #ifndef USE_CALLBACK
-		if (( wakeup & EVENT_TIM_IRQ) == EVENT_TIM_IRQ)
+		if (( wakeup & WAKEUP_FROM_TIM_IRQ) == WAKEUP_FROM_TIM_IRQ)
 		{
 			if (( Encoder_Drv.status & ENCODER_UP) == ENCODER_UP)
 				sprintf((char *)uart_tx_buffer,"Event Encoder : %d UP\n\r",(int )Encoder_Drv.encoder_value);
 			else
 				sprintf((char *)uart_tx_buffer,"Event Encoder : %d DOWN\n\r",(int )Encoder_Drv.encoder_value);
+			uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
+		}
+		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
+		{
+			sprintf((char *)uart_tx_buffer,"Event Encoder Button Pressed\n\r");
 			uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 		}
 #endif // #ifndef USE_CALLBACK
