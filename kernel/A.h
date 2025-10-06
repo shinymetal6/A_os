@@ -204,7 +204,7 @@ extern	void supervisor_process4(void);
 
 extern	Asys_t		Asys;
 
-#include "kernel_opt.h"
+//#include "kernel_opt.h"
 
 #ifdef PERF_FLAG_GPIO_Port
 #define	__PERF_SET()		PERF_FLAG_GPIO_Port->BSRR = PERF_FLAG_Pin

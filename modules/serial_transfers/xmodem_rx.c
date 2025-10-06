@@ -25,7 +25,6 @@
 
 #include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/kernel_opt.h"
 
 #include "xmodem_rx.h"
 #include <string.h>

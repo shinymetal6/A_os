@@ -26,7 +26,6 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #include "../../../kernel/scheduler.h"
-#include "../../../kernel/kernel_opt.h"
 
 #ifdef A_OS_TIMERS_ENABLED
 
@@ -51,7 +50,7 @@ uint32_t	i,initial,temp;
 
 ITCM_AREA_CODE static uint8_t dhtxx_am230x_decode(Dhtxx_am230x_Drv_TypeDef	*Dhtxx_am230x_Drv)
 {
-uint32_t	i,j,initial,byteindex;
+uint32_t	i,j,initial=0,byteindex;
 uint8_t		byte_val,byte_mask;
 
 	dhtxx_am230x_create_bitbytes(Dhtxx_am230x_Drv);
@@ -105,7 +104,7 @@ uint8_t		byte_val,byte_mask;
 	return 1;
 }
 
-ITCM_AREA_CODE static uint32_t get_handle_from_dht_workers(uint32_t device_index)
+ITCM_AREA_CODE uint32_t get_handle_from_dht_workers(uint32_t device_index)
 {
 uint32_t	i,drv_ret=255;
 	for(i=0;i<MAX_I2C_DEVICES;i++)
@@ -243,7 +242,7 @@ Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
 
 /*********** Interrupt *********/
 
-
+/*
 ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 Dhtxx_am230x_Drv_TypeDef	*dhtxx_am230x_Drv;
@@ -258,5 +257,5 @@ uint32_t handle_dht,i;
 		}
 	}
 }
-
+*/
 #endif // #ifdef A_OS_TIMERS_ENABLED

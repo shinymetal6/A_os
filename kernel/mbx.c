@@ -23,7 +23,6 @@
 #include "A.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
-#include "kernel_opt.h"
 #include <string.h>
 
 extern	PCB_t process[MAX_PROCESS];

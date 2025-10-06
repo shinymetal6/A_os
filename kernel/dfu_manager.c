@@ -23,7 +23,6 @@
 #include "A.h"
 #include "system_default.h"
 #include "A_exported_functions.h"
-#include "kernel_opt.h"
 
 void dfu_run_bootloader(void)
 {

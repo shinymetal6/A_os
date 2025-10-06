@@ -14,31 +14,35 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * encoder.h
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Oct 6, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#ifndef DRIVERS_TIMERS_ENCODER_ENCODER_H_
+#define DRIVERS_TIMERS_ENCODER_ENCODER_H_
 
 typedef struct
 {
-	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
+	uint32_t			wakeup_id;
+	TIM_HandleTypeDef 	*encoder_timer;
+	GPIO_TypeDef	 	*button_port;
+	uint16_t			button_bit;
+	uint32_t 			encoder_last_value;
+	uint32_t 			encoder_value;
+	void				(*irq_encoder_callback)  (uint32_t encoder_value);
+}Encoder_Drv_TypeDef;
+/* status */
+#define	ENCODER_INITIALIZED			0x01
+#define	ENCODER_WAKEUP				0x02
+#define	ENCODER_RUNNING				0x40
+#define	ENCODER_READY				0x80
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-#include "sound/sound.h"
-#include "midi_decoder/midi_decoder.h"
+extern uint32_t	encoder_register(Encoder_Drv_TypeDef *private_data);
+extern uint32_t get_handle_from_encoder_workers(TIM_HandleTypeDef 	*encoder_timer);
 
-#endif /* MODULES_MODULES_H_ */
+#endif /* DRIVERS_TIMERS_ENCODER_ENCODER_H_ */

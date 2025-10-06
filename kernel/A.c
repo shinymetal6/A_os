@@ -25,7 +25,6 @@
 #include "A.h"
 #include "scheduler.h"
 #include "A_exported_functions.h"
-#include "kernel_opt.h"
 #include "../libraries/lwip2.2/version.h"
 #include <strings.h>
 #include <stdio.h>

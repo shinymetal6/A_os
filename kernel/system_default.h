@@ -52,6 +52,9 @@
 #ifdef	STM32H563xx
 		#include "../processors/STM32H563xx.h"
 #endif
+#ifdef	STM32F746xx
+		#include "../processors/STM32F746xx.h"
+#endif
 
 #if __has_include("user_config.h") && __has_include(<stdint.h>)
 	#include "user_config.h"

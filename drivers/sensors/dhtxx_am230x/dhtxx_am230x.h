@@ -79,6 +79,7 @@ extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_dri
 extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *values);
+extern	uint32_t	get_handle_from_dht_workers(uint32_t device_index);
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

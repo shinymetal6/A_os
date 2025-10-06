@@ -1,0 +1,127 @@
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * sample_process_1_encoder.c
+ *
+ *  Created on: Oct 6, 2025
+ *      Author: fil
+ */
+
+#include "main.h"
+#include "sample_A_os_includes.h"
+
+#ifdef SAMPLE_PROCESSES_ENABLED
+#include "sample_processes_includes.h"
+#ifdef 	SAMPLEPROCESS_1_ENCODER
+extern	TIM_HandleTypeDef htim1;
+extern	UART_HandleTypeDef huart3;
+
+#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
+#define	UART_EVENT			EVENT_UART3_IRQ
+#define	UART				huart3
+
+//#define	USE_CALLBACK	1
+
+#ifdef USE_CALLBACK
+extern	void irq_encoder_callback(uint32_t value);
+#endif // #ifdef USE_CALLBACK
+
+Encoder_Drv_TypeDef	Encoder_Drv =
+{
+		.encoder_timer = &htim1,
+		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
+#ifdef USE_CALLBACK
+		.irq_encoder_callback = irq_encoder_callback,
+#endif // #ifdef USE_CALLBACK
+};
+uint32_t encoder_driver_handle;
+
+#define	UART_RX_BUF_SIZE	512
+#define	UART_TX_BUF_SIZE	512
+uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
+uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
+
+UART_Drv_TypeDef Uart_Drv =
+{
+	.data = uart_rx_buffer,
+	.rx_max_len = UART_RX_BUF_SIZE,
+	.uart = &UART,
+	.wakeup_id = UART_WAKEUP,
+	.timeout = 1000,
+	.flags = UART_USES_DMA_TX,
+};
+
+uint32_t	uart_driver_handle;
+
+#ifdef USE_CALLBACK
+uint32_t	enc_val,ready=0;;
+void irq_encoder_callback(uint32_t value)
+{
+	enc_val = value;
+	ready=1;
+}
+#endif // #ifdef USE_CALLBACK
+
+void sample_process_1_encoder(uint32_t process_id)
+{
+uint32_t	wakeup,flags;
+uint8_t	logo_cnt=0;
+
+	encoder_driver_handle = encoder_register(&Encoder_Drv);
+	uart_driver_handle = uart_register(&Uart_Drv);
+	uart_start_receive(uart_driver_handle);
+#ifdef USE_CALLBACK
+	Encoder_Drv.wakeup_id = 0;
+#endif // #ifdef USE_CALLBACK
+
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+
+	while(1)
+	{
+		wait_event(EVENT_TIMER | WAKEUP_FROM_TIM_IRQ);
+		get_wakeup_flags(&wakeup,&flags);
+		if (( wakeup & EVENT_TIMER) == EVENT_TIMER)
+		{
+			process_led();
+			logo_cnt++;
+			if ( logo_cnt == 5 )
+			{
+				sprintf((char *)uart_tx_buffer,"Encoder test\n\r");
+				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
+			}
+			if ( logo_cnt > 6 )
+				logo_cnt = 6;
+#ifdef USE_CALLBACK
+			if ( ready == 1 )
+			{
+				ready = 0;
+				sprintf((char *)uart_tx_buffer,"Callback Encoder : %d\n\r",(int )Encoder_Drv.encoder_value);
+				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
+			}
+#endif // #ifdef USE_CALLBACK
+		}
+
+		if (( wakeup & EVENT_TIM_IRQ) == EVENT_TIM_IRQ)
+		{
+			sprintf((char *)uart_tx_buffer,"Event Encoder : %d\n\r",(int )Encoder_Drv.encoder_value);
+			uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
+		}
+	}
+}
+#endif // #ifdef 	SAMPLEPROCESS_1_ENCODER
+
+#endif // #ifdef SAMPLE_PROCESSES_ENABLED
+

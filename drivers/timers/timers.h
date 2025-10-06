@@ -38,6 +38,7 @@ typedef struct
 #include "pwm/pwm.h"
 #include "servo/servo.h"
 #include "ws2812/ws2812.h"
+#include "encoder/encoder.h"
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

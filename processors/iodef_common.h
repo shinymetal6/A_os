@@ -319,5 +319,10 @@
 		#define A_OS_UART_ENABLED	1
 	#endif
 #endif // #ifdef	STM32H563xx
+#ifdef	STM32F746xx
+	#ifdef HAL_UART_MODULE_ENABLED
+		#define A_OS_UART_ENABLED	1
+	#endif
+#endif // #ifdef	STM32F746xx
 
 #endif /* BOARDS_IODEF_COMMON_H_ */

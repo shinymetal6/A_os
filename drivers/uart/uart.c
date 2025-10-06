@@ -48,10 +48,10 @@ ITCM_AREA_CODE  uint32_t uart_get_status(uint8_t handle)
 	return 0;
 }
 
+uint32_t ret_val = 0;
 ITCM_AREA_CODE  uint32_t	uart_send(uint8_t handle, uint8_t *buffer,uint16_t len)
 {
 UART_Drv_TypeDef	*uarts_Drv = (UART_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
-uint32_t ret_val = 0;
 	if ( (uarts_Drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
 		ret_val = HAL_UART_Transmit_DMA(uarts_Drv->uart , buffer, len);
 	else

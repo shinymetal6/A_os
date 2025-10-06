@@ -62,13 +62,14 @@ __weak void MX_LWIP_Process(void)
 }
 
 #ifndef A_OS_STM32G4xx_PROCESSOR
-
+/*
 __weak PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 __weak void HAL_PCD_IRQHandler(PCD_HandleTypeDef *hpcd)
 {
 
 }
+*/
 #endif
 __weak void MX_USB_HOST_Process(void)
 {
