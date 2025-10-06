@@ -39,6 +39,8 @@ typedef struct
 /* status */
 #define	ENCODER_INITIALIZED			0x01
 #define	ENCODER_WAKEUP				0x02
+#define	ENCODER_UP					0x10
+#define	ENCODER_DOWN				0x20
 #define	ENCODER_RUNNING				0x40
 #define	ENCODER_READY				0x80
 

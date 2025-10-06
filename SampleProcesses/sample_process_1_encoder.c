@@ -33,7 +33,7 @@ extern	UART_HandleTypeDef huart3;
 #define	UART_EVENT			EVENT_UART3_IRQ
 #define	UART				huart3
 
-//#define	USE_CALLBACK	1
+#define	USE_CALLBACK	1
 
 #ifdef USE_CALLBACK
 extern	void irq_encoder_callback(uint32_t value);
@@ -42,9 +42,10 @@ extern	void irq_encoder_callback(uint32_t value);
 Encoder_Drv_TypeDef	Encoder_Drv =
 {
 		.encoder_timer = &htim1,
-		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
 #ifdef USE_CALLBACK
 		.irq_encoder_callback = irq_encoder_callback,
+#else
+		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
 #endif // #ifdef USE_CALLBACK
 };
 uint32_t encoder_driver_handle;
@@ -71,7 +72,6 @@ uint32_t	enc_val,ready=0;;
 void irq_encoder_callback(uint32_t value)
 {
 	enc_val = value;
-	ready=1;
 }
 #endif // #ifdef USE_CALLBACK
 
@@ -105,22 +105,31 @@ uint8_t	logo_cnt=0;
 			if ( logo_cnt > 6 )
 				logo_cnt = 6;
 #ifdef USE_CALLBACK
-			if ( ready == 1 )
+			if (( Encoder_Drv.status & ENCODER_READY) == ENCODER_READY)
 			{
-				ready = 0;
-				sprintf((char *)uart_tx_buffer,"Callback Encoder : %d\n\r",(int )Encoder_Drv.encoder_value);
+				Encoder_Drv.status &= ~ENCODER_READY;
+				if (( Encoder_Drv.status & ENCODER_UP) == ENCODER_UP)
+					sprintf((char *)uart_tx_buffer,"Callback Encoder : %d UP\n\r",(int )Encoder_Drv.encoder_value);
+				else
+					sprintf((char *)uart_tx_buffer,"Callback Encoder : %d DOWN\n\r",(int )Encoder_Drv.encoder_value);
 				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 			}
 #endif // #ifdef USE_CALLBACK
 		}
 
+#ifndef USE_CALLBACK
 		if (( wakeup & EVENT_TIM_IRQ) == EVENT_TIM_IRQ)
 		{
-			sprintf((char *)uart_tx_buffer,"Event Encoder : %d\n\r",(int )Encoder_Drv.encoder_value);
+			if (( Encoder_Drv.status & ENCODER_UP) == ENCODER_UP)
+				sprintf((char *)uart_tx_buffer,"Event Encoder : %d UP\n\r",(int )Encoder_Drv.encoder_value);
+			else
+				sprintf((char *)uart_tx_buffer,"Event Encoder : %d DOWN\n\r",(int )Encoder_Drv.encoder_value);
 			uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 		}
+#endif // #ifndef USE_CALLBACK
 	}
 }
+
 #endif // #ifdef 	SAMPLEPROCESS_1_ENCODER
 
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED

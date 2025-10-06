@@ -61,6 +61,12 @@ uint32_t handle_dht,handle_encoder,i;
 				encoder_driver_data->encoder_value = (htim->Instance->CNT>>2);
 				if ( encoder_driver_data->encoder_value != encoder_driver_data->encoder_last_value )
 				{
+					encoder_driver_data->status &= ~(ENCODER_UP | ENCODER_DOWN);
+
+					if ( encoder_driver_data->encoder_value > encoder_driver_data->encoder_last_value)
+						encoder_driver_data->status |= ENCODER_UP;
+					else
+						encoder_driver_data->status |= ENCODER_DOWN;
 					encoder_driver_data->status |= ENCODER_READY;
 					encoder_driver_data->encoder_last_value = encoder_driver_data->encoder_value;
 					if ( encoder_driver_data->irq_encoder_callback != NULL )
