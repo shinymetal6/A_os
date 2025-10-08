@@ -27,40 +27,33 @@
 
 #define	MAX_DHT11_DEVICES					8
 
-#define	DHTXX_AM230X_MAX_SAMPLES_LEN		128
-#define	DHTXX_AM230X_MAX_BITBYTES_LEN		80
-#define	DHTXX_AM230X_BYTES_NUM				5
-#define	DHTXX_AM230X_START_MINIMUM			75
-#define	DHTXX_AM230X_START_MAXIMUM			90
+#define	DHTXX_AM230X_SAMPLESLEN				96
+#define	DHTXX_AM230X_BITBYTES_LEN			96
+#define	DHTXX_AM230X_BITNUM					40
+#define	DHTXX_AM230X_DATALEN				(DHTXX_AM230X_BITNUM/8)
 
-#define	DHTXX_AM230X_50uLOW_MIN				40
-#define	DHTXX_AM230X_50uLOW_MAX				70
-#define	DHTXX_AM230X_DECODED_0				30
-#define	DHTXX_AM230X_DECODED_1MIN			50
+#define	DHTXX_AM230X_0_VAL					30
+#define	DHTXX_AM230X_1_VAL					70
+#define	DHTXX_AM230X_PULSE_END				250
 
 typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
 	uint8_t				handle;
-	uint8_t				device_index;
+	uint8_t				sensor_id;
 	uint8_t				state_machine;
 	uint32_t			ticks;
-	uint32_t			samples_number;
-	uint32_t			dhtxx_am230x_samples[DHTXX_AM230X_MAX_SAMPLES_LEN];
-	uint32_t			dhtxx_am230x_bitbytes[DHTXX_AM230X_MAX_BITBYTES_LEN];
-	uint32_t			dhtxx_am230x_decoded[DHTXX_AM230X_BYTES_NUM];
+	uint16_t			dhtxx_am230x_samples[DHTXX_AM230X_SAMPLESLEN];
+	uint16_t			dhtxx_am230x_length[DHTXX_AM230X_BITBYTES_LEN];
+	uint8_t				dhtxx_data[DHTXX_AM230X_DATALEN];
 	uint8_t				checksum;
-	uint32_t			errors;
 	TIM_HandleTypeDef 	*dht_timer;
 	uint16_t 			dht_timer_channel;
 	GPIO_TypeDef	 	*one_wire_port;
 	uint16_t			one_wire_bit;
 }Dhtxx_am230x_Drv_TypeDef;
 /* status */
-#define	DHTXX_AM230X_STARTBIT	0x01
-#define	DHTXX_AM230X_ACQRUN	0x02
-#define	DHTXX_AM230X_VALID		0x08
 #define	DHTXX_AM230X_RUNNING	0x40
 #define	DHTXX_AM230X_ACQDONE	0x80
 
@@ -75,13 +68,12 @@ enum DHTXX_AM230X_STATE_MACHINE {
 #define	DHTXX_AM230X_START_TICKS	18
 #define	DHTXX_AM230X_CYCLE_TICKS	6
 
-extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data,uint32_t sensor_id);
+extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data);
 extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
 extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
-extern	uint32_t	dhtxx_am230x_get_values(uint8_t handle_dht,uint8_t *values);
 extern	uint32_t	get_handle_from_dht_workers(uint32_t device_index);
+extern	uint32_t	dhtxx_am230x_get_status(uint8_t handle_dht);
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
-
 
 #endif /* DRIVERS_SENSORS_DHTXX_AM230X_DHTXX_AM230X_H_ */

@@ -25,26 +25,35 @@
 #include "../../kernel/A.h"
 
 #include "gpio.h"
-void set_gpio_mode(GPIO_TypeDef	*one_wire_port,uint16_t	one_wire_bit,uint8_t mode,uint8_t value)
+void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_t value)
 {
-uint32_t	one_wire_32 = (uint32_t )one_wire_bit;
+	uint32_t	shft;
+	for(shft=0;shft<16;shft++)
+		if ( gpio_bit == 1<<shft )
+			break;
+	shft *= 2;
+
 	switch( mode )
 	{
-	case	GPIO_IS_INPUT 		:
-		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
-		one_wire_port->PUPDR &= ~(0x03 << (one_wire_32 << 1));
+	case	MODE_INPUT 		:
+		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER |= MODE_INPUT<<shft;
 		break;
-	case	GPIO_IS_ALTERNATE 	:
-		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
-		one_wire_port->MODER |= 1 << (((one_wire_32+1) * 2)-1);
+	case	MODE_AF 	:
+		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER |= MODE_AF<<shft;
 		break;
-	case	GPIO_IS_OUTPUT	 	:
-		one_wire_port->MODER &= ~(0x03 << (one_wire_32 << 1));
-		one_wire_port->MODER |= 1 << (((one_wire_32+1) * 2)-2);
-		one_wire_port->BSRR = (value != GPIO_PIN_RESET) ? one_wire_bit : (uint32_t)one_wire_bit << (16U);
+	case	MODE_OUTPUT	 	:
+		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER |= MODE_OUTPUT<<shft;
+		if (value)
+			gpio_port->BSRR = (uint32_t)gpio_bit;
+		else
+			gpio_port->BRR = (uint32_t)gpio_bit;
 		break;
-	case	GPIO_IS_ANALOG	 	:
-		one_wire_port->MODER |= 0x03 << (one_wire_32 << 1);
+	case	MODE_ANALOG	 	:
+		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER |= MODE_ANALOG<<shft;
 		break;
 	default	 	: break;
 	}

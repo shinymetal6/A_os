@@ -45,6 +45,8 @@ Encoder_Drv_TypeDef	*encoder_driver_data;
 		if ( encoder_driver_data->encoder_timer == NULL )
 			return DRIVER_REQUEST_FAILED;
 		encoder_driver_data->flags = 0;
+		TIM_DriverStruct[last_tim_used_handle].timer_type = TIM_TYPE_ENCODER;
+
 		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
 		HAL_TIM_Encoder_Start_IT(encoder_driver_data->encoder_timer, TIM_CHANNEL_ALL);
 

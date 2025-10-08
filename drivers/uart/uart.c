@@ -234,6 +234,10 @@ UART_Drv_TypeDef	*uarts_Drv;
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
 			#define	DMA_UART_FOUND 1
 #endif
+#ifdef	STM32G431xx
+			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-uarts_Drv->uart->hdmarx->Instance->CNDTR;
+			#define	DMA_UART_FOUND 1
+#endif
 #ifdef	STM32H563xx
 			uarts_Drv->rx_num_chars = uarts_Drv->rx_max_len-((DMA_NodeTypeDef *)uarts_Drv->uart->hdmarx->Instance)->NDTR;
 			#define	DMA_UART_FOUND 1

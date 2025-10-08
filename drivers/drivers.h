@@ -31,7 +31,6 @@
 #include "uart/uart.h"
 #include "dmx512/dmx512.h"
 #include "timers/timers.h"
-#include "sensors/sensors.h"
 #include "USB_Device/usb_device_driver_manager.h"
 #include "qspi/qspi.h"
 #include "spi/spi.h"

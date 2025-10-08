@@ -64,9 +64,9 @@ ITCM_AREA_CODE void dmx512_send(uint8_t handle, uint8_t *buffer, uint16_t buffer
 {
 DMX512_Drv_TypeDef	*dmx512_Drv = (DMX512_Drv_TypeDef	*)UARTS_DriverStruct[handle].driver_private_data;
 	__disable_irq();
-	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,GPIO_IS_OUTPUT,0);
+	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,MODE_OUTPUT,0);
 	DWT_Delay_us(dmx512_Drv->break_length);
-	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,GPIO_IS_ALTERNATE,0);
+	set_gpio_mode(dmx512_Drv->tx_port,dmx512_Drv->tx_bit,MODE_AF,0);
 	uart_send(handle,buffer,buffer_len);
 	__enable_irq();
 }

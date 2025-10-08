@@ -65,6 +65,13 @@ extern	UART_HandleTypeDef	hlpuart1;
 #define	UART_EVENT			EVENT_UART1_IRQ
 #endif
 
+#ifdef	STM32G431xx
+extern	UART_HandleTypeDef	hlpuart1;
+#define	UART				hlpuart1
+#define	UART_WAKEUP			WAKEUP_FROM_UART1_IRQ
+#define	UART_EVENT			EVENT_UART1_IRQ
+#endif
+
 #define	UART_RX_BUF_SIZE	512
 #define	UART_TX_BUF_SIZE	512
 uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];

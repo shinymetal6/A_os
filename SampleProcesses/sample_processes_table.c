@@ -16,6 +16,9 @@
 #ifdef	SAMPLEPROCESS_1_BASIC
 extern	void sample_process_1_basic(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_BASIC
+#ifdef	SAMPLEPROCESS_1_GPIO
+extern	void sample_process_1_gpio(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_GPIO
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX_UART
 extern	void sample_process_1_xmodem_rx_UART(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_UART
@@ -105,6 +108,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_BASIC
 				.user_process = sample_process_1_basic,
 #endif // #define	SAMPLEPROCESS_1_BASIC
+#ifdef	SAMPLEPROCESS_1_GPIO
+				.user_process = sample_process_1_gpio,
+#endif // #define	SAMPLEPROCESS_1_GPIO
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX_UART
 				.user_process = sample_process_1_xmodem_rx_UART,
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_UART
