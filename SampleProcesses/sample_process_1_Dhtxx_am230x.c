@@ -64,12 +64,14 @@ uint32_t	uart_driver_handle;
 void sample_process_1_Dhtxx_am230x(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+float humidity;
+float temperature;
+uint8_t negative;
 	dht_driver_handle = dhtxx_am230x_register(&Dhtxx_am230x_Drv);
 	dhtxx_am230x_init(dht_driver_handle);
 	dhtxx_am230x_start(dht_driver_handle);
 	uart_driver_handle = uart_register(&Uart_Drv);
-	//uart_start_receive(uart_driver_handle);
-	sprintf((char *)uart_tx_buffer,"DHT\n\r");
+	sprintf((char *)uart_tx_buffer,"DHT on Aos\n\r");
 	uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
@@ -92,11 +94,19 @@ uint32_t	wakeup,flags;
 			case 8 :
 				sprintf((char *)uart_tx_buffer,"Error on DHT Data\n\r");
 				if ( dhtxx_am230x_get_status(dht_driver_handle) == 0 )
-					sprintf((char *)uart_tx_buffer,"DHT Data : h %d.%d , t %d.%d\n\r",
-							(int )Dhtxx_am230x_Drv.dhtxx_data[0],
-							(int )Dhtxx_am230x_Drv.dhtxx_data[1],
-							(int )Dhtxx_am230x_Drv.dhtxx_data[2],
-							(int )Dhtxx_am230x_Drv.dhtxx_data[3]);
+				{
+					humidity = Dhtxx_am230x_Drv.dhtxx_data[0] + (Dhtxx_am230x_Drv.dhtxx_data[1] / 10.0);
+					negative = 0;
+					if ((Dhtxx_am230x_Drv.dhtxx_data[2] & 0x80) == 0x80 )
+						negative = 1;
+
+					uint16_t temp_abs = ((Dhtxx_am230x_Drv.dhtxx_data[2] & 0x7F) << 8) | Dhtxx_am230x_Drv.dhtxx_data[3];
+					temperature = temp_abs / 10.0;
+					if (negative)
+						temperature = -temperature;
+					sprintf((char *)uart_tx_buffer,"DHT Data : humidity = %f temperature = %f\n\r",humidity,temperature);
+				}
+
 				uart_send(uart_driver_handle, uart_tx_buffer,strlen((char * )uart_tx_buffer));
 				dht_sm = 0;
 				break;
