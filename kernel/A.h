@@ -27,11 +27,13 @@
 #include "system_default.h"
 #include "system_functions.h"
 #include "weak_functions.h"
+#include "kernel_options.h"
 #include <strings.h>
 #include <stdio.h>
 
 #define MAX_PROCESS					5
 #define MAX_PROCESS_MASK			0x1e
+
 #define USR_PROCESS_NUMBER			(MAX_PROCESS-1)
 #define MAX_SVC						16
 #define MAX_TIMERS					8

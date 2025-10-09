@@ -52,7 +52,7 @@ The timeout filed is the timeout after which even if the packet len has not reac
  
  If the field requested_len is not specified or specified as 0 the driver will wake up the process at each 
   packet received. In this case the timeout value is ignored and is disabled.
- Conversely, if requested_len is specified the driver will wake up the process whe the requested_len is reached
+ Conversely, if requested_len is specified the driver will wake up the process when the requested_len is reached
   or a timeout occours.  
  
  There are several examples in SampleProcesses
