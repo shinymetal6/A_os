@@ -142,7 +142,6 @@ Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)TIM_Dri
 	dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_IDLE;
 	dhtxx_am230x_Drv->ticks = 0;
 	set_gpio_type(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,OUTPUT_OD,OUTPUT_PP,GPIO_SPEED_FREQ_HIGH );
-
 	set_before_check_timers_callback(dhtxx_am230x_worker);
 	return 0;
 }
