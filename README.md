@@ -70,6 +70,7 @@ sample_process_1_can.c<br>
 sample_process_1_dccpwm.c<br>
 sample_process_1_Dhtxx_am230x.c<br>
 sample_process_1_encoder.c<br>
+sample_process_1_gpio.c<br>
 sample_process_1_i2c.c<br>
 sample_process_1_i2cmem.c<br>
 sample_process_1_i2csensors.c<br>
