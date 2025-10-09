@@ -21,7 +21,6 @@
  */
 #include "main.h"
 #include "A.h"
-#include "scheduler.h"
 #include "A_exported_functions.h"
 #include <string.h>
 

@@ -39,8 +39,6 @@
 #define MAX_TIM_DRIVERS				8
 #define MAX_ANALOG_DRIVERS			8
 #define MAX_EXTMEM_DRIVERS			8
-//#define MAX_MODULES					8
-//#define MAX_SENSORS					16
 #define MAX_I2C_BUSES				4
 #define MAX_I2C_DEVICES				16
 #define MAX_SPI_DEVICES				16
@@ -203,8 +201,6 @@ extern	void supervisor_process3(void);
 extern	void supervisor_process4(void);
 
 extern	Asys_t		Asys;
-
-//#include "kernel_opt.h"
 
 #ifdef PERF_FLAG_GPIO_Port
 #define	__PERF_SET()		PERF_FLAG_GPIO_Port->BSRR = PERF_FLAG_Pin

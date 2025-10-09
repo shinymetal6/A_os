@@ -24,7 +24,6 @@
 #include "main.h"
 #include "A.h"
 #include "system_default.h"
-#include "scheduler.h"
 #include <strings.h>
 
 #ifdef	POOL_ENABLE

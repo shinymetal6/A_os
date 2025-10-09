@@ -14,15 +14,16 @@
  * Project : A_os
 */
 /*
- * kernel_opt.h
+ * kernel_options.h
  *
- *  Created on: Jan 25, 2024
+ *  Created on: Oct 9, 2025
  *      Author: fil
  */
 
-#ifndef KERNEL_KERNEL_OPT_H_
-#define KERNEL_KERNEL_OPT_H_
+#ifndef KERNEL_KERNEL_OPTIONS_H_
+#define KERNEL_KERNEL_OPTIONS_H_
 
-#pragma GCC optimize("Ofast")
+//#pragma GCC optimize("Ofast")
 
-#endif /* KERNEL_KERNEL_OPT_H_ */
+
+#endif /* KERNEL_KERNEL_OPTIONS_H_ */

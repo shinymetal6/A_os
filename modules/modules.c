@@ -23,7 +23,6 @@
 #include "../kernel/system_default.h"
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
-#include "../kernel/scheduler.h"
 #include "modules.h"
 
 SYSTEM_RAM	MODULES_Struct_t	MODULES_Struct[MODULES_NUM];

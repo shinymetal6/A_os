@@ -25,7 +25,6 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
 #include "synth.h"
-//#include "../../../kernel/kernel_opt.h"
 #ifdef SOUND_ENABLED
 
 // Precomputed sine wavetable (Q15 format)

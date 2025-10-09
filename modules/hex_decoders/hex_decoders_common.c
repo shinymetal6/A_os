@@ -24,10 +24,9 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
 #ifdef	HEX_DEC_ENABLE
 
-uint32_t get_hex_crlflen(uint8_t *data_ptr)
+ITCM_AREA_CODE	uint32_t get_hex_crlflen(uint8_t *data_ptr)
 {
 uint32_t	i;
 	for(i=0;i<256;i++)

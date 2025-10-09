@@ -26,25 +26,23 @@
 
 #include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
-//#include "../../kernel/kernel_opt.h"
 
 #include "s3_hex.h"
 #include <string.h>
 
 SYSTEM_RAM	S3Hex_struct_t	S3Hex;
 
-uint8_t	*get_s3hex_data_ptr(void)
+ITCM_AREA_CODE uint8_t	*get_s3hex_data_ptr(void)
 {
 	return S3Hex.s3hex_line;
 }
 
-uint32_t get_s3hex_address(void)
+ITCM_AREA_CODE uint32_t get_s3hex_address(void)
 {
 	return S3Hex.address;
 }
 
-uint32_t s3hex_check_line(uint8_t *data_ptr , uint32_t data_len)
+ITCM_AREA_CODE uint32_t s3hex_check_line(uint8_t *data_ptr , uint32_t data_len)
 {
 uint32_t	check=0 , i;
 
@@ -53,7 +51,7 @@ uint32_t	check=0 , i;
 	return A_hex_to_byte(data_ptr[data_len-2] , data_ptr[data_len-1]) - (check & 0xff);
 }
 
-void pack_s3hex_data(uint8_t *data_ptr, uint8_t data_len)
+ITCM_AREA_CODE void pack_s3hex_data(uint8_t *data_ptr, uint8_t data_len)
 {
 uint32_t 	i,data_idx;
 
@@ -64,7 +62,7 @@ uint32_t 	i,data_idx;
 	S3Hex.stored_bytes += data_len;
 }
 
-uint8_t	s3hex_decode(uint8_t *data_ptr, uint8_t data_len)
+ITCM_AREA_CODE uint8_t	s3hex_decode(uint8_t *data_ptr, uint8_t data_len)
 {
 uint8_t decoded_len = 255;
 

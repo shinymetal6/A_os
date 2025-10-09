@@ -25,7 +25,6 @@
 #include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-#include "../../../kernel/scheduler.h"
 #ifdef A_OS_TIMERS_ENABLED
 
 #include "pwm.h"

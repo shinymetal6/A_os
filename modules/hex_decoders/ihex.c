@@ -26,7 +26,6 @@
 
 #include "../../kernel/system_default.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
 
 #include "ihex.h"
 #include "hex_decoders_common.h"
@@ -34,22 +33,22 @@
 
 SYSTEM_RAM	IHex_struct_t	IHex;
 
-uint8_t	*get_ihex_data_ptr(void)
+ITCM_AREA_CODE uint8_t	*get_ihex_data_ptr(void)
 {
 	return IHex.ihex_line;
 }
 
-uint32_t get_ihex_address(void)
+ITCM_AREA_CODE uint32_t get_ihex_address(void)
 {
 	return IHex.address;
 }
 
-uint32_t ihex_get_data_len(uint8_t *data_ptr)
+ITCM_AREA_CODE uint32_t ihex_get_data_len(uint8_t *data_ptr)
 {
 	return ((data_ptr[1] & 0x0f)<<4 ) | (data_ptr[2] & 0x0f);
 }
 
-uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len)
+ITCM_AREA_CODE uint32_t ihex_check_line(uint8_t *ihex_buf , uint32_t ihex_len)
 {
 uint32_t	check=0 , i;
 
@@ -58,7 +57,7 @@ uint32_t	check=0 , i;
 	return A_hex_to_byte(ihex_buf[ihex_len-2] , ihex_buf[ihex_len-1]) - (check & 0xff);
 }
 
-void pack_ihex_data(uint8_t *data_ptr, uint8_t data_len)
+ITCM_AREA_CODE void pack_ihex_data(uint8_t *data_ptr, uint8_t data_len)
 {
 uint32_t 	i,data_idx;
 
@@ -69,10 +68,7 @@ uint32_t 	i,data_idx;
 	IHex.stored_bytes += data_len;
 }
 
-
-uint8_t bum=0;
-
-uint8_t	ihex_decode_line(uint8_t *data_ptr, uint8_t data_len)
+ITCM_AREA_CODE uint8_t	ihex_decode_line(uint8_t *data_ptr, uint8_t data_len)
 {
 uint8_t decoded_len = 255;
 	if ( ihex_check_line(data_ptr,data_len))
@@ -83,8 +79,6 @@ uint8_t decoded_len = 255;
 	case	IHEX_DATA	:
 		IHex.address = (A_hex_to_byte(data_ptr[3],data_ptr[4]) << 8) | A_hex_to_byte(data_ptr[5],data_ptr[6]);
 		decoded_len = A_hex_to_byte(data_ptr[1],data_ptr[2]);
-		if ( decoded_len < 0x10 )
-			bum++;
 		pack_ihex_data(&data_ptr[9],decoded_len);
 		break;
 	case	IHEX_END_OF_FILE	:
@@ -129,7 +123,7 @@ uint32_t	linelen;
 uint8_t		ihex_result;
 uint32_t	ihex_len;
 uint8_t 	*ihex_data_ptr_fail;
-uint32_t ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr)
+ITCM_AREA_CODE uint32_t ihex_decode_area(uint8_t *binary_data_ptr, uint8_t *ihex_data_ptr)
 {
 uint32_t	i;
 

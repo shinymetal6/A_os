@@ -24,7 +24,6 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
 
 SYSTEM_RAM	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
 SYSTEM_RAM	uint8_t					last_analog_used_handle=0,analog_driver_request = 0;

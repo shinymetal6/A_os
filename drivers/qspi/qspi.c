@@ -24,7 +24,6 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
 
 SYSTEM_RAM	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 SYSTEM_RAM	uint8_t					last_qspi_used_handle=0;

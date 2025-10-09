@@ -23,9 +23,7 @@
 #include "main.h"
 #include "A.h"
 #include "system_default.h"
-#include "scheduler.h"
 #include "A_exported_functions.h"
-//#include "kernel_opt.h"
 
 extern	PCB_t 		process[MAX_PROCESS];
 extern	Asys_t		Asys;

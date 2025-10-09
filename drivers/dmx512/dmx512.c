@@ -24,8 +24,6 @@
 #include "../../kernel/system_default.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#include "../../kernel/scheduler.h"
-//#include "../../kernel/kernel_opt.h"
 
 #ifdef A_OS_UART_ENABLED
 
