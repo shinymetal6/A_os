@@ -48,7 +48,8 @@
  * will be set to standard values. Override anything you don't like!
  */
 #include "../../../../Target/lwipopts.h"
-#include "../../../../../../kernel/system_default.h"
+#include "../../../../../../kernel/A.h"
+#include "../../../../../../kernel/A_exported_functions.h"
 #include "debug.h"
 
 /**
@@ -946,7 +947,6 @@
 #define LWIP_DHCP                       1
 #endif
 #else
-#include "../../../../../../kernel/system_default.h"
 
 #ifdef NETWORKING_DHCP
 	#define LWIP_DHCP                       1

@@ -20,7 +20,6 @@
  *      Author: fil
  */
 #include "main.h"
-#include "system_default.h"
 #include "A.h"
 #include "A_exported_functions.h"
 #include "../processors/iodef_common.h"

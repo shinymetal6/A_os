@@ -22,7 +22,6 @@
 
 #include "main.h"
 #include "A.h"
-#include "system_default.h"
 #include "A_exported_functions.h"
 
 extern	PCB_t 		process[MAX_PROCESS];

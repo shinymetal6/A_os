@@ -21,9 +21,9 @@
  */
 
 #include "main.h"
-
+#include "../../A.h"
+#include "../../A_exported_functions.h"
 #ifdef	STM32F446xx
-#include "../../system_default.h"
 #include "flash_updater.h"
 
 extern	uint8_t	*_fdata_start,*_fdata_end,*_d2ram_start;

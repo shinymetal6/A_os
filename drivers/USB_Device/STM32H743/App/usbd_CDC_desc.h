@@ -24,7 +24,6 @@
 #define DRIVERS_USB_STM32H743_APP_USBD_CDC_DESC_H_
 
 #ifdef	STM32H743xx
-#include "../../../../kernel/system_default.h"
 #ifdef	USB_DEVICE_ENABLED
 
 #ifdef __cplusplus

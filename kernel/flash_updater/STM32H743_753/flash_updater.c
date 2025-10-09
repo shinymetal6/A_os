@@ -30,7 +30,8 @@
 #endif
 
 #ifdef	FLASH_UPDATER_ENABLED
-#include "../../system_default.h"
+#include "../../A.h"
+#include "../../A_exported_functions.h"
 #include "flash_updater.h"
 
 extern	uint8_t	*_fdata_start,*_fdata_end,*_d2ram_start;

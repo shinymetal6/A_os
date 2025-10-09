@@ -24,7 +24,6 @@
 /* vim: set ai et ts=4 sw=4: */
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
 #ifdef TOUCH_ENABLED

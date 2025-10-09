@@ -20,7 +20,7 @@
  *      Author: fil
  */
 
-#include "../kernel/system_default.h"
+#include "main.h"
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
 #include "modules.h"

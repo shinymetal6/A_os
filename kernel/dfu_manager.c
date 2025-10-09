@@ -21,7 +21,6 @@
  */
 #include "main.h"
 #include "A.h"
-#include "system_default.h"
 #include "A_exported_functions.h"
 
 void dfu_run_bootloader(void)

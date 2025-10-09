@@ -27,7 +27,6 @@
 #define __USB_DEVICE__H__
 
 #ifdef	STM32H743xx
-#include "../../../../kernel/system_default.h"
 #ifdef	USB_DEVICE_ENABLED
 
 #ifdef __cplusplus

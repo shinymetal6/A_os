@@ -23,7 +23,6 @@
 #ifndef DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 #define DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
 
-#include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 

@@ -21,10 +21,9 @@
  */
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
-
-#ifdef A_OS_I2C_ENABLED
+#include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
+#ifdef A_OS_I2C_ENABLED
 #include "lps22df.h"
 
 extern	I2C_DriverStruct_t	I2C_DriverStruct[MAX_I2C_DEVICES];

@@ -19,8 +19,8 @@
   */  
 
 #include "main.h"
-#include "../../kernel/system_default.h"
-
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
 #ifdef	NETWORKING_ENABLED
 #include "lan8742.h"
 

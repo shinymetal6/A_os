@@ -21,7 +21,6 @@
  */
 
 #include "main.h"
-#include "../../../kernel/system_default.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #ifdef STM32H7xx_HAL_QSPI_H

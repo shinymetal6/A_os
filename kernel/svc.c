@@ -23,7 +23,6 @@
 
 #include "main.h"
 #include "A.h"
-#include "system_default.h"
 #include "A_exported_functions.h"
 
 SYSTEM_RAM	uint8_t	opcode;

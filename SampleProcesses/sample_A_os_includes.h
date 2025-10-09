@@ -24,10 +24,7 @@
 #define SAMPLEPROCESSES_A_OS_INCLUDES_H_
 
 #include "../kernel/A.h"
-#include "../kernel/system_default.h"
 #include "../kernel/A_exported_functions.h"
-#include <stdio.h>
-#include <string.h>
 
 #ifdef SAMPLE_PROCESSES_ENABLED
 	extern void process_led(void);

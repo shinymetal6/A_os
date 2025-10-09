@@ -24,7 +24,6 @@
 #define DRIVERS_LCD_ILI9341_LCD_ILI9341_H_
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
 #ifdef A_OS_SPI_ENABLED
 #ifdef LCD_ENABLED
 

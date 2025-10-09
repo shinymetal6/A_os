@@ -20,7 +20,8 @@
  *      Author: fil
  */
 #include "main.h"
-#include "../../A_os/kernel/A.h"
+#include "A.h"
+#include "A_exported_functions.h"
 
 /* These processes waste only time, they are defined to have something of useless to schedule */
 __weak void weak_process1_init(uint32_t process_id)

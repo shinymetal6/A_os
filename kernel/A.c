@@ -21,13 +21,9 @@
  */
 
 #include "main.h"
-#include "system_default.h"
 #include "A.h"
-#include "scheduler.h"
 #include "A_exported_functions.h"
-#include "../libraries/lwip2.2/version.h"
-#include <strings.h>
-#include <stdio.h>
+
 
 SYSTEM_RAM		Asys_t			Asys;
 SYSTEM_RAM 		PCB_t 			process[MAX_PROCESS];
@@ -38,8 +34,12 @@ SYSTEM_RAM		MEMpool_t		MEMpool[POOL_NUM];
 VERSIONING	uint8_t	aos_name[8]	 			= "A_os";
 VERSIONING	uint8_t	aos_version[32] 		= A_OS_VERSION;
 VERSIONING	uint8_t	lwip_name[8]	 		= "lwip";
+#ifdef	NETWORKING_ENABLED
+#include "../libraries/lwip2.2/version.h"
 VERSIONING	uint8_t	lwip_version[32] 		= LWIP_VERSION;
-
+#else
+VERSIONING	uint8_t	lwip_version[32] 		= "Disabled";
+#endif
 AOS_FLASH_END	uint8_t	aos_end[32]	 			= "A_os End Code";
 
 extern	USRprcs_t	UserProcesses[USR_PROCESS_NUMBER];

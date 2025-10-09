@@ -23,7 +23,6 @@
 #include "main.h"
 #include "A.h"
 #include "A_exported_functions.h"
-#include "system_default.h"
 
 #ifdef NETWORKING_ENABLED
 extern	void MX_LWIP_Process(void);

@@ -22,9 +22,8 @@
 
 #include "main.h"
 #include "../../A.h"
-
+#include "../../A_exported_functions.h"
 #ifdef	A_OS_STM32G4xx_PROCESSOR
-#include "../../system_default.h"
 #include "flash_updater.h"
 
 uint32_t	G491_flash_swTick=0;

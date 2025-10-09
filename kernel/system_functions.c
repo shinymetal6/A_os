@@ -23,7 +23,7 @@
 
 #include "main.h"
 #include "A.h"
-#include "system_functions.h"
+#include "A_exported_functions.h"
 
 ITCM_AREA_CODE uint32_t A_bit_index_to_num(uint32_t bit_index )
 {
