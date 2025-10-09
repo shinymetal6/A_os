@@ -21,12 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef A_OS_STM32G4xx_PROCESSOR
 #ifdef USB_DEVICE_ENABLED
-
-#include "../../../../kernel/A_exported_functions.h"
-
 #include "usb_device.h"
 #include "../Core/usbd_core.h"
 #include "usbd_desc.h"

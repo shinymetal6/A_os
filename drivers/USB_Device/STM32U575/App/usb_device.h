@@ -27,7 +27,6 @@
 #endif
 
 #ifdef	STM32U575xx
-#include "../../../../kernel/system_default.h"
 #ifdef USB_DEVICE_ENABLED
 #include "../Class/CDC/usbd_cdc.h"
 

@@ -23,11 +23,11 @@
 
 #include "main.h"
 
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef	STM32U575xx
-#include "../../../../kernel/system_default.h"
 
 #ifdef	USB_DEVICE_ENABLED
-#include "../../../../kernel/A_exported_functions.h"
 #include "../../usb_device_driver_manager.h"
 
 #include "usb_device.h"

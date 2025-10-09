@@ -17,10 +17,10 @@
   */
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef STM32H563xx
 #ifdef USB_DEVICE_ENABLED
-#include "../../../../kernel/A_exported_functions.h"
 
 #include "usbd_core.h"
 

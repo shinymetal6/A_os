@@ -24,7 +24,6 @@
 #define __USBD_CDC_IF_H__
 
 #ifdef	STM32F446xx
-#include "../../../../kernel/system_default.h"
 #ifdef	USB_DEVICE_ENABLED
 
 #ifdef __cplusplus

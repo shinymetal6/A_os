@@ -17,11 +17,9 @@
   ******************************************************************************
   */
 #include "main.h"
-/* USER CODE END Header */
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef	STM32F722xx
-
-#include "../../../../kernel/system_default.h"
-
 #ifdef	USB_DEVICE_ENABLED
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f7xx.h"

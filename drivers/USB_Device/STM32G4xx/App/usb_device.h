@@ -26,7 +26,6 @@
  extern "C" {
 #endif
 
-#include "../../../../kernel/system_default.h"
 #ifdef A_OS_STM32G4xx_PROCESSOR
 
 /* Includes ------------------------------------------------------------------*/

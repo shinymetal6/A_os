@@ -27,7 +27,6 @@
 #endif
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
 #ifdef A_OS_STM32G4xx_PROCESSOR
 #ifdef USB_DEVICE_ENABLED
 

@@ -55,9 +55,10 @@
 - "stm32xxxxx_{eval}{discovery}_io.c"
 EndBSPDependencies */
 #include "main.h"
+#include "../../../../../kernel/A.h"
+#include "../../../../../kernel/A_exported_functions.h"
 
 #ifdef	STM32U575xx
-#include "../../../../../kernel/system_default.h"
 #ifdef USB_DEVICE_ENABLED
 
 /* Includes ------------------------------------------------------------------*/

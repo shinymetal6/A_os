@@ -21,7 +21,8 @@
 #include "main.h"
 #ifdef	STM32F722xx
 
-#include "../../../../kernel/system_default.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef	USB_CDC
 #include "usbd_cdc_if.h"
 

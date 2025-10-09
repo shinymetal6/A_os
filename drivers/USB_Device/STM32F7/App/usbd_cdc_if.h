@@ -30,7 +30,6 @@
 #endif
 
 #include "main.h"
-#include "../../../../kernel/system_default.h"
 #ifdef	USB_CDC
 #include "../Class/CDC/usbd_cdc.h"
 

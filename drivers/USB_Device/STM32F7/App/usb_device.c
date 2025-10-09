@@ -21,9 +21,10 @@
 /* Includes ------------------------------------------------------------------*/
 
 #include "main.h"
-#ifdef	STM32F722xx
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 
-#include "../../../../kernel/system_default.h"
+#ifdef	STM32F722xx
 #ifdef USB_DEVICE_ENABLED
 
 #include "usb_device.h"

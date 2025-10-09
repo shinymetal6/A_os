@@ -25,7 +25,6 @@
 extern "C" {
 #endif
 
-#include "../../../../../kernel/system_default.h"
 #ifdef A_OS_STM32G4xx_PROCESSOR
 #ifdef USB_DEVICE_ENABLED
 #include "../../Core/usbd_ioreq.h"
