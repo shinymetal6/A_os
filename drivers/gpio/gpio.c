@@ -25,26 +25,49 @@
 #include "../../kernel/A.h"
 
 #include "gpio.h"
-void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_t value)
+
+ITCM_AREA_CODE static uint32_t get_shift_by_pin(uint16_t	gpio_bit)
 {
-	uint32_t	shft;
+uint32_t	shft;
 	for(shft=0;shft<16;shft++)
 		if ( gpio_bit == 1<<shft )
 			break;
-	shft *= 2;
+	return shft * 2;
+}
 
+ITCM_AREA_CODE void set_gpio_type(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint16_t	otype,uint16_t	pupd,uint16_t	speed )
+{
+uint32_t	shft = get_shift_by_pin(gpio_bit);
+	// --- Output type (OTYPER) ---
+	if (otype == OUTPUT_OD)
+		gpio_port->OTYPER |= gpio_bit;
+	else
+		gpio_port->OTYPER &= ~gpio_bit;
+
+	// --- Pull-up/pull-down (PUPDR) ---
+	gpio_port->PUPDR &= ~(0x3U << shft);
+	gpio_port->PUPDR |= ((uint32_t)pupd << shft);
+
+	// --- Speed (OSPEEDR) ---
+	gpio_port->OSPEEDR &= ~(0x3U << shft);
+	gpio_port->OSPEEDR |= ((uint32_t)speed << shft);
+}
+
+ITCM_AREA_CODE void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_t value)
+{
+uint32_t	shft = get_shift_by_pin(gpio_bit);
 	switch( mode )
 	{
 	case	MODE_INPUT 		:
-		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_INPUT<<shft;
 		break;
 	case	MODE_AF 	:
-		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_AF<<shft;
 		break;
 	case	MODE_OUTPUT	 	:
-		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_OUTPUT<<shft;
 		if (value)
 			gpio_port->BSRR = (uint32_t)gpio_bit;
@@ -52,7 +75,7 @@ void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_
 			gpio_port->BRR = (uint32_t)gpio_bit;
 		break;
 	case	MODE_ANALOG	 	:
-		gpio_port->MODER &= ~(3 << shft);
+		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_ANALOG<<shft;
 		break;
 	default	 	: break;
