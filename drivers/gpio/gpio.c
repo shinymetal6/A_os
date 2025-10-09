@@ -38,17 +38,17 @@ uint32_t	shft;
 ITCM_AREA_CODE void set_gpio_type(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint16_t	otype,uint16_t	pupd,uint16_t	speed )
 {
 uint32_t	shft = get_shift_by_pin(gpio_bit);
-	// --- Output type (OTYPER) ---
+	// --- Output type (OTYPER) --- Possible types : OUTPUT_OD OUTPUT_PP
 	if (otype == OUTPUT_OD)
 		gpio_port->OTYPER |= gpio_bit;
 	else
 		gpio_port->OTYPER &= ~gpio_bit;
 
-	// --- Pull-up/pull-down (PUPDR) ---
+	// --- Pull-up/pull-down (PUPDR) --- Possible types : GPIO_NOPULL GPIO_PULLUP GPIO_PULLDOWN
 	gpio_port->PUPDR &= ~(0x3U << shft);
 	gpio_port->PUPDR |= ((uint32_t)pupd << shft);
 
-	// --- Speed (OSPEEDR) ---
+	// --- Speed (OSPEEDR) --- Possible types : GPIO_SPEED_FREQ_LOW GPIO_SPEED_FREQ_MEDIUM GPIO_SPEED_FREQ_HIGH GPIO_SPEED_FREQ_VERY_HIGH
 	gpio_port->OSPEEDR &= ~(0x3U << shft);
 	gpio_port->OSPEEDR |= ((uint32_t)speed << shft);
 }
@@ -69,10 +69,17 @@ uint32_t	shft = get_shift_by_pin(gpio_bit);
 	case	MODE_OUTPUT	 	:
 		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_OUTPUT<<shft;
+#ifdef STM32H743xx
+		if (value)
+			gpio_port->BSRR = gpio_bit;
+		else
+			gpio_port->BSRR = (uint32_t)gpio_bit << 16U;
+#else
 		if (value)
 			gpio_port->BSRR = (uint32_t)gpio_bit;
 		else
 			gpio_port->BRR = (uint32_t)gpio_bit;
+#endif
 		break;
 	case	MODE_ANALOG	 	:
 		gpio_port->MODER &= ~(0x3U << shft);

@@ -32,18 +32,17 @@ SYSTEM_RAM	uint8_t				last_tim_used_handle=0,tim_driver_request = 0;
 
 ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-uint32_t i;
+uint32_t i,j;
 
 	if ( last_tim_used_handle )
 	{
 		for(i=0;i<MAX_TIM_DRIVERS;i++)
 		{
-			/*
-			if ( TIM_DriverStruct[last_tim_used_handle].timer_type == TIM_TYPE_DHT11 )
+			if ( TIM_DriverStruct[i].timer_type == TIM_TYPE_DHT11 )
 			{
-				for(i=0;i<MAX_DHT11_DEVICES;i++)
+				for(j=0;j<MAX_DHT11_DEVICES;j++)
 				{
-					uint32_t handle_dht = get_handle_from_dht_workers(i);
+					uint32_t handle_dht = get_handle_from_dht_workers(j);
 					if ( handle_dht != 255)
 					{
 						Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)TIM_DriverStruct[handle_dht].private_data;
@@ -51,8 +50,7 @@ uint32_t i;
 					}
 				}
 			}
-			*/
-			if ( TIM_DriverStruct[last_tim_used_handle].timer_type == TIM_TYPE_ENCODER )
+			if ( TIM_DriverStruct[i].timer_type == TIM_TYPE_ENCODER )
 			{
 				Encoder_Drv_TypeDef	*encoder_driver_data = (Encoder_Drv_TypeDef *)TIM_DriverStruct[i].private_data;
 				if ( encoder_driver_data->encoder_timer == htim)

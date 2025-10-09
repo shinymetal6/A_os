@@ -270,7 +270,7 @@ I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv = (I2C_24xx_Drv_TypeDef *)I2C_DriverStruct[ha
 uint8_t	i;
 	if ( i2c_24xx_Drv->i2c_scl_port != NULL )
 	{
-		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,GPIO_IS_OUTPUT,0);
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_OUTPUT,0);
 		for(i=0;i<9;i++)
 		{
 			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_SET);
@@ -278,7 +278,7 @@ uint8_t	i;
 			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_RESET);
 			  DWT_Delay_us(10);
 		}
-		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,GPIO_IS_ALTERNATE,0);
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_AF,0);
 	}
 	return 0;
 }
