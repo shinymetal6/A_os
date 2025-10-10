@@ -33,35 +33,30 @@
 #define	CMD_MASK				0xF0
 #define	CHANNEL_MASK			0x0F
 
-#define	CABLEN_MASK				0xF0
-#define	CIN_MASK				0x0F
-
-#define	MISC					0x00
-#define	CABLE					0x01
-#define	TWO_BYTES				0x02
-#define	THREE_BYTES				0x03
+/* byte 0 */
 #define	SYSEX_STARTC			0x04
 #define	SYSEX_END_1				0x05
 #define	SYSEX_END_2				0x06
 #define	SYSEX_END_3				0x07
 
-#define	NOTE_OFF				0x08
-#define	NOTE_ON					0x09
-#define	POLY_PRESSURE			0x0A
-#define	CONTROL_CHANGE			0x0B
-#define	PROGRAM_CHANGE			0x0C
-#define	CHANNEL_PRESSURE		0x0D
-#define	PITCH_BEND				0x0E
-#define	SINGLEBYTE				0x0F
-
+/* byte 1 */
+#define	NOTE_OFF				0x80
+#define	NOTE_ON					0x90
+#define	POLY_PRESSURE			0xA0
+#define	CONTROL_CHANGE			0xB0
+#define	PROGRAM_CHANGE			0xC0
+#define	CHANNEL_PRESSURE		0xD0
+#define	PITCH_BEND				0xE0
 #define	SYSEX_START				0xF0
 #define	SYSEX_END				0xF7
 
 typedef struct {
 	void		(*SysEx)(void);
-	void		(*Note)(uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	void		(*ControlChange)(uint8_t cc_index,uint8_t cc_value);
+	void		(*Note)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*ControlChange)(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value);
 	void		(*ProgramChange)(uint8_t pc_index,uint8_t pc_value);
+	void		(*PolyPressure)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*PitchBend)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
 	uint8_t		midi_commands_number;
 	uint8_t		midi_commands[MIDI_RXBUF_SIZE/4];
 	uint8_t		midi_note[MIDI_RXBUF_SIZE/4];
@@ -76,9 +71,11 @@ typedef struct {
 typedef struct {
 	A_midi_decoder_t	*A_midi_decoder;
 	void		(*SysEx)(void);
-	void		(*Note)(uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	void		(*ControlChange)(uint8_t cc_index,uint8_t cc_value);
+	void		(*Note)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*ControlChange)(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value);
 	void		(*ProgramChange)(uint8_t pc_index,uint8_t pc_value);
+	void		(*PolyPressure)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*PitchBend)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
 	uint8_t		*midi_received_sysex_buffer;
 	uint8_t		*midi_transmit_sysex_buffer;
 } A_midi_t;

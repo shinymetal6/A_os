@@ -1,135 +1,38 @@
-Sysex
-********************** SYSTEM COMMANDS **************************
 amidi -l : list all midi ports
 
-system command example
+
+note on/off command example
+amidi -p hw:1,0 -S "90 3C 7F"
+amidi -p hw:1,0 -S "80 3C 7F"	
+
+control change command example
+amidi -p hw:1,0 -S "B0 00 00"	
+amidi -p hw:1,0 -S "B0 01 01"	
+amidi -p hw:1,0 -S "B0 02 02"	
+amidi -p hw:1,0 -S "B0 03 03"	
+
+program change command example
+amidi -p hw:1,0 -S "C0 04"	
+amidi -p hw:1,0 -S "C7 08"	
+
+poly pressure command example
+amidi -p hw:1,0 -S "A0 3C 7F"
+amidi -p hw:1,0 -S "A0 48 7F"	
+
+pitch bend command example
+amidi -p hw:1,0 -S "E0 21 7F"
+amidi -p hw:1,0 -S "E0 37 7F"	
+
+sysex command example
 amidi -p hw:1,0,0 -S 'F0 30 55 55 F7'
 						  |  |  |
 						  |  |  ---------------------------------	reset
 						  |  ------------------------------------	reset
 						  ---------------------------------------	system command cmd
 
-*
 amidi -p hw:1,0,0 -S 'F0 30 22 00 F7' -r dump.syx -t 1
 						  |  |  |  
 						  |  |  ---------------------------------	program number
 						  |  ------------------------------------	dump program
 						  ---------------------------------------	system command cmd
 						  
-amidi -p hw:1,0,0 -S 'F0 30 23 00 F7' -r dump.syx -t 1
-						  |  |  |  
-						  |  |  ---------------------------------	( not used )
-						  |  ------------------------------------	dump current program
-						  ---------------------------------------	system command cmd
-						  
-amidi -p hw:1,0,0 -S 'F0 30 24 00 F7' -r dump.syx -t 1
-						  |  |  |  
-						  |  |  ---------------------------------	program number
-						  |  ------------------------------------	store current settings to program
-						  ---------------------------------------	system command cmd
-						  
-amidi -p hw:1,0,0 -S 'F0 30 25 00 F7' -r dump.syx -t 1
-						  |  |  |  
-						  |  |  ---------------------------------	program number
-						  |  ------------------------------------	erase program
-						  ---------------------------------------	system command cmd
-						  
-
-******************************** 
-amidi -p hw:1,0 -S "90 3C 7F"
-amidi -p hw:1,0 -S "80 3C 7F"	
-
-*** Using control change messages for controls
-#define	CC_OSCWAVE0				0x00
-#define	CC_OSCWAVE1				0x01
-#define	CC_OSCWAVE2				0x02
-#define	CC_OSCWAVE3				0x03
-#define	CC_OSCVOLUME0			0x04
-#define	CC_OSCVOLUME1			0x05
-#define	CC_OSCVOLUME2			0x06
-#define	CC_OSCVOLUME3			0x07
-#define	CC_OSCDUTY0				0x08
-#define	CC_OSCDUTY1				0x09
-#define	CC_OSCDUTY2				0x0A
-#define	CC_OSCDUTY3				0x0B
-#define	CC_OSCDETUNE0			0x0C
-#define	CC_OSCDETUNE1			0x0D
-#define	CC_OSCDETUNE2			0x0E
-#define	CC_OSCDETUNE3			0x0F
-#define	CC_AFXENABLE			0x20
-#define	CC_AFXTYPE				0x21
-#define	CC_AFXFREQUENCY			0x22
-#define	CC_AFXRESONANCE			0x23
-#define	CC_AFXCONTROLSOURCE		0x24
-#define	CC_DLYENABLE			0x30
-#define	CC_DELAYLEN				0x31
-#define	CC_DELAYBALANCE			0x32
-#define	CC_DELAYSOURCE			0x33
-#define	CC_ATIME				0x40
-#define	CC_DTIME				0x41
-#define	CC_SVAL					0x42
-#define	CC_RTIME				0x43
-#define	CC_SEQUENCE				0x50
-
-
-#define	SINE							0
-#define	TRIANGLE						1
-#define	SQUARE							2
-#define	NOISE							3
-wave ch 0 SINE , ch1 TRIANGLE , ch2 SQUARE and ch3 NOISE					  
-amidi -p hw:1,0 -S "B0 00 00"	
-amidi -p hw:1,0 -S "B0 01 01"	
-amidi -p hw:1,0 -S "B0 02 02"	
-amidi -p hw:1,0 -S "B0 03 03"	
-volume ch 0 max , ch1 min , ch2 half and ch3 semi half					  
-amidi -p hw:1,0 -S "B0 04 7F"	
-amidi -p hw:1,0 -S "B0 05 00"	
-amidi -p hw:1,0 -S "B0 06 40"	
-amidi -p hw:1,0 -S "B0 07 3F"	
-duty ch 0 max , ch1 min , ch2 half and ch3 semi half					  
-amidi -p hw:1,0 -S "B0 08 7F"	
-amidi -p hw:1,0 -S "B0 09 00"	
-amidi -p hw:1,0 -S "B0 0A 40"	
-amidi -p hw:1,0 -S "B0 0B 3F"	
-detune ch 0 max , ch1 min , ch2 half and ch3 semi half					  
-amidi -p hw:1,0 -S "B0 0C 7F"	
-amidi -p hw:1,0 -S "B0 0D 00"	
-amidi -p hw:1,0 -S "B0 0E 40"	
-amidi -p hw:1,0 -S "B0 0F 3F"	
-vcf enable
-amidi -p hw:1,0 -S "B0 20 01"
-vcf disable
-amidi -p hw:1,0 -S "B0 20 00"	
-vcf type lp , bp , hp
-amidi -p hw:1,0 -S "B0 21 00"
-amidi -p hw:1,0 -S "B0 21 20"	
-amidi -p hw:1,0 -S "B0 21 40"	
-vcf frequency min, mid and max
-amidi -p hw:1,0 -S "B0 22 00"	
-amidi -p hw:1,0 -S "B0 22 40"	
-amidi -p hw:1,0 -S "B0 22 7F"	
-vcf resonance min, mid and max
-amidi -p hw:1,0 -S "B0 23 00"	
-amidi -p hw:1,0 -S "B0 23 40"	
-amidi -p hw:1,0 -S "B0 23 7F"	
-delay enable
-amidi -p hw:1,0 -S "B0 30 01"	
-delay disable
-amidi -p hw:1,0 -S "B0 30 00"	
-delay len min, mid and max
-amidi -p hw:1,0 -S "B0 31 00"	
-amidi -p hw:1,0 -S "B0 31 40"	
-amidi -p hw:1,0 -S "B0 31 7F"	
-delay balance min, mid and max
-amidi -p hw:1,0 -S "B0 32 00"	
-amidi -p hw:1,0 -S "B0 32 40"	
-amidi -p hw:1,0 -S "B0 32 7F"	
-sequence vco->vcf->delay
-amidi -p hw:1,0 -S "B0 40 00"	
-sequence vco->delay->vcf
-amidi -p hw:1,0 -S "B0 40 01"	
-
-
-
-
-

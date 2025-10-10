@@ -122,10 +122,10 @@ uint8_t	i,j=1,k=0;
 	return len;
 }
 
-uint8_t	MidiParseControlChange(uint8_t cc_index,uint8_t cc_value)
+uint8_t	MidiParseControlChange(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value)
 {
 	if ( A_midi_decoder.ControlChange != NULL)
-		A_midi_decoder.ControlChange(cc_index,cc_value);
+		A_midi_decoder.ControlChange(cc_channel,cc_index,cc_value);
 	return 4;
 }
 
@@ -133,79 +133,69 @@ uint8_t	MidiParseProgramChange(uint8_t pc_index,uint8_t pc_value)
 {
 	if ( A_midi_decoder.ProgramChange != NULL)
 		A_midi_decoder.ProgramChange(pc_index,pc_value);
+	return 3;
+}
+
+uint8_t	MidiParsePolyPressure(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+{
+	if ( A_midi_decoder.PolyPressure != NULL)
+		A_midi_decoder.PolyPressure(midi_status ,midi_channel , midi_note , midi_velocity);
 	return 4;
 }
 
-uint8_t	MidiParseNote(uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity, uint8_t cmdnumber)
+uint8_t	MidiParsePitchBend(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+{
+	if ( A_midi_decoder.PitchBend != NULL)
+		A_midi_decoder.PitchBend(midi_status ,midi_channel , midi_note , midi_velocity);
+	return 4;
+}
+
+uint8_t	MidiParseNote(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity, uint8_t cmdnumber)
 {
 	A_midi_decoder.midi_channel[A_midi_decoder.midi_commands_number] = midi_channel;
 	A_midi_decoder.midi_note[A_midi_decoder.midi_commands_number] = midi_note;
 	A_midi_decoder.midi_velocity[A_midi_decoder.midi_commands_number] = midi_velocity;
 	if ( A_midi_decoder.Note != NULL)
-		A_midi_decoder.Note(midi_channel , midi_note , midi_velocity);
+		A_midi_decoder.Note( midi_status ,midi_channel , midi_note , midi_velocity);
 	return 4;
 }
 
 void MidiParser(uint8_t* buf, uint16_t len)
 {
-uint8_t		cmd,midi_channel,midi_note,midi_velocity;
+uint8_t		midi_status,midi_channel,midi_note,midi_velocity;
 uint32_t	l_index=0;
 	A_midi_decoder.midi_commands_number = 0;
 	while ( l_index < len )
 	{
-		cmd = buf[l_index] & CIN_MASK;
+		midi_status = buf[l_index+1] & CMD_MASK;
 		midi_channel = buf[l_index+1] & CHANNEL_MASK;
 		midi_note = buf[l_index+2];
 		midi_velocity = buf[l_index+3];
-		switch(cmd)
+		switch(midi_status)
 		{
 			case NOTE_OFF			:
 			case NOTE_ON			:
-				l_index += MidiParseNote(midi_channel , midi_note , midi_velocity, A_midi_decoder.midi_commands_number);
+				l_index += MidiParseNote(buf[l_index+1],midi_channel , midi_note , midi_velocity, A_midi_decoder.midi_commands_number);
 				A_midi_decoder.midi_commands_number++;
 				break;
-			case SYSEX_END_1			:
-				break;
-			case SYSEX_STARTC			:
-			case SYSEX_END_2			:
-			case SYSEX_END_3			:
-				if ( buf[1] == SYSEX_START )
-				{
-					l_index += MidiParseSysEx(midi_channel,cmd,len,buf);
-					A_midi_decoder.midi_commands_number++;
-				}
+			case SYSEX_START			:
+				l_index += MidiParseSysEx(midi_channel,midi_status,len,buf);
+				A_midi_decoder.midi_commands_number++;
 				break;
 			case CONTROL_CHANGE			:
-				l_index += MidiParseControlChange (buf[l_index+2],buf[l_index+3]);
+				l_index += MidiParseControlChange (buf[l_index+1],buf[l_index+2],buf[l_index+3]);
 				A_midi_decoder.midi_commands_number++;
 				break;
 			case PROGRAM_CHANGE			:
-				l_index += MidiParseProgramChange (buf[l_index+2],buf[l_index+3]);
+				l_index += MidiParseProgramChange (buf[l_index+1],buf[l_index+2]);
 				A_midi_decoder.midi_commands_number++;
 				break;
-				/*
 			case POLY_PRESSURE			:
-				l_index += UsbMidiParsePolyPressure (channel,midi_note,velocity);
+				l_index += MidiParsePolyPressure (buf[l_index+1],midi_channel , midi_note , midi_velocity);
 				break;
 			case PITCH_BEND			:
-				l_index += UsbMidiParsePitchBend (channel,midi_note,velocity);
+				l_index += MidiParsePitchBend (buf[l_index+1],midi_channel , midi_note , midi_velocity);
 				break;
-			case SINGLEBYTE			:
-				l_index += UsbMidiParseSingleByte (channel,midi_note,velocity);
-				break;
-			case MISC			:
-				l_index += UsbMidiParseMisc (channel,midi_note,velocity);
-				break;
-			case CABLE			:
-				l_index += UsbMidiParseCable (channel,midi_note,velocity);
-				break;
-			case TWO_BYTES			:
-				l_index += UsbMidiParseTwoBytes (channel,midi_note,velocity);
-				break;
-			case THREE_BYTES			:
-				l_index += UsbMidiParseThreeBytes (channel,midi_note,velocity);
-				break;
-				*/
 			default			:	l_index += 4; break;
 		}
 	}
@@ -225,6 +215,8 @@ uint32_t MidiInit(A_midi_t *MIDI)
 	A_midi_decoder.Note = MIDI->Note;
 	A_midi_decoder.ControlChange = MIDI->ControlChange;
 	A_midi_decoder.ProgramChange = MIDI->ProgramChange;
+	A_midi_decoder.PolyPressure = MIDI->PolyPressure;
+	A_midi_decoder.PitchBend = MIDI->PitchBend;
 	A_midi_decoder.midi_received_sysex_buffer = MIDI->midi_received_sysex_buffer;
 	return 0;
 }
