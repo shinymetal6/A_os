@@ -11,6 +11,8 @@ typedef struct
 	uint8_t				*data;
 	uint16_t			timeout;
 	uint16_t			timeout_reload_value;
+	uint16_t			usb_interface_class;
+	void				(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 			wakeup_id;
 }USB_Drv_TypeDef;
 
@@ -55,6 +57,10 @@ The timeout filed is the timeout after which even if the packet len has not reac
  Conversely, if requested_len is specified the driver will wake up the process when the requested_len is reached
   or a timeout occours.  
  
+ If the Rx_CallbackPtr field is compiled the referenced function will be called under the usb irq, so is
+  quicker than the standard way of passing through the system and wake up the process.
+ This makes the irq time longer but it ehxibits a faster execution.
+  
  There are several examples in SampleProcesses
   
  

@@ -31,7 +31,7 @@
 
 __attribute__ ((aligned (4)))	A_midi_decoder_t	A_midi_decoder;
 
-uint16_t SYSEX_ConvertMidiBufOut(uint8_t *buf_out , uint16_t len)
+ITCM_AREA_CODE uint16_t SYSEX_ConvertMidiBufOut(uint8_t *buf_out , uint16_t len)
 {
 uint32_t	r=0,k=0;
 
@@ -66,12 +66,7 @@ uint32_t	r=0,k=0;
 	return k;
 }
 
-void SysExApplyValues(void)
-{
-
-}
-
-uint8_t MidiParseSysEx(uint8_t channel , uint8_t sub_command,uint32_t len,uint8_t* buf)
+ITCM_AREA_CODE static uint8_t MidiParseSysEx(uint8_t channel , uint8_t sub_command,uint32_t len,uint8_t* buf)
 {
 uint8_t	i,j=1,k=0;
 
@@ -122,35 +117,35 @@ uint8_t	i,j=1,k=0;
 	return len;
 }
 
-uint8_t	MidiParseControlChange(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value)
+ITCM_AREA_CODE static uint8_t	MidiParseControlChange(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value)
 {
 	if ( A_midi_decoder.ControlChange != NULL)
 		A_midi_decoder.ControlChange(cc_channel,cc_index,cc_value);
 	return 4;
 }
 
-uint8_t	MidiParseProgramChange(uint8_t pc_index,uint8_t pc_value)
+ITCM_AREA_CODE static uint8_t	MidiParseProgramChange(uint8_t pc_index,uint8_t pc_value)
 {
 	if ( A_midi_decoder.ProgramChange != NULL)
 		A_midi_decoder.ProgramChange(pc_index,pc_value);
 	return 3;
 }
 
-uint8_t	MidiParsePolyPressure(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+ITCM_AREA_CODE static uint8_t	MidiParsePolyPressure(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
 {
 	if ( A_midi_decoder.PolyPressure != NULL)
 		A_midi_decoder.PolyPressure(midi_status ,midi_channel , midi_note , midi_velocity);
 	return 4;
 }
 
-uint8_t	MidiParsePitchBend(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+ITCM_AREA_CODE static uint8_t	MidiParsePitchBend(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
 {
 	if ( A_midi_decoder.PitchBend != NULL)
 		A_midi_decoder.PitchBend(midi_status ,midi_channel , midi_note , midi_velocity);
 	return 4;
 }
 
-uint8_t	MidiParseNote(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity, uint8_t cmdnumber)
+ITCM_AREA_CODE static uint8_t	MidiParseNote(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity, uint8_t cmdnumber)
 {
 	A_midi_decoder.midi_channel[A_midi_decoder.midi_commands_number] = midi_channel;
 	A_midi_decoder.midi_note[A_midi_decoder.midi_commands_number] = midi_note;
@@ -160,7 +155,7 @@ uint8_t	MidiParseNote(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_n
 	return 4;
 }
 
-void MidiParser(uint8_t* buf, uint16_t len)
+ITCM_AREA_CODE void MidiParser(uint8_t* buf, uint16_t len)
 {
 uint8_t		midi_status,midi_channel,midi_note,midi_velocity;
 uint32_t	l_index=0;
@@ -201,7 +196,7 @@ uint32_t	l_index=0;
 	}
 }
 
-uint32_t MidiInit(A_midi_t *MIDI)
+ITCM_AREA_CODE uint32_t MidiInit(A_midi_t *MIDI)
 {
 	if ( MIDI->SysEx == NULL )
 			return 1;
