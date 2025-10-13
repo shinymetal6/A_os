@@ -66,7 +66,7 @@ uint32_t	r=0,k=0;
 	return k;
 }
 
-ITCM_AREA_CODE static uint8_t MidiParseSysEx(uint8_t channel , uint8_t sub_command,uint32_t len,uint8_t* buf)
+ITCM_AREA_CODE static uint8_t MidiParseSysEx(uint8_t channel ,uint32_t len,uint8_t* buf)
 {
 uint8_t	i,j=1,k=0;
 
@@ -131,72 +131,59 @@ ITCM_AREA_CODE static uint8_t	MidiParseProgramChange(uint8_t pc_index,uint8_t pc
 	return 3;
 }
 
-ITCM_AREA_CODE static uint8_t	MidiParsePolyPressure(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+ITCM_AREA_CODE static uint8_t	MidiParsePolyPressure(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
 	if ( A_midi_decoder.PolyPressure != NULL)
-		A_midi_decoder.PolyPressure(midi_status ,midi_channel , midi_note , midi_velocity);
+		A_midi_decoder.PolyPressure(midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
-ITCM_AREA_CODE static uint8_t	MidiParsePitchBend(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity)
+ITCM_AREA_CODE static uint8_t	MidiParsePitchBend(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
 	if ( A_midi_decoder.PitchBend != NULL)
-		A_midi_decoder.PitchBend(midi_status ,midi_channel , midi_note , midi_velocity);
+		A_midi_decoder.PitchBend(midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
-ITCM_AREA_CODE static uint8_t	MidiParseNote(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity, uint8_t cmdnumber)
+ITCM_AREA_CODE static uint8_t	MidiParseNote(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
-	A_midi_decoder.midi_channel[A_midi_decoder.midi_commands_number] = midi_channel;
-	A_midi_decoder.midi_note[A_midi_decoder.midi_commands_number] = midi_note;
-	A_midi_decoder.midi_velocity[A_midi_decoder.midi_commands_number] = midi_velocity;
 	if ( A_midi_decoder.Note != NULL)
-		A_midi_decoder.Note( midi_status ,midi_channel , midi_note , midi_velocity);
+		A_midi_decoder.Note( midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
 ITCM_AREA_CODE void MidiParser(uint8_t* buf, uint16_t len)
 {
-uint8_t		midi_status,midi_channel,midi_note,midi_velocity;
 uint32_t	l_index=0;
-	A_midi_decoder.midi_commands_number = 0;
 	while ( l_index < len )
 	{
-		midi_status = buf[l_index+1] & CMD_MASK;
-		midi_channel = buf[l_index+1] & CHANNEL_MASK;
-		midi_note = buf[l_index+2];
-		midi_velocity = buf[l_index+3];
-		switch(midi_status)
+		switch(buf[l_index+1] & CMD_MASK)
 		{
 			case NOTE_OFF			:
 			case NOTE_ON			:
-				l_index += MidiParseNote(buf[l_index+1],midi_channel , midi_note , midi_velocity, A_midi_decoder.midi_commands_number);
-				A_midi_decoder.midi_commands_number++;
+				l_index += MidiParseNote(buf[l_index+1] , buf[l_index+2] , buf[l_index+3]);
 				break;
 			case SYSEX_START			:
-				l_index += MidiParseSysEx(midi_channel,midi_status,len,buf);
-				A_midi_decoder.midi_commands_number++;
+				l_index += MidiParseSysEx(buf[l_index+1],len,buf);
 				break;
 			case CONTROL_CHANGE			:
 				l_index += MidiParseControlChange (buf[l_index+1],buf[l_index+2],buf[l_index+3]);
-				A_midi_decoder.midi_commands_number++;
 				break;
 			case PROGRAM_CHANGE			:
 				l_index += MidiParseProgramChange (buf[l_index+1],buf[l_index+2]);
-				A_midi_decoder.midi_commands_number++;
 				break;
 			case POLY_PRESSURE			:
-				l_index += MidiParsePolyPressure (buf[l_index+1],midi_channel , midi_note , midi_velocity);
+				l_index += MidiParsePolyPressure (buf[l_index+1] , buf[l_index+2] , buf[l_index+3]);
 				break;
 			case PITCH_BEND			:
-				l_index += MidiParsePitchBend (buf[l_index+1],midi_channel , midi_note , midi_velocity);
+				l_index += MidiParsePitchBend (buf[l_index+1] , buf[l_index+2] , buf[l_index+3]);
 				break;
 			default			:	l_index += 4; break;
 		}
 	}
 }
 
-ITCM_AREA_CODE uint32_t MidiInit(A_midi_t *MIDI)
+ITCM_AREA_CODE uint32_t MidiInit(A_midi_decoder_t *MIDI)
 {
 	if ( MIDI->SysEx == NULL )
 			return 1;
@@ -206,13 +193,6 @@ ITCM_AREA_CODE uint32_t MidiInit(A_midi_t *MIDI)
 		return 1;
 	if ( MIDI->ProgramChange == NULL )
 		return 1;
-	A_midi_decoder.SysEx = MIDI->SysEx;
-	A_midi_decoder.Note = MIDI->Note;
-	A_midi_decoder.ControlChange = MIDI->ControlChange;
-	A_midi_decoder.ProgramChange = MIDI->ProgramChange;
-	A_midi_decoder.PolyPressure = MIDI->PolyPressure;
-	A_midi_decoder.PitchBend = MIDI->PitchBend;
-	A_midi_decoder.midi_received_sysex_buffer = MIDI->midi_received_sysex_buffer;
 	return 0;
 }
 

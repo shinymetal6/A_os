@@ -52,37 +52,20 @@
 
 typedef struct {
 	void		(*SysEx)(void);
-	void		(*Note)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*Note)(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity);
 	void		(*ControlChange)(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value);
 	void		(*ProgramChange)(uint8_t pc_index,uint8_t pc_value);
-	void		(*PolyPressure)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	void		(*PitchBend)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	uint8_t		midi_commands_number;
-	uint8_t		midi_commands[MIDI_RXBUF_SIZE/4];
-	uint8_t		midi_note[MIDI_RXBUF_SIZE/4];
-	uint8_t		midi_channel[MIDI_RXBUF_SIZE/4];
-	uint8_t		midi_velocity[MIDI_RXBUF_SIZE/4];
+	void		(*PolyPressure)(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity);
+	void		(*PitchBend)(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity);
 	uint8_t		*midi_received_sysex_buffer;
 	uint8_t		midi_received_sysex_len;
 	uint8_t		*midi_transmit_sysex_buffer;
 	uint8_t		midi_transmit_sysex_len;
 } A_midi_decoder_t;
 
-typedef struct {
-	A_midi_decoder_t	*A_midi_decoder;
-	void		(*SysEx)(void);
-	void		(*Note)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	void		(*ControlChange)(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value);
-	void		(*ProgramChange)(uint8_t pc_index,uint8_t pc_value);
-	void		(*PolyPressure)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	void		(*PitchBend)(uint8_t midi_status ,uint8_t midi_channel , uint8_t midi_note , uint8_t midi_velocity);
-	uint8_t		*midi_received_sysex_buffer;
-	uint8_t		*midi_transmit_sysex_buffer;
-} A_midi_t;
-
 extern	A_midi_decoder_t	A_midi_decoder;
 
-extern	uint32_t MidiInit(A_midi_t *MIDI);
+extern	uint32_t MidiInit(A_midi_decoder_t *MIDI);
 extern	void MidiParser(uint8_t* buf, uint16_t len);
 
 #endif // #ifdef MIDI_ENABLED
