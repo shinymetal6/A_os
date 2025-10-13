@@ -197,7 +197,8 @@ uint32_t	i , start_sample;
 #ifdef SOUND_ENABLED
 		if (( dac_drv->flags & DAC_FLAGS_USE_SYNTHMODULE) == DAC_FLAGS_USE_SYNTHMODULE)
 		{
-			Do_synth( start_sample);
+			Do_synth( 0,start_sample);
+			Do_synth( 1,start_sample);
 		}
 #ifdef	USB_AUDIO
 		if (( dac_drv->flags & DAC_FLAGS_USE_USBMODULE) == DAC_FLAGS_USE_USBMODULE)

@@ -126,7 +126,8 @@ uint32_t	start_sample;
 	start_sample = (i2s_drv->status & I2S_STATUS_HALF) ? 0 : i2s_drv->len/2;
 	if (( i2s_drv->flags & I2S_FLAGS_USE_SYNTHMODULE) == I2S_FLAGS_USE_SYNTHMODULE)
 	{
-		Do_synth(start_sample);
+		Do_synth(0,start_sample);
+		Do_synth(1,start_sample);
 	}
 }
 

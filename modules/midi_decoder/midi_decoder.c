@@ -29,38 +29,38 @@
 
 #include "midi_decoder.h"
 
-__attribute__ ((aligned (4)))	A_midi_decoder_t	A_midi_decoder;
+A_midi_decoder_t	*MidiDecoder;
 
 ITCM_AREA_CODE uint16_t SYSEX_ConvertMidiBufOut(uint8_t *buf_out , uint16_t len)
 {
 uint32_t	r=0,k=0;
 
-	if ( A_midi_decoder.midi_transmit_sysex_buffer == NULL )
+	if ( MidiDecoder->midi_transmit_sysex_buffer == NULL )
 		return 0;
-	A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_STARTC;
+	MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_STARTC;
 	k++;
-	A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_START;
+	MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_START;
 	k++;
 	r = 0;
 	while ( r < len )
 	{
-		A_midi_decoder.midi_transmit_sysex_buffer[k] = buf_out[r];
+		MidiDecoder->midi_transmit_sysex_buffer[k] = buf_out[r];
 		r++;
 		k++;
 		if ( (k & 0x03 ) == 0)
 		{
 			if (( len - r ) == 2)
-				A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_END_3;
+				MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_END_3;
 			else if (( len - r ) == 1)
-				A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_END_2;
+				MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_END_2;
 			else if (( len - r ) == 0)
-				A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_END_1;
+				MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_END_1;
 			else
-				A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_STARTC;
+				MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_STARTC;
 			k++;
 		}
 	}
-	A_midi_decoder.midi_transmit_sysex_buffer[k] = SYSEX_END;
+	MidiDecoder->midi_transmit_sysex_buffer[k] = SYSEX_END;
 	while ((k & 0x03 ) != 0 )
 		k++;
 	return k;
@@ -72,83 +72,83 @@ uint8_t	i,j=1,k=0;
 
 	if ( len > SYSEX_MAX_LEN )
 		return 0;
-	if ( A_midi_decoder.midi_received_sysex_buffer == NULL )
+	if ( MidiDecoder->midi_received_sysex_buffer == NULL )
 		return 0;
 
-	A_midi_decoder.midi_received_sysex_len = 0;
+	MidiDecoder->midi_received_sysex_len = 0;
 	for(i=0;i<len;i+=4)
 	{
 		if ( buf[i] == SYSEX_STARTC )
 		{
-			A_midi_decoder.midi_received_sysex_buffer[k] = buf[j];
-			A_midi_decoder.midi_received_sysex_buffer[k+1] = buf[j+1];
-			A_midi_decoder.midi_received_sysex_buffer[k+2] = buf[j+2];
+			MidiDecoder->midi_received_sysex_buffer[k] = buf[j];
+			MidiDecoder->midi_received_sysex_buffer[k+1] = buf[j+1];
+			MidiDecoder->midi_received_sysex_buffer[k+2] = buf[j+2];
 			k +=3;
 			j +=4;
-			A_midi_decoder.midi_received_sysex_len+=3;
+			MidiDecoder->midi_received_sysex_len+=3;
 		}
 		if ( buf[i] == SYSEX_END_1 )
 		{
-			A_midi_decoder.midi_received_sysex_buffer[k] = buf[j];
-			A_midi_decoder.midi_received_sysex_len+=0;
+			MidiDecoder->midi_received_sysex_buffer[k] = buf[j];
+			MidiDecoder->midi_received_sysex_len+=0;
 			i = len;
 		}
 		if ( buf[i] == SYSEX_END_2 )
 		{
-			A_midi_decoder.midi_received_sysex_buffer[k] = buf[j];
-			A_midi_decoder.midi_received_sysex_buffer[k+1] = buf[j+1];
-			A_midi_decoder.midi_received_sysex_len+=1;
+			MidiDecoder->midi_received_sysex_buffer[k] = buf[j];
+			MidiDecoder->midi_received_sysex_buffer[k+1] = buf[j+1];
+			MidiDecoder->midi_received_sysex_len+=1;
 			i = len;
 		}
 		if ( buf[i] == SYSEX_END_3 )
 		{
-			A_midi_decoder.midi_received_sysex_buffer[k] = buf[j];
-			A_midi_decoder.midi_received_sysex_buffer[k+1] = buf[j+1];
-			A_midi_decoder.midi_received_sysex_buffer[k+2] = buf[j+2];
-			A_midi_decoder.midi_received_sysex_len+=2;
+			MidiDecoder->midi_received_sysex_buffer[k] = buf[j];
+			MidiDecoder->midi_received_sysex_buffer[k+1] = buf[j+1];
+			MidiDecoder->midi_received_sysex_buffer[k+2] = buf[j+2];
+			MidiDecoder->midi_received_sysex_len+=2;
 			i = len;
 		}
 	}
-	if ( A_midi_decoder.midi_received_sysex_buffer[A_midi_decoder.midi_received_sysex_len] == SYSEX_END )
+	if ( MidiDecoder->midi_received_sysex_buffer[MidiDecoder->midi_received_sysex_len] == SYSEX_END )
 	{
-		if ( A_midi_decoder.SysEx != NULL)
-			A_midi_decoder.SysEx();
+		if ( MidiDecoder->SysEx != NULL)
+			MidiDecoder->SysEx();
 	}
 	return len;
 }
 
 ITCM_AREA_CODE static uint8_t	MidiParseControlChange(uint8_t cc_channel,uint8_t cc_index,uint8_t cc_value)
 {
-	if ( A_midi_decoder.ControlChange != NULL)
-		A_midi_decoder.ControlChange(cc_channel,cc_index,cc_value);
+	if ( MidiDecoder->ControlChange != NULL)
+		MidiDecoder->ControlChange(cc_channel,cc_index,cc_value);
 	return 4;
 }
 
 ITCM_AREA_CODE static uint8_t	MidiParseProgramChange(uint8_t pc_index,uint8_t pc_value)
 {
-	if ( A_midi_decoder.ProgramChange != NULL)
-		A_midi_decoder.ProgramChange(pc_index,pc_value);
+	if ( MidiDecoder->ProgramChange != NULL)
+		MidiDecoder->ProgramChange(pc_index,pc_value);
 	return 3;
 }
 
 ITCM_AREA_CODE static uint8_t	MidiParsePolyPressure(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
-	if ( A_midi_decoder.PolyPressure != NULL)
-		A_midi_decoder.PolyPressure(midi_channel_status , midi_note , midi_velocity);
+	if ( MidiDecoder->PolyPressure != NULL)
+		MidiDecoder->PolyPressure(midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
 ITCM_AREA_CODE static uint8_t	MidiParsePitchBend(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
-	if ( A_midi_decoder.PitchBend != NULL)
-		A_midi_decoder.PitchBend(midi_channel_status , midi_note , midi_velocity);
+	if ( MidiDecoder->PitchBend != NULL)
+		MidiDecoder->PitchBend(midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
 ITCM_AREA_CODE static uint8_t	MidiParseNote(uint8_t midi_channel_status , uint8_t midi_note , uint8_t midi_velocity)
 {
-	if ( A_midi_decoder.Note != NULL)
-		A_midi_decoder.Note( midi_channel_status , midi_note , midi_velocity);
+	if ( MidiDecoder->Note != NULL)
+		MidiDecoder->Note( midi_channel_status , midi_note , midi_velocity);
 	return 4;
 }
 
@@ -183,15 +183,16 @@ uint32_t	l_index=0;
 	}
 }
 
-ITCM_AREA_CODE uint32_t MidiInit(A_midi_decoder_t *MIDI)
+ITCM_AREA_CODE uint32_t MidiInit(A_midi_decoder_t *user_midi)
 {
-	if ( MIDI->SysEx == NULL )
+	MidiDecoder = user_midi;
+	if ( MidiDecoder->SysEx == NULL )
 			return 1;
-	if ( MIDI->Note == NULL )
+	if ( MidiDecoder->Note == NULL )
 		return 1;
-	if ( MIDI->ControlChange == NULL )
+	if ( MidiDecoder->ControlChange == NULL )
 		return 1;
-	if ( MIDI->ProgramChange == NULL )
+	if ( MidiDecoder->ProgramChange == NULL )
 		return 1;
 	return 0;
 }

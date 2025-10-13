@@ -34,6 +34,9 @@
 #define	SYNTH_WAVETABLE_1024	1024
 #define	SYNTH_MIDI_NOTES		128
 
+#define	SYNTH_CHANNELS			2
+
+
 // Waveform types
 typedef enum {
 	SYNTH_WAVEFORM_SINE,
@@ -76,15 +79,15 @@ typedef struct {
 #define		SYNTH_DAC_OUT		32768
 #define		SYNTH_I2S_OUT		0
 
-extern uint8_t Synth_Init(MidiSynth_TypeDef *synth);
+extern uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth);
 extern uint8_t Synth_Start(MidiSynth_TypeDef *synth);
 extern uint8_t Synth_Stop(MidiSynth_TypeDef *synth);
 
-extern void NoteOn(uint8_t note, uint8_t velocity);
-extern void NoteOff(uint8_t note);
+extern void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity);
+extern void NoteOff(uint8_t channel,uint8_t note);
 extern void AllNoteOFF(void);
 
-extern void Do_synth(uint32_t start_sample);
+extern void Do_synth(uint8_t synth_number,uint32_t start_sample);
 
 #endif // #ifdef SOUND_ENABLED
 
