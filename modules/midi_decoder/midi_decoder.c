@@ -186,14 +186,6 @@ uint32_t	l_index=0;
 ITCM_AREA_CODE uint32_t MidiInit(A_midi_decoder_t *user_midi)
 {
 	MidiDecoder = user_midi;
-	if ( MidiDecoder->SysEx == NULL )
-			return 1;
-	if ( MidiDecoder->Note == NULL )
-		return 1;
-	if ( MidiDecoder->ControlChange == NULL )
-		return 1;
-	if ( MidiDecoder->ProgramChange == NULL )
-		return 1;
 	return 0;
 }
 

@@ -71,6 +71,8 @@ typedef struct {
 	float				synth_sample_frequency;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
+	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample);
+
 } MidiSynth_TypeDef;
 /* status */
 #define		SYNTH_ENABLED		0x01

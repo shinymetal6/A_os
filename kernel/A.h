@@ -50,9 +50,7 @@
 
 #define	TIMER_CALLBACK_ARRAY_SIZE	8
 #define	MAILBOX_NUM					8
-#define	PERIPHERAL_NUM				32
-#define	HWDEVICES_NUM				32
-#define	MODULES_NUM					32
+#define	MODULES_NUM					8
 
 #define	MODULE_ID_MQTT				1
 
