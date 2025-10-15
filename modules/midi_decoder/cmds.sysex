@@ -1,11 +1,15 @@
 amidi -l : list all midi ports
 
 
-note on/off command example
-amidi -p hw:1,0 -S "90 3C 7F"
-amidi -p hw:1,0 -S "80 3C 7F"	
+note on/off command for 1046.5 (C6 -> hex 0x54 -> dec 84 ) example for channel 1 on DAC channel 1
+amidi -p hw:1,0 -S "90 54 7F"
+amidi -p hw:1,0 -S "80 54 7F"	
 
-control change command example
+note on/off command for 1046.5 (C6 -> hex 0x54 -> dec 84 ) example for channel 2 on DAC channel 2
+amidi -p hw:1,0 -S "91 54 7F"
+amidi -p hw:1,0 -S "81 54 7F"	
+
+control change command example example for channel 1
 amidi -p hw:1,0 -S "B0 00 00"	
 amidi -p hw:1,0 -S "B0 01 01"	
 amidi -p hw:1,0 -S "B0 02 02"	
@@ -15,11 +19,11 @@ program change command example
 amidi -p hw:1,0 -S "C0 04"	
 amidi -p hw:1,0 -S "C7 08"	
 
-poly pressure command example
+poly pressure command example example for channel 1
 amidi -p hw:1,0 -S "A0 3C 7F"
 amidi -p hw:1,0 -S "A0 48 7F"	
 
-pitch bend command example
+pitch bend command example example for channel 1
 amidi -p hw:1,0 -S "E0 21 7F"
 amidi -p hw:1,0 -S "E0 37 7F"	
 

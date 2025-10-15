@@ -30,12 +30,14 @@ extern	TIM_HandleTypeDef htim6;
 
 #define	USB_BUF_LEN	64
 
- __attribute__ ((aligned (32))) int16_t	dac_buffer[DAC_AUDIO_BUF_SIZE*2];
- __attribute__ ((aligned (32))) int16_t	synth_workbuffer_left[NUMBER_OF_AUDIO_SAMPLES];
+#define	DUAL_CHANNEL	1
 
-uint32_t	midi_initialized;
-uint32_t	synth0_initialized;
-uint32_t	synth1_initialized;
+__attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_AUDIO_BUF_SIZE*2];
+__attribute__ ((aligned (32))) int16_t	synth_workbuffer_left[NUMBER_OF_AUDIO_SAMPLES];
+#ifdef DUAL_CHANNEL
+__attribute__ ((aligned (32))) int16_t	dac_buffer_right[DAC_AUDIO_BUF_SIZE*2];
+__attribute__ ((aligned (32))) int16_t	synth_workbuffer_right[NUMBER_OF_AUDIO_SAMPLES];
+#endif // #ifdef DUAL_CHANNEL
 
 #define	LEFT_CHANNEL	0
 #define	RIGHT_CHANNEL	1
@@ -61,22 +63,50 @@ __attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_left =
 	.status = SYNTH_DISABLED,
 	.out_buf = synth_workbuffer_left,
 	.out_device = SYNTH_DAC_OUT,
-	.codec_buf = dac_buffer,
+	.codec_buf = dac_buffer_left,
 	.synth_sample_frequency = SAMPLE_FREQUENCY,
 	.wavetable_size = SYNTH_WAVETABLE_1024,
 };
+uint32_t	synth_left_initialized;
 
-__attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv =
+#ifdef DUAL_CHANNEL
+__attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_right =
+{
+	.status = SYNTH_DISABLED,
+	.out_buf = synth_workbuffer_right,
+	.out_device = SYNTH_DAC_OUT,
+	.codec_buf = dac_buffer_right,
+	.synth_sample_frequency = SAMPLE_FREQUENCY,
+	.wavetable_size = SYNTH_WAVETABLE_1024,
+};
+uint32_t	synth_right_initialized;
+#endif // #ifdef DUAL_CHANNEL
+
+__attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 {
 	.flags = DAC_FLAGS_USE_SYNTHMODULE,
 	.dac = &hdac1,
 	.dac_timer = &htim6,
 	.dac_sample_frequency = SAMPLE_FREQUENCY,
-	.dac_buffer = dac_buffer,
+	.dac_buffer = dac_buffer_left,
 	.channel = DAC_CHANNEL_1,
 	.len = DAC_AUDIO_BUF_SIZE,
 };
-uint32_t		dac_driver_handle;
+uint32_t		dac_left_driver_handle;
+
+#ifdef DUAL_CHANNEL
+__attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Right =
+{
+	.flags = DAC_FLAGS_USE_SYNTHMODULE,
+	.dac = &hdac1,
+	.dac_timer = &htim6,
+	.dac_sample_frequency = SAMPLE_FREQUENCY,
+	.dac_buffer = dac_buffer_right,
+	.channel = DAC_CHANNEL_2,
+	.len = DAC_AUDIO_BUF_SIZE,
+};
+uint32_t		dac_right_driver_handle;
+#endif // #ifdef DUAL_CHANNEL
 
 void	Note(uint8_t channel , uint8_t midi_note , uint8_t midi_velocity)
 {
@@ -123,11 +153,18 @@ A_midi_decoder_t	MIDI =
 	.SysEx = SysEx,
 	.midi_received_sysex_buffer = rx_sysex_buffer,
 };
+uint32_t	midi_initialized;
 
 void sample_process_1_init(uint32_t process_id)
 {
-	dac_driver_handle = int_dac_register(&DAC_Drv);
-	synth0_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
+	dac_left_driver_handle = int_dac_register(&DAC_Drv_Left);
+#ifdef DUAL_CHANNEL
+	dac_right_driver_handle = int_dac_register(&DAC_Drv_Right);
+#endif // #ifdef DUAL_CHANNEL
+	synth_left_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
+#ifdef DUAL_CHANNEL
+	synth_right_initialized = Synth_Register(RIGHT_CHANNEL ,&Audio_Synth_right);
+#endif // #ifdef DUAL_CHANNEL
 	usb_driver_handle = usb_device_driver_register(&USB_Drv);
 	midi_initialized = MidiInit(&MIDI);
 }
@@ -137,9 +174,21 @@ void sample_process_1_audiomidi(uint32_t process_id)
 uint32_t	wakeup,flags;
 uint8_t	cntr = 0;
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+
 	Synth_Start(&Audio_Synth_left);
-	dac_init(dac_driver_handle);
-	dac_start(dac_driver_handle);
+#ifdef DUAL_CHANNEL
+	Synth_Start(&Audio_Synth_right);
+#endif // #ifdef DUAL_CHANNEL
+
+	dac_init(dac_left_driver_handle);
+#ifdef DUAL_CHANNEL
+	dac_init(dac_right_driver_handle);
+#endif // #ifdef DUAL_CHANNEL
+
+	dac_start(dac_left_driver_handle);
+#ifdef DUAL_CHANNEL
+	dac_start(dac_right_driver_handle);
+#endif // #ifdef DUAL_CHANNEL
 
 	while(1)
 	{
