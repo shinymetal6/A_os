@@ -1,0 +1,51 @@
+The effects interface provides a way to set parameters both from code and from external
+ analog signals driven by adc dma.
+ 
+The common structure should be:
+typedef struct
+{
+	uint16_t			*control1;
+	uint16_t			*control2;
+	uint16_t			*control3;
+	uint8_t				status;
+}Extern_Effect_TypeDef;
+All the controls are 16 bit unsigned.
+Example:
+The moog filter has 3 parameters :
+	float	cutoffFrequency;	// = 1000.0f; // Initial cutoff frequency (1 kHz)
+	float	resonance; 			// = 0.5f;          // Resonance (0.0 to 1.0)
+	float	lfo_rate;	
+So, to map 3 adc ( i.e. from pots ) there should be a conversion from uint16_t to float
+
+Affected modules and struct fileds:
+chorus
+    float dry_mix;        // Dry signal mix level
+    float wet_mix;        // Wet signal mix level
+echo
+    float attenuation;    // Attenuation factor
+    float dry_mix;        // Dry signal mix level
+    float wet_mix;        // Wet signal mix level
+iir
+    float 		cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
+	float 		bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
+moog_filter    
+    float	cutoffFrequency;	// = 1000.0f; // Initial cutoff frequency (1 kHz)
+	float	resonance; 			// = 0.5f;          // Resonance (0.0 to 1.0)
+	float	lfo_rate;
+phaser
+	float 			lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+	float 			depth;							// Depth of the LFO
+	float 			mix;	
+reverb
+    float dry_mix;
+    float wet_mix;
+ringmod    
+    float 			carrierFrequency;						// Phase of the LFO
+tape_freak    	
+    float32_t	tone_gain_bass;
+	float32_t	tone_gain_treble;
+	float32_t	preamp_gain;
+vca
+	uint16_t			*amplitude;
+	
+		
