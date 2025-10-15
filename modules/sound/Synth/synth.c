@@ -188,10 +188,11 @@ ITCM_AREA_CODE static uint8_t synth_calc_shift(uint8_t voices)
 ITCM_AREA_CODE static void synth_note_on(MidiSynth_TypeDef *synth, uint8_t note, uint8_t velocity, Synth_WaveformType waveform, float duty_cycle)
 {
     // Find an inactive voice
-    for (int i = 0; i < SYNTH_MAX_VOICES; i++) {
+    for (int i = 0; i < SYNTH_MAX_VOICES; i++)
+    {
         if (!synth->voices[i].active) {
             synth->voices[i].phase = 0.0f;
-            synth->voices[i].phase_increment = rom_midi_freq[note] / SYNTH_SAMPLE_RATE; // Phase increment per sample
+            synth->voices[i].phase_increment = rom_midi_freq[note] / synth->synth_sample_frequency; // Phase increment per sample
             synth->voices[i].amplitude = (q15_t)((velocity / 127.0f) * 32768.0f); // Scale velocity to Q15 , max val = 127
             synth->voices[i].waveform = waveform;
             synth->voices[i].duty_cycle = duty_cycle;
@@ -339,7 +340,7 @@ q15_t *output;
                 sample = (q15_t)(((q31_t)sample * synth->voices[v].amplitude) >> 15);
 
                 // Add voice contribution to output
-                q31_t temp = (q31_t)(output[i]) + (q31_t)(sample) + (q31_t)synth->out_device;
+                q31_t temp = (q31_t)(output[i]) + (q31_t)(sample);// + (q31_t)synth->out_device;
                 temp >>= (q31_t)synth->voices_shift;
                 output[i] = (q15_t)temp;
 
@@ -405,7 +406,7 @@ ITCM_AREA_CODE void AllNoteOFF(void)
 	synth_all_note_off(synth);
 }
 
-
+uint8_t number_of_synths = 0;
 ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth)
 {
 	if ( synth->codec_buf == NULL )
@@ -417,6 +418,8 @@ ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth)
 	Synth[channel] = synth;
 	if ( synth->wavetable_size == 0 )
 		synth->wavetable_size = SYNTH_WAVETABLE_256;
+	if ( synth->synth_sample_frequency == 0 )
+		synth->synth_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
 	// Initialize all voices
@@ -428,18 +431,29 @@ ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth)
 		synth->voices[i].wavetable = NULL;        // No custom wavetable by default
 		synth->voices[i].note = 0;
 	}
+	number_of_synths++;
 	return 0;
 }
 
-ITCM_AREA_CODE static inline void audio_to_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+ITCM_AREA_CODE static inline void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
 {
 uint32_t i;
-	if ( audio_out == NULL )
-		return;
-	if ( synth_number > 1 )
+	if (( audio_out == NULL ) || ( synth_number > 1 ) )
 		return;
 	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
 		audio_out[i*2 + start_sample*2 + synth_number] = audio_in[i+start_sample];
+}
+
+ITCM_AREA_CODE static inline void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+{
+uint32_t i,sample;
+	if (( audio_out == NULL ) || ( synth_number > 1 ) )
+		return;
+	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+	{
+		sample = (uint32_t )(audio_in[i+start_sample] +32768);
+		audio_out[i + start_sample] = (int16_t )(sample >> 4);
+	}
 }
 
 ITCM_AREA_CODE void Do_synth(uint8_t synth_number,uint32_t start_sample)
@@ -447,8 +461,9 @@ ITCM_AREA_CODE void Do_synth(uint8_t synth_number,uint32_t start_sample)
 Effect_TypeDef *last_effect;
 
 	MidiSynth_TypeDef *synth = Synth[synth_number];
-	if ( synth == NULL )
+	if (( synth == NULL ) || ( synth_number == number_of_synths ))
 		return;
+
 	if ( synth->status == SYNTH_ENABLED )
 	{
 		synth_process_block((uint32_t *)synth,start_sample);
@@ -456,12 +471,16 @@ Effect_TypeDef *last_effect;
 		{
 			last_effect = Sound_Apply_Effect((Effect_TypeDef *)synth->effect_s,start_sample);
 			if ( last_effect->out_device == SYNTH_I2S_OUT)
-				audio_to_out(synth_number,synth->codec_buf,last_effect->out_buf,start_sample);
+				audio_to_i2s_out(synth_number,synth->codec_buf,last_effect->out_buf,start_sample);
+			if ( last_effect->out_device == SYNTH_DAC_OUT)
+				audio_to_dac_out(synth_number,synth->codec_buf,last_effect->out_buf,start_sample);
 		}
 		else
 		{
 			if ( synth->out_device == SYNTH_I2S_OUT)
-				audio_to_out(synth_number,synth->codec_buf,synth->out_buf,start_sample);
+				audio_to_i2s_out(synth_number,synth->codec_buf,synth->out_buf,start_sample);
+			if ( synth->out_device == SYNTH_DAC_OUT)
+				audio_to_dac_out(synth_number,synth->codec_buf,synth->out_buf,start_sample);
 		}
 	}
 }

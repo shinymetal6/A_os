@@ -26,8 +26,10 @@
 
 typedef struct
 {
-	q15_t				amplitude;
+	uint16_t			*amplitude;
+	uint8_t				status;
 }VCA_Effect_TypeDef;
+
 
 extern void Effect_VCA(uint32_t *effect_s, uint32_t start_sample);
 

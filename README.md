@@ -65,8 +65,10 @@ The iodef_common.h file is not yet complete, so some definitions maybe not corre
 
 # Samples : <br>
 sample_process_1_adc.c<br>
+sample_process_1_audiomidi.c<br>
 sample_process_1_basic.c<br>
 sample_process_1_can.c<br>
+sample_process_1_dac_waveforms.c<br>
 sample_process_1_dccpwm.c<br>
 sample_process_1_Dhtxx_am230x.c<br>
 sample_process_1_encoder.c<br>
@@ -78,7 +80,7 @@ sample_process_1_intflash.c<br>
 sample_process_1_lcd7735.c<br>
 sample_process_1_lora.c<br>
 sample_process_1_lora_scanner.c<br>
-sample_process_1_mbxToPrc2.c<br>
+sample_process_1_mbxToPrc1.c : MUST be used with sample_process_2_mbxFromPrc2.c<br>
 sample_process_1_midi.c<br>
 sample_process_1_nrf24l01_ping.c<br>
 sample_process_1_qspi.c<br>
@@ -90,7 +92,6 @@ sample_process_1_usbclass_switch.c<br>
 sample_process_1_usbecho.c<br>
 sample_process_1_xmodem_rx_UART.c<br>
 sample_process_1_xmodem_rx_USB.c<br>
-sample_process_2_mbxFromPrc1.c<br>
 
 
 

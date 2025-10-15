@@ -23,7 +23,7 @@
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_INTFLASH
+#ifdef SAMPLEPROCESS_1_INTFLASH
 #ifdef	STM32H743xx
 
 #define	DATA_FLASH_SIZE	1024
@@ -207,5 +207,5 @@ uint32_t 	flash_size;
 }
 
 #endif // #ifdef	STM32H743xx
-#endif // #ifdef SAMPLEPROCESS_INTFLASH
+#endif // #ifdef SAMPLEPROCESS_1_INTFLASH
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED

@@ -33,7 +33,8 @@ ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s, uint32_t start_sample)
 uint32_t	i;
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 VCA_Effect_TypeDef *private = (VCA_Effect_TypeDef *)effect->private_data;
-q15_t gain = (q15_t)((private->amplitude / 127.0f) * 32768.0f);
+//q15_t gain = (q15_t)((*private->amplitude / 127.0f) * 32768.0f);
+uint16_t gain = *private->amplitude >> 1;
 
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
@@ -43,4 +44,6 @@ q15_t gain = (q15_t)((private->amplitude / 127.0f) * 32768.0f);
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
 	}
 }
+
+
 #endif // #ifdef SOUND_ENABLED

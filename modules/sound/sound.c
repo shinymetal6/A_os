@@ -31,7 +31,7 @@ uint32_t 			null_start_sample = 0;
 
 ITCM_AREA_CODE uint8_t Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeDef *effect)
 {
-	if (( Synth == NULL ) || ( effect == NULL ))
+	if (( Synth == NULL ) || ( effect == NULL ) || ( effect->in_buf == NULL ))
 		return 1;
 
 	if ( Synth->effect_s == NULL )
@@ -49,6 +49,8 @@ ITCM_AREA_CODE uint8_t Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeD
 		if ( effect->effect_init != NULL )
 			effect->effect_init((uint32_t *)effect);
 		effect->status |= SOUND_EFFECT_INITIALIZED;
+		if ( (effect->status & SOUND_EFFECT_AUTO_ENABLE) == SOUND_EFFECT_AUTO_ENABLE )
+			effect->status |= SOUND_EFFECT_ENABLED;
 	}
 	else
 	{
@@ -70,6 +72,8 @@ ITCM_AREA_CODE uint8_t Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeD
 		if ( effect->effect_init != NULL )
 			effect->effect_init((uint32_t *)effect);
 		effect->status |= SOUND_EFFECT_INITIALIZED;
+		if ( (effect->status & SOUND_EFFECT_AUTO_ENABLE) == SOUND_EFFECT_AUTO_ENABLE )
+			effect->status |= SOUND_EFFECT_ENABLED;
 	}
 	return 0;
 }
@@ -84,7 +88,6 @@ uint32_t	st;
 		st = (effect->next_effect_s==NULL) ? start_sample : 0;
 		if ( (effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
 			effect->effect( (uint32_t *)effect , st);
-
 		if ( effect->next_effect_s != NULL )
 			effect = (Effect_TypeDef *)effect->next_effect_s;
 		else
@@ -93,9 +96,15 @@ uint32_t	st;
 	return NULL;
 }
 
-ITCM_AREA_CODE uint8_t Sound_Set_Effect_Params(Effect_TypeDef *effect,uint32_t *params)
+ITCM_AREA_CODE void Sound_Effect_enable(Effect_TypeDef *effect)
 {
-	effect->effect_params_set( (uint32_t *)effect , params);
-	return 0;
+	effect->status |= SOUND_EFFECT_ENABLED;
 }
+
+ITCM_AREA_CODE void Sound_Effect_disable(Effect_TypeDef *effect)
+{
+	effect->status &= ~SOUND_EFFECT_ENABLED;
+}
+
+
 #endif

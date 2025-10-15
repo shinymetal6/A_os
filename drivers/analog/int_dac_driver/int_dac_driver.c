@@ -51,9 +51,8 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 ITCM_AREA_CODE  static uint32_t int_dac_init(uint8_t handle)
 {
 DAC_Drv_TypeDef		*dac_drv = (DAC_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
-	dac_drv->status = 0;
-	HAL_DAC_Start_DMA(dac_drv->dac, dac_drv->channel, (uint32_t *)dac_drv->dac_buffer, dac_drv->len,dac_drv->alignment);
-	return 0;
+	dac_drv->status = HAL_DAC_Start_DMA(dac_drv->dac, dac_drv->channel, (uint32_t *)dac_drv->dac_buffer, dac_drv->len,dac_drv->alignment);
+	return dac_drv->status;
 }
 
 ITCM_AREA_CODE  static uint32_t int_dac_get_status(uint8_t handle)
@@ -71,7 +70,8 @@ ITCM_AREA_CODE  static uint32_t int_dac_timer_set(DAC_Drv_TypeDef *dac_drv,float
 TIM_HandleTypeDef 	*dac_timer = dac_drv->dac_timer;
 
 	dac_drv->dac_sample_frequency = frequency;
-	fdiv = ((float )HSI_CLOCK / 2.0F / frequency) - 1.0F;
+	//fdiv = ((float )HSI_CLOCK / 2.0F / frequency) - 1.0F;
+	fdiv = ((float )HSI_CLOCK / 1.0F / frequency) - 1.0F;
 	__HAL_TIM_DISABLE(dac_timer);
 	dac_timer->Instance->CNT = 0;
 	dac_drv->PSC = dac_timer->Instance->PSC = 0;
@@ -120,8 +120,6 @@ DAC_Drv_TypeDef	*dac_drv;
 			return DRIVER_REQUEST_FAILED;
 		if ( dac_drv->dac_sample_frequency == 0)
 			dac_drv->dac_sample_frequency = DEFAULT_SAMPLE_FREQUENCY;
-		else
-			dac_drv->dac_sample_frequency /= 1000.0F;
 
 		if ( dac_drv->flags == DAC_FLAGS_USE_USBMODULE)
 		{

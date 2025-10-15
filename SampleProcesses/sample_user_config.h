@@ -39,10 +39,15 @@
 //#define	LORAWAN_ENABLE	1
 //#define	LWIP_ENABLE		1
 //#define	WIFI_ENABLE		1
+
 #ifdef	SAMPLEPROCESS_1_PING_NRF24L01
 	#define	WIRELESS_NRF24L01		1
 #endif
 #ifdef SAMPLEPROCESS_1_MIDI
+	#define	MIDI_ENABLED	1
+#endif
+#ifdef SAMPLEPROCESS_1_AUDIO_MIDI
+	#define	SOUND_ENABLED	1
 	#define	MIDI_ENABLED	1
 #endif
 
@@ -88,9 +93,9 @@
 #endif
 
 #ifdef USB_DEVICE_ENABLED
-	#ifdef SAMPLEPROCESS_1_MIDI
-		#define USBD_MIDI_MANUFACTURER_STRING		"BB"
-		#define USBD_MIDI_PRODUCT_STRING_FS			"H743_Midi"
+	#ifdef MIDI_ENABLED
+		#define USBD_MIDI_MANUFACTURER_STRING		"Nucleo743"
+		#define USBD_MIDI_PRODUCT_STRING_FS			"NucleoH743_Midi"
 		#define	USB_MIDI			1
 	#else
 		#define	USB_CDC				1

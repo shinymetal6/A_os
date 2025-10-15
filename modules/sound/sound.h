@@ -37,12 +37,12 @@
 
 #define	NUMBER_OF_AUDIO_SAMPLES			1024
 #define	HALF_NUMBER_OF_AUDIO_SAMPLES	(NUMBER_OF_AUDIO_SAMPLES/2)
-#define	SOUND_BLOCK_SIZE				HALF_NUMBER_OF_AUDIO_SAMPLES
 #define	DAC_AUDIO_SAMPLES_SIZE			NUMBER_OF_AUDIO_SAMPLES
 #define	DAC_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES
 #define	I2S_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES*2
 #define	I2S_AUDIO_HALF_BUF_SIZE			NUMBER_OF_AUDIO_SAMPLES
 
+#define	SOUND_BLOCK_SIZE				HALF_NUMBER_OF_AUDIO_SAMPLES
 
 /* macro for ease the writing */
 
@@ -64,7 +64,8 @@ typedef struct {
 	uint32_t			*private_data;
 } Effect_TypeDef;
 #define SOUND_EFFECT_ENABLED	 		0x80
-#define	SOUND_EFFECT_INITIALIZED		0x40
+#define SOUND_EFFECT_AUTO_ENABLE 		0x40
+#define	SOUND_EFFECT_INITIALIZED		0x01
 
 // Delay line structure
 typedef struct {
@@ -91,7 +92,9 @@ extern void 	Sound_Delay_Line_Init(Sound_DelayLine_TypeDef *delay_line, uint32_t
 extern q15_t 	Sound_Delay_Line(Sound_DelayLine_TypeDef *delay_line, q15_t input);
 extern uint8_t 	Sound_Insert_Effect(MidiSynth_TypeDef *Synth,Effect_TypeDef *effect);
 extern Effect_TypeDef *Sound_Apply_Effect(Effect_TypeDef *effect,uint32_t start_sample);
-extern uint8_t Sound_Set_Effect_Params(Effect_TypeDef *effect,uint32_t *params);
+extern uint8_t 	Sound_Set_Effect_Params(Effect_TypeDef *effect,uint32_t *params);
+extern void		Sound_Effect_enable(Effect_TypeDef *effect);
+extern void 	Sound_Effect_disable(Effect_TypeDef *effect);
 
 #endif // #ifdef SOUND_ENABLED
 
