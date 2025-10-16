@@ -43,10 +43,10 @@ typedef struct {
 
 typedef struct
 {
-    float feedback_gain;
-    float dry_mix;
-    float wet_mix;
     /* Internals */
+    float f_feedback_gain;
+    float f_dry_mix;
+    float f_wet_mix;
 
     Reverb_DelayLine_TypeDef *comb_filters; // Comb filters
     Reverb_DelayLine_TypeDef *allpass_filters; // All-pass filters

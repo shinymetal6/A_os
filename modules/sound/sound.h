@@ -57,15 +57,15 @@ typedef struct {
 	uint32_t 			*next_effect_s;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
-	uint16_t			out_device;				/* from previous module : for dac is 32768 , for codec is 0 */
+	uint16_t			out_device;				/* from previous module : for dac is 1 , for codec is 0 */
 	void 				(*effect)(uint32_t 	*effect_data , uint32_t start_sample);
 	void 				(*effect_init)(uint32_t *effect_data);
-	void 				(*effect_params_set)(uint32_t *effect_s,uint32_t *params);
 	uint32_t			*private_data;
 } Effect_TypeDef;
-#define SOUND_EFFECT_ENABLED	 		0x80
+/* for each effect in the status field */
+#define	SOUND_EFFECT_INITIALIZED		0x20
 #define SOUND_EFFECT_AUTO_ENABLE 		0x40
-#define	SOUND_EFFECT_INITIALIZED		0x01
+#define SOUND_EFFECT_ENABLED	 		0x80
 
 // Delay line structure
 typedef struct {
@@ -76,16 +76,17 @@ typedef struct {
 #define SOUND_MAX_DELAY_LENGTH DEFAULT_SAMPLE_FREQUENCY/2 // Maximum delay length (1 second at 44.1 kHz)
 
 #include	"Synth/synth.h"
-#include	"Effects/passthrough.h"
-#include	"Effects/vca.h"
-#include	"Effects/phaser.h"
-#include	"Effects/reverb.h"
 #include	"Effects/chorus.h"
 #include	"Effects/echo.h"
 #include	"Effects/iir.h"
+#include	"Effects/lfo.h"
 #include	"Effects/moog_filter.h"
+#include	"Effects/passthrough.h"
+#include	"Effects/phaser.h"
+#include	"Effects/reverb.h"
 #include	"Effects/ringmod.h"
 #include	"Effects/tape_freak.h"
+#include	"Effects/vca.h"
 #include	"USB_Audio/usb_audio.h"
 
 extern void 	Sound_Delay_Line_Init(Sound_DelayLine_TypeDef *delay_line, uint32_t delay_length);

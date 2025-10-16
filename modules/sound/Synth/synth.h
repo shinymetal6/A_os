@@ -68,7 +68,7 @@ typedef struct {
 	uint32_t 			*effect_s;
 	uint8_t				i2s_handle;
 	int16_t 			*codec_buf;
-	float				synth_sample_frequency;
+	float				sample_rate;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
 	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample);

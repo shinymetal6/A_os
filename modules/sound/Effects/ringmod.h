@@ -24,17 +24,22 @@
 #define MODULES_SOUND_EFFECTS_RINGMOD_H_
 
 #define RINGMOD_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
-#define RINGMOD_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
 #define RINGMOD_DEFAULT_CARRIER_FREQ	800.0f 	// LFO frequency in Hz
 
 typedef struct
 {
-	float 			carrierFrequency;						// Phase of the LFO
-	/* internals */
-	float 			carrierPhase;						// Phase of the LFO
-	float			phaseIncrement;
-}RINGMOD_Effect_TypeDef;
+	uint8_t		status;
+	uint8_t		flags;
+	float 		carrierFrequency;					// Phase of the LFO
+	float		sample_rate;
 
+	/* internals */
+	float 		carrierPhase;						// Phase of the LFO
+	float		phaseIncrement;
+	float		(*ringmod_effect)(uint32_t *ringmod,float input );
+}RINGMOD_Effect_TypeDef;
+#define	RINGMODE_STATUS_INTERNAL	0x01
+#define	RINGMODE_STATUS_EXTERNAL	0x02
 extern void Effect_RingMod(uint32_t *effect_s, uint32_t start_sample);
 extern void Effect_RingMod_Init(uint32_t *effect_s);
 

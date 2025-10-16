@@ -51,8 +51,8 @@ typedef struct
 
 
 extern 	I2S_HandleTypeDef hi2s2;
-extern	uint32_t	i2s_register(I2S_Drv_TypeDef *private_data);
-extern	int16_t	*get_codec_out_buf(uint8_t handle);
-extern	int16_t	*get_codec_in_buf(uint8_t handle);
+extern	uint32_t	int_i2s_register(I2S_Drv_TypeDef *private_data);
+extern	int16_t		*get_codec_out_buf(uint8_t handle);
+extern	int16_t		*get_codec_in_buf(uint8_t handle);
 
 #endif /* DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_ */

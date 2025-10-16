@@ -27,9 +27,10 @@
 
 #include "iir.h"
 
-void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoffFreq, float bw) {
+ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoffFreq, float bw, float sample_rate)
+{
     // Normalize the cutoff frequency
-    float w0 = 2.0f * M_PI * cutoffFreq / IIR_SAMPLE_RATE;
+    float w0 = 2.0f * M_PI * cutoffFreq / sample_rate;
     float sinW0 = sinf(w0);
     float cosW0 = cosf(w0);
 
@@ -59,7 +60,7 @@ void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoff
 
         case FILTER_TYPE_BAND_PASS:
             // Normalize bandwidth
-            float bwNorm = 2.0f * M_PI * bw / IIR_SAMPLE_RATE;
+            float bwNorm = 2.0f * M_PI * bw / sample_rate;
             alpha = sinW0 * sinh((logf(2.0f) / 2.0f) * bwNorm * w0 / sinW0);
 
             a0 = 1.0f + alpha;
@@ -72,7 +73,7 @@ void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoff
 
         case FILTER_TYPE_NOTCH:
             // Normalize bandwidth
-            bwNorm = 2.0f * M_PI * bw / IIR_SAMPLE_RATE;
+            bwNorm = 2.0f * M_PI * bw / sample_rate;
             alpha = sinW0 * sinh((logf(2.0f) / 2.0f) * bwNorm * w0 / sinW0);
 
             a0 = 1.0f + alpha;
@@ -94,39 +95,41 @@ void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoff
     }
 }
 
-float iir_effect(IIR_Effect_TypeDef *iir, float input)
+ITCM_AREA_CODE static float iir_effect(IIR_Effect_TypeDef *iir, float input)
 {
-        float sample = input;
+float sample = input;
 
-        // Process through each biquad stage
-        for (uint8_t j = 0; j < IIR_NUM_BIQUADS; j++) {
-            BiquadFilter *bq = &iir->biquads[j];
+	// Process through each biquad stage
+	for (uint8_t j = 0; j < IIR_NUM_BIQUADS; j++) {
+		BiquadFilter *bq = &iir->biquads[j];
 
-            // Apply the IIR difference equation:
-            // y[n] = b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] - a1 * y[n-1] - a2 * y[n-2]
-            float y0 = bq->b0 * input + bq->b1 * bq->x1 + bq->b2 * bq->x2
-                     - bq->a1 * bq->y1 - bq->a2 * bq->y2;
+		// Apply the IIR difference equation:
+		// y[n] = b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] - a1 * y[n-1] - a2 * y[n-2]
+		float y0 = bq->b0 * input + bq->b1 * bq->x1 + bq->b2 * bq->x2
+				 - bq->a1 * bq->y1 - bq->a2 * bq->y2;
 
-            // Update filter state
-            bq->x2 = bq->x1;
-            bq->x1 = sample;
-            bq->y2 = bq->y1;
-            bq->y1 = y0;
+		// Update filter state
+		bq->x2 = bq->x1;
+		bq->x1 = sample;
+		bq->y2 = bq->y1;
+		bq->y1 = y0;
 
-            // Pass the output of this stage as the input to the next stage
-            sample = y0;
-        }
+		// Pass the output of this stage as the input to the next stage
+		sample = y0;
+	}
 
-        // Write output sample
-        return sample;
+	// Write output sample
+	return sample;
 }
 
 ITCM_AREA_CODE void Effect_IIR_Init(uint32_t *effect_s)
 {
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
+	if ( iir->sample_rate == 0 )
+		iir->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++) {
-		calculateBiquadCoefficients(&iir->biquads[i], iir->filterType, iir->cutoffFrequency, iir->bandwidth);
+		calculateBiquadCoefficients(&iir->biquads[i], iir->filterType, iir->cutoffFrequency, iir->bandwidth,iir->sample_rate);
 		iir->biquads[i].x1 = iir->biquads[i].x2 = 0.0f;
 		iir->biquads[i].y1 = iir->biquads[i].y2 = 0.0f;
 	}
@@ -134,6 +137,8 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
 			iir->cutoffFrequency = 1000.0F;
 	if ( iir->bandwidth == 0.0F )
 			iir->bandwidth = 200.0F;
+	iir->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
 }
 
 ITCM_AREA_CODE void Effect_IIR_SetParams(uint32_t *effect_s,uint32_t *params )
@@ -155,9 +160,11 @@ uint32_t	i;
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
 
+	if ((( iir->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( iir == NULL ))
+		return;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
-		if (( effect->status & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			effect->out_buf[i + start_sample] = (q15_t ) iir_effect(iir,(float )effect->in_buf[i]) + effect->out_device;
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;

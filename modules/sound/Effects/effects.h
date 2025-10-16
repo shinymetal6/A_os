@@ -14,24 +14,17 @@
  * Project : A_os
 */
 /*
- * vca.h
+ * effects.h
  *
- *  Created on: Apr 24, 2025
+ *  Created on: Oct 16, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_VCA_H_
-#define MODULES_SOUND_EFFECTS_VCA_H_
-#ifdef SOUND_ENABLED
+#ifndef MODULES_SOUND_EFFECTS_EFFECTS_H_
+#define MODULES_SOUND_EFFECTS_EFFECTS_H_
 
-typedef struct
-{
-	uint16_t			*amplitude;
-	uint8_t				flags;
-	uint8_t				status;
-}VCA_Effect_TypeDef;
+/* for limits -1.0F < v < 1.0F */
+#define	FULL_SCALE_F_FACTOR		65535.0F
+#define	HALF_SCALE_F_FACTOR		(FULL_SCALE_F_FACTOR / 2.0F)
 
-extern void Effect_VCA(uint32_t *effect_s, uint32_t start_sample);
-
-#endif // #ifdef SOUND_ENABLED
-#endif /* MODULES_SOUND_EFFECTS_VCA_H_ */
+#endif /* MODULES_SOUND_EFFECTS_EFFECTS_H_ */

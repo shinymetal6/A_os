@@ -133,6 +133,8 @@ TAPE_FREAK_Effect_TypeDef *tape_freak = (TAPE_FREAK_Effect_TypeDef *)effect->pri
     arm_biquad_cascade_df2T_init_f32(&tape_freak->LPF_Instance, 1, tape_freak->biquadCoeffsLP, tape_freak->lpfState);
     arm_biquad_cascade_df2T_init_f32(&tape_freak->BASS_Instance, 1, tape_freak->biquadCoeffsBass, tape_freak->bassState);
     arm_biquad_cascade_df2T_init_f32(&tape_freak->TREBLE_Instance, 1, tape_freak->biquadCoeffsTreble, tape_freak->trebleState);
+    tape_freak->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
 }
 
 ITCM_AREA_CODE void Effect_Tape_Freak(uint32_t *effect_s, uint32_t start_sample)
@@ -141,7 +143,9 @@ uint32_t	i;
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 TAPE_FREAK_Effect_TypeDef *tape_freak = (TAPE_FREAK_Effect_TypeDef *)effect->private_data;
 
-	if (( effect->status & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+	if ((( tape_freak->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( tape_freak == NULL ))
+		return;
+	if (( tape_freak->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		tape_freak_process(tape_freak,(float *)effect->in_buf,effect->out_buf + start_sample,effect->out_device,TAPE_FREAK_BUFFER_SIZE);
 	else
 	{

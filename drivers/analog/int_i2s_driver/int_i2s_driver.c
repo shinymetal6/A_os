@@ -72,7 +72,7 @@ I2S_Drv_TypeDef		*i2s_drv = (I2S_Drv_TypeDef	*)ANALOG_DriverStruct[handle].priva
 	return i2s_drv->adc_buffer;
 }
 
-ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	int_i2s_register(I2S_Drv_TypeDef *private_data)
 {
 I2S_Drv_TypeDef	*i2s_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )

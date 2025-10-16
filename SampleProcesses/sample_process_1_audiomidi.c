@@ -64,7 +64,7 @@ __attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_left =
 	.out_buf = synth_workbuffer_left,
 	.out_device = SYNTH_DAC_OUT,
 	.codec_buf = dac_buffer_left,
-	.synth_sample_frequency = SAMPLE_FREQUENCY,
+	.sample_rate = SAMPLE_FREQUENCY,
 	.wavetable_size = SYNTH_WAVETABLE_1024,
 };
 uint32_t	synth_left_initialized;
@@ -76,7 +76,7 @@ __attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_right =
 	.out_buf = synth_workbuffer_right,
 	.out_device = SYNTH_DAC_OUT,
 	.codec_buf = dac_buffer_right,
-	.synth_sample_frequency = SAMPLE_FREQUENCY,
+	.sample_rate = SAMPLE_FREQUENCY,
 	.wavetable_size = SYNTH_WAVETABLE_1024,
 };
 uint32_t	synth_right_initialized;
@@ -157,9 +157,9 @@ uint32_t	midi_initialized;
 
 void sample_process_1_init(uint32_t process_id)
 {
-	dac_left_driver_handle = int_dac_register(&DAC_Drv_Left);
+	dac_left_driver_handle = dac_register(&DAC_Drv_Left);
 #ifdef DUAL_CHANNEL
-	dac_right_driver_handle = int_dac_register(&DAC_Drv_Right);
+	dac_right_driver_handle = dac_register(&DAC_Drv_Right);
 #endif // #ifdef DUAL_CHANNEL
 	synth_left_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
 #ifdef DUAL_CHANNEL

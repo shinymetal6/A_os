@@ -16,33 +16,44 @@
 /*
  * moog_filter.h
  *
- *  Created on: Apr 30, 2025
+ *  Created on: Oct 16, 2025
  *      Author: fil
  */
 
 #ifndef MODULES_SOUND_EFFECTS_MOOG_FILTER_H_
 #define MODULES_SOUND_EFFECTS_MOOG_FILTER_H_
 
-#define MOOG_F_BLOCK_SIZE SOUND_BLOCK_SIZE          // Block size (number of samples per block)
-#define MOOG_F_SAMPLE_RATE DEFAULT_SAMPLE_FREQUENCY       // Sample rate in Hz
-#define MOOG_F_NUM_CUTOFF_STEPS 1024   // Number of steps in the lookup table
+#include <stdint.h>
+#include <math.h>
 
-typedef struct {
-	uint8_t lfo_enabled;
-	float	cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
-	float	resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
-	float	lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+#ifndef M_PI
+#define M_PI 3.14159265358979323846f
+#endif
+
+/*
+    moog_set_params(&filter_l, 1000.0f, 0.8f, 48000.0f);
+*/
+
+typedef struct
+{
+	uint8_t		status;
+	uint8_t		flags;
+	uint16_t	*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
+	uint16_t	*resonance; 				// = 32768	Resonance (0 to 65535)
+	uint16_t	*lfo_rate;					// = 16384	Rate of the LFO [0 .. 65535] easy for user side
+	float		sample_rate;
 
     /* Internals */
-	float 	lfo_phase;						// Phase of the LFO
-	float	lfo_increment;
-
-	float 	cutoffLookupTable[MOOG_F_NUM_CUTOFF_STEPS];
-	float 	stage1;
-	float	stage2;
-	float 	stage3;
-	float 	stage4; // Filter stages
-	float 	feedback; // Feedback signal
+	float	f_cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
+	float	f_resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
+    float 	g;   // cutoff-related gain
+    float 	k;   // resonance feedback factor
+    float 	y1, y2, y3, y4; // state
 } MOOG_F_Effect_TypeDef;
+
+void moog_init(MOOG_F_Effect_TypeDef *f);
+void moog_set_params(MOOG_F_Effect_TypeDef *f, float cutoff, float resonance, float sample_rate);
+float moog_process(MOOG_F_Effect_TypeDef *f, float input);
+
 
 #endif /* MODULES_SOUND_EFFECTS_MOOG_FILTER_H_ */

@@ -327,7 +327,7 @@ uint8_t 	gain				= (uint8_t  )param3;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	int_nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
 {
 Nau88C22_Drv_TypeDef	*codec_drv;
 	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )

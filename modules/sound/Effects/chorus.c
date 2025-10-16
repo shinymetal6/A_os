@@ -26,19 +26,22 @@
 #include "../sound.h"
 #ifdef SOUND_ENABLED
 
+#include "effects.h"
 #include "chorus.h"
 #define	CHORUS_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 /*CHORUS_DELAY_AREA_CODE*/	Chorus_DelayLine_TypeDef	chorus_delay_line; // Delay line
 
 // Initialize the delay line
-ITCM_AREA_CODE static void chorus_delay_line_init(Chorus_DelayLine_TypeDef *delay_line, uint32_t delay_length) {
+ITCM_AREA_CODE static void chorus_delay_line_init(Chorus_DelayLine_TypeDef *delay_line, uint32_t delay_length)
+{
     memset(delay_line, 0, sizeof(Reverb_DelayLine_TypeDef));
     delay_line->write_index = 0;
     delay_line->delay_length = delay_length;
 }
 
 // Process a sample through the delay line
-ITCM_AREA_CODE static q15_t chorus_delay_line_process(Chorus_DelayLine_TypeDef *delay_line, q15_t input) {
+ITCM_AREA_CODE static q15_t chorus_delay_line_process(Chorus_DelayLine_TypeDef *delay_line, q15_t input)
+{
     // Read from the delay line
     uint32_t read_index = (delay_line->write_index + CHORUS_MAX_DELAY_LENGTH - delay_line->delay_length) % CHORUS_MAX_DELAY_LENGTH;
     q15_t output = delay_line->buffer[read_index];
@@ -63,14 +66,14 @@ ITCM_AREA_CODE static q15_t chorus_lfo_generate(q15_t phase_increment, q15_t *lf
 ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *input, q15_t *output, uint32_t out_device, uint32_t block_size)
 {
 	// Compute LFO phase increment (frequency in Q15 format)
-	q15_t lfo_phase_increment = (q15_t)(CHORUS_LFO_FREQUENCY * 32768.0f / CHORUS_SAMPLE_RATE);
+	q15_t lfo_phase_increment = (q15_t)(CHORUS_LFO_FREQUENCY * 32768.0f / chorus->sample_rate);
 
 	for (int i = 0; i < block_size; i++) {
 		// Generate LFO output
 		q15_t lfo_output = chorus_lfo_generate(lfo_phase_increment, &chorus->lfo_phase);
 
 		// Modulate delay length with LFO
-		int32_t base_delay = CHORUS_SAMPLE_RATE / 10; // Base delay length (100 ms)
+		int32_t base_delay = chorus->sample_rate / 10; // Base delay length (100 ms)
 		int32_t modulated_delay = base_delay + (int32_t)((float)lfo_output * base_delay / 32768.0f);
 		if (modulated_delay < 0) modulated_delay = 0;
 		if (modulated_delay >= CHORUS_MAX_DELAY_LENGTH) modulated_delay = CHORUS_MAX_DELAY_LENGTH - 1;
@@ -82,7 +85,9 @@ ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *
 		q15_t delayed_sample = chorus_delay_line_process(chorus->delay_line, input[i]);
 
 		// Store the output sample
-		output[i] = (input[i] >> 1 ) + (delayed_sample >> 1 ) + out_device;
+	    chorus->dry_mix = (float )*chorus->mix / HALF_SCALE_F_FACTOR;
+	    chorus->wet_mix = 1.0F - chorus->dry_mix;
+		output[i] = (q15_t)((float )input[i] * chorus->dry_mix) + (q15_t)((float )delayed_sample  * chorus->wet_mix ) + out_device;
 	}
 }
 
@@ -93,8 +98,14 @@ Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 
 	chorus->delay_line = &chorus_delay_line;
+	if ( chorus->sample_rate == 0 )
+		chorus->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 	chorus_delay_line_init(chorus->delay_line, CHORUS_MAX_DELAY_LENGTH); // Initial delay length (100 ms)
     chorus->lfo_phase = 0;
+    chorus->dry_mix = (float )*chorus->mix / HALF_SCALE_F_FACTOR;
+    chorus->wet_mix = 1.0F - chorus->dry_mix;
+    chorus->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
 }
 
 
@@ -104,7 +115,9 @@ uint32_t	i;
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 
-	if (( effect->status & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+	if ((( chorus->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( chorus == NULL ))
+		return;
+	if (( chorus->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		chorus_process(chorus,effect->in_buf,effect->out_buf + start_sample,effect->out_device,CHORUS_BLOCK_SIZE);
 	else
 	{

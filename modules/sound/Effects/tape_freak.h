@@ -34,6 +34,7 @@
 
 typedef struct
 {
+	uint8_t		status;
 	uint8_t		flags;
 	float32_t	tone_gain_bass;
 	float32_t	tone_gain_treble;

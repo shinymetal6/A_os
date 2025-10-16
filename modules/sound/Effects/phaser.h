@@ -26,7 +26,6 @@
 
 
 #define PHASER_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
-#define PHASER_SAMPLE_RATE		DEFAULT_SAMPLE_FREQUENCY
 #define PHASER_DEFAULT_LFO_RATE	2.0F	// LFO frequency in Hz
 #define PHASER_DEFAULT_DEPTH	0.7F	// Depth of modulation
 #define PHASER_DEFAULT_MIX		0.5F	// mix rate
@@ -34,11 +33,17 @@
 
 typedef struct
 {
-	float 			lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
-	float 			depth;							// Depth of the LFO
-	float 			mix;
-	int32_t			allpass_number;					// Read position in the buffer
+	uint8_t			status;
+	uint8_t			flags;
+	uint16_t		*lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+	uint16_t		*depth;							// Depth of the LFO
+	uint16_t		*mix;
+	float			sample_rate;
 	/* internals */
+	float 			f_lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+	float 			f_depth;							// Depth of the LFO
+	float 			f_mix;
+	int32_t			allpass_number;					// Read position in the buffer
 	float 			lfo_phase;						// Phase of the LFO
 	float			lfo_increment;
 	float 			depth_sum,depth_mul;							// Depth of the LFO
