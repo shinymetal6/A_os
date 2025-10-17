@@ -61,7 +61,7 @@ typedef struct {
 // MIDI synthesizer state
 typedef struct {
 	uint8_t				status;
-	uint16_t			out_device;		/* for dac is 32768 , for codec is 0 */
+	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
 	int16_t				*out_buf;

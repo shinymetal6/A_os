@@ -44,13 +44,6 @@
 
 #define	SOUND_BLOCK_SIZE				HALF_NUMBER_OF_AUDIO_SAMPLES
 
-/* macro for ease the writing */
-
-#define	OBUF effect->out_buf[i + start_sample]
-#define	IBUF effect->in_buf[i] + effect->out_device
-
-/* END macro for ease the writing */
-
 typedef struct {
 	uint8_t				status;
 	uint32_t 			*pre_effect_s;

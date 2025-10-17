@@ -27,7 +27,7 @@
 
 typedef struct {
 	uint8_t				status;
-	uint16_t			out_device;		/* for dac is 32768 , for codec is 0 */
+	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
 	uint8_t				*dac_drvstatus;
 	int16_t				*out_buf;
 	int16_t				*usbaudio_buf;
