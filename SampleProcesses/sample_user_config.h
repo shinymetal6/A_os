@@ -50,6 +50,10 @@
 	#define	SOUND_ENABLED	1
 	#define	MIDI_ENABLED	1
 #endif
+#ifdef SAMPLEPROCESS_1_AUDIODUAL_EFFECT
+	#define	SOUND_ENABLED	1
+	#define	MIDI_ENABLED	1
+#endif
 
 #define	POWERSAVING_ENABLED	1
 

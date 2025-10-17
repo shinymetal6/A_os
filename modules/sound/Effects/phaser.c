@@ -90,6 +90,8 @@ ITCM_AREA_CODE void Effect_Phaser_Init(uint32_t *effect_s)
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect->private_data;
 
+	if ( phaser->sample_rate == 0 )
+		phaser->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 	phaser->lfo_phase = 0.0F;
 	phaser_update_lfo(phaser);
 

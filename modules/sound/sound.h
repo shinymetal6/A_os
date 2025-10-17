@@ -69,6 +69,7 @@ typedef struct {
 #define SOUND_MAX_DELAY_LENGTH DEFAULT_SAMPLE_FREQUENCY/2 // Maximum delay length (1 second at 44.1 kHz)
 
 #include	"Synth/synth.h"
+#include	"Effects/effects.h"
 #include	"Effects/chorus.h"
 #include	"Effects/echo.h"
 #include	"Effects/iir.h"

@@ -98,6 +98,10 @@ extern	void sample_process_1_encoder(uint32_t process_id);
 extern	void sample_process_1_audiomidi(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_MIDI
+#ifdef	SAMPLEPROCESS_1_AUDIODUAL_EFFECT
+extern	void sample_process_1_audiodualeffect(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_AUDIODUAL_EFFECT
 #ifdef	SAMPLEPROCESS_1_DAC_WAVEFORMS
 extern	void sample_process_1_dac_waveforms(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
@@ -197,6 +201,11 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_audiomidi,
 				.user_init = sample_process_1_init,
 #endif
+#ifdef	SAMPLEPROCESS_1_AUDIODUAL_EFFECT
+				.user_process = sample_process_1_audiodualeffect,
+				.user_init = sample_process_1_init,
+#endif
+
 #ifdef	SAMPLEPROCESS_1_DAC_WAVEFORMS
 				.user_process = sample_process_1_dac_waveforms,
 				.user_init = sample_process_1_init,
