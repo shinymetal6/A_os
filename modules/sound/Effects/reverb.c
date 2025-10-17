@@ -115,9 +115,9 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
 		if (( effect->status & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample]  = reverb_process(reverb,effect->in_buf[i])+effect->out_device;
+			effect->out_buf[i + start_sample]  = reverb_process(reverb,effect->in_buf[i]);
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 
 	}
 }

@@ -165,9 +165,9 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) iir_effect(iir,(float )effect->in_buf[i]) + effect->out_device;
+			effect->out_buf[i + start_sample] = (q15_t ) iir_effect(iir,(float )effect->in_buf[i]);
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 	if (( iir->flags & IIR_UPDATE_PARAMS) == IIR_UPDATE_PARAMS)
 	{

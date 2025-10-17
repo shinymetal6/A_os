@@ -25,12 +25,11 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
 #ifdef SOUND_ENABLED
-#ifdef ENABLE_TESTING
 
 #include "wah_filter.h"
 
 /*
-ITCM_AREA_CODE void wah_set_params(WAH_F_Effect_TypeDef *wah, float min_fc, float max_fc, float res, float sens)
+ITCM_AREA_CODE void Wah_Set_Params(WAH_F_Effect_TypeDef *wah, float min_fc, float max_fc, float res, float sens)
 {
     wah->f_min_cutoff = (min_fc < 50.0f) ? 50.0f : min_fc;
     wah->f_max_cutoff = (max_fc > 8000.0f) ? 8000.0f : max_fc;
@@ -40,25 +39,16 @@ ITCM_AREA_CODE void wah_set_params(WAH_F_Effect_TypeDef *wah, float min_fc, floa
 */
 ITCM_AREA_CODE static void wah_set_params(WAH_F_Effect_TypeDef *wah)
 {
-    if ( *wah->attack == 0 )
+
+    if (( *wah->attack == 0 ) | ( *wah->attack > 100 ))
     	wah->f_attack = 1.0f - expf(-1.0f / (0.0001f * wah->sample_rate));   // ~0.1 ms f_attack
     else
-    {
-        if ( *wah->attack < 100 )
-        	wah->f_attack = (float )*wah->attack*0.0001F;   // ~0.1 ms f_attack in 100 uSec units
-        else
-        	wah->f_attack = 0.0001F;
-    }
+       	wah->f_attack = 1.0f - expf(-1.0f / (*wah->attack * 0.000001f * wah->sample_rate));
 
-    if ( *wah->release == 0 )
+    if (( *wah->release == 0 ) || ( *wah->release < 100 ))
     	wah->f_release = 1.0f - expf(-1.0f / (0.001f * wah->sample_rate));   // ~1 ms f_release
     else
-    {
-        if ( *wah->release < 100 )
-        	wah->f_release = (float )*wah->release*0.001F;   // ~1 ms f_release in 100 uSec units
-        else
-        	wah->f_release = 0.0001F;
-    }
+    	wah->f_release = 1.0f - expf(-1.0f / (*wah->release * 0.00001f * wah->sample_rate));   // ~1 ms f_release
 
     if (( *wah->min_cutoff < 300 ) || ( *wah->min_cutoff > 2000 ))
     	wah->f_min_cutoff = 300.0f;
@@ -141,7 +131,8 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect->private_data;
 		return;
 	if ( wah->release == NULL )
 		return;
-
+	if ( wah->sample_rate == 0 )
+		wah->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 	wah->env = 0.0f;
 	wah_set_params(wah);
 
@@ -163,13 +154,11 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect->private_data;
 		if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{
 			wah_set_params(wah);
-			effect->out_buf[i + start_sample] = (q15_t ) wah_process(wah,(float )effect->in_buf[i]) + effect->out_device;
+			effect->out_buf[i + start_sample] = (q15_t ) wah_process(wah,(float )effect->in_buf[i]);
 		}
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
-
-#endif // #ifdef ENABLE_TESTING
 
 #endif // #ifdef SOUND_ENABLED

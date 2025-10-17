@@ -110,9 +110,9 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) phaser_effect(phaser,(float )effect->in_buf[i]) + effect->out_device;
+			effect->out_buf[i + start_sample] = (q15_t ) phaser_effect(phaser,(float )effect->in_buf[i]);
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
 #endif // #ifdef SOUND_ENABLED

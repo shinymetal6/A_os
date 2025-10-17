@@ -76,9 +76,9 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect->private_data
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( ringmod->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) ringmod->ringmod_effect((uint32_t *)ringmod,(float )effect->in_buf[i]) + effect->out_device;
+			effect->out_buf[i + start_sample] = (q15_t ) ringmod->ringmod_effect((uint32_t *)ringmod,(float )effect->in_buf[i]);
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
 

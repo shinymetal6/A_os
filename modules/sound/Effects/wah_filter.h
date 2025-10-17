@@ -30,6 +30,7 @@
 #define M_PI 3.14159265358979323846f
 #endif
 /*
+ * defaults
     wah->attack = 1.0f - expf(-1.0f / (0.0001f * fs));   // ~0.1 ms attack
     wah->release = 1.0f - expf(-1.0f / (0.001f * fs));   // ~1 ms release
 
@@ -49,7 +50,7 @@ typedef struct
     uint16_t	*max_cutoff;	// units : Hz
     uint16_t	*resonance;		// units : values 0 - 100
     uint16_t	*sensitivity;	// units : values 2 - 200
-    float sample_rate;
+    float 		sample_rate;
     /* Internals */
 	// Envelope follower
     float env;

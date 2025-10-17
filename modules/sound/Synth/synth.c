@@ -340,7 +340,7 @@ q15_t *output;
                 sample = (q15_t)(((q31_t)sample * synth->voices[v].amplitude) >> 15);
 
                 // Add voice contribution to output
-                q31_t temp = (q31_t)(output[i]) + (q31_t)(sample);// + (q31_t)synth->out_device;
+                q31_t temp = (q31_t)(output[i]) + (q31_t)(sample);
                 temp >>= (q31_t)synth->voices_shift;
                 output[i] = (q15_t)temp;
 

@@ -36,7 +36,7 @@ Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 PASSTHROUGH_Effect_TypeDef *private = (PASSTHROUGH_Effect_TypeDef *)effect->private_data;
 
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+		effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	private->call_counter++;
 }
 #endif // #ifdef SOUND_ENABLED

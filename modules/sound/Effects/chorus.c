@@ -63,7 +63,7 @@ ITCM_AREA_CODE static q15_t chorus_lfo_generate(q15_t phase_increment, q15_t *lf
 }
 
 // Process a block of audio samples through the chorus effect
-ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *input, q15_t *output, uint32_t out_device, uint32_t block_size)
+ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *input, q15_t *output, uint32_t block_size)
 {
 	// Compute LFO phase increment (frequency in Q15 format)
 	q15_t lfo_phase_increment = (q15_t)(CHORUS_LFO_FREQUENCY * 32768.0f / chorus->sample_rate);
@@ -87,7 +87,7 @@ ITCM_AREA_CODE static void chorus_process(Chorus_Effect_TypeDef *chorus, q15_t *
 		// Store the output sample
 	    chorus->dry_mix = (float )*chorus->mix / HALF_SCALE_F_FACTOR;
 	    chorus->wet_mix = 1.0F - chorus->dry_mix;
-		output[i] = (q15_t)((float )input[i] * chorus->dry_mix) + (q15_t)((float )delayed_sample  * chorus->wet_mix ) + out_device;
+		output[i] = (q15_t)((float )input[i] * chorus->dry_mix) + (q15_t)((float )delayed_sample  * chorus->wet_mix );
 	}
 }
 
@@ -118,11 +118,11 @@ Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 	if ((( chorus->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( chorus == NULL ))
 		return;
 	if (( chorus->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-		chorus_process(chorus,effect->in_buf,effect->out_buf + start_sample,effect->out_device,CHORUS_BLOCK_SIZE);
+		chorus_process(chorus,effect->in_buf,effect->out_buf + start_sample,CHORUS_BLOCK_SIZE);
 	else
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 
 }

@@ -30,25 +30,43 @@
 #define M_PI 3.14159265358979323846f
 #endif
 
+#define	ROBOT_VOICE_SQUARE_WAVE	1
+#define	ROBOT_VOICE_SINE_WAVE	0
+
+#define	ROBOT_VOICE_RING_FREQ_MIN	100.0F
+#define	ROBOT_VOICE_RING_FREQ_MAX	2000.0F
+
+//600.0f, 1, 8.0f, 1200.0f, 1.2f); // default: square wave, 8-bit, 1.2kHz BP
 typedef struct {
-    // Ring modulator
-    float ring_phase;
-    float ring_freq;        // Hz (300–1000)
-    uint8_t ring_wave;      // 0=sine, 1=square
+	uint8_t		status;
+	uint8_t		flags;
+    uint16_t	*ring_freq;	// Hz (300–1000)
+    uint16_t	*ring_wave;	// 0=sine, 1=square , default square
+    uint16_t	*bit_depth;	// default 8 bit
+    uint16_t	*bp_freq;	// default 1.2KHz , in Hz unit
+    uint16_t	*bp_q;	 	// default 1.2 , in 0.1 unit
+
+    //float ring_freq, uint8_t ring_wave, float bit_depth, float bp_freq, float bp_q)
+
+    float 		sample_rate;
+
+	/* Internals */
+	// Ring modulator
+    float f_ring_freq;      // Hz (300–1000)
+    float f_ring_phase;
+    uint8_t i_ring_wave;      // 0=sine, 1=square
 
     // Bit crusher
-    float bit_depth;        // 4–12 bits
-    float sample_rate;      // e.g., 48000
+    float f_bit_depth;        // 4–12 bits
 
     // Bandpass filter (simple 2-pole)
-    float bp_x1, bp_x2;
-    float bp_y1, bp_y2;
-    float bp_freq;          // center freq (Hz)
-    float bp_q;             // Q factor (0.5–2.0)
+    float f_bp_x1, f_bp_x2;
+    float f_bp_y1, f_bp_y2;
+    float f_bp_freq;          // center freq (Hz)
+    float f_bp_q;             // Q factor (0.5–2.0)
 } ROBOT_VOICE_Effect_TypeDef;
 
-void robot_init(ROBOT_VOICE_Effect_TypeDef *rv, float sample_rate);
-void robot_set_params(ROBOT_VOICE_Effect_TypeDef *rv, float ring_freq, uint8_t ring_wave, float bit_depth, float bp_freq, float bp_q);
-float robot_process(ROBOT_VOICE_Effect_TypeDef *rv, float input);
+extern	void Effect_Robot_Init(uint32_t *effect_s);
+extern	void Effect_Robot(uint32_t *effect_s, uint32_t start_sample);
 
 #endif /* MODULES_SOUND_EFFECTS_ROBOT_VOICE_H_ */

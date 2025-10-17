@@ -8,8 +8,8 @@ passthrough
 phaser
 reverb
 ringmod
-robot_voice (**)
-space_echo (**)
+robot_voice (*)
+space_echo (*)
 tape_freak
 vca
 wah_filter (*)

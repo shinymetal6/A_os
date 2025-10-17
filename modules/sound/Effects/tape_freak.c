@@ -58,7 +58,7 @@ ITCM_AREA_CODE static float32_t apply_tape_freak_bitcrusher(float32_t sample)
     return last_sample;
 }
 
-ITCM_AREA_CODE static void tape_freak_process(TAPE_FREAK_Effect_TypeDef *tape_freak,float32_t* input, q15_t* output, uint32_t out_device, uint32_t blockSize)
+ITCM_AREA_CODE static void tape_freak_process(TAPE_FREAK_Effect_TypeDef *tape_freak,float32_t* input, q15_t* output, uint32_t blockSize)
 {
 
     q31_t	result;
@@ -99,7 +99,7 @@ ITCM_AREA_CODE static void tape_freak_process(TAPE_FREAK_Effect_TypeDef *tape_fr
         	result = 32767.0f;
         if (result < -32768.0f)
         	result = -32768.0f;
-        output[i] = (q15_t )result + out_device;
+        output[i] = (q15_t )result;
     }
 }
 
@@ -146,11 +146,11 @@ TAPE_FREAK_Effect_TypeDef *tape_freak = (TAPE_FREAK_Effect_TypeDef *)effect->pri
 	if ((( tape_freak->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( tape_freak == NULL ))
 		return;
 	if (( tape_freak->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-		tape_freak_process(tape_freak,(float *)effect->in_buf,effect->out_buf + start_sample,effect->out_device,TAPE_FREAK_BUFFER_SIZE);
+		tape_freak_process(tape_freak,(float *)effect->in_buf,effect->out_buf + start_sample,TAPE_FREAK_BUFFER_SIZE);
 	else
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
 #endif // #ifdef SOUND_ENABLED

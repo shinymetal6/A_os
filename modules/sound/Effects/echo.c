@@ -29,7 +29,7 @@
 #include "echo.h"
 
 // Process a block of audio samples through the echo effect
-ITCM_AREA_CODE static void echo_process(Echo_Effect_TypeDef *echo, q15_t *input, q15_t *output, uint32_t out_device, uint32_t block_size)
+ITCM_AREA_CODE static void echo_process(Echo_Effect_TypeDef *echo, q15_t *input, q15_t *output, uint32_t block_size)
 {
     for (int i = 0; i < block_size; i++) {
         // Process through delay line
@@ -41,7 +41,7 @@ ITCM_AREA_CODE static void echo_process(Echo_Effect_TypeDef *echo, q15_t *input,
         // Mix dry and wet signals
         echo->dry_mix = (float )*echo->mix / HALF_SCALE_F_FACTOR;
         echo->wet_mix = 1.0F - echo->dry_mix;
-        q15_t mixed_output = (q15_t )(float )(input[i] * echo->dry_mix) + (float )(attenuated_sample * echo->wet_mix) + out_device;
+        q15_t mixed_output = (q15_t )(float )(input[i] * echo->dry_mix) + (float )(attenuated_sample * echo->wet_mix);
 
         // Store the output sample
         output[i] = mixed_output;
@@ -75,11 +75,11 @@ Echo_Effect_TypeDef *echo = (Echo_Effect_TypeDef *)effect->private_data;
 	if ((( echo->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( echo == NULL ))
 		return;
 	if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-		echo_process(echo,effect->in_buf,effect->out_buf + start_sample,effect->out_device,ECHO_BLOCK_SIZE);
+		echo_process(echo,effect->in_buf,effect->out_buf + start_sample,ECHO_BLOCK_SIZE);
 	else
 	{
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
 

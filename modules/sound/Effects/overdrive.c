@@ -46,9 +46,9 @@ OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect->privat
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 	{
 		if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) overdrive_process(overdrive,(float )effect->in_buf[i]) + effect->out_device;
+			effect->out_buf[i + start_sample] = (q15_t ) overdrive_process(overdrive,(float )effect->in_buf[i]);
 		else
-			effect->out_buf[i + start_sample]  = effect->in_buf[i]+effect->out_device;
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
 #endif // #ifdef SOUND_ENABLED

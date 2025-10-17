@@ -155,39 +155,72 @@ A_midi_decoder_t	MIDI =
 };
 uint32_t	midi_initialized;
 
+uint16_t	vca_ampl_left = 0;
+
+VCA_Effect_TypeDef	VCA_Effect_Left =
+{
+	.amplitude = &vca_ampl_left,
+};
+
+#ifdef DUAL_CHANNEL
+uint16_t	vca_ampl_right = 0;
+VCA_Effect_TypeDef	VCA_Effect_Right =
+{
+		.amplitude = &vca_ampl_right,
+};
+#endif
+
+__attribute__ ((aligned (32))) int16_t	vca_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+Effect_TypeDef	VCA_Left =
+{
+	.effect = Effect_VCA,
+	.in_buf = vca_buf_left,
+	.private_data = (uint32_t *)&VCA_Effect_Left,
+	.status = SOUND_EFFECT_AUTO_ENABLE,
+};
+
+#ifdef DUAL_CHANNEL
+__attribute__ ((aligned (32))) int16_t	vca_buf_right[HALF_NUMBER_OF_AUDIO_SAMPLES];
+Effect_TypeDef	VCA_Right =
+{
+	.effect = Effect_VCA,
+	.in_buf = vca_buf_right,
+	.private_data = (uint32_t *)&VCA_Effect_Right,
+	.status = SOUND_EFFECT_AUTO_ENABLE,
+};
+#endif
+
 void sample_process_1_init(uint32_t process_id)
 {
 	dac_left_driver_handle = dac_register(&DAC_Drv_Left);
-#ifdef DUAL_CHANNEL
-	dac_right_driver_handle = dac_register(&DAC_Drv_Right);
-#endif // #ifdef DUAL_CHANNEL
 	synth_left_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
 #ifdef DUAL_CHANNEL
+	dac_right_driver_handle = dac_register(&DAC_Drv_Right);
 	synth_right_initialized = Synth_Register(RIGHT_CHANNEL ,&Audio_Synth_right);
 #endif // #ifdef DUAL_CHANNEL
 	usb_driver_handle = usb_device_driver_register(&USB_Drv);
 	midi_initialized = MidiInit(&MIDI);
 }
 
+#define STEP	200
+#define HLIMIT	(65500 - STEP)
+#define LLIMIT	(STEP * 2)
 void sample_process_1_audiomidi(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t	cntr = 0;
+uint8_t	up = 1;
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
 	Synth_Start(&Audio_Synth_left);
+	dac_init(dac_left_driver_handle);
+	dac_start(dac_left_driver_handle);
+	Sound_Insert_Effect(&Audio_Synth_left,&VCA_Left);
 #ifdef DUAL_CHANNEL
 	Synth_Start(&Audio_Synth_right);
-#endif // #ifdef DUAL_CHANNEL
-
-	dac_init(dac_left_driver_handle);
-#ifdef DUAL_CHANNEL
 	dac_init(dac_right_driver_handle);
-#endif // #ifdef DUAL_CHANNEL
-
-	dac_start(dac_left_driver_handle);
-#ifdef DUAL_CHANNEL
 	dac_start(dac_right_driver_handle);
+	Sound_Insert_Effect(&Audio_Synth_right,&VCA_Right);
 #endif // #ifdef DUAL_CHANNEL
 
 	while(1)
@@ -201,6 +234,24 @@ uint8_t	cntr = 0;
 			{
 				cntr = 0;
 				process_led();
+			}
+			if ( up )
+			{
+				vca_ampl_left += STEP;
+#ifdef DUAL_CHANNEL
+				vca_ampl_right += STEP;
+#endif
+				if ( vca_ampl_left > HLIMIT )
+					up = 0;
+			}
+			else
+			{
+				vca_ampl_left -= STEP;
+#ifdef DUAL_CHANNEL
+				vca_ampl_right -= STEP;
+#endif
+				if ( vca_ampl_left < LLIMIT )
+					up = 1;
 			}
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)

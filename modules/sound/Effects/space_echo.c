@@ -24,7 +24,6 @@
 #include "../../../kernel/A_exported_functions.h"
 #include "../sound.h"
 #ifdef SOUND_ENABLED
-#ifdef ENABLE_TESTING
 
 #include "space_echo.h"
 
@@ -41,41 +40,19 @@ static float read_delay_line(float *buffer, uint32_t size, uint32_t wptr, float 
     return buffer[rptr_i] + frac * (buffer[rptr_next] - buffer[rptr_i]);
 }
 
-void space_echo_init(SPACE_ECHO_Effect_TypeDef *echo, float fs) {
-    for (int i = 0; i < ECHO_BUFFER_SIZE; i++) echo->buffer[i] = 0.0f;
-    echo->write_ptr = 0;
-    echo->sample_rate = fs;
-    echo->lfo_phase = 0.0f;
-    space_echo_set_params(echo, 300.0f, 0.5f, 1.2f, 3.0f, 1200.0f);
-}
-
-void space_echo_set_params(SPACE_ECHO_Effect_TypeDef *echo, float delay_ms, float fb, float lfo_rate, float lfo_depth, float lpf_cutoff) {
-    if (delay_ms < 20.0f) delay_ms = 20.0f;
-    if (delay_ms > ECHO_MAX_DELAY_MS) delay_ms = ECHO_MAX_DELAY_MS;
-    echo->delay_time_ms = delay_ms;
-
-    echo->feedback = (fb < 0.0f) ? 0.0f : (fb > 0.85f ? 0.85f : fb);
-    echo->lfo_rate = lfo_rate;
-    echo->lfo_depth_ms = lfo_depth;
-    echo->cutoff = lpf_cutoff;
-
-    // Precompute Moog g for feedback LPF
-    float g = tanf(M_PI * lpf_cutoff / echo->sample_rate);
-    if (g > 10.0f) g = 10.0f;
-    echo->g = g;
-    echo->k = 4.0f * 0.7f; // fixed resonance for warmth
-}
-
-float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input) {
+ITCM_AREA_CODE static float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input)
+{
     const float fs = echo->sample_rate;
 
     // --- LFO for delay modulation (tape wow) ---
-    echo->lfo_phase += 2.0f * M_PI * echo->lfo_rate / fs;
-    if (echo->lfo_phase >= 2.0f * M_PI) echo->lfo_phase -= 2.0f * M_PI;
+    echo->lfo_phase += 2.0f * M_PI * echo->f_lfo_rate / fs;
+    if (echo->lfo_phase >= 2.0f * M_PI)
+    	echo->lfo_phase -= 2.0f * M_PI;
 
     float lfo_val = sinf(echo->lfo_phase); // [-1, 1]
-    float mod_delay_ms = echo->delay_time_ms + lfo_val * echo->lfo_depth_ms;
-    if (mod_delay_ms < 20.0f) mod_delay_ms = 20.0f;
+    float mod_delay_ms = echo->f_delay_time_ms + lfo_val * echo->f_lfo_depth_ms;
+    if (mod_delay_ms < 20.0f)
+    	mod_delay_ms = 20.0f;
 
     float delay_samples = mod_delay_ms * fs / 1000.0f;
 
@@ -93,7 +70,7 @@ float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input) {
     float filtered_feedback = echo->y4;
 
     // --- Write input + feedback into delay line ---
-    float write_val = input + filtered_feedback * echo->feedback;
+    float write_val = input + filtered_feedback * echo->f_feedback;
     echo->buffer[echo->write_ptr] = write_val;
 
     // --- Advance pointer ---
@@ -102,6 +79,74 @@ float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input) {
     // --- Output = dry + wet (adjust mix as needed) ---
     return input + delay_out * 0.7f; // 70% wet
 }
-#endif // #ifdef ENABLE_TESTING
+
+
+ITCM_AREA_CODE static void Effect_Space_Echo_Set_params(SPACE_ECHO_Effect_TypeDef *echo)
+{
+	if ( *echo->delay_time_ms == 0 )
+		*echo->delay_time_ms = (uint16_t )ECHO_DEFAULT_DELAY_TIME;
+	if (*echo->delay_time_ms < 20)
+		*echo->delay_time_ms = 20;
+	echo->f_delay_time_ms = *echo->delay_time_ms < 20 ? ECHO_DEFAULT_DELAY_TIME : (float )*echo->delay_time_ms;
+
+	if ( *echo->feedback == 0 )
+		*echo->feedback = (uint16_t )ECHO_DEFAULT_FEEDBACK * 100;
+	echo->f_feedback = ((float )*echo->feedback*100.0F) > ECHO_MAX_FEEDBACK ? ECHO_MAX_FEEDBACK/100.0F : (float )*echo->feedback;
+
+	if ( *echo->lfo_rate == 0 )
+		*echo->lfo_rate = (uint16_t )ECHO_DEFAULT_LFO_RATE * 10;
+	echo->f_lfo_rate = (float )*echo->lfo_rate / 10.0F;
+
+	if ( *echo->lfo_depth_ms == 0 )
+		*echo->lfo_depth_ms = (uint16_t )ECHO_DEFAULT_LFO_DEPTH;
+	echo->f_lfo_depth_ms = (float )*echo->lfo_depth_ms;
+
+	if ( *echo->cutoff == 0 )
+		*echo->cutoff = (uint16_t )ECHO_DEFAULT_CUTOFF;
+	echo->f_cutoff = (float )*echo->cutoff;
+
+    // Precompute Moog g for feedback LPF
+    float g = tanf(M_PI * echo->f_cutoff / echo->sample_rate);
+    if (g > 10.0f)
+    	g = 10.0f;
+    echo->g = g;
+    echo->k = 4.0f * 0.7f; // fixed resonance for warmth
+}
+
+ITCM_AREA_CODE void Effect_Space_Echo_Init(uint32_t *effect_s)
+{
+Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
+SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect->private_data;
+	if (( echo->delay_time_ms == NULL ) || ( echo->feedback == NULL ) || ( echo->lfo_rate == NULL ) || ( echo->lfo_depth_ms == NULL ) || ( echo->cutoff == NULL ))
+		return;
+	if ( echo->sample_rate == 0 )
+		echo->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+    for (int i = 0; i < ECHO_BUFFER_SIZE; i++)
+    	echo->buffer[i] = 0.0f;
+    echo->write_ptr = 0;
+    echo->lfo_phase = 0.0f;
+
+    Effect_Space_Echo_Set_params(echo);
+    echo->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
+}
+
+ITCM_AREA_CODE void Effect_Space_Echo(uint32_t *effect_s, uint32_t start_sample)
+{
+uint32_t	i;
+Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
+SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect->private_data;
+
+	if ((( echo->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( echo == NULL ))
+		return;
+    Effect_Space_Echo_Set_params(echo);
+	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	{
+		if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+			effect->out_buf[i + start_sample] = (q15_t ) space_echo_process(echo,(float )effect->in_buf[i]);
+		else
+			effect->out_buf[i + start_sample]  = effect->in_buf[i];
+	}
+}
 
 #endif // #ifdef SOUND_ENABLED

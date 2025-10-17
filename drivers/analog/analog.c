@@ -136,8 +136,6 @@ ITCM_AREA_CODE uint32_t i2s_init(uint8_t handle)
 	return 1;
 }
 
-#endif
-
 ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
 {
 	return int_nau88c22_codec_register(private_data);
@@ -177,4 +175,5 @@ ITCM_AREA_CODE uint32_t codec_internal_ops(uint8_t handle,uint8_t command,uint32
 		return ANALOG_DriverStruct[handle].codec_internal_ops(handle,command,param0,param1,param2,param3);
 	return 1;
 }
+#endif
 

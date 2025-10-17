@@ -33,23 +33,38 @@
 #define M_PI 3.14159265358979323846f
 #endif
 
-#define ECHO_MAX_DELAY_MS 800   // Max delay time
+#define ECHO_MAX_DELAY_MS 	800   // Max delay time
+#define ECHO_MAX_FEEDBACK 	85.0F    //
 #define ECHO_BUFFER_SIZE (ECHO_MAX_DELAY_MS * 48) // 48 kHz → ~38,400 samples
+
+#define	ECHO_DEFAULT_DELAY_TIME	300.0F
+#define	ECHO_DEFAULT_FEEDBACK	0.5F
+#define	ECHO_DEFAULT_LFO_RATE	1.2F
+#define	ECHO_DEFAULT_LFO_DEPTH	3.0F
+#define	ECHO_DEFAULT_CUTOFF		1200.0F
 
 typedef struct
 {
 	uint8_t		status;
 	uint8_t		flags;
+    uint16_t 	*delay_time_ms;        // 50–800 ms
+    uint16_t 	*feedback;             // 0.0–0.8 multiplied by 100 , so 0 to 80
+    uint16_t 	*lfo_rate;             // 0.5–3 Hz multiplied by 10, so 5 to 30
+    uint16_t 	*lfo_depth_ms;         // 0–10 ms
+    uint16_t 	*cutoff;               // LPF on feedback (200–5000 Hz)
+    float 		sample_rate;
+    /* Internals */
+
 	// Delay buffer (mono for now; duplicate for stereo)
     float buffer[ECHO_BUFFER_SIZE];
     uint32_t write_ptr;
 
     // Parameters
-    float delay_time_ms;        // 50–800 ms
-    float feedback;             // 0.0–0.8
-    float lfo_rate;             // 0.5–3 Hz
-    float lfo_depth_ms;         // 0–10 ms
-    float cutoff;               // LPF on feedback (200–5000 Hz)
+    float f_delay_time_ms;        // 50–800 ms
+    float f_feedback;             // 0.0–0.8
+    float f_lfo_rate;             // 0.5–3 Hz
+    float f_lfo_depth_ms;         // 0–10 ms
+    float f_cutoff;               // LPF on feedback (200–5000 Hz)
 
     // LFO state
     float lfo_phase;
@@ -58,12 +73,10 @@ typedef struct
     float g, k;
     float y1, y2, y3, y4;
 
-    float sample_rate;
 } SPACE_ECHO_Effect_TypeDef;
 
-void space_echo_init(SPACE_ECHO_Effect_TypeDef *echo, float sample_rate);
-void space_echo_set_params(SPACE_ECHO_Effect_TypeDef *echo, float delay_ms, float feedback, float lfo_rate, float lfo_depth, float lpf_cutoff);
-float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input);
+extern void Effect_Space_Echo_Init(uint32_t *effect_s);
+extern void Effect_Space_Echo(uint32_t *effect_s, uint32_t start_sample);
 
 #endif
 
