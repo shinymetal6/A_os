@@ -49,7 +49,7 @@ void update_g_and_k(MOOG_F_Effect_TypeDef* moog_f)
 	moog_f->k = 4.0f * moog_f->f_resonance;
 }
 
-float moog_f_effect(MOOG_F_Effect_TypeDef* moog_f, float input)
+ITCM_AREA_CODE  static q15_t moog_f_effect(MOOG_F_Effect_TypeDef* moog_f, float input)
 {
 	update_g_and_k(moog_f);
     // Solve feedback: u = (x - k*y4) / (1 + g*(1 + g*(1 + g*(1 + g))))
@@ -60,7 +60,7 @@ float moog_f_effect(MOOG_F_Effect_TypeDef* moog_f, float input)
     stage = tanhf(stage + moog_f->g * moog_f->y2);   moog_f->y2 = stage;
     stage = tanhf(stage + moog_f->g * moog_f->y3);   moog_f->y3 = stage;
     stage = tanhf(stage + moog_f->g * moog_f->y4);   moog_f->y4 = stage;
-    return moog_f->y4;
+    return __FLOAT_2_Q15(moog_f->y4);
 }
 
 ITCM_AREA_CODE void Effect_MOOG_F_Init(uint32_t *effect_s)
@@ -96,68 +96,10 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( moog_f->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) moog_f_effect(moog_f,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = moog_f_effect(moog_f,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
-/*
 
-
-void moog_set_params(MOOG_F_Effect_TypeDef *f, float cutoff, float resonance, float fs)
-{
-    // Limit cutoff to Nyquist
-    if (cutoff > fs * 0.49f) cutoff = fs * 0.49f;
-    if (cutoff < 20.0f) cutoff = 20.0f;
-
-    // g = tan(π * fc / fs)
-    f->g = tanf(M_PI * cutoff / fs);
-    if (f->g > 10.0f) f->g = 10.0f; // stability
-
-    // Resonance: 0.0 (none) to ~3.9 (self-oscillation)
-    resonance = (resonance < 0.0f) ? 0.0f : (resonance > 4.0f ? 4.0f : resonance);
-    f->k = 4.0f * resonance;
-}
-
- void Audio_Init(void) {
-    moog_init(&filter_l);
-    moog_init(&filter_r);
-    // Set initial params: 1 kHz cutoff, resonance = 0.8
-    moog_set_params(&filter_l, 1000.0f, 0.8f, 48000.0f);
-    moog_set_params(&filter_r, 1000.0f, 0.8f, 48000.0f);
-}
-
-// Called on DMA half-complete & complete
-void Process_Audio_Buffer(void) {
-    for (int i = 0; i < AUDIO_BUFFER_SIZE; i += 2) {
-        // Convert Q15 to float [-1.0, 1.0]
-        float in_l = (float)audio_rx_buffer[i] / 32768.0f;
-        float in_r = (float)audio_rx_buffer[i + 1] / 32768.0f;
-
-        // Process
-        float out_l = moog_process(&filter_l, in_l);
-        float out_r = moog_process(&filter_r, in_r);
-
-        // Clamp to [-1, 1] to prevent overflow
-        if (out_l > 1.0f) out_l = 1.0f;
-        if (out_l < -1.0f) out_l = -1.0f;
-        if (out_r > 1.0f) out_r = 1.0f;
-        if (out_r < -1.0f) out_r = -1.0f;
-
-        // Convert back to Q15
-        audio_tx_buffer[i]     = (int16_t)(out_l * 32767.0f);
-        audio_tx_buffer[i + 1] = (int16_t)(out_r * 32767.0f);
-    }
-}
-
-Using LFO
-        // Get LFO value: [-1, 1]
-        float lfo_val = lfo_process(&lfo);
-
-        // Map LFO to cutoff range
-        float mod_amount = lfo_val * lfo.depth; // [-depth, +depth]
-        float cutoff_range = cutoff_max - cutoff_min;
-        float current_cutoff = base_cutoff + mod_amount * (cutoff_range * 0.5f);
-
- */
 #endif // #ifdef SOUND_ENABLED

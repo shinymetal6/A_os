@@ -29,4 +29,7 @@
 #define	HUNDRED_SCALE_F_FACTOR		100
 #define	HALF_HUNDRED_SCALE_F_FACTOR	(HUNDRED_SCALE_F_FACTOR / 2)
 
+#define __Q15_2_FLOAT(input) ((float)input / 65535.0F)
+#define __FLOAT_2_Q15(output) ((q15_t)(output * 65535.0F))
+
 #endif /* MODULES_SOUND_EFFECTS_EFFECTS_H_ */

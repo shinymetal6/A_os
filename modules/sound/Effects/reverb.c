@@ -28,8 +28,8 @@
 #include "reverb.h"
 
 //#define	REVERB_INCLUDED	1
+#ifdef SOUND_ENABLED
 
-#ifdef	REVERB_INCLUDED
 #define	REVERB_DELAY_AREA_CODE	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 
 REVERB_DELAY_AREA_CODE	Reverb_DelayLine_TypeDef reverb_comb_filters[REVERB_NUM_COMB_FILTERS];
@@ -76,7 +76,7 @@ ITCM_AREA_CODE static q15_t reverb_process(REVERB_Effect_TypeDef *reverb, q15_t 
         for (int a = 0; a < REVERB_NUM_ALLPASS_FILTERS; a++) {
             wet_sample = reverb_delay_line_process(&reverb->allpass_filters[a], wet_sample);
         }
-        q15_t mixed_output = (q15_t )(float )(dry_sample * reverb->dry_mix) + (float )(wet_sample * reverb->wet_mix);
+        q15_t mixed_output = (q15_t )(float )(dry_sample * reverb->f_dry_mix) + (float )(wet_sample * reverb->f_wet_mix);
 
         // Store the output sample
         return mixed_output;
@@ -87,6 +87,7 @@ ITCM_AREA_CODE void Effect_Reverb_Init(uint32_t *effect_s)
 {
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
+
 
     // Initialize comb filters with different delay lengths
     uint32_t comb_delay_lengths[REVERB_NUM_COMB_FILTERS] = {1557, 1617, 1491, 1422}; // Prime numbers for diffusion
@@ -103,7 +104,7 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
     }
 
     // Set feedback gain and mix levels
-    reverb->feedback_gain_q15 = (q15_t)(reverb->feedback_gain * 32768.0f); // Convert to Q15
+    reverb->feedback_gain_q15 = (q15_t)(reverb->f_feedback_gain * 32768.0f); // Convert to Q15
 }
 
 ITCM_AREA_CODE void Effect_Reverb(uint32_t *effect_s, uint32_t start_sample)
@@ -121,4 +122,6 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect->private_data;
 
 	}
 }
-#endif
+
+#endif // #ifdef SOUND_ENABLED
+

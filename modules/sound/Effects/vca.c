@@ -29,6 +29,14 @@
 #include "effects.h"
 #include "vca.h"
 
+ITCM_AREA_CODE void Effect_VCA_Init(uint32_t *effect_s)
+{
+Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
+VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect->private_data;
+	vca->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
+}
+
 ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s, uint32_t start_sample)
 {
 uint32_t	i;

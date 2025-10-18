@@ -59,7 +59,7 @@ ITCM_AREA_CODE static void phaser_update_lfo(PHASER_Effect_TypeDef *phaser)
 }
 
 // Process one sample
-ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float input)
+ITCM_AREA_CODE static q15_t phaser_effect(PHASER_Effect_TypeDef *phaser,float input)
 {
     // Update LFO phase
 
@@ -76,13 +76,12 @@ ITCM_AREA_CODE static float phaser_effect(PHASER_Effect_TypeDef *phaser,float in
     float feedback = phaser->depth_sum + phaser->depth_mul * lfo_signal; // Base + modulation
 
     // Apply cascade of all-pass filters
-    float wet = input;
+    float wet;
     for (int i = 0; i < phaser->allpass_number; i++) { // Cascade of 6 all-pass filters
-        wet = phaser_all_pass_filter(phaser,wet, feedback);
+        wet = phaser_all_pass_filter(phaser,input, feedback);
     }
     // Mix dry and wet signals
-    return phaser->f_mix * input + (1.0F - phaser->f_mix) * wet;  // Simple equal mix
-
+    return __FLOAT_2_Q15(phaser->f_mix * input + (1.0F - phaser->f_mix) * wet);  // Simple equal mix
 }
 
 ITCM_AREA_CODE void Effect_Phaser_Init(uint32_t *effect_s)
@@ -90,6 +89,8 @@ ITCM_AREA_CODE void Effect_Phaser_Init(uint32_t *effect_s)
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect->private_data;
 
+	if (( phaser->lfo_rate == NULL ) || ( phaser->depth == NULL ) || ( phaser->mix == NULL ))
+		return;
 	if ( phaser->sample_rate == 0 )
 		phaser->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 	phaser->lfo_phase = 0.0F;
@@ -112,7 +113,7 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) phaser_effect(phaser,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = phaser_effect(phaser,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}

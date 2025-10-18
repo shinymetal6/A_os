@@ -27,12 +27,28 @@
 #include "../sound.h"
 #ifdef SOUND_ENABLED
 
+#include "effects.h"
 #include "overdrive.h"
 
-ITCM_AREA_CODE static float overdrive_process(OVERDRIVE_Effect_TypeDef* overdrive, float input)
+ITCM_AREA_CODE static q15_t overdrive_effect(OVERDRIVE_Effect_TypeDef* overdrive, float input)
 {
-	input *= overdrive->drive; // e.g., drive = 5.0
-    return tanhf(input); // soft clip
+	if ( *overdrive->overdrive == 0 )
+		overdrive->f_overdrive = 1.0F;
+	else
+		overdrive->f_overdrive = (float )*overdrive->overdrive;
+
+	return __FLOAT_2_Q15((tanhf(input) * overdrive->f_overdrive));
+}
+
+ITCM_AREA_CODE void Effect_Overdrive_Init(uint32_t *effect_s)
+{
+Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
+OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect->private_data;
+
+	if ( overdrive->overdrive == NULL )
+		return;
+	overdrive->status |= SOUND_EFFECT_INITIALIZED;
+    effect->status |= SOUND_EFFECT_INITIALIZED;
 }
 
 ITCM_AREA_CODE void Effect_Overdrive(uint32_t *effect_s, uint32_t start_sample)
@@ -41,12 +57,13 @@ uint32_t	i;
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect->private_data;
 
-	if ((( overdrive->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( overdrive == NULL ))
+	if ( overdrive == NULL )
 		return;
-	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+
+	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) overdrive_process(overdrive,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = overdrive_effect(overdrive,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}

@@ -50,10 +50,10 @@ typedef struct {
 	uint8_t		status;
 	uint8_t		flags;
 	float		sample_rate;
-	float 		cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
-	float 		bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
 	FilterType	filterType;
     /* Internals */
+	float 		cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
+	float 		bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
     BiquadFilter biquads[IIR_NUM_BIQUADS];
 } IIR_Effect_TypeDef;
 #define IIR_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)

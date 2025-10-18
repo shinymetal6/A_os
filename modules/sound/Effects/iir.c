@@ -25,6 +25,7 @@
 #include "../sound.h"
 #ifdef SOUND_ENABLED
 
+#include "effects.h"
 #include "iir.h"
 
 ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoffFreq, float bw, float sample_rate)
@@ -95,7 +96,7 @@ ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterT
     }
 }
 
-ITCM_AREA_CODE static float iir_effect(IIR_Effect_TypeDef *iir, float input)
+ITCM_AREA_CODE static q15_t iir_effect(IIR_Effect_TypeDef *iir, float input)
 {
 float sample = input;
 
@@ -119,7 +120,7 @@ float sample = input;
 	}
 
 	// Write output sample
-	return sample;
+	return __FLOAT_2_Q15(sample);
 }
 
 ITCM_AREA_CODE void Effect_IIR_Init(uint32_t *effect_s)
@@ -165,7 +166,7 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect->private_data;
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) iir_effect(iir,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = (q15_t ) iir_effect(iir,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}

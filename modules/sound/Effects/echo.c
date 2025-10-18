@@ -27,6 +27,7 @@
 
 #include "effects.h"
 #include "echo.h"
+#ifdef	ECHO_INCLUDED
 
 // Process a block of audio samples through the echo effect
 ITCM_AREA_CODE static void echo_process(Echo_Effect_TypeDef *echo, q15_t *input, q15_t *output, uint32_t block_size)
@@ -82,5 +83,6 @@ Echo_Effect_TypeDef *echo = (Echo_Effect_TypeDef *)effect->private_data;
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
 }
+#endif // #ifdef	ECHO_INCLUDED
 
 #endif // #ifdef SOUND_ENABLED

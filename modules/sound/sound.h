@@ -75,6 +75,7 @@ typedef struct {
 #include	"Effects/iir.h"
 #include	"Effects/lfo.h"
 #include	"Effects/moog_filter.h"
+#include	"Effects/overdrive.h"
 #include	"Effects/passthrough.h"
 #include	"Effects/phaser.h"
 #include	"Effects/reverb.h"

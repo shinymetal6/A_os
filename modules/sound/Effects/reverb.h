@@ -43,6 +43,8 @@ typedef struct {
 
 typedef struct
 {
+    uint16_t *feedback_gain;
+    uint16_t *mix;
     /* Internals */
     float f_feedback_gain;
     float f_dry_mix;

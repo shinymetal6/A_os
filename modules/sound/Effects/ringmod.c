@@ -28,34 +28,38 @@
 
 #include "ringmod.h"
 
-ITCM_AREA_CODE static float ringmod_internal_effect(uint32_t *ring,float input )
+ITCM_AREA_CODE static q15_t ringmod_internal_effect(uint32_t *ring,float input )
 {
 RINGMOD_Effect_TypeDef *ringmod	= (RINGMOD_Effect_TypeDef *)ring;
 	// Update carrier phase
 	ringmod->carrierPhase += ringmod->phaseIncrement;
 	if (ringmod->carrierPhase >= 2.0f * PI)
 		ringmod->carrierPhase -= 2.0f * PI;
-	return input * sinf(ringmod->carrierPhase);      // Ring modulation
+	return __FLOAT_2_Q15(input * sinf(ringmod->carrierPhase));      // Ring modulation
 }
 
-ITCM_AREA_CODE static float ringmod_external_effect(uint32_t *ring,float input )
+ITCM_AREA_CODE static q15_t ringmod_external_effect(uint32_t *ring,float input )
 {
 RINGMOD_Effect_TypeDef *ringmod	= (RINGMOD_Effect_TypeDef *)ring;
 	// Update carrier phase
 	ringmod->carrierPhase += ringmod->phaseIncrement;
 	if (ringmod->carrierPhase >= 2.0f * PI)
 		ringmod->carrierPhase -= 2.0f * PI;
-	return input * sinf(ringmod->carrierPhase);      // Ring modulation
+	return __FLOAT_2_Q15(input * sinf(ringmod->carrierPhase));      // Ring modulation
 }
 
 ITCM_AREA_CODE void Effect_RingMod_Init(uint32_t *effect_s)
 {
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect->private_data;
-	ringmod->carrierFrequency = RINGMOD_DEFAULT_CARRIER_FREQ;
+	if ( ringmod->carrierFrequency == NULL )
+		return;
+	ringmod->f_carrierFrequency = (float )*ringmod->carrierFrequency;
+	if ( ringmod->f_carrierFrequency > RINGMOD_MAX_CARRIER_FREQ)
+		ringmod->f_carrierFrequency = RINGMOD_DEFAULT_CARRIER_FREQ;
 	if ( ringmod->sample_rate == 0 )
 		ringmod->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
-	ringmod->phaseIncrement = 2.0f * PI * ringmod->carrierFrequency / ringmod->sample_rate;
+	ringmod->phaseIncrement = 2.0f * PI * ringmod->f_carrierFrequency / ringmod->sample_rate;
 
 	if (( ringmod->status & RINGMODE_STATUS_INTERNAL) == RINGMODE_STATUS_INTERNAL)
 		ringmod->ringmod_effect = ringmod_internal_effect;
@@ -76,7 +80,7 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect->private_data
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( ringmod->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) ringmod->ringmod_effect((uint32_t *)ringmod,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = ringmod->ringmod_effect((uint32_t *)ringmod,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}

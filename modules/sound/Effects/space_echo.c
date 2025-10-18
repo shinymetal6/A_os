@@ -40,7 +40,7 @@ static float read_delay_line(float *buffer, uint32_t size, uint32_t wptr, float 
     return buffer[rptr_i] + frac * (buffer[rptr_next] - buffer[rptr_i]);
 }
 
-ITCM_AREA_CODE static float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input)
+ITCM_AREA_CODE static q15_t space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, float input)
 {
     const float fs = echo->sample_rate;
 
@@ -77,7 +77,7 @@ ITCM_AREA_CODE static float space_echo_process(SPACE_ECHO_Effect_TypeDef *echo, 
     echo->write_ptr = (echo->write_ptr + 1) % ECHO_BUFFER_SIZE;
 
     // --- Output = dry + wet (adjust mix as needed) ---
-    return input + delay_out * 0.7f; // 70% wet
+    return __FLOAT_2_Q15(input + delay_out * 0.7f); // 70% wet
 }
 
 
@@ -143,7 +143,7 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect->private_d
 	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
 	{
 		if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			effect->out_buf[i + start_sample] = (q15_t ) space_echo_process(echo,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = space_echo_process(echo,__Q15_2_FLOAT(effect->in_buf[i]));
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}

@@ -1,18 +1,18 @@
 chorus
 echo
 iir
-lfo (*)
+lfo
 moog_filter
-overdrive  (*)
+overdrive		T
 passthrough
-phaser
+phaser			T
 reverb
 ringmod
-robot_voice (*)
-space_echo (*)
+robot_voice
+space_echo
 tape_freak
-vca
-wah_filter (*)
+vca				T
+wah_filter
 
- (*) : to be tested 
- (**) : compiles but actually excluded
+Legend : 
+	T = tested

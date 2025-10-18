@@ -92,7 +92,17 @@ A_midi_decoder_t	MIDI =
 };
 uint32_t	midi_initialized;
 
+/*******************/
+/****	Effects ****/
+/*******************/
+#define VCA_EFFECT	1
+#define OVERDRIVE_EFFECT	1
+#define PHASER_EFFECT		1
+
+#ifdef VCA_EFFECT
 uint16_t	vca0_ampl_left = 0;
+uint8_t		up = 1;
+
 VCA_Effect_TypeDef	VCA0_Effect_Left =
 {
 	.amplitude = &vca0_ampl_left,
@@ -102,13 +112,15 @@ __attribute__ ((aligned (32))) int16_t	vca0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLE
 Effect_TypeDef	VCA0_Left =
 {
 	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
 	.in_buf = vca0_buf_left,
 	.private_data = (uint32_t *)&VCA0_Effect_Left,
 	.status = SOUND_EFFECT_AUTO_ENABLE,
 };
+#endif // #ifdef VCA_EFFECT
 
+#ifdef PHASER_EFFECT
 uint16_t	lfo_rate = 50,depth = 50,mix = 50;
-
 PHASER_Effect_TypeDef	PHASER_Effect_left =
 {
 		.lfo_rate = &lfo_rate,
@@ -118,7 +130,6 @@ PHASER_Effect_TypeDef	PHASER_Effect_left =
 };
 
 __attribute__ ((aligned (32))) int16_t	phaser_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
-
 Effect_TypeDef	PHASER_Left =
 {
 	.effect = Effect_Phaser,
@@ -127,6 +138,28 @@ Effect_TypeDef	PHASER_Left =
 	.private_data = (uint32_t *)&PHASER_Effect_left,
 	.status = SOUND_EFFECT_AUTO_ENABLE,
 };
+#endif // #ifdef PHASER_EFFECT
+
+#ifdef OVERDRIVE_EFFECT
+uint8_t		overdrive_cntr = 0;
+uint16_t		overdrive = 3;
+
+OVERDRIVE_Effect_TypeDef	OVERDRIVE_Effect_Left =
+{
+		.overdrive = &overdrive,
+		.flags = SOUND_EFFECT_ENABLED,
+};
+
+__attribute__ ((aligned (32))) int16_t	overdrive_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+Effect_TypeDef	OVERDRIVE_Left =
+{
+	.effect_init = Effect_Overdrive_Init,
+	.effect = Effect_Overdrive,
+	.in_buf = overdrive_buf_left,
+	.private_data = (uint32_t *)&OVERDRIVE_Effect_Left,
+	.status = SOUND_EFFECT_AUTO_ENABLE,
+};
+#endif // #ifdef OVERDRIVE_EFFECT
 
 void sample_process_1_init(uint32_t process_id)
 {
@@ -142,16 +175,22 @@ void sample_process_1_init(uint32_t process_id)
 void sample_process_1_audiodualeffect(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t	cntr = 0;
-uint8_t	up = 1;
+uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
 	Synth_Start(&Audio_Synth_left);
 	dac_init(dac_left_driver_handle);
 	dac_start(dac_left_driver_handle);
+#ifdef VCA_EFFECT
 	Sound_Insert_Effect(&Audio_Synth_left,&VCA0_Left);
+#endif // #ifdef VCA_EFFECT
+#ifdef PHASER_EFFECT
 	Sound_Insert_Effect(&Audio_Synth_left,&PHASER_Left);
+#endif // #ifdef PHASER_EFFECT
+#ifdef OVERDRIVE_EFFECT
+	Sound_Insert_Effect(&Audio_Synth_left,&OVERDRIVE_Left);
+#endif // #ifdef OVERDRIVE_EFFECT
 
 	while(1)
 	{
@@ -165,6 +204,7 @@ uint8_t	up = 1;
 				cntr = 0;
 				process_led();
 			}
+#ifdef VCA_EFFECT
 			if ( up )
 			{
 				vca0_ampl_left += STEP;
@@ -177,6 +217,20 @@ uint8_t	up = 1;
 				if ( vca0_ampl_left < LLIMIT )
 					up = 1;
 			}
+#endif // #ifdef VCA_EFFECT
+#ifdef OVERDRIVE_EFFECT
+			overdrive_cntr++;
+			if ( overdrive_cntr == 100)
+			{
+				OVERDRIVE_Effect_Left.flags |= SOUND_EFFECT_ENABLED;
+			}
+			if ( overdrive_cntr == 200)
+			{
+				OVERDRIVE_Effect_Left.flags &= ~SOUND_EFFECT_ENABLED;
+				overdrive_cntr = 0;
+			}
+#endif // #ifdef OVERDRIVE_EFFECT
+
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{

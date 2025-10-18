@@ -29,7 +29,8 @@
 #include "robot_voice.h"
 
 // Simple 2-pole bandpass filter (bilinear transform)
-static void bp_filter_update_coeffs(ROBOT_VOICE_Effect_TypeDef *rv, float *a1, float *a2, float *b0, float *b1) {
+ITCM_AREA_CODE static void bp_filter_update_coeffs(ROBOT_VOICE_Effect_TypeDef *rv, float *a1, float *a2, float *b0, float *b1)
+{
     float w0 = 2.0f * M_PI * rv->f_bp_freq / rv->sample_rate;
     float cos_w0 = cosf(w0);
     float sin_w0 = sinf(w0);
@@ -42,7 +43,8 @@ static void bp_filter_update_coeffs(ROBOT_VOICE_Effect_TypeDef *rv, float *a1, f
     *a2 = (1.0f - alpha) / a0;
 }
 
-float robot_process(ROBOT_VOICE_Effect_TypeDef *rv, float input) {
+ITCM_AREA_CODE static q15_t robot_process(ROBOT_VOICE_Effect_TypeDef *rv, float input)
+{
     const float fs = rv->sample_rate;
 
     // --- 1. Ring Modulation ---
@@ -74,7 +76,7 @@ float robot_process(ROBOT_VOICE_Effect_TypeDef *rv, float input) {
     rv->f_bp_y2 = rv->f_bp_y1;
     rv->f_bp_y1 = bp_out;
 
-    return bp_out;
+    return __FLOAT_2_Q15(bp_out);
 }
 
 ITCM_AREA_CODE static void Effect_Robot_Set_Params(ROBOT_VOICE_Effect_TypeDef *rv)
@@ -92,6 +94,7 @@ ITCM_AREA_CODE void Effect_Robot_Init(uint32_t *effect_s)
 {
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect->private_data;
+
 	if (( rv->ring_freq == NULL ) || ( rv->bit_depth == NULL ) || ( rv->bp_freq == NULL ) || ( rv->bp_q == NULL ))
 		return;
 	if ( rv->sample_rate == 0 )
@@ -119,7 +122,7 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect->private_d
 	{
 		if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{
-			effect->out_buf[i + start_sample] = (q15_t ) robot_process(rv,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = robot_process(rv,__Q15_2_FLOAT(effect->in_buf[i]));
 		}
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];

@@ -41,10 +41,11 @@ typedef struct
 {
 	uint8_t						status;
 	uint8_t						flags;
-	Chorus_DelayLine_TypeDef	*delay_line; // Delay line
-    q15_t 						lfo_phase;      // LFO phase in Q15 format
     uint16_t					*mix;			// 32768 is half effect and half input signal, 65535 is full effect
 	float						sample_rate;
+	/* Internals */
+	Chorus_DelayLine_TypeDef	*delay_line; // Delay line
+    q15_t 						lfo_phase;      // LFO phase in Q15 format
     float 						dry_mix;        // Dry signal mix level
     float 						wet_mix;        // Wet signal mix level
 } Chorus_Effect_TypeDef;

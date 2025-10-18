@@ -27,7 +27,11 @@ typedef struct
 {
 	uint8_t		status;
 	uint8_t		flags;
-	float		drive;
+	uint16_t	*overdrive;
+	float		f_overdrive;
 }OVERDRIVE_Effect_TypeDef;
+
+extern void Effect_Overdrive_Init(uint32_t *effect_s);
+extern void Effect_Overdrive(uint32_t *effect_s, uint32_t start_sample);
 
 #endif /* MODULES_SOUND_EFFECTS_OVERDRIVE_H_ */

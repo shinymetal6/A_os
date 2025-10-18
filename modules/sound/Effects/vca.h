@@ -31,6 +31,7 @@ typedef struct
 	uint8_t				status;
 }VCA_Effect_TypeDef;
 
+extern void Effect_VCA_Init(uint32_t *effect_s);
 extern void Effect_VCA(uint32_t *effect_s, uint32_t start_sample);
 
 #endif // #ifdef SOUND_ENABLED

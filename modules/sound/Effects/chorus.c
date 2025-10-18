@@ -97,6 +97,8 @@ ITCM_AREA_CODE void Effect_Chorus_Init(uint32_t *effect_s)
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 
+	if ( chorus->mix == NULL )
+		return;
 	chorus->delay_line = &chorus_delay_line;
 	if ( chorus->sample_rate == 0 )
 		chorus->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
@@ -124,6 +126,5 @@ Chorus_Effect_TypeDef *chorus = (Chorus_Effect_TypeDef *)effect->private_data;
 		for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
 	}
-
 }
 #endif // #ifdef SOUND_ENABLED

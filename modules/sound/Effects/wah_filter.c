@@ -74,10 +74,9 @@ ITCM_AREA_CODE static void wah_set_params(WAH_F_Effect_TypeDef *wah)
     	wah->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
 
     wah->y1 = wah->y2 = wah->y3 = wah->y4 = 0.0f;
-
 }
 
-ITCM_AREA_CODE static float wah_process(WAH_F_Effect_TypeDef *wah, float input)
+ITCM_AREA_CODE static q15_t wah_process(WAH_F_Effect_TypeDef *wah, float input)
 {
     const float fs = wah->sample_rate;
 
@@ -111,7 +110,7 @@ ITCM_AREA_CODE static float wah_process(WAH_F_Effect_TypeDef *wah, float input)
     stage = tanhf(stage + g * wah->y3);   wah->y3 = stage;
     stage = tanhf(stage + g * wah->y4);   wah->y4 = stage;
 
-    return wah->y4;
+    return __FLOAT_2_Q15(wah->y4);
 }
 
 ITCM_AREA_CODE void Effect_Wah_Init(uint32_t *effect_s)
@@ -119,17 +118,7 @@ ITCM_AREA_CODE void Effect_Wah_Init(uint32_t *effect_s)
 Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
 WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect->private_data;
 
-	if ( wah->min_cutoff == NULL )
-		return;
-	if ( wah->max_cutoff == NULL )
-		return;
-	if ( wah->resonance == NULL )
-		return;
-	if ( wah->sensitivity == NULL )
-		return;
-	if ( wah->attack == NULL )
-		return;
-	if ( wah->release == NULL )
+	if (( wah->min_cutoff == NULL ) || ( wah->max_cutoff == NULL ) || ( wah->resonance == NULL ) || ( wah->sensitivity == NULL ) || ( wah->attack == NULL ) || ( wah->release == NULL ))
 		return;
 	if ( wah->sample_rate == 0 )
 		wah->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
@@ -154,7 +143,7 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect->private_data;
 		if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{
 			wah_set_params(wah);
-			effect->out_buf[i + start_sample] = (q15_t ) wah_process(wah,(float )effect->in_buf[i]);
+			effect->out_buf[i + start_sample] = wah_process(wah,__Q15_2_FLOAT(effect->in_buf[i]));
 		}
 		else
 			effect->out_buf[i + start_sample]  = effect->in_buf[i];
