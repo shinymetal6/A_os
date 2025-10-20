@@ -14,24 +14,33 @@
  * Project : A_os
 */
 /*
- * overdrive.h
+ * vca.h
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Apr 24, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_OVERDRIVE_H_
-#define MODULES_SOUND_EFFECTS_OVERDRIVE_H_
+#ifndef MODULES_SOUND_EFFECTS_VCA_H_
+#define MODULES_SOUND_EFFECTS_VCA_H_
+#ifdef SOUND_ENGINE_ENABLED
 
 typedef struct
 {
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	*overdrive;
-	float		f_overdrive;
-}OVERDRIVE_Effect_TypeDef;
+	/* effect header */
+	uint32_t 			*pre_effect;
+	uint32_t 			*next_effect;
+	q15_t				*effect_in_buf;
+	q15_t				*effect_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint8_t				status;
+	uint8_t				flags;
+	/* effect data */
+	uint16_t			*amplitude;
+}VCA_Effect_TypeDef;
 
-extern void Effect_Overdrive_Init(uint32_t *effect_s);
-extern void Effect_Overdrive(uint32_t *effect_s, uint32_t start_sample);
+extern void Effect_VCA_Init(uint32_t *effect_s);
+extern void Effect_VCA(uint32_t *effect_s);
 
-#endif /* MODULES_SOUND_EFFECTS_OVERDRIVE_H_ */
+#endif // #ifdef SOUND_ENGINE_ENABLED
+#endif /* MODULES_SOUND_EFFECTS_VCA_H_ */

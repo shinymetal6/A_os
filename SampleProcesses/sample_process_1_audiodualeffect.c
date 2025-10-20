@@ -95,8 +95,8 @@ uint32_t	midi_initialized;
 /*******************/
 /****	Effects ****/
 /*******************/
-#define VCA_EFFECT	1
-#define OVERDRIVE_EFFECT	1
+//#define VCA_EFFECT	1
+//#define OVERDRIVE_EFFECT	1
 #define PHASER_EFFECT		1
 
 #ifdef VCA_EFFECT

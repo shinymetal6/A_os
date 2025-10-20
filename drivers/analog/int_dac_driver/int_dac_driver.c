@@ -192,11 +192,11 @@ uint32_t	i , start_sample;
 	}
 	else
 	{
-#ifdef SOUND_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 		if (( dac_drv->flags & DAC_FLAGS_USE_SYNTHMODULE) == DAC_FLAGS_USE_SYNTHMODULE)
 		{
 			Do_synth( 0,start_sample);
-			Do_synth( 1,start_sample);
+			//Do_synth( 1,start_sample);
 		}
 #ifdef	USB_AUDIO
 		if (( dac_drv->flags & DAC_FLAGS_USE_USBMODULE) == DAC_FLAGS_USE_USBMODULE)
@@ -227,7 +227,7 @@ uint32_t	i , start_sample;
 			__enable_irq();
 		}
 #endif // #ifdef	USB_AUDIO
-#endif // #ifdef SOUND_ENABLED
+#endif // #ifdef SOUND_ENGINE_ENABLED
 
 	}
 }

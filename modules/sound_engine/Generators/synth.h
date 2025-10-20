@@ -23,7 +23,7 @@
 #ifndef SRC_SYNTH_H_
 #define SRC_SYNTH_H_
 
-#ifdef SOUND_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 
 #define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
 
@@ -59,21 +59,29 @@ typedef struct {
 } Synth_Voice_TypeDef;
 
 // MIDI synthesizer state
-typedef struct {
+typedef struct
+{
+	/* effect header */
+	uint32_t 			*pre_effect;
+	uint32_t 			*next_effect;
+	q15_t				*effect_in_buf;	// unused
+	q15_t				*synth_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
+	uint8_t				flags;
+	/* Internals */
+	uint8_t				source_type;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
-	int16_t				*out_buf;
-	uint32_t 			*effect_s;
 	uint8_t				i2s_handle;
 	int16_t 			*codec_buf;
 	float				sample_rate;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
 	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample);
-
-} MidiSynth_TypeDef;
+} Synth_TypeDef;
 /* status */
 #define		SYNTH_ENABLED		0x01
 #define		SYNTH_DISABLED		0x00
@@ -82,9 +90,9 @@ typedef struct {
 #define		SYNTH_DAC_OUT		1
 #define		SYNTH_I2S_OUT		0
 
-extern uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth);
-extern uint8_t Synth_Start(MidiSynth_TypeDef *synth);
-extern uint8_t Synth_Stop(MidiSynth_TypeDef *synth);
+extern uint8_t Synth_Register(uint8_t channel,Synth_TypeDef *synth);
+extern uint8_t Synth_Start(Synth_TypeDef *synth);
+extern uint8_t Synth_Stop(Synth_TypeDef *synth);
 
 extern void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity);
 extern void NoteOff(uint8_t channel,uint8_t note);
@@ -92,6 +100,6 @@ extern void AllNoteOFF(void);
 
 extern void Do_synth(uint8_t synth_number,uint32_t start_sample);
 
-#endif // #ifdef SOUND_ENABLED
+#endif // #ifdef SOUND_ENGINE_ENABLED
 
 #endif /* SRC_SYNTH_H_ */

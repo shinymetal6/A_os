@@ -60,7 +60,7 @@ typedef struct
 #include "int_dac_driver/int_dac_driver.h"
 #endif
 
-#ifdef SOUND_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 	#ifdef A_OS_I2S_ENABLED
 		#include "int_i2s_driver/int_i2s_driver.h"
 		#ifdef A_OS_I2C_ENABLED

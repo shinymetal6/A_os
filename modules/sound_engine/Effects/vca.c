@@ -14,7 +14,7 @@
  * Project : A_os
 */
 /*
- * passthrough.c
+ * vca.c
  *
  *  Created on: Apr 24, 2025
  *      Author: fil
@@ -23,22 +23,31 @@
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-#include "../sound.h"
-#ifdef SOUND_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 
-#include "passthrough.h"
+#include "../sound_engine.h"
+#include "effects.h"
+#include "vca.h"
 
+ITCM_AREA_CODE void Effect_VCA_Init(uint32_t *effect_s)
+{
+VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
+	vca->status |= SOUND_EFFECT_INITIALIZED;
+}
 
-ITCM_AREA_CODE void Effect_Passthrough(uint32_t *effect_s, uint32_t start_sample)
+ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s)
 {
 uint32_t	i;
-Effect_TypeDef *effect = (Effect_TypeDef *)effect_s;
-PASSTHROUGH_Effect_TypeDef *private = (PASSTHROUGH_Effect_TypeDef *)effect->private_data;
+VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
 
+float gain = (float )*vca->amplitude / FULL_SCALE_F_FACTOR;
 	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
-		effect->out_buf[i + start_sample]  = effect->in_buf[i];
-	private->call_counter++;
+	{
+		if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+			vca->effect_out_buf[i]  = (q15_t )((float )vca->effect_in_buf[i]*gain);
+		else
+			vca->effect_out_buf[i]  = vca->effect_in_buf[i];
+	}
 }
+
 #endif // #ifdef SOUND_ENABLED
-
-

@@ -22,13 +22,13 @@
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
-#include "../sound.h"
+#include "../sound_engine.h"
 #include "synth.h"
-#ifdef SOUND_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 
 // Precomputed sine wavetable (Q15 format)
 AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
-AUDIO_FAST_RAM	MidiSynth_TypeDef *Synth[2] = {NULL,NULL};
+AUDIO_FAST_RAM	Synth_TypeDef *Synth[2] = {NULL,NULL};
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[SYNTH_MIDI_NOTES] =
 {
 		8.176,
@@ -162,7 +162,7 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 };
 
 // Initialize sine wavetable
-ITCM_AREA_CODE static void synth_sine_wavetable_init(MidiSynth_TypeDef *synth)
+ITCM_AREA_CODE static void synth_sine_wavetable_init(Synth_TypeDef *synth)
 {
     for (int i = 0; i < synth->wavetable_size; i++) {
         float phase = (float)i / (float)synth->wavetable_size; // Normalize phase to [0, 1)
@@ -185,7 +185,7 @@ ITCM_AREA_CODE static uint8_t synth_calc_shift(uint8_t voices)
 	}
 }
 // Note-on event handler
-ITCM_AREA_CODE static void synth_note_on(MidiSynth_TypeDef *synth, uint8_t note, uint8_t velocity, Synth_WaveformType waveform, float duty_cycle)
+ITCM_AREA_CODE static void synth_note_on(Synth_TypeDef *synth, uint8_t note, uint8_t velocity, Synth_WaveformType waveform, float duty_cycle)
 {
     // Find an inactive voice
     for (int i = 0; i < SYNTH_MAX_VOICES; i++)
@@ -206,7 +206,7 @@ ITCM_AREA_CODE static void synth_note_on(MidiSynth_TypeDef *synth, uint8_t note,
 }
 
 // Note-off event handler
-ITCM_AREA_CODE static void synth_note_off(MidiSynth_TypeDef *synth, uint8_t note)
+ITCM_AREA_CODE static void synth_note_off(Synth_TypeDef *synth, uint8_t note)
 {
     for (int i = 0; i < SYNTH_MAX_VOICES; i++) {
         if ((synth->voices[i].active) && (synth->voices[i].note == note)) {
@@ -219,7 +219,7 @@ ITCM_AREA_CODE static void synth_note_off(MidiSynth_TypeDef *synth, uint8_t note
 }
 
 // all-note-off event handler
-ITCM_AREA_CODE static void synth_all_note_off(MidiSynth_TypeDef *synth)
+ITCM_AREA_CODE static void synth_all_note_off(Synth_TypeDef *synth)
 {
     for (int i = 0; i < SYNTH_MAX_VOICES; i++)
     {
@@ -231,14 +231,11 @@ ITCM_AREA_CODE static void synth_all_note_off(MidiSynth_TypeDef *synth)
 // Process a block of audio samples
 ITCM_AREA_CODE static void synth_process_block(uint32_t *the_synt,uint32_t start_sample)
 {
-MidiSynth_TypeDef *synth = (MidiSynth_TypeDef *)the_synt;
+Synth_TypeDef *synth = (Synth_TypeDef *)the_synt;
 
 q15_t *output;
-	/* Is output buffer direct to dac? */
-	if ( synth->effect_s == NULL)	// yes, so ping pong
-		output = synth->out_buf + start_sample;
-	else
-		output = synth->out_buf; // no, so is half buffer
+
+	output = synth->synth_out_buf; // no, so is half buffer
 
     // Clear the output buffer
     memset(output, 0, SYNTH_BLOCK_SIZE * sizeof(q15_t));
@@ -353,13 +350,13 @@ q15_t *output;
     }
 }
 
-ITCM_AREA_CODE uint8_t Synth_Start(MidiSynth_TypeDef *synth)
+ITCM_AREA_CODE uint8_t Synth_Start(Synth_TypeDef *synth)
 {
     synth->status = SYNTH_ENABLED;
     return 0;
 }
 
-ITCM_AREA_CODE uint8_t Synth_Stop(MidiSynth_TypeDef *synth)
+ITCM_AREA_CODE uint8_t Synth_Stop(Synth_TypeDef *synth)
 {
     synth->status &= ~SYNTH_ENABLED;
     return 0;
@@ -376,7 +373,7 @@ ITCM_AREA_CODE void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity)
 {
 	if ( channel >= SYNTH_CHANNELS )
 		return;
-	MidiSynth_TypeDef *synth = Synth[channel];
+	Synth_TypeDef *synth = Synth[channel];
 	if ( synth == NULL )
 		return;
 	synth_note_on(synth, note, velocity,SYNTH_WAVEFORM_SINE,0.50F);
@@ -386,7 +383,7 @@ ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 {
 	if ( channel >= SYNTH_CHANNELS )
 		return;
-	MidiSynth_TypeDef *synth = Synth[channel];
+	Synth_TypeDef *synth = Synth[channel];
 	if ( synth == NULL )
 		return;
 	synth_note_off(synth, note);
@@ -394,7 +391,7 @@ ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 
 ITCM_AREA_CODE void AllNoteOFF(void)
 {
-MidiSynth_TypeDef *synth;
+Synth_TypeDef *synth;
 	synth = Synth[0];
 	if ( synth == NULL )
 		return;
@@ -418,32 +415,32 @@ ITCM_AREA_CODE static inline void audio_to_dac_out(uint8_t synth_number,int16_t 
 {
 uint32_t i;
 	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
-		audio_out[i + start_sample] = (int16_t )((uint32_t )(audio_in[i+start_sample] + 32768) >> 4);
+		audio_out[i + start_sample] = (int16_t )((uint32_t )(audio_in[i] + 32768) >> 4);
 }
 
 ITCM_AREA_CODE void Do_synth(uint8_t synth_number,uint32_t start_sample)
 {
-Effect_TypeDef *last_effect;
+	PTR_Effect_TypeDef *last_effect;
 
-	MidiSynth_TypeDef *synth = Synth[synth_number];
+	Synth_TypeDef *synth = Synth[synth_number];
 	if (( synth == NULL ) || ( synth_number == number_of_synths ) || ( synth->status != SYNTH_ENABLED ))
 		return;
 
 	synth_process_block((uint32_t *)synth,start_sample);
-	if ( synth->effect_s != NULL )
+	if ( synth->next_effect != NULL )
 	{
-		last_effect = Sound_Apply_Effect((Effect_TypeDef *)synth->effect_s,start_sample);
-		synth->OutFunc(synth_number,synth->codec_buf,last_effect->out_buf,start_sample);
+		last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
+		synth->OutFunc(synth_number,synth->codec_buf,last_effect->effect_out_buf,start_sample);
 	}
 	else
-		synth->OutFunc(synth_number,synth->codec_buf,synth->out_buf,start_sample);
+		synth->OutFunc(synth_number,synth->codec_buf,synth->synth_out_buf,start_sample);
 }
 
-ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth)
+ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,Synth_TypeDef *synth)
 {
 	if ( synth->codec_buf == NULL )
 		return 1;
-	if ( synth->out_buf == NULL )
+	if ( synth->synth_out_buf == NULL )
 			return 1;
 	if ( channel >= SYNTH_CHANNELS )
 		return 1;
@@ -458,6 +455,7 @@ ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,MidiSynth_TypeDef *synth)
 		synth->OutFunc = audio_to_i2s_out;
 	else
 		synth->OutFunc = audio_to_dac_out;
+	synth->source_type = SOUND_SOURCE_SYNTH;
 	// Initialize all voices
 	for (int i = 0; i < SYNTH_MAX_VOICES; i++)
 	{

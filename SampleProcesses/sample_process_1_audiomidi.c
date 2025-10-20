@@ -30,7 +30,7 @@ extern	TIM_HandleTypeDef htim6;
 
 #define	USB_BUF_LEN	64
 
-#define	DUAL_CHANNEL	1
+//#define	DUAL_CHANNEL	1
 
 __attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_AUDIO_BUF_SIZE*2];
 __attribute__ ((aligned (32))) int16_t	synth_workbuffer_left[NUMBER_OF_AUDIO_SAMPLES];
@@ -156,37 +156,24 @@ A_midi_decoder_t	MIDI =
 uint32_t	midi_initialized;
 
 uint16_t	vca_ampl_left = 0;
-
-VCA_Effect_TypeDef	VCA_Effect_Left =
+__attribute__ ((aligned (32))) int16_t	vca_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+VCA_Effect_TypeDef	VCA_Left =
 {
+	.effect = Effect_VCA,
+	.in_buf = vca_buf_left,
+	.status = SOUND_EFFECT_ENABLED,
 	.amplitude = &vca_ampl_left,
 };
 
 #ifdef DUAL_CHANNEL
 uint16_t	vca_ampl_right = 0;
-VCA_Effect_TypeDef	VCA_Effect_Right =
-{
-		.amplitude = &vca_ampl_right,
-};
-#endif
-
-__attribute__ ((aligned (32))) int16_t	vca_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
-Effect_TypeDef	VCA_Left =
-{
-	.effect = Effect_VCA,
-	.in_buf = vca_buf_left,
-	.private_data = (uint32_t *)&VCA_Effect_Left,
-	.status = SOUND_EFFECT_AUTO_ENABLE,
-};
-
-#ifdef DUAL_CHANNEL
 __attribute__ ((aligned (32))) int16_t	vca_buf_right[HALF_NUMBER_OF_AUDIO_SAMPLES];
-Effect_TypeDef	VCA_Right =
+VCA_Effect_TypeDef	VCA_Right =
 {
 	.effect = Effect_VCA,
 	.in_buf = vca_buf_right,
-	.private_data = (uint32_t *)&VCA_Effect_Right,
-	.status = SOUND_EFFECT_AUTO_ENABLE,
+	.status = SOUND_EFFECT_ENABLED,
+	.amplitude = &vca_ampl_right,
 };
 #endif
 
@@ -215,12 +202,12 @@ uint8_t	up = 1;
 	Synth_Start(&Audio_Synth_left);
 	dac_init(dac_left_driver_handle);
 	dac_start(dac_left_driver_handle);
-	Sound_Insert_Effect(&Audio_Synth_left,&VCA_Left);
+	Sound_Insert_Effect(&Audio_Synth_left,(uint32_t *)&VCA_Left);
 #ifdef DUAL_CHANNEL
 	Synth_Start(&Audio_Synth_right);
 	dac_init(dac_right_driver_handle);
 	dac_start(dac_right_driver_handle);
-	Sound_Insert_Effect(&Audio_Synth_right,&VCA_Right);
+	Sound_Insert_Effect(&Audio_Synth_right,(uint32_t *)&VCA_Right);
 #endif // #ifdef DUAL_CHANNEL
 
 	while(1)
