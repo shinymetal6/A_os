@@ -25,6 +25,7 @@
 #ifdef SOUND_ENGINE_ENABLED
 #include "sound_engine.h"
 uint8_t	num_effects=0;
+
 ITCM_AREA_CODE PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
 {
 uint8_t		done=0;
@@ -89,6 +90,42 @@ int16_t				*out_buf;
 		}
 	}
 	return 0;
+}
+
+uint8_t number_of_synths = 0;
+
+ITCM_AREA_CODE inline void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+{
+uint32_t i;
+	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+		audio_out[i*2 + start_sample*2 + synth_number] = audio_in[i+start_sample];
+}
+
+ITCM_AREA_CODE inline void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+{
+uint32_t i;
+	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+		audio_out[i + start_sample] = (int16_t )((uint32_t )(audio_in[i] + 32768) >> 4);
+}
+
+extern	Synth_TypeDef *Synth[2];
+
+ITCM_AREA_CODE void Do_synth(uint8_t synth_number,uint32_t start_sample)
+{
+	PTR_Effect_TypeDef *last_effect;
+
+	Synth_TypeDef *synth = Synth[synth_number];
+	if (( synth == NULL ) || ( synth_number == number_of_synths ) || ( synth->status != SYNTH_ENABLED ))
+		return;
+
+	Synth_Process_Block((uint32_t *)synth,start_sample);
+	if ( synth->next_effect != NULL )
+	{
+		last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
+		synth->OutFunc(synth_number,synth->codec_buf,last_effect->effect_out_buf,start_sample);
+	}
+	else
+		synth->OutFunc(synth_number,synth->codec_buf,synth->synth_out_buf,start_sample);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

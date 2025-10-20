@@ -45,7 +45,7 @@ __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 };
 uint32_t		dac_left_driver_handle;
 
-__attribute__ ((aligned (32))) int16_t	synth0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM int16_t	synth0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
 __attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
 {
 	.status = SYNTH_DISABLED,
@@ -58,7 +58,7 @@ __attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
 uint32_t	synth_left_initialized;
 
 
-__attribute__ ((aligned (32))) int16_t	vca0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM int16_t	vca0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
 uint16_t			vca0_ampl_left = 32768;
 VCA_Effect_TypeDef	VCA0_Left =
 {
@@ -69,7 +69,7 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
-__attribute__ ((aligned (32))) int16_t	vca1_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM int16_t	vca1_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
 uint16_t			vca1_ampl_left = 32768;
 VCA_Effect_TypeDef	VCA1_Left =
 {

@@ -74,7 +74,11 @@ typedef struct {
 #include	"Generators/synth.h"
 #include	"Effects/vca.h"
 
+extern void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample);
+extern void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample);
+
 extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);
+extern void 				Do_synth(uint8_t synth_number,uint32_t start_sample);
 
 #endif /* MODULES_SOUND_ENGINE_SOUND_ENGINE_H_ */

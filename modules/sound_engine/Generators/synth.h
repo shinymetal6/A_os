@@ -90,15 +90,15 @@ typedef struct
 #define		SYNTH_DAC_OUT		1
 #define		SYNTH_I2S_OUT		0
 
-extern uint8_t Synth_Register(uint8_t channel,Synth_TypeDef *synth);
-extern uint8_t Synth_Start(Synth_TypeDef *synth);
-extern uint8_t Synth_Stop(Synth_TypeDef *synth);
+extern void 	Synth_Process_Block(uint32_t *the_synt,uint32_t start_sample);
+extern uint8_t 	Synth_Register(uint8_t channel,Synth_TypeDef *synth);
+extern uint8_t	Synth_Start(Synth_TypeDef *synth);
+extern uint8_t 	Synth_Stop(Synth_TypeDef *synth);
 
 extern void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity);
 extern void NoteOff(uint8_t channel,uint8_t note);
 extern void AllNoteOFF(void);
 
-extern void Do_synth(uint8_t synth_number,uint32_t start_sample);
 
 #endif // #ifdef SOUND_ENGINE_ENABLED
 
