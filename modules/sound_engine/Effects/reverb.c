@@ -46,12 +46,15 @@ ITCM_AREA_CODE static void reverb_delay_line_init(Reverb_DelayLine_TypeDef *dela
 ITCM_AREA_CODE static q15_t reverb_delay_line_process(Reverb_DelayLine_TypeDef *delay_line, q15_t input)
 {
     // Read from the delay line
-    uint32_t read_index = (delay_line->write_index + REVERB_MAX_DELAY_LENGTH - delay_line->delay_length) % REVERB_MAX_DELAY_LENGTH;
+	uint32_t reverb_max_delay_len;
+	Sound_Sample_Frequency <= DEFAULT_SAMPLE_FREQUENCY ? reverb_max_delay_len = (uint32_t )(Sound_Sample_Frequency/4.0F) : DEFAULT_SAMPLE_FREQUENCY/4;
+
+    uint32_t read_index = (delay_line->write_index + reverb_max_delay_len - delay_line->delay_length) % reverb_max_delay_len;
     q15_t output = delay_line->buffer[read_index];
 
     // Write to the delay line
     delay_line->buffer[delay_line->write_index] = input;
-    delay_line->write_index = (delay_line->write_index + 1) % REVERB_MAX_DELAY_LENGTH;
+    delay_line->write_index = (delay_line->write_index + 1) % reverb_max_delay_len;
 
     return output;
 }

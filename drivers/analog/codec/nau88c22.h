@@ -27,6 +27,8 @@
 #define NAU88C22_NUM_REGS				79
 #define NAU88C22_I2C_ADDR				(0x1a << 1)
 #define	NAU88C22_EXT_FREQ_12_288MHZ		1
+#define	NAU88C22_SAMPLE_FREQUENCY		48000
+
 
 typedef struct
 {

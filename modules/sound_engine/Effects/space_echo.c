@@ -118,7 +118,7 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
 	if (( echo->delay_time_ms == NULL ) || ( echo->feedback == NULL ) || ( echo->lfo_rate == NULL ) || ( echo->lfo_depth_ms == NULL ) || ( echo->cutoff == NULL ))
 		return;
 	if ( echo->sample_rate == 0 )
-		echo->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		echo->sample_rate = Sound_Sample_Frequency;
     for (int i = 0; i < ECHO_BUFFER_SIZE; i++)
     	echo->buffer[i] = 0.0f;
     echo->write_ptr = 0;

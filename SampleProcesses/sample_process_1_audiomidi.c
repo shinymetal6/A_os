@@ -30,18 +30,13 @@ extern	TIM_HandleTypeDef htim6;
 
 #define	USB_BUF_LEN	64
 
-//#define	DUAL_CHANNEL	1
-
-__attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_AUDIO_BUF_SIZE*2];
-__attribute__ ((aligned (32))) int16_t	synth_workbuffer_left[NUMBER_OF_AUDIO_SAMPLES];
-#ifdef DUAL_CHANNEL
-__attribute__ ((aligned (32))) int16_t	dac_buffer_right[DAC_AUDIO_BUF_SIZE*2];
-__attribute__ ((aligned (32))) int16_t	synth_workbuffer_right[NUMBER_OF_AUDIO_SAMPLES];
-#endif // #ifdef DUAL_CHANNEL
+#define	DUAL_CHANNEL	1
+#define	SWEEP_VCA		1
 
 #define	LEFT_CHANNEL	0
 #define	RIGHT_CHANNEL	1
 
+//#define	SAMPLE_FREQUENCY	48000
 #define	SAMPLE_FREQUENCY	96000
 
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
@@ -58,30 +53,10 @@ __attribute__ ((aligned (32)))	USB_Drv_TypeDef	USB_Drv =
 };
 uint32_t		usb_driver_handle;
 
-__attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_left =
-{
-	.status = SYNTH_DISABLED,
-	.out_buf = synth_workbuffer_left,
-	.out_device = SYNTH_DAC_OUT,
-	.codec_buf = dac_buffer_left,
-	.sample_rate = SAMPLE_FREQUENCY,
-	.wavetable_size = SYNTH_WAVETABLE_1024,
-};
-uint32_t	synth_left_initialized;
+extern	DAC_HandleTypeDef hdac1;
+extern	TIM_HandleTypeDef htim6;
 
-#ifdef DUAL_CHANNEL
-__attribute__ ((aligned (32)))	MidiSynth_TypeDef Audio_Synth_right =
-{
-	.status = SYNTH_DISABLED,
-	.out_buf = synth_workbuffer_right,
-	.out_device = SYNTH_DAC_OUT,
-	.codec_buf = dac_buffer_right,
-	.sample_rate = SAMPLE_FREQUENCY,
-	.wavetable_size = SYNTH_WAVETABLE_1024,
-};
-uint32_t	synth_right_initialized;
-#endif // #ifdef DUAL_CHANNEL
-
+__attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_AUDIO_BUF_SIZE];
 __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 {
 	.flags = DAC_FLAGS_USE_SYNTHMODULE,
@@ -95,6 +70,7 @@ __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 uint32_t		dac_left_driver_handle;
 
 #ifdef DUAL_CHANNEL
+__attribute__ ((aligned (32))) int16_t	dac_buffer_right[DAC_AUDIO_BUF_SIZE];
 __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Right =
 {
 	.flags = DAC_FLAGS_USE_SYNTHMODULE,
@@ -106,6 +82,56 @@ __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Right =
 	.len = DAC_AUDIO_BUF_SIZE,
 };
 uint32_t		dac_right_driver_handle;
+#endif // #ifdef DUAL_CHANNEL
+
+AUDIO_FAST_RAM int16_t	synth0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+__attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
+{
+	.status = SYNTH_DISABLED,
+	.synth_out_buf = synth0_buf_left,
+	.out_device = SYNTH_DAC_OUT,
+	.codec_buf = dac_buffer_left,
+	.sample_rate = SAMPLE_FREQUENCY,
+	.wavetable_size = SYNTH_WAVETABLE_1024,
+};
+uint32_t	synth_left_initialized;
+
+#ifdef DUAL_CHANNEL
+AUDIO_FAST_RAM int16_t	synth0_buf_right[HALF_NUMBER_OF_AUDIO_SAMPLES];
+__attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_right =
+{
+	.status = SYNTH_DISABLED,
+	.synth_out_buf = synth0_buf_right,
+	.out_device = SYNTH_DAC_OUT,
+	.codec_buf = dac_buffer_right,
+	.sample_rate = SAMPLE_FREQUENCY,
+	.wavetable_size = SYNTH_WAVETABLE_1024,
+};
+uint32_t	synth_right_initialized;
+#endif
+
+AUDIO_FAST_RAM int16_t	vca0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+uint16_t			vca0_ampl_left = 32768;
+VCA_Effect_TypeDef	VCA0_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.effect_in_buf = vca0_buf_left,
+	.amplitude = &vca0_ampl_left,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+#ifdef DUAL_CHANNEL
+AUDIO_FAST_RAM int16_t	vca0_buf_right[HALF_NUMBER_OF_AUDIO_SAMPLES];
+uint16_t			vca0_ampl_right = 32768;
+VCA_Effect_TypeDef	VCA0_Right =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.effect_in_buf = vca0_buf_right,
+	.amplitude = &vca0_ampl_right,
+	.flags = SOUND_EFFECT_ENABLED,
+};
 #endif // #ifdef DUAL_CHANNEL
 
 void	Note(uint8_t channel , uint8_t midi_note , uint8_t midi_velocity)
@@ -155,30 +181,9 @@ A_midi_decoder_t	MIDI =
 };
 uint32_t	midi_initialized;
 
-uint16_t	vca_ampl_left = 0;
-__attribute__ ((aligned (32))) int16_t	vca_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
-VCA_Effect_TypeDef	VCA_Left =
-{
-	.effect = Effect_VCA,
-	.in_buf = vca_buf_left,
-	.status = SOUND_EFFECT_ENABLED,
-	.amplitude = &vca_ampl_left,
-};
-
-#ifdef DUAL_CHANNEL
-uint16_t	vca_ampl_right = 0;
-__attribute__ ((aligned (32))) int16_t	vca_buf_right[HALF_NUMBER_OF_AUDIO_SAMPLES];
-VCA_Effect_TypeDef	VCA_Right =
-{
-	.effect = Effect_VCA,
-	.in_buf = vca_buf_right,
-	.status = SOUND_EFFECT_ENABLED,
-	.amplitude = &vca_ampl_right,
-};
-#endif
-
 void sample_process_1_init(uint32_t process_id)
 {
+	Sound_Change_Sample_Frequency(SAMPLE_FREQUENCY);
 	dac_left_driver_handle = dac_register(&DAC_Drv_Left);
 	synth_left_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
 #ifdef DUAL_CHANNEL
@@ -196,18 +201,22 @@ void sample_process_1_audiomidi(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t	cntr = 0;
+uint8_t	removed = 0;
+#ifdef SWEEP_VCA
 uint8_t	up = 1;
+#endif // #ifdef SWEEP_VCA
+
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
 	Synth_Start(&Audio_Synth_left);
 	dac_init(dac_left_driver_handle);
 	dac_start(dac_left_driver_handle);
-	Sound_Insert_Effect(&Audio_Synth_left,(uint32_t *)&VCA_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
 #ifdef DUAL_CHANNEL
 	Synth_Start(&Audio_Synth_right);
 	dac_init(dac_right_driver_handle);
 	dac_start(dac_right_driver_handle);
-	Sound_Insert_Effect(&Audio_Synth_right,(uint32_t *)&VCA_Right);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_right,(uint32_t *)&VCA0_Right);
 #endif // #ifdef DUAL_CHANNEL
 
 	while(1)
@@ -221,25 +230,32 @@ uint8_t	up = 1;
 			{
 				cntr = 0;
 				process_led();
+				if ( removed == 0)
+				{
+					removed = 1;
+					Sound_Remove_Effect((uint32_t *)&Audio_Synth_right,(uint32_t *)&VCA0_Right);
+				}
 			}
+#ifdef SWEEP_VCA
 			if ( up )
 			{
-				vca_ampl_left += STEP;
+				vca0_ampl_left += STEP;
 #ifdef DUAL_CHANNEL
-				vca_ampl_right += STEP;
+				vca0_ampl_right += STEP;
 #endif
-				if ( vca_ampl_left > HLIMIT )
+				if ( vca0_ampl_left > HLIMIT )
 					up = 0;
 			}
 			else
 			{
-				vca_ampl_left -= STEP;
+				vca0_ampl_left -= STEP;
 #ifdef DUAL_CHANNEL
-				vca_ampl_right -= STEP;
+				vca0_ampl_right -= STEP;
 #endif
-				if ( vca_ampl_left < LLIMIT )
+				if ( vca0_ampl_left < LLIMIT )
 					up = 1;
 			}
+#endif // #ifdef SWEEP_VCA
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
@@ -250,7 +266,7 @@ uint8_t	up = 1;
 		}
 	}
 }
-#endif // #ifdef SAMPLE_PROCESSES_ENABLED
+#endif // #ifdef SAMPLEPROCESS_1_AUDIO_MIDI
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 

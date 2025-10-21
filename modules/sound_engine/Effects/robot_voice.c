@@ -98,7 +98,7 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 	if (( rv->ring_freq == NULL ) || ( rv->bit_depth == NULL ) || ( rv->bp_freq == NULL ) || ( rv->bp_q == NULL ))
 		return;
 	if ( rv->sample_rate == 0 )
-		rv->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		rv->sample_rate = Sound_Sample_Frequency;
 
     rv->f_ring_phase = 0.0f;
 

@@ -71,7 +71,7 @@ ITCM_AREA_CODE static void wah_set_params(WAH_F_Effect_TypeDef *wah)
     	wah->f_sensitivity = (float )*wah->sensitivity*0.01F;
 
     if ( wah->sample_rate == 0 )
-    	wah->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+    	wah->sample_rate = Sound_Sample_Frequency;
 
     wah->y1 = wah->y2 = wah->y3 = wah->y4 = 0.0f;
 }
@@ -120,7 +120,7 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 	if (( wah->min_cutoff == NULL ) || ( wah->max_cutoff == NULL ) || ( wah->resonance == NULL ) || ( wah->sensitivity == NULL ) || ( wah->attack == NULL ) || ( wah->release == NULL ))
 		return;
 	if ( wah->sample_rate == 0 )
-		wah->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		wah->sample_rate = Sound_Sample_Frequency;
 	wah->env = 0.0f;
 	wah_set_params(wah);
 

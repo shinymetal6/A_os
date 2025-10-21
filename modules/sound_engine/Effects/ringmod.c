@@ -58,7 +58,7 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect_s;
 	if ( ringmod->f_carrierFrequency > RINGMOD_MAX_CARRIER_FREQ)
 		ringmod->f_carrierFrequency = RINGMOD_DEFAULT_CARRIER_FREQ;
 	if ( ringmod->sample_rate == 0 )
-		ringmod->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		ringmod->sample_rate = Sound_Sample_Frequency;
 	ringmod->phaseIncrement = 2.0f * PI * ringmod->f_carrierFrequency / ringmod->sample_rate;
 
 	if (( ringmod->status & RINGMODE_STATUS_INTERNAL) == RINGMODE_STATUS_INTERNAL)

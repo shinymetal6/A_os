@@ -1,0 +1,18 @@
+chorus
+echo
+iir
+lfo
+moog_filter
+overdrive		T
+passthrough
+phaser			T
+reverb
+ringmod
+robot_voice
+space_echo
+tape_freak
+vca				T
+wah_filter
+
+Legend : 
+	T = tested

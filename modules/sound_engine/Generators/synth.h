@@ -70,13 +70,13 @@ typedef struct
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
-	/* Internals */
-	uint8_t				source_type;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
+	/* Internals */
+	int16_t 			*codec_buf;
+	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
 	uint8_t				i2s_handle;
-	int16_t 			*codec_buf;
 	float				sample_rate;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size

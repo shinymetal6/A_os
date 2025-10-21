@@ -26,9 +26,12 @@
 #include "synth.h"
 #ifdef SOUND_ENGINE_ENABLED
 
+/* This cannot be in AUDIO_FAST_RAM unless not initialized by user */
+/* So the better solution is to have this in std boot-initialized ram */
+Synth_TypeDef *Synth[2] = {NULL,NULL};
+
 // Precomputed sine wavetable (Q15 format)
 AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
-AUDIO_FAST_RAM	Synth_TypeDef *Synth[2] = {NULL,NULL};
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[SYNTH_MIDI_NOTES] =
 {
 		8.176,
@@ -160,6 +163,7 @@ __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	ro
 		11839.8,
 		12543.9 /* 127 */
 };
+AUDIO_FAST_RAM	float	midi_freq[SYNTH_MIDI_NOTES];
 
 // Initialize sine wavetable
 ITCM_AREA_CODE static void synth_sine_wavetable_init(Synth_TypeDef *synth)
@@ -192,7 +196,7 @@ ITCM_AREA_CODE static void synth_note_on(Synth_TypeDef *synth, uint8_t note, uin
     {
         if (!synth->voices[i].active) {
             synth->voices[i].phase = 0.0f;
-            synth->voices[i].phase_increment = rom_midi_freq[note] / synth->sample_rate; // Phase increment per sample
+            synth->voices[i].phase_increment = midi_freq[note] / synth->sample_rate; // Phase increment per sample
             synth->voices[i].amplitude = (q15_t)((velocity / 127.0f) * 32768.0f); // Scale velocity to Q15 , max val = 127
             synth->voices[i].waveform = waveform;
             synth->voices[i].duty_cycle = duty_cycle;
@@ -406,17 +410,21 @@ extern	uint8_t number_of_synths;
 
 ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,Synth_TypeDef *synth)
 {
+uint32_t	i;
+
 	if ( synth->codec_buf == NULL )
 		return 1;
 	if ( synth->synth_out_buf == NULL )
 			return 1;
 	if ( channel >= SYNTH_CHANNELS )
 		return 1;
+	for(i=0;i<SYNTH_MIDI_NOTES;i++)
+		midi_freq[i] =	rom_midi_freq[i];
 	Synth[channel] = synth;
 	if ( synth->wavetable_size == 0 )
 		synth->wavetable_size = SYNTH_WAVETABLE_256;
 	if ( synth->sample_rate == 0 )
-		synth->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		synth->sample_rate = Sound_Sample_Frequency;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
 	if ( synth->out_device == SYNTH_I2S_OUT)

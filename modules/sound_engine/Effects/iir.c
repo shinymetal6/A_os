@@ -127,7 +127,7 @@ ITCM_AREA_CODE void Effect_IIR_Init(uint32_t *effect_s)
 {
 IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 	if ( iir->sample_rate == 0 )
-		iir->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		iir->sample_rate = Sound_Sample_Frequency;
 	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++) {
 		calculateBiquadCoefficients(&iir->biquads[i], iir->filterType, iir->cutoffFrequency, iir->bandwidth,iir->sample_rate);
 		iir->biquads[i].x1 = iir->biquads[i].x2 = 0.0f;

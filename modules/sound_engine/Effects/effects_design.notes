@@ -1,0 +1,42 @@
+The effects interface provides a way to set parameters both from code and from external
+ analog signals driven by adc dma.
+ 
+Struct fields:
+	uint8_t		status;
+	uint8_t		flags;
+	... examples
+    uint16_t 	*dry_mix;        // Dry signal mix level
+    uint16_t 	*wet_mix;        // Wet signal mix level
+    
+The module will check at each cycle if the uint16_t params are changed and 
+ will change the internal values appropriately.
+The implementation inside the module is different due to the different nature of
+ the module itself.
+ 
+ As an example :
+ typedef struct
+{
+	uint8_t		status;
+	uint8_t		flags;
+	uint16_t	*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
+	uint16_t	*resonance; 				// = 32768	Resonance (0 to 65535)
+	uint16_t	*lfo_rate;					// = 16384	Rate of the LFO [0 .. 65535] easy for user side
+	float		sample_rate;
+
+    /* Internals */
+	float	f_cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
+	float	f_resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
+    float 	g;   // cutoff-related gain
+    float 	k;   // resonance feedback factor
+    float 	y1, y2, y3, y4; // state
+} MOOG_F_Effect_TypeDef;
+
+Here the uint16_t pointer values are 3 : cutoffFrequency,resonance and lfo_rate.
+Other module can have more or less or none, it depends on the module itself.
+In this case the sample rate is exported too and can be modified by the calling code.
+
+The stratus field will reflect 3 states: 
+
+
+
+

@@ -91,7 +91,7 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 	if (( phaser->lfo_rate == NULL ) || ( phaser->depth == NULL ) || ( phaser->mix == NULL ))
 		return;
 	if ( phaser->sample_rate == 0 )
-		phaser->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		phaser->sample_rate = Sound_Sample_Frequency;
 	phaser->lfo_phase = 0.0F;
 	phaser_update_lfo(phaser);
 

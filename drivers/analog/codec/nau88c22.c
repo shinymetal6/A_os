@@ -168,7 +168,7 @@ const Nau88c22_t	Nau88c22[] =
 			R39 0x000 ; lowest order 9-bits of 24-bit fraction
 		*/
 
-#if DEFAULT_SAMPLE_FREQUENCY == 48000
+#if NAU88C22_SAMPLE_FREQUENCY == 48000
 		{
 			NAU88C22_PLL_N,
 			0x008	// 256fs IMCLK rate : 12.288Mhz internal / 12.288Mhz external ref clk

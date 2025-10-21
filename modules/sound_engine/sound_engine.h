@@ -54,11 +54,12 @@ typedef struct
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				i2s_handle;
-	int16_t 			*codec_buf;
 	uint16_t			out_device;				/* from previous module : for dac is 1 , for codec is 0 */
+	int16_t 			*codec_buf;
+	uint8_t				i2s_handle;
 }PTR_Effect_TypeDef;
 
+#ifdef ASDF
 typedef struct {
 	uint8_t				status;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
@@ -67,9 +68,12 @@ typedef struct {
 	int16_t 			*codec_buf;
 	float				sample_rate;
 } SoundSource_TypeDef;
+#endif
 
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80
+
+extern	float	Sound_Sample_Frequency;
 
 #include	"Generators/synth.h"
 #include	"Effects/vca.h"
@@ -79,6 +83,8 @@ extern void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audi
 
 extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);
-extern void 				Do_synth(uint8_t synth_number,uint32_t start_sample);
+extern	uint8_t				Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect);
+extern	uint8_t				Sound_Change_Sample_Frequency(uint32_t new_sample_frequency);
+extern void 				Do_Audio(uint32_t start_sample);
 
 #endif /* MODULES_SOUND_ENGINE_SOUND_ENGINE_H_ */

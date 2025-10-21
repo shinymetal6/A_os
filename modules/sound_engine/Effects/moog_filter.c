@@ -78,7 +78,7 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 	if ( moog_f->lfo_rate == NULL )
 		return;
 	if ( moog_f->sample_rate == 0 )
-		moog_f->sample_rate = DEFAULT_SAMPLE_FREQUENCY;
+		moog_f->sample_rate = Sound_Sample_Frequency;
 
 	update_g_and_k(moog_f);
 	moog_f->status |= SOUND_EFFECT_INITIALIZED;

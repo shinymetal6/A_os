@@ -22,8 +22,11 @@
 #include "main.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+
+float	Sound_Sample_Frequency = DEFAULT_SAMPLE_FREQUENCY;
 #ifdef SOUND_ENGINE_ENABLED
 #include "sound_engine.h"
+
 uint8_t	num_effects=0;
 
 ITCM_AREA_CODE PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
@@ -47,7 +50,7 @@ PTR_Effect_TypeDef	*PTR_Effect = (PTR_Effect_TypeDef *)effect;
 
 ITCM_AREA_CODE uint8_t Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect)
 {
-PTR_Effect_TypeDef	*effect = (PTR_Effect_TypeDef *)new_effect , *last_effect;
+PTR_Effect_TypeDef	*effect = (PTR_Effect_TypeDef *)new_effect , *pre_effect;
 Synth_TypeDef		*synth = (Synth_TypeDef *)ext_source;
 int16_t				*out_buf;
 	if (( ext_source == NULL ) || ( new_effect == NULL ) || ( effect->effect_in_buf == NULL ))
@@ -70,26 +73,63 @@ int16_t				*out_buf;
 		}
 		else
 		{
-			last_effect = effect = (PTR_Effect_TypeDef *)synth->next_effect;
+			pre_effect = effect = (PTR_Effect_TypeDef *)synth;
 			while ( effect->next_effect != NULL)
 			{
-				last_effect = (PTR_Effect_TypeDef *)effect->next_effect;
+				pre_effect = (PTR_Effect_TypeDef *)effect->next_effect;
 				effect = (PTR_Effect_TypeDef *)effect->next_effect;
 			}
-			last_effect->next_effect = new_effect;
-			effect = (PTR_Effect_TypeDef *)last_effect->next_effect;
+			effect->next_effect = new_effect;
+			effect = (PTR_Effect_TypeDef *)pre_effect->next_effect;
 			effect->next_effect = NULL;
-			out_buf = last_effect->effect_out_buf;
-			last_effect->effect_out_buf = effect->effect_in_buf;
+			effect->pre_effect = (uint32_t *)pre_effect;
+			out_buf = pre_effect->effect_out_buf;
+			pre_effect->effect_out_buf = effect->effect_in_buf;
 			effect->effect_out_buf = out_buf;
-			effect->out_device = last_effect->out_device;
-			last_effect->out_device = SYNTH_I2S_OUT;
+			effect->out_device = pre_effect->out_device;
+			pre_effect->out_device = SYNTH_I2S_OUT;
 			if ( effect->effect_init != NULL )
 				effect->effect_init(new_effect);
 			effect->status |= SOUND_EFFECT_INITIALIZED;
 		}
 	}
 	return 0;
+}
+
+ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect)
+{
+PTR_Effect_TypeDef	*effect,*pre_effect;
+Synth_TypeDef		*synth = (Synth_TypeDef *)ext_source;
+
+	if ( synth->source_type == SOUND_SOURCE_SYNTH)
+	{
+		if ( synth->next_effect == NULL )
+			return 1;
+
+		pre_effect = effect = (PTR_Effect_TypeDef *)synth;
+		while ( effect != (PTR_Effect_TypeDef *)remove_effect )
+		{
+			if ( effect->next_effect == NULL)
+				return 1;
+			pre_effect = (PTR_Effect_TypeDef *)effect->pre_effect;
+			effect = (PTR_Effect_TypeDef *)effect->next_effect;
+		}
+		pre_effect->pre_effect = (uint32_t *)pre_effect;
+		pre_effect->next_effect = effect->next_effect;
+		pre_effect->effect_out_buf = effect->effect_out_buf;
+	}
+	return 0;
+}
+
+
+ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequency)
+{
+	if (( new_sample_frequency >= 8000) && ( new_sample_frequency >= 96000))
+	{
+		Sound_Sample_Frequency = (float )new_sample_frequency;
+		return 0;
+	}
+	return 1;
 }
 
 uint8_t number_of_synths = 0;
@@ -110,22 +150,27 @@ uint32_t i;
 
 extern	Synth_TypeDef *Synth[2];
 
-ITCM_AREA_CODE void Do_synth(uint8_t synth_number,uint32_t start_sample)
+ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
-	PTR_Effect_TypeDef *last_effect;
+PTR_Effect_TypeDef *last_effect;
+uint8_t i=0;
 
-	Synth_TypeDef *synth = Synth[synth_number];
-	if (( synth == NULL ) || ( synth_number == number_of_synths ) || ( synth->status != SYNTH_ENABLED ))
-		return;
-
-	Synth_Process_Block((uint32_t *)synth,start_sample);
-	if ( synth->next_effect != NULL )
+	while ( Synth[i] != NULL)
 	{
-		last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
-		synth->OutFunc(synth_number,synth->codec_buf,last_effect->effect_out_buf,start_sample);
+		Synth_TypeDef *synth = Synth[i];
+		if (( synth == NULL ) || ( i == 2 ) || ( synth->status != SYNTH_ENABLED ))
+			break;
+
+		Synth_Process_Block((uint32_t *)synth,start_sample);
+		if ( synth->next_effect != NULL )
+		{
+			last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
+			synth->OutFunc(i,synth->codec_buf,last_effect->effect_out_buf,start_sample);
+		}
+		else
+			synth->OutFunc(i,synth->codec_buf,synth->synth_out_buf,start_sample);
+		i++;
 	}
-	else
-		synth->OutFunc(synth_number,synth->codec_buf,synth->synth_out_buf,start_sample);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED
