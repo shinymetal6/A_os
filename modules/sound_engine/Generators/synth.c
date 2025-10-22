@@ -194,7 +194,8 @@ ITCM_AREA_CODE static void synth_note_on(Synth_TypeDef *synth, uint8_t note, uin
     // Find an inactive voice
     for (int i = 0; i < SYNTH_MAX_VOICES; i++)
     {
-        if (!synth->voices[i].active) {
+        if (!synth->voices[i].active)
+        {
             synth->voices[i].phase = 0.0f;
             synth->voices[i].phase_increment = midi_freq[note] / synth->sample_rate; // Phase increment per sample
             synth->voices[i].amplitude = (q15_t)((velocity / 127.0f) * 32768.0f); // Scale velocity to Q15 , max val = 127
@@ -242,12 +243,12 @@ q15_t *output;
 	output = synth->synth_out_buf; // no, so is half buffer
 
     // Clear the output buffer
-    memset(output, 0, SYNTH_BLOCK_SIZE * sizeof(q15_t));
+    memset(output, 0, synth->synth_block_size * sizeof(q15_t));
 
     // Process each active voice
     for (int v = 0; v < SYNTH_MAX_VOICES; v++) {
         if (synth->voices[v].active) {
-            for (int i = 0; i < SYNTH_BLOCK_SIZE; i++) {
+            for (int i = 0; i < synth->synth_block_size; i++) {
                 float phase = synth->voices[v].phase;
                 q15_t sample = 0;
 

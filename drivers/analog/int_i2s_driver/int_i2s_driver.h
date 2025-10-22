@@ -23,6 +23,8 @@
 #ifndef DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_
 #define DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_
 
+#ifdef SOUND_ENGINE_I2S_ENABLED
+
 typedef struct
 {
 	uint8_t				status;
@@ -34,8 +36,8 @@ typedef struct
 	uint8_t 			control_flags;
 	uint32_t 			wakeup_id;
 	float				master_volume;
-	int16_t 			*adc_buffer;
-	int16_t 			*dac_buffer;
+	int16_t 			*i2s_in_buffer;
+	int16_t 			*i2s_out_buffer;
 }I2S_Drv_TypeDef;
 
 /* status */
@@ -49,10 +51,15 @@ typedef struct
 #define		I2S_FLAGS_USE_SYNTHMODULE	0x02
 #define		I2S_FLAGS_USE_AUDIOMODULE	0x01
 
+#define	I2S_SAMPLE_FREQUENCY		48000
+#define	USER_I2S_SAMPLE_FREQUENCY	(I2S_SAMPLE_FREQUENCY*2)
+
 
 extern 	I2S_HandleTypeDef hi2s2;
 extern	uint32_t	int_i2s_register(I2S_Drv_TypeDef *private_data);
-extern	int16_t		*get_codec_out_buf(uint8_t handle);
-extern	int16_t		*get_codec_in_buf(uint8_t handle);
+extern	int16_t		*get_i2s_out_buf(uint8_t handle);
+extern	int16_t		*get_i2s_in_buf(uint8_t handle);
+
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 #endif /* DRIVERS_ANALOG_INT_I2S_DRIVER_INT_I2S_DRIVER_H_ */

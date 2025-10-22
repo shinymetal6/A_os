@@ -89,6 +89,8 @@ ITCM_AREA_CODE void Effect_Reverb_Init(uint32_t *effect_s)
 REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect_s;
 
     // Initialize comb filters with different delay lengths
+	if ( reverb->synth_block_size == 0 )
+		reverb->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
     uint32_t comb_delay_lengths[REVERB_NUM_COMB_FILTERS] = {1557, 1617, 1491, 1422}; // Prime numbers for diffusion
     for (int i = 0; i < REVERB_NUM_COMB_FILTERS; i++) {
     	reverb->comb_filters[i] = reverb_comb_filters[i];
@@ -111,7 +113,7 @@ ITCM_AREA_CODE void Effect_Reverb(uint32_t *effect_s)
 uint32_t	i;
 REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect_s;
 
-	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+	for ( i=0;i<reverb->synth_block_size;i++)
 	{
 		if (( reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			reverb->effect_out_buf[i]  = reverb_process(reverb,reverb->effect_in_buf[i]);

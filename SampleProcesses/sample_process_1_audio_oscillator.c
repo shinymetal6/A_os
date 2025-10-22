@@ -30,9 +30,13 @@ extern	TIM_HandleTypeDef htim6;
 
 #define	LEFT_CHANNEL		0
 #define	RIGHT_CHANNEL		1
-#define	SAMPLE_FREQUENCY	96000
+#define	SAMPLE_FREQUENCY	48000
 
-__attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_AUDIO_BUF_SIZE];
+#define	DAC_BUF_SIZE		1024
+#define	EFFECTS_BUF_SIZE	(DAC_BUF_SIZE/2)
+
+//#define	SWEEP_VCA	1
+__attribute__ ((aligned (32))) int16_t	dac_buffer_left[DAC_BUF_SIZE];
 __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 {
 	.flags = DAC_FLAGS_USE_SYNTHMODULE,
@@ -41,14 +45,15 @@ __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 	.dac_sample_frequency = SAMPLE_FREQUENCY,
 	.dac_buffer = dac_buffer_left,
 	.channel = DAC_CHANNEL_1,
-	.len = DAC_AUDIO_BUF_SIZE,
+	.len = DAC_BUF_SIZE,
 };
 uint32_t		dac_left_driver_handle;
 
-AUDIO_FAST_RAM int16_t	synth0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM int16_t	synth0_buf_left[EFFECTS_BUF_SIZE];
 __attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
 {
 	.status = SYNTH_DISABLED,
+	.synth_block_size = EFFECTS_BUF_SIZE,
 	.synth_out_buf = synth0_buf_left,
 	.out_device = SYNTH_DAC_OUT,
 	.codec_buf = dac_buffer_left,
@@ -58,8 +63,8 @@ __attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
 uint32_t	synth_left_initialized;
 
 
-AUDIO_FAST_RAM int16_t	vca0_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
-uint16_t			vca0_ampl_left = 32768;
+AUDIO_FAST_RAM int16_t	vca0_buf_left[EFFECTS_BUF_SIZE];
+uint16_t			vca0_ampl_left = 65535;
 VCA_Effect_TypeDef	VCA0_Left =
 {
 	.effect = Effect_VCA,
@@ -69,7 +74,7 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
-AUDIO_FAST_RAM int16_t	vca1_buf_left[HALF_NUMBER_OF_AUDIO_SAMPLES];
+AUDIO_FAST_RAM int16_t	vca1_buf_left[EFFECTS_BUF_SIZE];
 uint16_t			vca1_ampl_left = 32768;
 VCA_Effect_TypeDef	VCA1_Left =
 {
@@ -96,7 +101,9 @@ void sample_process_1_audio_oscillator(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
+#ifdef SWEEP_VCA
 uint8_t		cntr1 = 0;
+#endif // #ifdef SWEEP_VCA
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 
@@ -104,7 +111,9 @@ uint8_t		cntr1 = 0;
 	dac_init(dac_left_driver_handle);
 	dac_start(dac_left_driver_handle);
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
+#ifdef SWEEP_VCA
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA1_Left);
+#endif // #ifdef SWEEP_VCA
 	NoteOn(0,69,127);
 	while(1)
 	{
@@ -118,6 +127,8 @@ uint8_t		cntr1 = 0;
 				cntr = 0;
 				process_led();
 			}
+#ifdef SWEEP_VCA
+			/*
 			cntr1++;
 			if ( cntr1 == 100)
 			{
@@ -128,6 +139,7 @@ uint8_t		cntr1 = 0;
 				vca1_ampl_left = 32768;
 				cntr1 = 0;
 			}
+			*/
 			if ( up )
 			{
 				vca0_ampl_left += STEP;
@@ -140,6 +152,7 @@ uint8_t		cntr1 = 0;
 				if ( vca0_ampl_left < LLIMIT )
 					up = 1;
 			}
+#endif // #ifdef SWEEP_VCA
 		}
 	}
 }

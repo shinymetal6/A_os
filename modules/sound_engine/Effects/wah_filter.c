@@ -119,6 +119,8 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 
 	if (( wah->min_cutoff == NULL ) || ( wah->max_cutoff == NULL ) || ( wah->resonance == NULL ) || ( wah->sensitivity == NULL ) || ( wah->attack == NULL ) || ( wah->release == NULL ))
 		return;
+	if ( wah->synth_block_size == 0 )
+		wah->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( wah->sample_rate == 0 )
 		wah->sample_rate = Sound_Sample_Frequency;
 	wah->env = 0.0f;
@@ -135,7 +137,7 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 
 	if ((( wah->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( wah == NULL ))
 		return;
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<wah->synth_block_size;i++)
 	{
 		if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{

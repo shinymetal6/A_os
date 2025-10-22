@@ -117,6 +117,8 @@ ITCM_AREA_CODE void Effect_Space_Echo_Init(uint32_t *effect_s)
 SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
 	if (( echo->delay_time_ms == NULL ) || ( echo->feedback == NULL ) || ( echo->lfo_rate == NULL ) || ( echo->lfo_depth_ms == NULL ) || ( echo->cutoff == NULL ))
 		return;
+	if ( echo->synth_block_size == 0 )
+		echo->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( echo->sample_rate == 0 )
 		echo->sample_rate = Sound_Sample_Frequency;
     for (int i = 0; i < ECHO_BUFFER_SIZE; i++)
@@ -136,7 +138,7 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
 	if ((( echo->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( echo == NULL ))
 		return;
     Effect_Space_Echo_Set_params(echo);
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<echo->synth_block_size;i++)
 	{
 		if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			echo->effect_out_buf[i] = space_echo_process(echo,__Q15_2_FLOAT(echo->effect_in_buf[i]));

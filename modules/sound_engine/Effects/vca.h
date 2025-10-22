@@ -35,9 +35,11 @@ typedef struct
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
+	uint16_t			synth_block_size;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
 	/* effect data */
 	uint16_t			*amplitude;
+	uint16_t			*offset;
 }VCA_Effect_TypeDef;
 
 extern void Effect_VCA_Init(uint32_t *effect_s);

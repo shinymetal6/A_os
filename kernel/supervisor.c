@@ -58,10 +58,8 @@ uint32_t	var=0;
 #endif
 
 uint32_t stat_prc[4] = {0,0,0,0};
-
 ITCM_AREA_CODE void supervisor(void)
 {
-uint32_t prc_scanner;
 	while(1)
 	{
 #ifdef	POOL_ENABLE
@@ -80,20 +78,11 @@ uint32_t prc_scanner;
 #ifdef USB_HOST_ENABLED
 		MX_USB_HOST_Process();
 #endif
-		__enable_irq();
+		__disable_irq();
 		__PERF_RESET();
 		supervisor_entry_callback();
-		__disable_irq();
-
-		for(prc_scanner= 1 ; prc_scanner < (MAX_TASKS) ; prc_scanner++)
-		{
-			if( ((process[prc_scanner].current_state & PROCESS_READY_STATE ) == PROCESS_READY_STATE) )
-			{
-				supervisor_exit_callback();
-				stat_prc[prc_scanner-1]++;
-				schedule();
-			}
-		}
+		supervisor_exit_callback();
+		__enable_irq();
 	}
 }
 

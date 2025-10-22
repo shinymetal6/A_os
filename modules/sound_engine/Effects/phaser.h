@@ -23,7 +23,7 @@
 #ifndef MODULES_SOUND_EFFECTS_PHASER_H_
 #define MODULES_SOUND_EFFECTS_PHASER_H_
 
-#define PHASER_BUFFER_SIZE		SOUND_BLOCK_SIZE  	// 128 samples
+#define PHASER_BUFFER_SIZE		128  	// 128 samples
 #define PHASER_DEFAULT_LFO_RATE	2.0F	// LFO frequency in Hz
 #define PHASER_DEFAULT_DEPTH	0.7F	// Depth of modulation
 #define PHASER_DEFAULT_MIX		0.5F	// mix rate
@@ -40,6 +40,8 @@ typedef struct
 	void 			(*effect_init)(uint32_t *effect_data);
 	uint8_t			status;
 	uint8_t			flags;
+	uint16_t		synth_block_size;
+	uint16_t		out_device;						/* for dac is 1 , for codec is 0 */
 	/* effect data */
 	uint16_t		*lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
 	uint16_t		*depth;							// Depth of the LFO

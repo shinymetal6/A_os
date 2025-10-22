@@ -53,10 +53,18 @@ void process_led(void)
 	{
 	case 7:
 	case 9:
+#ifdef AU100825
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+#else
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+#endif
 		break;
 	default :
+#ifdef AU100825
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+#else
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+#endif
 		break;
 	}
 	sample_led_cntr++;

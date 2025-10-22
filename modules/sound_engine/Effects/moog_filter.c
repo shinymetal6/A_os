@@ -67,19 +67,21 @@ ITCM_AREA_CODE void Effect_MOOG_F_Init(uint32_t *effect_s)
 {
 MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 
-	moog_f->y1 = moog_f->y2 = moog_f->y3 = moog_f->y4 = 0.0f;
-	moog_f->g = 0.1f;
-	moog_f->k = 0.0f;
-
 	if ( moog_f->cutoffFrequency == NULL )
 		return;
 	if ( moog_f->resonance == NULL )
 		return;
 	if ( moog_f->lfo_rate == NULL )
 		return;
+
+	moog_f->y1 = moog_f->y2 = moog_f->y3 = moog_f->y4 = 0.0f;
+	moog_f->g = 0.1f;
+	moog_f->k = 0.0f;
+
 	if ( moog_f->sample_rate == 0 )
 		moog_f->sample_rate = Sound_Sample_Frequency;
-
+	if ( moog_f->synth_block_size == 0 )
+		moog_f->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	update_g_and_k(moog_f);
 	moog_f->status |= SOUND_EFFECT_INITIALIZED;
 }
@@ -92,7 +94,7 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 
 	if ((( moog_f->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( moog_f == NULL ))
 		return;
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<moog_f->synth_block_size;i++)
 	{
 		if (( moog_f->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			moog_f->effect_out_buf[i] = moog_f_effect(moog_f,__Q15_2_FLOAT(moog_f->effect_in_buf[i]));

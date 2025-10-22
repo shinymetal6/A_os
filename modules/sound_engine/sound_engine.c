@@ -66,6 +66,7 @@ int16_t				*out_buf;
 			synth->synth_out_buf = effect->effect_in_buf;
 			effect->effect_out_buf = out_buf;
 			effect->out_device = synth->out_device;
+			effect->synth_block_size = synth->synth_block_size;
 			synth->out_device = SYNTH_I2S_OUT;
 			if ( effect->effect_init != NULL )
 				effect->effect_init(new_effect);
@@ -87,6 +88,7 @@ int16_t				*out_buf;
 			pre_effect->effect_out_buf = effect->effect_in_buf;
 			effect->effect_out_buf = out_buf;
 			effect->out_device = pre_effect->out_device;
+			effect->synth_block_size = pre_effect->synth_block_size;
 			pre_effect->out_device = SYNTH_I2S_OUT;
 			if ( effect->effect_init != NULL )
 				effect->effect_init(new_effect);
@@ -124,7 +126,7 @@ Synth_TypeDef		*synth = (Synth_TypeDef *)ext_source;
 
 ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequency)
 {
-	if (( new_sample_frequency >= 8000) && ( new_sample_frequency >= 96000))
+	if (( new_sample_frequency >= 8000) && ( new_sample_frequency <= 96000))
 	{
 		Sound_Sample_Frequency = (float )new_sample_frequency;
 		return 0;
@@ -134,21 +136,24 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 
 uint8_t number_of_synths = 0;
 
-ITCM_AREA_CODE inline void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+extern	Synth_TypeDef *Synth[2];
+
+ITCM_AREA_CODE inline void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples)
 {
 uint32_t i;
-	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
-		audio_out[i*2 + start_sample*2 + synth_number] = audio_in[i+start_sample];
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
+	for ( i=0;i<num_samples;i++)
+		audio_out[i*2 + start_sample + synth_number] = audio_in[i];
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
 }
 
-ITCM_AREA_CODE inline void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample)
+ITCM_AREA_CODE inline void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples)
 {
 uint32_t i;
-	for ( i=0;i<SYNTH_BLOCK_SIZE;i++)
+	for ( i=0;i<num_samples;i++)
 		audio_out[i + start_sample] = (int16_t )((uint32_t )(audio_in[i] + 32768) >> 4);
 }
 
-extern	Synth_TypeDef *Synth[2];
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
@@ -165,10 +170,10 @@ uint8_t i=0;
 		if ( synth->next_effect != NULL )
 		{
 			last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
-			synth->OutFunc(i,synth->codec_buf,last_effect->effect_out_buf,start_sample);
+			synth->OutFunc(i,synth->codec_buf,last_effect->effect_out_buf,start_sample,synth->synth_block_size);
 		}
 		else
-			synth->OutFunc(i,synth->codec_buf,synth->synth_out_buf,start_sample);
+			synth->OutFunc(i,synth->codec_buf,synth->synth_out_buf,start_sample,synth->synth_block_size);
 		i++;
 	}
 }

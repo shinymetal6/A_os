@@ -32,6 +32,8 @@
 ITCM_AREA_CODE void Effect_VCA_Init(uint32_t *effect_s)
 {
 VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
+	if ( vca->synth_block_size == 0 )
+		vca->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	vca->status |= SOUND_EFFECT_INITIALIZED;
 }
 
@@ -40,8 +42,8 @@ ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s)
 uint32_t	i;
 VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
 
-float gain = (float )*vca->amplitude / FULL_SCALE_F_FACTOR;
-	for ( i=0;i<HALF_NUMBER_OF_AUDIO_SAMPLES;i++)
+float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
+	for ( i=0;i<vca->synth_block_size;i++)
 	{
 		if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			vca->effect_out_buf[i]  = (q15_t )((float )vca->effect_in_buf[i]*gain);

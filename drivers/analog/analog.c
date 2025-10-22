@@ -24,8 +24,8 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 
-SYSTEM_RAM	ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
-SYSTEM_RAM	uint8_t					last_analog_used_handle=0,analog_driver_request = 0;
+ANALOG_DriverStruct_t	ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
+uint8_t					last_analog_used_handle=0,analog_driver_request = 0;
 
 #ifdef A_OS_ADC_ENABLED
 
@@ -116,6 +116,7 @@ ITCM_AREA_CODE uint32_t dac_stop_wav(uint8_t handle)
 #endif
 
 #ifdef A_OS_I2S_ENABLED
+#ifdef SOUND_ENGINE_I2S_ENABLED
 
 ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *private_data)
 {
@@ -175,5 +176,6 @@ ITCM_AREA_CODE uint32_t codec_internal_ops(uint8_t handle,uint8_t command,uint32
 		return ANALOG_DriverStruct[handle].codec_internal_ops(handle,command,param0,param1,param2,param3);
 	return 1;
 }
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 #endif
 

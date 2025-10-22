@@ -97,6 +97,8 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 
 	if (( rv->ring_freq == NULL ) || ( rv->bit_depth == NULL ) || ( rv->bp_freq == NULL ) || ( rv->bp_q == NULL ))
 		return;
+	if ( rv->synth_block_size == 0 )
+		rv->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( rv->sample_rate == 0 )
 		rv->sample_rate = Sound_Sample_Frequency;
 
@@ -116,7 +118,7 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 	if ((( rv->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( rv == NULL ))
 		return;
 	Effect_Robot_Set_Params(rv);
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<rv->synth_block_size;i++)
 	{
 		if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{

@@ -45,6 +45,8 @@ ITCM_AREA_CODE void Effect_Overdrive_Init(uint32_t *effect_s)
 OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect_s;
 	if ( overdrive->overdrive == NULL )
 		return;
+	if ( overdrive->synth_block_size == 0 )
+		overdrive->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	overdrive->status |= SOUND_EFFECT_INITIALIZED;
 }
 
@@ -56,7 +58,7 @@ OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect_s;
 	if ( overdrive == NULL )
 		return;
 
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<overdrive->synth_block_size;i++)
 	{
 		if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			overdrive->effect_out_buf[i] = overdrive_effect(overdrive,__Q15_2_FLOAT(overdrive->effect_in_buf[i]));

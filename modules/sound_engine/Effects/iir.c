@@ -126,6 +126,9 @@ float sample = input;
 ITCM_AREA_CODE void Effect_IIR_Init(uint32_t *effect_s)
 {
 IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
+
+	if ( iir->synth_block_size == 0 )
+		iir->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( iir->sample_rate == 0 )
 		iir->sample_rate = Sound_Sample_Frequency;
 	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++) {
@@ -159,7 +162,7 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 
 	if ((( iir->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( iir == NULL ))
 		return;
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<iir->synth_block_size;i++)
 	{
 		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			iir->effect_out_buf[i] = (q15_t ) iir_effect(iir,__Q15_2_FLOAT(iir->effect_in_buf[i]));

@@ -45,6 +45,8 @@ typedef struct
 	void 		(*effect_init)(uint32_t *effect_data);
 	uint8_t		status;
 	uint8_t		flags;
+	uint16_t	synth_block_size;
+	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
 	/* effect data */
 	uint16_t	*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
 	uint16_t	*resonance; 				// = 32768	Resonance (0 to 65535)

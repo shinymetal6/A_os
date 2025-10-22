@@ -54,6 +54,8 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect_s;
 
 	if ( ringmod->carrierFrequency == NULL )
 		return;
+	if ( ringmod->synth_block_size == 0 )
+		ringmod->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	ringmod->f_carrierFrequency = (float )*ringmod->carrierFrequency;
 	if ( ringmod->f_carrierFrequency > RINGMOD_MAX_CARRIER_FREQ)
 		ringmod->f_carrierFrequency = RINGMOD_DEFAULT_CARRIER_FREQ;
@@ -75,7 +77,7 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect_s;
 
 	if ((( ringmod->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( ringmod == NULL ))
 		return;
-	for ( i=0;i<SOUND_BLOCK_SIZE;i++)
+	for ( i=0;i<ringmod->synth_block_size;i++)
 	{
 		if (( ringmod->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 			ringmod->effect_out_buf[i] = ringmod->ringmod_effect((uint32_t *)ringmod,__Q15_2_FLOAT(ringmod->effect_in_buf[i]));
