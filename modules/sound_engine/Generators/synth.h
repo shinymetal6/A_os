@@ -84,12 +84,13 @@ typedef struct
 	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
 } Synth_TypeDef;
 /* status */
-#define		SYNTH_ENABLED		0x01
-#define		SYNTH_DISABLED		0x00
+#define		SOURCE_ENABLED		0x01
+#define		SOURCE_DISABLED		0x00
 /* out_device */
-//#define		SYNTH_DAC_OUT		32768
-#define		SYNTH_DAC_OUT		1
-#define		SYNTH_I2S_OUT		0
+#define		SOURCE_DAC_OUT		1
+#define		SOURCE_I2S_OUT		0
+
+
 
 extern void 	Synth_Process_Block(uint32_t *the_synt,uint32_t start_sample);
 extern uint8_t 	Synth_Register(uint8_t channel,Synth_TypeDef *synth);

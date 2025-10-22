@@ -22,13 +22,13 @@
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
 #include "../sound_engine.h"
 #include "synth.h"
-#ifdef SOUND_ENGINE_ENABLED
 
 /* This cannot be in AUDIO_FAST_RAM unless not initialized by user */
 /* So the better solution is to have this in std boot-initialized ram */
-Synth_TypeDef *Synth[2] = {NULL,NULL};
+extern	Synth_TypeDef *AudioSource[2];
 
 // Precomputed sine wavetable (Q15 format)
 AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
@@ -357,13 +357,13 @@ q15_t *output;
 
 ITCM_AREA_CODE uint8_t Synth_Start(Synth_TypeDef *synth)
 {
-    synth->status = SYNTH_ENABLED;
+    synth->status = SOURCE_ENABLED;
     return 0;
 }
 
 ITCM_AREA_CODE uint8_t Synth_Stop(Synth_TypeDef *synth)
 {
-    synth->status &= ~SYNTH_ENABLED;
+    synth->status &= ~SOURCE_DISABLED;
     return 0;
 }
 
@@ -378,7 +378,7 @@ ITCM_AREA_CODE void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity)
 {
 	if ( channel >= SYNTH_CHANNELS )
 		return;
-	Synth_TypeDef *synth = Synth[channel];
+	Synth_TypeDef *synth = AudioSource[channel];
 	if ( synth == NULL )
 		return;
 	synth_note_on(synth, note, velocity,SYNTH_WAVEFORM_SINE,0.50F);
@@ -388,7 +388,7 @@ ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 {
 	if ( channel >= SYNTH_CHANNELS )
 		return;
-	Synth_TypeDef *synth = Synth[channel];
+	Synth_TypeDef *synth = AudioSource[channel];
 	if ( synth == NULL )
 		return;
 	synth_note_off(synth, note);
@@ -397,11 +397,11 @@ ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 ITCM_AREA_CODE void AllNoteOFF(void)
 {
 Synth_TypeDef *synth;
-	synth = Synth[0];
+	synth = AudioSource[0];
 	if ( synth == NULL )
 		return;
 	synth_all_note_off(synth);
-	synth = Synth[1];
+	synth = AudioSource[1];
 	if ( synth == NULL )
 		return;
 	synth_all_note_off(synth);
@@ -421,18 +421,18 @@ uint32_t	i;
 		return 1;
 	for(i=0;i<SYNTH_MIDI_NOTES;i++)
 		midi_freq[i] =	rom_midi_freq[i];
-	Synth[channel] = synth;
+	AudioSource[channel] = synth;
 	if ( synth->wavetable_size == 0 )
 		synth->wavetable_size = SYNTH_WAVETABLE_256;
 	if ( synth->sample_rate == 0 )
 		synth->sample_rate = Sound_Sample_Frequency;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
-	if ( synth->out_device == SYNTH_I2S_OUT)
-		synth->OutFunc = audio_to_i2s_out;
+	if ( synth->out_device == SOURCE_I2S_OUT)
+		synth->OutFunc = synth_to_i2s_out;
 	else
-		synth->OutFunc = audio_to_dac_out;
-	synth->source_type = SOUND_SOURCE_SYNTH;
+		synth->OutFunc = synth_to_dac_out;
+	synth->source_type = SOURCE_IS_SYNTH;
 	// Initialize all voices
 	for (int i = 0; i < SYNTH_MAX_VOICES; i++)
 	{

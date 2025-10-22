@@ -42,8 +42,9 @@
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
-#define	SOUND_SOURCE_SYNTH				0
-#define	SOUND_SOURCE_ANALOG				1
+/* source_type */
+#define		SOURCE_IS_SYNTH		0
+#define		SYNTH_IS_I2S_IN		1
 
 typedef struct
 {
@@ -76,13 +77,16 @@ typedef struct {
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80
 
-extern	float	Sound_Sample_Frequency;
+extern	float				Sound_Sample_Frequency;
+#define	AudioSource_TypeDef	Synth_TypeDef
 
 #include	"Generators/synth.h"
+#include	"Generators/i2s_in.h"
 #include	"Effects/vca.h"
 
-extern void audio_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
-extern void audio_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
+extern void synth_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
+extern void synth_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
+extern void i2sin_to_i2sout(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
 
 extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);

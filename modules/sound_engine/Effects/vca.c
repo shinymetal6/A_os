@@ -42,7 +42,10 @@ ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s)
 uint32_t	i;
 VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
 
+
 float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
+	if ((( vca->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( vca == NULL ))
+		return;
 	for ( i=0;i<vca->synth_block_size;i++)
 	{
 		if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
