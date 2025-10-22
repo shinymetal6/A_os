@@ -26,19 +26,14 @@
 #include "main.h"
 #include "arm_math.h"
 
+#include	"Generators/audio_sources.h"
+
 #if defined USER_SAMPLE_RATE
 	#define DEFAULT_SAMPLE_FREQUENCY 		USER_SAMPLE_RATE
 #else
 	#define DEFAULT_SAMPLE_FREQUENCY 		96000
 #endif
 
-/*
-#define	DAC_AUDIO_SAMPLES_SIZE			NUMBER_OF_AUDIO_SAMPLES
-#define	DAC_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES
-#define	I2S_AUDIO_BUF_SIZE				NUMBER_OF_AUDIO_SAMPLES*2
-#define	I2S_AUDIO_HALF_BUF_SIZE			NUMBER_OF_AUDIO_SAMPLES
-*/
-//#define	SOUND_BLOCK_SIZE				HALF_NUMBER_OF_AUDIO_SAMPLES
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
@@ -56,7 +51,7 @@ typedef struct
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
-	uint16_t			synth_block_size;
+	uint16_t			block_size;
 	uint16_t			out_device;				/* from previous module : for dac is 1 , for codec is 0 */
 	/* Here finishes the common area */
 	int16_t 			*codec_buf;
@@ -77,8 +72,7 @@ typedef struct {
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80
 
-extern	float				Sound_Sample_Frequency;
-#define	AudioSource_TypeDef	Synth_TypeDef
+extern	float					Sound_Sample_Frequency;
 
 #include	"Generators/synth.h"
 #include	"Generators/i2s_in.h"

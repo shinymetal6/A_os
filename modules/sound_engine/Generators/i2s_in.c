@@ -25,23 +25,24 @@
 #include "../../../kernel/A_exported_functions.h"
 #ifdef SOUND_ENGINE_I2S_ENABLED
 #include "../sound_engine.h"
+#include "i2s_in.h"
 
-extern	Synth_TypeDef *AudioSource[2];
-ITCM_AREA_CODE uint8_t I2SIn_Start(AudioSource_TypeDef *i2s_in)
+extern	AUDIO_Source_TypeDef *AudioSource[2];
+ITCM_AREA_CODE uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in)
 {
 	i2s_in->status = SOURCE_ENABLED;
     return 0;
 }
 
-ITCM_AREA_CODE uint8_t I2SIn_Stop(AudioSource_TypeDef *i2s_in)
+ITCM_AREA_CODE uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in)
 {
 	i2s_in->status &= ~SOURCE_DISABLED;
     return 0;
 }
 
-ITCM_AREA_CODE uint8_t I2SIn_Register(uint8_t channel,AudioSource_TypeDef *i2s_in)
+ITCM_AREA_CODE uint8_t I2SIn_Register(uint8_t channel,AUDIO_Source_TypeDef *i2s_in)
 {
-	if (( i2s_in->codec_buf == NULL ) || ( i2s_in->synth_out_buf == NULL ))
+	if (( i2s_in->codec_buf == NULL ) || ( i2s_in->out_buf == NULL ))
 		return 1;
 	AudioSource[channel] = i2s_in;
 	i2s_in->OutFunc = i2sin_to_i2sout;

@@ -70,11 +70,11 @@ __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 uint8_t codec_handle;
 
 __attribute__ ((aligned (32))) int16_t	synth0_buf_left[EFFECTS_NUM_SAMPLES];
-__attribute__ ((aligned (32)))	AudioSource_TypeDef Audio_I2Sin_left =
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
 {
-	.synth_out_buf = i2s_in_buffer,
-	.synth_block_size = STEREO_CODEC_NUM_SAMPLES,
-	.out_device = SOURCE_I2S_OUT,
+	.out_buf = i2s_in_buffer,
+	.block_size = STEREO_CODEC_NUM_SAMPLES,
+	.out_device = SOURCE_TO_I2S_OUT,
 	.codec_buf = i2s_out_buffer,
 };
 uint32_t	audio_i2sin_left_initialized;

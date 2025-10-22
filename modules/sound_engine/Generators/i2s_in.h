@@ -23,9 +23,14 @@
 #ifndef MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_
 #define MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_
 
+#ifdef SOUND_ENGINE_I2S_ENABLED
 
-extern uint8_t I2SIn_Register(uint8_t channel,AudioSource_TypeDef *i2s_in);
-extern uint8_t I2SIn_Start(AudioSource_TypeDef *i2s_in);
-extern uint8_t I2SIn_Stop(AudioSource_TypeDef *i2s_in);
+#include "audio_sources.h"
+
+extern uint8_t I2SIn_Register(uint8_t channel,AUDIO_Source_TypeDef *i2s_in);
+extern uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in);
+extern uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in);
+
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_ */

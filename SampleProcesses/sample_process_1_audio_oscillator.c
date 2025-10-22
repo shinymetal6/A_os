@@ -50,12 +50,11 @@ __attribute__ ((aligned (32)))	DAC_Drv_TypeDef DAC_Drv_Left =
 uint32_t		dac_left_driver_handle;
 
 AUDIO_FAST_RAM int16_t	synth0_buf_left[EFFECTS_BUF_SIZE];
-__attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
-	.status = SYNTH_DISABLED,
-	.synth_block_size = EFFECTS_BUF_SIZE,
-	.synth_out_buf = synth0_buf_left,
-	.out_device = SYNTH_DAC_OUT,
+	.block_size = EFFECTS_BUF_SIZE,
+	.out_buf = synth0_buf_left,
+	.out_device = SOURCE_TO_DAC_OUT,
 	.codec_buf = dac_buffer_left,
 	.sample_rate = SAMPLE_FREQUENCY,
 	.wavetable_size = SYNTH_WAVETABLE_1024,

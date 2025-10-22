@@ -14,27 +14,15 @@
  * Project : A_os
 */
 /*
- * synth.h
+ * audio_sources.h
  *
- *  Created on: Apr 23, 2025
+ *  Created on: Oct 22, 2025
  *      Author: fil
  */
 
-#ifndef SRC_SYNTH_H_
-#define SRC_SYNTH_H_
+#ifndef MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_
+#define MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_
 
-#ifdef SOUND_ENGINE_ENABLED
-#include "audio_sources.h"
-
-#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
-
-#define	SYNTH_WAVETABLE_256		256
-#define	SYNTH_WAVETABLE_1024	1024
-#define	SYNTH_MIDI_NOTES		128
-
-#define	SYNTH_CHANNELS			2
-
-#ifdef OLDSYNTH
 #define SYNTH_MAX_VOICES 		16          // Maximum polyphony (number of simultaneous notes)
 
 // Waveform types
@@ -58,22 +46,20 @@ typedef struct {
     float 		duty_cycle;         // Duty cycle (0.0 to 1.0)
     const q15_t *wavetable;   // Pointer to custom wavetable for arbitrary waveform
 } Synth_Voice_TypeDef;
-
-// MIDI synthesizer state
 typedef struct
 {
 	/* effect header */
 	uint32_t 			*pre_effect;
 	uint32_t 			*next_effect;
 	q15_t				*effect_in_buf;	// unused
-	q15_t				*synth_out_buf;
+	q15_t				*out_buf;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
 	int16_t 			*codec_buf;
-	uint16_t			synth_block_size;
+	uint16_t			block_size;
 	uint8_t				i2s_handle;
 	/* Internals */
 	uint8_t				source_type;
@@ -83,28 +69,12 @@ typedef struct
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
 	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
-} Synth_TypeDef;
+} AUDIO_Source_TypeDef;
 /* status */
 #define		SOURCE_ENABLED		0x01
 #define		SOURCE_DISABLED		0x00
 /* out_device */
-#define		SOURCE_DAC_OUT		1
-#define		SOURCE_I2S_OUT		0
+#define		SOURCE_TO_DAC_OUT		1
+#define		SOURCE_TO_I2S_OUT		0
 
-#endif // #ifdef OLDSYNTH
-
-#include	"audio_sources.h"
-
-extern void 	Synth_Process_Block(uint32_t *the_synt,uint32_t start_sample);
-extern uint8_t 	Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth);
-extern uint8_t	Synth_Start(AUDIO_Source_TypeDef *synth);
-extern uint8_t 	Synth_Stop(AUDIO_Source_TypeDef *synth);
-
-extern void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity);
-extern void NoteOff(uint8_t channel,uint8_t note);
-extern void AllNoteOFF(void);
-
-
-#endif // #ifdef SOUND_ENGINE_ENABLED
-
-#endif /* SRC_SYNTH_H_ */
+#endif /* MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_ */

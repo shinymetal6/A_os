@@ -71,15 +71,13 @@ __attribute__ ((aligned (32)))	I2S_Drv_TypeDef	I2S_Drv =
 uint8_t i2s_handle;
 
 __attribute__ ((aligned (32))) int16_t	synth0_buf_left[EFFECTS_NUM_SAMPLES];
-__attribute__ ((aligned (32)))	Synth_TypeDef Audio_Synth_left =
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
-	.status = SYNTH_DISABLED,
-	.synth_out_buf = synth0_buf_left,
-	.synth_block_size = EFFECTS_NUM_SAMPLES,
-	.out_device = SYNTH_I2S_OUT,
+	.out_buf = synth0_buf_left,
+	.block_size = EFFECTS_NUM_SAMPLES,
+	.out_device = SOURCE_TO_I2S_OUT,
 	.codec_buf = i2s_out_buffer,
 	.sample_rate = SAMPLE_FREQUENCY,
-	.wavetable_size = SYNTH_WAVETABLE_1024,
 };
 uint32_t	synth_left_initialized;
 
