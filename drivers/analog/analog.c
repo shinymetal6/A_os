@@ -117,7 +117,7 @@ ITCM_AREA_CODE uint32_t dac_stop_wav(uint8_t handle)
 
 #ifdef A_OS_I2S_ENABLED
 #ifdef SOUND_ENGINE_I2S_ENABLED
-
+/*
 ITCM_AREA_CODE uint32_t	i2s_register(I2S_Drv_TypeDef *private_data)
 {
 	return int_i2s_register(private_data);
@@ -136,7 +136,7 @@ ITCM_AREA_CODE uint32_t i2s_init(uint8_t handle)
 		return ANALOG_DriverStruct[handle].i2s_init(handle);
 	return 1;
 }
-
+*/
 ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
 {
 	return int_nau88c22_codec_register(private_data);

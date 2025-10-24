@@ -49,8 +49,9 @@ const Nau88c22_t	Nau88c22[] =
 		},
 		{
 			NAU88C22_AUDIO_INTERFACE,
-			0x0010	// 16-bit word length, I2S format, Stereo 000010000
+			//0x0010	// 16-bit word length, I2S format, Stereo 000010000
 			//0x0008	// 16-bit word length, I2S format, Stereo 000010000
+			0x0070	// 16-bit word length on 32 bit frame, I2S format, Stereo 000010000 TESTED
 		},
 		{
 			NAU88C22_COMPANDING_CONTROL,

@@ -159,7 +159,7 @@ ITCM_AREA_CODE inline void i2sin_to_i2sout(uint8_t channel,int16_t *audio_out,q1
 uint32_t i;
 	//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
 	for ( i=0;i<num_samples;i++)
-		audio_out[i*2 + start_sample + channel] = audio_in[i];
+		audio_out[i*2 + start_sample + channel] = audio_in[i*2+ channel];
 	//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
 }
 

@@ -120,16 +120,39 @@ uint32_t	i,drv_ret=255;
 	return drv_ret;
 }
 
-ITCM_AREA_CODE  static void i2s_irq_common(I2S_Drv_TypeDef	*i2s_drv,uint32_t handle)
+ITCM_AREA_CODE  void i2s_irq_common(I2S_Drv_TypeDef	*i2s_drv,uint32_t handle)
 {
 uint32_t	start_sample;
+#ifdef TOUCH_CS_GPIO_Port
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
+#endif //#ifdef TOUCH_CS_GPIO_Port
 	start_sample = (i2s_drv->status & I2S_STATUS_HALF) ? 0 : i2s_drv->len/2;
 	if (( i2s_drv->flags & I2S_FLAGS_USE_SYNTHMODULE) == I2S_FLAGS_USE_SYNTHMODULE)
 		Do_Audio(start_sample);
+#ifdef TOUCH_CS_GPIO_Port
+	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
+#endif //#ifdef TOUCH_CS_GPIO_Port
 }
+
+extern	int16_t		i2s_in_buffer[2][512];
+extern	int16_t		i2s_out_buffer[2][512];
+void ProcessAudioHalf(void)
+{
+    // Example: echo RX to TX
+    memcpy(i2s_out_buffer[0], i2s_in_buffer[0], sizeof(i2s_out_buffer[0]));
+}
+
+
+void ProcessAudioFull(void)
+{
+    // Example: echo RX to TX
+    memcpy(i2s_out_buffer[1], i2s_in_buffer[1], sizeof(i2s_out_buffer[1]));
+}
+
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
+	/*
 uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
@@ -138,10 +161,13 @@ uint32_t handle;
 		i2s_drv->status &= ~I2S_STATUS_FULL;
 		i2s_irq_common(i2s_drv,handle);
 	}
+	*/
+	ProcessAudioHalf();
 }
 
 ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
 {
+	/*
 uint32_t handle;
 	if ( (handle = get_handle_from_i2s_dma_channel(hi2s)) != 255 )
 	{
@@ -150,6 +176,8 @@ uint32_t handle;
 		i2s_drv->status &= ~I2S_STATUS_HALF;
 		i2s_irq_common(i2s_drv,handle);
 	}
+	*/
+	ProcessAudioFull();
 }
 #endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 

@@ -62,7 +62,8 @@ typedef struct
 
 #ifdef SOUND_ENGINE_ENABLED
 	#ifdef A_OS_I2S_ENABLED
-		#include "int_i2s_driver/int_i2s_driver.h"
+		//#include "int_i2s_driver/int_i2s_driver.h"
+		#include "i2s/i2s_driver.h"
 		#ifdef A_OS_I2C_ENABLED
 			#include "codec/nau88c22.h"
 		#endif // #ifdef A_OS_I2C_ENABLED
@@ -88,9 +89,13 @@ extern	uint32_t dac_stop_wav(uint8_t handle);
 #endif
 
 #ifdef A_OS_I2S_ENABLED
+/*
 extern	uint32_t i2s_register(I2S_Drv_TypeDef *private_data);
 extern	uint32_t i2s_init(uint8_t handle);
 extern	uint32_t i2s_start(uint8_t handle);
+*/
+extern	uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s_driver);
+extern	uint32_t	i2s_driver_start(I2S_DriverStruct_t *i2s_driver);
 
 extern	uint32_t nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data);
 extern	uint32_t codec_start(uint8_t handle);

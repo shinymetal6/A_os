@@ -43,13 +43,26 @@ extern	ADC_HandleTypeDef hadc2;
 #define	ADC1_CHANNELS	6
 #define	ADC2_CHANNELS	3
 
-__attribute__((aligned(32))) uint16_t i2s_tx_buffer[I2S_BUFFER_SIZE*2];
-__attribute__((aligned(32))) uint16_t i2s_rx_buffer[I2S_BUFFER_SIZE*2];
+#define	CODEC_NUM_SAMPLES			512
+#define	STEREO_CODEC_NUM_SAMPLES	(CODEC_NUM_SAMPLES*2)
+#define	EFFECTS_NUM_SAMPLES			(CODEC_NUM_SAMPLES/2)
+/*
+__attribute__ ((aligned (32))) int16_t		i2s_in_buffer[STEREO_CODEC_NUM_SAMPLES];
+__attribute__ ((aligned (32))) int16_t		i2s_out_buffer[STEREO_CODEC_NUM_SAMPLES];
+*/
+__attribute__((aligned(32))) uint16_t i2s_out_buffer[2][STEREO_CODEC_NUM_SAMPLES];
+__attribute__((aligned(32))) uint16_t i2s_in_buffer[2][STEREO_CODEC_NUM_SAMPLES];
 
-__attribute__((aligned(32))) uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
+__attribute__ ((aligned (32)))	I2S_Drv_TypeDef	I2S_Drv =
+{
+	.i2s = 	&hi2s2,
+	.i2s_in_buffer = i2s_in_buffer,
+	.i2s_out_buffer = i2s_out_buffer,
+	.len = STEREO_CODEC_NUM_SAMPLES,
+	.flags = I2S_FLAGS_USE_SYNTHMODULE,
+	.wakeup_id = EVENT_I2S2_IRQ,
+};
+uint8_t i2s_handle;
 
 __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 {
@@ -59,22 +72,52 @@ __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 };
 uint8_t codec_handle;
 
-I2S_DriverStruct_t I2S_Driver =
+__attribute__ ((aligned (32))) int16_t	synth0_buf_left[EFFECTS_NUM_SAMPLES];
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
 {
-		.i2s_rx_buffer = i2s_rx_buffer,
-		.i2s_tx_buffer = i2s_tx_buffer,
-		.left_rx_buffer = left_rx_buffer,
-		.right_rx_buffer = right_rx_buffer,
-		.left_tx_buffer = left_tx_buffer,
-		.right_tx_buffer = right_tx_buffer,
-		.i2s = &hi2s2,
+	.out_buf = i2s_in_buffer,
+	.block_size = STEREO_CODEC_NUM_SAMPLES,
+	.out_device = SOURCE_TO_I2S_OUT,
+	.codec_buf = i2s_out_buffer,
+};
+uint32_t	audio_i2sin_left_initialized;
+
+__attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
+__attribute__ ((aligned (32))) ADC_Drv_TypeDef	ADC1_Drv =
+{
+	.adc = &hadc1,
+	.adc_timer = &htim6,
+	.adc_buffer = adc1_buf,
+	.num_channels = ADC1_CHANNELS,
+};
+uint8_t	adc1_handle;
+
+__attribute__ ((aligned (32)))	int16_t	vca0_buf_left[EFFECTS_NUM_SAMPLES];
+uint16_t			vca0_ampl_left = 32768;
+uint16_t			vca0_offset_left = 1000;
+
+VCA_Effect_TypeDef	VCA0_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.effect_in_buf = vca0_buf_left,
+	.offset = &vca0_offset_left,
+	.amplitude = &adc1_buf[2],
+	.flags = SOUND_EFFECT_ENABLED,
 };
 
 void sample_process_1_init(uint32_t process_id)
 {
 	codec_handle = nau88c22_codec_register(&Nau88C22_Drv);
 	codec_init(codec_handle);
-	i2s_driver_register(&I2S_Driver);
+	audio_i2sin_left_initialized = I2SIn_Register(LEFT_CHANNEL ,&Audio_I2Sin_left);
+
+	i2s_handle = i2s_register(&I2S_Drv);
+
+	adc1_handle = int_adc_register(&ADC1_Drv);
+	if ( adc_init(adc1_handle) == 0 )
+		adc_start(adc1_handle);
+	I2SIn_Start(&Audio_I2Sin_left);
 }
 
 void sample_process_1_audio_I2S_in2out(uint32_t process_id)
@@ -83,7 +126,8 @@ uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	i2s_driver_start(&I2S_Driver);
+	i2s_start(i2s_handle);
+	//Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
 	while(1)
 	{
 		wait_event(EVENT_TIMER);
