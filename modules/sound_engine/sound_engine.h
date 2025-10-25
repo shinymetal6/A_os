@@ -38,8 +38,8 @@
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
 /* source_type */
-#define		SOURCE_IS_SYNTH		0
-#define		SYNTH_IS_I2S_IN		1
+#define		SOUND_SOURCE_IS_SYNTH		0
+#define		SOUND_SOURCE_IS_I2S_IN		1
 
 typedef struct
 {
@@ -57,17 +57,6 @@ typedef struct
 	int16_t 			*codec_buf;
 	uint8_t				i2s_handle;
 }PTR_Effect_TypeDef;
-
-#ifdef ASDF
-typedef struct {
-	uint8_t				status;
-	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
-	int16_t				*out_buf;
-	uint32_t 			*effect_s;		/* pointer to feffect */
-	int16_t 			*codec_buf;
-	float				sample_rate;
-} SoundSource_TypeDef;
-#endif
 
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80

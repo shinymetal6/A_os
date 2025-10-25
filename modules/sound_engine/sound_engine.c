@@ -54,19 +54,19 @@ ITCM_AREA_CODE uint8_t Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_ef
 {
 PTR_Effect_TypeDef	*effect = (PTR_Effect_TypeDef *)new_effect , *pre_effect;
 AUDIO_Source_TypeDef		*synth = (AUDIO_Source_TypeDef *)ext_source;
-int16_t				*out_buf;
+int16_t				*work_buf;
 	if (( ext_source == NULL ) || ( new_effect == NULL ) || ( effect->effect_in_buf == NULL ))
 			return 1;
-	if ( synth->source_type == SOURCE_IS_SYNTH)
+	if ( synth->source_type == SOUND_SOURCE_IS_SYNTH)
 	{
 		if ( synth->next_effect == NULL )
 		{
 			synth->next_effect = (uint32_t *)effect;
 			effect->pre_effect = (uint32_t *)synth;
 			effect->next_effect = NULL;
-			out_buf = synth->out_buf;
-			synth->out_buf = effect->effect_in_buf;
-			effect->effect_out_buf = out_buf;
+			work_buf = synth->work_buf;
+			synth->work_buf = effect->effect_in_buf;
+			effect->effect_out_buf = work_buf;
 			effect->out_device = synth->out_device;
 			effect->block_size = synth->block_size;
 			synth->out_device = SOURCE_TO_I2S_OUT;
@@ -86,9 +86,9 @@ int16_t				*out_buf;
 			effect = (PTR_Effect_TypeDef *)pre_effect->next_effect;
 			effect->next_effect = NULL;
 			effect->pre_effect = (uint32_t *)pre_effect;
-			out_buf = pre_effect->effect_out_buf;
+			work_buf = pre_effect->effect_out_buf;
 			pre_effect->effect_out_buf = effect->effect_in_buf;
-			effect->effect_out_buf = out_buf;
+			effect->effect_out_buf = work_buf;
 			effect->out_device = pre_effect->out_device;
 			effect->block_size = pre_effect->block_size;
 			pre_effect->out_device = SOURCE_TO_I2S_OUT;
@@ -105,7 +105,7 @@ ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove
 PTR_Effect_TypeDef	*effect,*pre_effect;
 AUDIO_Source_TypeDef		*synth = (AUDIO_Source_TypeDef *)ext_source;
 
-	if ( synth->source_type == SOURCE_IS_SYNTH)
+	if ( synth->source_type == SOUND_SOURCE_IS_SYNTH)
 	{
 		if ( synth->next_effect == NULL )
 			return 1;
@@ -147,74 +147,44 @@ uint32_t i;
 		audio_out[i*2 + start_sample + channel] = audio_in[i];
 }
 
-ITCM_AREA_CODE inline void synth_to_dac_out(uint8_t channel,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples)
+ITCM_AREA_CODE void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples)
 {
 uint32_t i;
 	for ( i=0;i<num_samples;i++)
-		audio_out[i + start_sample] = (int16_t )((uint32_t )(audio_in[i] + 32768) >> 4);
+		audio_out[i + start_sample] = audio_in[i];
 }
-
-ITCM_AREA_CODE inline void i2sin_to_i2sout(uint8_t channel,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples)
-{
-uint32_t i;
-	//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
-	for ( i=0;i<num_samples;i++)
-		audio_out[i*2 + start_sample + channel] = audio_in[i*2+ channel];
-	//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
-}
-
 
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
 PTR_Effect_TypeDef *last_effect;
 uint8_t i=0;
+//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
+//HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
 
-	while ( AudioSource[i] != NULL)
+	for(i=0;i<SOUND_AUDIO_SOURCES;i++)
 	{
-		AUDIO_Source_TypeDef *source = AudioSource[i];
-		if (( source == NULL ) || ( i == 2 ) || ( source->status != SOURCE_ENABLED ))
-			break;
-		if ( AudioSource[i]->source_type == SOURCE_IS_SYNTH)
-			Synth_Process_Block((uint32_t *)source,start_sample);
-		if ( source->next_effect != NULL )
+		if ( AudioSource[i] != NULL)
 		{
-			last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
-			source->OutFunc(i,source->codec_buf,last_effect->effect_out_buf,start_sample,source->block_size);
-		}
-		else
-			source->OutFunc(i,source->codec_buf,source->out_buf,start_sample,source->block_size);
-	/*
-		if ( AudioSource[i]->source_type == SOURCE_IS_SYNTH)
-		{
-			AUDIO_Source_TypeDef *synth = AudioSource[i];
-			if (( synth == NULL ) || ( i == 2 ) || ( synth->status != SOURCE_ENABLED ))
-				break;
-
-			Synth_Process_Block((uint32_t *)synth,start_sample);
-			if ( synth->next_effect != NULL )
+			AUDIO_Source_TypeDef *source = AudioSource[i];
+			if ( source->status == SOURCE_ENABLED )
 			{
-				last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(synth->next_effect);
-				synth->OutFunc(i,synth->codec_buf,last_effect->effect_out_buf,start_sample,synth->block_size);
+				if ( AudioSource[i]->source_type == SOUND_SOURCE_IS_SYNTH)
+				{
+					Synth_Process_Block((uint32_t *)source);
+					if ( source->out_device == SOURCE_TO_I2S_OUT)
+					{
+						if ( source->next_effect != NULL )
+						{
+							last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
+							to_i2sout(source->out_buf,last_effect->effect_out_buf,start_sample,source->block_size);
+						}
+						else
+							to_i2sout(source->out_buf,source->work_buf,start_sample,source->block_size);
+					}
+				}
 			}
-			else
-				synth->OutFunc(i,synth->codec_buf,synth->out_buf,start_sample,synth->block_size);
 		}
-		if ( AudioSource[i]->source_type == SYNTH_IS_I2S_IN)
-		{
-			AUDIO_Source_TypeDef *i2s_in = AudioSource[i];
-			if (( i2s_in == NULL ) || ( i == 2 ) || ( i2s_in->status != SOURCE_ENABLED ))
-				break;
-			if ( i2s_in->next_effect != NULL )
-			{
-				last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(i2s_in->next_effect);
-				i2s_in->OutFunc(i,i2s_in->codec_buf,last_effect->effect_out_buf,start_sample,i2s_in->block_size);
-			}
-			else
-				i2s_in->OutFunc(i,i2s_in->codec_buf,i2s_in->out_buf,start_sample,i2s_in->block_size);
-		}
-*/
-		i++;
 	}
 }
 

@@ -34,68 +34,9 @@
 
 #define	SYNTH_CHANNELS			2
 
-#ifdef OLDSYNTH
-#define SYNTH_MAX_VOICES 		16          // Maximum polyphony (number of simultaneous notes)
-
-// Waveform types
-typedef enum {
-	SYNTH_WAVEFORM_SINE,
-	SYNTH_WAVEFORM_SQUARE,
-	SYNTH_WAVEFORM_SAWTOOTH,
-	SYNTH_WAVEFORM_TRIANGLE,
-	SYNTH_WAVEFORM_EXPONENTIAL,
-	SYNTH_WAVEFORM_ARBITRARY
-} Synth_WaveformType;
-
-// Voice state for polyphonic synthesis
-typedef struct {
-	uint8_t		note;
-    float 		phase;              // Phase accumulator (floating-point format)
-    float 		phase_increment;    // Phase increment per sample (floating-point format)
-    q15_t 		amplitude;          // Amplitude (Q15 format)
-    int 		active;               // Flag indicating if the voice is active
-    Synth_WaveformType waveform;    // Waveform type
-    float 		duty_cycle;         // Duty cycle (0.0 to 1.0)
-    const q15_t *wavetable;   // Pointer to custom wavetable for arbitrary waveform
-} Synth_Voice_TypeDef;
-
-// MIDI synthesizer state
-typedef struct
-{
-	/* effect header */
-	uint32_t 			*pre_effect;
-	uint32_t 			*next_effect;
-	q15_t				*effect_in_buf;	// unused
-	q15_t				*synth_out_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
-	uint8_t				status;
-	uint8_t				flags;
-	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
-	int16_t 			*codec_buf;
-	uint16_t			synth_block_size;
-	uint8_t				i2s_handle;
-	/* Internals */
-	uint8_t				source_type;
-	uint8_t				active_voices;
-	uint8_t				voices_shift;
-	float				sample_rate;
-	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
-    uint32_t 			wavetable_size;    //Wavetable size
-	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
-} Synth_TypeDef;
-/* status */
-#define		SOURCE_ENABLED		0x01
-#define		SOURCE_DISABLED		0x00
-/* out_device */
-#define		SOURCE_DAC_OUT		1
-#define		SOURCE_I2S_OUT		0
-
-#endif // #ifdef OLDSYNTH
-
 #include	"audio_sources.h"
 
-extern void 	Synth_Process_Block(uint32_t *the_synt,uint32_t start_sample);
+extern void 	Synth_Process_Block(uint32_t *the_synt);
 extern uint8_t 	Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth);
 extern uint8_t	Synth_Start(AUDIO_Source_TypeDef *synth);
 extern uint8_t 	Synth_Stop(AUDIO_Source_TypeDef *synth);
@@ -104,7 +45,5 @@ extern void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity);
 extern void NoteOff(uint8_t channel,uint8_t note);
 extern void AllNoteOFF(void);
 
-
 #endif // #ifdef SOUND_ENGINE_ENABLED
-
 #endif /* SRC_SYNTH_H_ */

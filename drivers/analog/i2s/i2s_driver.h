@@ -39,12 +39,15 @@ typedef struct
 	uint16_t 			*right_tx_buffer;
 	I2S_HandleTypeDef 	*i2s;
 }I2S_DriverStruct_t;
+/* flags */
+#define		I2S_FLAGS_ECHO			0x80
 
-#define		I2S_BUFFER_SIZE			1024
+#define		I2S_BUFFER_SIZE			512
 #define		I2S_LEFT_CHANNEL		0
 #define		I2S_RIGHT_CHANNEL		1
 #define		I2S_FIRST_HALF			0
 #define		I2S_SECOND_HALF			(I2S_BUFFER_SIZE/2)
+#define		I2S_SAMPLE_FREQUENCY	48000
 
 extern uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s);
 extern uint32_t	i2s_driver_start(I2S_DriverStruct_t *i2s);

@@ -197,7 +197,7 @@ ITCM_AREA_CODE static void synth_note_on(AUDIO_Source_TypeDef *synth, uint8_t no
         if (!synth->voices[i].active)
         {
             synth->voices[i].phase = 0.0f;
-            synth->voices[i].phase_increment = midi_freq[note] / synth->sample_rate; // Phase increment per sample
+            synth->voices[i].phase_increment = midi_freq[note] / (synth->sample_rate*8.0F); // Phase increment per sample
             synth->voices[i].amplitude = (q15_t)((velocity / 127.0f) * 32768.0f); // Scale velocity to Q15 , max val = 127
             synth->voices[i].waveform = waveform;
             synth->voices[i].duty_cycle = duty_cycle;
@@ -234,13 +234,13 @@ ITCM_AREA_CODE static void synth_all_note_off(AUDIO_Source_TypeDef *synth)
     synth->voices_shift = synth_calc_shift(0);
 }
 // Process a block of audio samples
-ITCM_AREA_CODE void Synth_Process_Block(uint32_t *the_synt,uint32_t start_sample)
+ITCM_AREA_CODE void Synth_Process_Block(uint32_t *the_synt)
 {
 AUDIO_Source_TypeDef *synth = (AUDIO_Source_TypeDef *)the_synt;
 
 q15_t *output;
 
-	output = synth->out_buf; // no, so is half buffer
+	output = synth->work_buf; // no, so is half buffer
 
     // Clear the output buffer
     memset(output, 0, synth->block_size * sizeof(q15_t));
@@ -413,9 +413,9 @@ ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synt
 {
 uint32_t	i;
 
-	if ( synth->codec_buf == NULL )
-		return 1;
 	if ( synth->out_buf == NULL )
+		return 1;
+	if ( synth->work_buf == NULL )
 			return 1;
 	if ( channel >= SYNTH_CHANNELS )
 		return 1;
@@ -428,11 +428,13 @@ uint32_t	i;
 		synth->sample_rate = Sound_Sample_Frequency;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
+	/*
 	if ( synth->out_device == SOURCE_TO_I2S_OUT)
 		synth->OutFunc = synth_to_i2s_out;
 	else
 		synth->OutFunc = synth_to_dac_out;
-	synth->source_type = SOURCE_IS_SYNTH;
+	*/
+	synth->source_type = SOUND_SOURCE_IS_SYNTH;
 	// Initialize all voices
 	for (int i = 0; i < SYNTH_MAX_VOICES; i++)
 	{

@@ -84,7 +84,10 @@ uint32_t i,j;
 		i2s->right_rx_buffer[j] = i2s->i2s_rx_buffer[start_sample*2+i+I2S_RIGHT_CHANNEL];
 	}
 
-	i2s_copy_buf((uint32_t *)&i2s->left_tx_buffer[start_sample],(uint32_t *)&i2s->left_rx_buffer[start_sample]);
+	if (( i2s->flags & I2S_FLAGS_ECHO ) == I2S_FLAGS_ECHO)
+		i2s_copy_buf((uint32_t *)&i2s->left_tx_buffer[start_sample],(uint32_t *)&i2s->left_rx_buffer[start_sample]);
+	else
+		Do_Audio(start_sample);
 
 	for(i=0,j=start_sample;i<I2S_BUFFER_SIZE;i+=2,j++)
 	{

@@ -36,7 +36,7 @@ extern	ADC_HandleTypeDef hadc2;
 #define	RIGHT_CHANNEL		1
 
 #ifdef SOUND_ENGINE_I2S_ENABLED
-	#define	SAMPLE_FREQUENCY	USER_I2S_SAMPLE_FREQUENCY
+	#define	SAMPLE_FREQUENCY	I2S_SAMPLE_FREQUENCY
 #else
 	#define	SAMPLE_FREQUENCY	48000
 #endif
@@ -68,6 +68,7 @@ I2S_DriverStruct_t I2S_Driver =
 		.left_tx_buffer = left_tx_buffer,
 		.right_tx_buffer = right_tx_buffer,
 		.i2s = &hi2s2,
+		.flags = I2S_FLAGS_ECHO,
 };
 
 void sample_process_1_init(uint32_t process_id)

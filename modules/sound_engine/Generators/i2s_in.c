@@ -42,11 +42,11 @@ ITCM_AREA_CODE uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in)
 
 ITCM_AREA_CODE uint8_t I2SIn_Register(uint8_t channel,AUDIO_Source_TypeDef *i2s_in)
 {
-	if (( i2s_in->codec_buf == NULL ) || ( i2s_in->out_buf == NULL ))
+	if (( i2s_in->out_buf == NULL ) || ( i2s_in->work_buf == NULL ))
 		return 1;
 	AudioSource[channel] = i2s_in;
 	i2s_in->OutFunc = i2sin_to_i2sout;
-	i2s_in->source_type = SYNTH_IS_I2S_IN;
+	i2s_in->source_type = SOUND_SOURCE_IS_SYNTH;
 	return 0;
 
 }

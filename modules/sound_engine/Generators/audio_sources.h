@@ -24,6 +24,7 @@
 #define MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_
 
 #define SYNTH_MAX_VOICES 		16          // Maximum polyphony (number of simultaneous notes)
+#define SOUND_AUDIO_SOURCES		2           // Maximum sources
 
 // Waveform types
 typedef enum {
@@ -52,13 +53,13 @@ typedef struct
 	uint32_t 			*pre_effect;
 	uint32_t 			*next_effect;
 	q15_t				*effect_in_buf;	// unused
-	q15_t				*out_buf;
+	q15_t				*work_buf;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
 	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
-	int16_t 			*codec_buf;
+	int16_t 			*out_buf;
 	uint16_t			block_size;
 	uint8_t				i2s_handle;
 	/* Internals */
