@@ -137,9 +137,13 @@ uint8_t i=0;
 					Synth_Process_Block((uint32_t *)source);
 				last_effect = (PTR_Effect_TypeDef *)source;
 				if ( source->next_effect != NULL )
+				{
 					last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
-				if ( last_effect->out_device == SOURCE_TO_I2S_OUT)
-					to_i2sout(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+					if ( last_effect->out_device == SOURCE_TO_I2S_OUT)
+						to_i2sout(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+				}
+				else
+					to_i2sout(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
 			}
 		}
 	}

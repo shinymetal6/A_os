@@ -66,45 +66,47 @@ __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 	.device_address = NAU88C22_I2C_ADDR,
 	.master_volume = 100,
 };
-uint8_t codec_handle;
 
 I2S_DriverStruct_t I2S_Driver =
 {
-		.i2s_rx_buffer = i2s_rx_buffer,
-		.i2s_tx_buffer = i2s_tx_buffer,
-		.left_rx_buffer = left_rx_buffer,
-		.right_rx_buffer = right_rx_buffer,
-		.left_tx_buffer = left_tx_buffer,
-		.right_tx_buffer = right_tx_buffer,
-		.i2s = &hi2s2,
+	.i2s_rx_buffer = i2s_rx_buffer,
+	.i2s_tx_buffer = i2s_tx_buffer,
+	.left_rx_buffer = left_rx_buffer,
+	.right_rx_buffer = right_rx_buffer,
+	.left_tx_buffer = left_tx_buffer,
+	.right_tx_buffer = right_tx_buffer,
+	.i2s = &hi2s2,
 };
 
 __attribute__ ((aligned (32))) int16_t	synth0_work_buf_left[EFFECTS_NUM_SAMPLES];
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
-	.work_buf = synth0_work_buf_left,
 	.block_size = I2S_EFFECT_SIZE,
+	.in_buf = synth0_work_buf_left,
 	.out_device = SOURCE_TO_I2S_OUT,
-	.out_buf = (int16_t *)i2s_tx_buffer,
+	.out_buf = (q15_t *)left_tx_buffer,
+	.device_out_buf = (int16_t *)i2s_tx_buffer,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
 uint32_t	synth_left_initialized;
 
-AUDIO_FAST_RAM int16_t	vca0_buf_left[EFFECTS_NUM_SAMPLES];
+AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
 uint16_t			vca0_ampl_left = 1000;
+uint16_t			vca0_offset = 0;
 VCA_Effect_TypeDef	VCA0_Left =
 {
 	.effect = Effect_VCA,
 	.effect_init = Effect_VCA_Init,
-	.effect_in_buf = vca0_buf_left,
+	.out_buf = vca0_buf_left,
 	.amplitude = &vca0_ampl_left,
+	.offset = &vca0_offset,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
 void sample_process_1_init(uint32_t process_id)
 {
-	codec_handle = nau88c22_codec_register(&Nau88C22_Drv);
-	codec_init(codec_handle);
+	nau88c22_codec_register(&Nau88C22_Drv);
+	nau88c22_init(&Nau88C22_Drv);
 
 	i2s_driver_register(&I2S_Driver);
 
@@ -116,7 +118,7 @@ void sample_process_1_init(uint32_t process_id)
 
 uint8_t		up = 0;
 
-//#define SWEEP_VCA	1
+#define SWEEP_VCA	1
 #define STEP	200
 #define HLIMIT	(65500 - STEP)
 #define LLIMIT	(STEP * 2)

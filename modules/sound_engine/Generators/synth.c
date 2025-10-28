@@ -428,6 +428,7 @@ uint32_t	i;
 	synth->active_voices = 0;
 
 	synth->source_type = SOUND_SOURCE_IS_SYNTH;
+
 	if (synth->out_device == SOURCE_TO_I2S_OUT)
 		synth->sample_rate /= 4;
 

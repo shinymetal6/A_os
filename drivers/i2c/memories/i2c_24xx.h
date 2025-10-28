@@ -42,6 +42,8 @@ typedef struct
 	void 				(*init)(void);
 	I2C_DriverStruct_t	*next_drv;
 	/* driver proprietary data */
+	uint8_t 			*read_buf;
+	uint8_t				*write_buf;
 	GPIO_TypeDef	 	*i2c_scl_port;
 	uint16_t			i2c_scl_bit;
 	uint8_t 			device_address_size;

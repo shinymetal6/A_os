@@ -16,12 +16,12 @@
 /*
  * sht40.h
  *
- *  Created on: Mar 13, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_SENSORS_SHT40_SHT40_H_
-#define DRIVERS_SENSORS_SHT40_SHT40_H_
+#ifndef DRIVERS_I2C_SENSORS_SHT40_H_
+#define DRIVERS_I2C_SENSORS_SHT40_H_
 
 /* status */
 #define	SHT40_STARTED		0x80
@@ -48,6 +48,34 @@
 #define SHT40_I2C_TIMEOUT			1000U
 #define SHT40_DRIVER_NOT_OWNED		0xffffffff
 
-extern	uint32_t sht40_register(I2C_Sensors_DriverStruct_t *driver_private_data);
+typedef struct
+{
+	/* driver header */
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t 			process;
+	I2C_HandleTypeDef 	*bus;
+	uint16_t 			device_address;
+	uint32_t 			wakeup_id;
+	void 				(*init)(void);
+	I2C_DriverStruct_t	*next_drv;
+	/* driver proprietary data */
+	uint8_t				device_flags;
+	uint32_t 			device_config;
+	uint32_t			sensor_id;
+	GPIO_TypeDef	 	*i2c_scl_port;
+	uint16_t			i2c_scl_bit;
+	uint8_t 			device_address_size;
+	uint32_t 			device_size;
+	GPIO_TypeDef	 	*power_port;
+	uint16_t			power_bit;
+	uint16_t			power_active_level;
+	uint32_t 			timeout;
+	uint32_t			who_am_i;
+	uint8_t				*data;
+	uint8_t				*additional_data;
+}I2C_Sht40_Drv_TypeDef;
 
-#endif /* DRIVERS_SENSORS_SHT40_SHT40_H_ */
+extern uint32_t sht40_register(I2C_Sht40_Drv_TypeDef *sht40_Drv);
+
+#endif /* DRIVERS_I2C_SENSORS_SHT40_H_ */

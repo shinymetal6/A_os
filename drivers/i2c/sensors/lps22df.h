@@ -16,11 +16,12 @@
 /*
  * lps22df.h
  *
- *  Created on: Dec 22, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
-#ifndef DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_
-#define DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_
+
+#ifndef DRIVERS_I2C_SENSORS_LPS22DF_H_
+#define DRIVERS_I2C_SENSORS_LPS22DF_H_
 
 #define	LPS22DF_I2C_TIMEOUT				1000
 #define	LPS22DF_ADDR					0xb8
@@ -88,7 +89,35 @@
 
 #define	LPS22DF_STARTED	0x80
 
-extern uint32_t lps22df_register(I2C_Sensors_DriverStruct_t *driver_private_data);
+typedef struct
+{
+	/* driver header */
+	uint8_t				status;
+	uint8_t				flags;
+	uint8_t 			process;
+	I2C_HandleTypeDef 	*bus;
+	uint16_t 			device_address;
+	uint32_t 			wakeup_id;
+	void 				(*init)(void);
+	I2C_DriverStruct_t	*next_drv;
+	/* driver proprietary data */
+	uint8_t				device_flags;
+	uint32_t 			device_config;
+	uint32_t			sensor_id;
+	GPIO_TypeDef	 	*i2c_scl_port;
+	uint16_t			i2c_scl_bit;
+	uint8_t 			device_address_size;
+	uint32_t 			device_size;
+	GPIO_TypeDef	 	*power_port;
+	uint16_t			power_bit;
+	uint16_t			power_active_level;
+	uint32_t 			timeout;
+	uint32_t			who_am_i;
+	uint8_t				*data;
+	uint8_t				*additional_data;
+}I2C_Lps22DF_Drv_TypeDef;
+
+extern uint32_t lps22df_register(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv);
 
 
-#endif /* DRIVERS_I2C_SENSORS_LPS22DF_LPS22DF_H_ */
+#endif /* DRIVERS_I2C_SENSORS_LPS22DF_H_ */

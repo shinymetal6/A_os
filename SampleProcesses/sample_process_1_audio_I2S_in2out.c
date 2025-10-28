@@ -59,14 +59,13 @@ __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 
 I2S_DriverStruct_t I2S_Driver =
 {
-		.i2s_rx_buffer = i2s_rx_buffer,
-		.i2s_tx_buffer = i2s_tx_buffer,
-		.left_rx_buffer = left_rx_buffer,
-		.right_rx_buffer = right_rx_buffer,
-		.left_tx_buffer = left_tx_buffer,
-		.right_tx_buffer = right_tx_buffer,
-		.i2s = &hi2s2,
-		//.flags = I2S_FLAGS_ECHO,
+	.i2s_rx_buffer = i2s_rx_buffer,
+	.i2s_tx_buffer = i2s_tx_buffer,
+	.left_rx_buffer = left_rx_buffer,
+	.right_rx_buffer = right_rx_buffer,
+	.left_tx_buffer = left_tx_buffer,
+	.right_tx_buffer = right_tx_buffer,
+	.i2s = &hi2s2,
 };
 
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =

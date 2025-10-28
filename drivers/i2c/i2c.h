@@ -30,6 +30,7 @@ typedef struct
 	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
 	uint32_t 			wakeup_id;
@@ -43,6 +44,11 @@ extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 #ifdef SOUND_ENGINE_ENABLED
 	#include "codec/nau88c22.h"
 #endif // #ifdef SOUND_ENABLED
+#include "memories/i2c_24xx.h"
+#include "sensors/lis2dw12.h"
+#include "sensors/sht40.h"
+#include "sensors/stts22h.h"
+#include "sensors/lps22df.h"
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

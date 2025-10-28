@@ -24,11 +24,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
 #include "../i2c.h"
-
 #include "lis2dw12.h"
-
-extern	I2C_DriverStruct_t	I2C_DriverStruct[MAX_I2C_DEVICES];
-extern	uint8_t				last_i2c_used_handle,i2c_driver_request;
 
 ITCM_AREA_CODE static uint8_t	write_lis_reg(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv,uint8_t address,uint8_t data)
 {
@@ -139,45 +135,6 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		lis2dw12_Drv->next_drv = NULL;
 		lis2dw12_Drv->process = get_current_process();
 	}
-	return 0;
-	/*
-	if ( I2C_DriverStruct[last_i2c_used_handle].process == 0 )
-	{
-		I2C_DriverStruct[last_i2c_used_handle].process = get_current_process();
-		I2C_DriverStruct[last_i2c_used_handle].private_data = (uint32_t *)driver_private_data;
-		I2C_DriverStruct[last_i2c_used_handle].handle = last_i2c_used_handle;
-		lis2dw12_Drv = (I2C_Sensors_DriverStruct_t *)I2C_DriverStruct[last_i2c_used_handle].private_data;
-		if ( lis2dw12_Drv->bus == NULL)
-			return DRIVER_REQUEST_FAILED;
-		if ( lis2dw12_Drv->data == NULL)
-			return DRIVER_REQUEST_FAILED;
-		if ( lis2dw12_Drv->additional_data == NULL)
-			return DRIVER_REQUEST_FAILED;
-		if ( lis2dw12_Drv->wakeup_id == 0)
-			return DRIVER_REQUEST_FAILED;
-		I2C_DriverStruct[last_i2c_used_handle].bus = lis2dw12_Drv->bus;
-
-		if ( lis2dw12_Drv->i2c_timeout == 0 )
-			lis2dw12_Drv->i2c_timeout = LIS2DW12_I2C_TIMEOUT;
-		if ( lis2dw12_Drv->device_config == 0 )
-			lis2dw12_Drv->device_config = LIS2DW12_NUM_FIFO_LOCATIONS;
-		lis2dw12_Drv->status = DRIVER_STATUS_IN_USE;
-		lis2dw12_Drv->sensor_start = lis2dw12_start;
-		lis2dw12_Drv->sensor_stop = lis2dw12_stop;
-		lis2dw12_Drv->sensor_init = lis2dw12_init;
-		lis2dw12_Drv->sensor_get_data = lis2dw12_get_Pdata;
-		lis2dw12_Drv->sensor_get_additional_data = lis2dw12_get_Tdata;
-
-		lis2dw12_Drv->sensor_power_on = lis2dw12_power_on;
-		lis2dw12_Drv->sensor_power_off = lis2dw12_power_off;
-		lis2dw12_Drv->power_port = lis2dw12_Drv->power_port;
-		lis2dw12_Drv->power_bit = lis2dw12_Drv->power_bit;
-		last_i2c_used_handle++;
-		i2c_driver_request++;
-		return last_i2c_used_handle-1;
-	}
-	return DRIVER_REQUEST_FAILED;
-*/
 	return 0;
 }
 

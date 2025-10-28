@@ -217,19 +217,18 @@ uint8_t i2c_data[2];
 	return HAL_I2C_Mem_Write(bus, device_address, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE static uint32_t nau88c22_start(uint8_t handle)
+ITCM_AREA_CODE uint32_t nau88c22_start(Nau88C22_Drv_TypeDef *codec_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t nau88c22_stop(uint8_t handle)
+ITCM_AREA_CODE uint32_t nau88c22_stop(Nau88C22_Drv_TypeDef *codec_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t nau88c22_get_status(uint8_t handle)
+ITCM_AREA_CODE uint32_t nau88c22_get_status(Nau88C22_Drv_TypeDef *codec_drv)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 	return codec_drv->status;
 }
 
