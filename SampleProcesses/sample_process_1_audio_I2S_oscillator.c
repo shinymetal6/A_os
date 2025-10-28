@@ -46,6 +46,8 @@ extern	ADC_HandleTypeDef hadc2;
 	#define	SAMPLE_FREQUENCY	48000
 #endif
 
+#define SWEEP_VCA	1
+
 #define	USB_BUF_LEN			64
 #define	ADC1_CHANNELS	6
 #define	ADC2_CHANNELS	3
@@ -90,6 +92,16 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 };
 uint32_t	synth_left_initialized;
 
+__attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
+__attribute__ ((aligned (32))) ADC_Drv_TypeDef	ADC1_Drv =
+{
+	.adc = &hadc1,
+	.adc_timer = &htim6,
+	.adc_buffer = adc1_buf,
+	.num_channels = ADC1_CHANNELS,
+};
+uint8_t	adc1_handle;
+
 AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
 uint16_t			vca0_ampl_left = 1000;
 uint16_t			vca0_offset = 0;
@@ -98,7 +110,11 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.effect = Effect_VCA,
 	.effect_init = Effect_VCA_Init,
 	.out_buf = vca0_buf_left,
+#ifdef SWEEP_VCA
 	.amplitude = &vca0_ampl_left,
+#else
+	.amplitude = &adc1_buf[2],
+#endif
 	.offset = &vca0_offset,
 	.flags = SOUND_EFFECT_ENABLED,
 };
@@ -114,11 +130,12 @@ void sample_process_1_init(uint32_t process_id)
 	if ( synth_left_initialized == 0 )
 		Synth_Start(&Audio_Synth_left);
 	i2s_driver_start(&I2S_Driver);
+	adc1_handle = int_adc_register(&ADC1_Drv);
+	adc_start(adc1_handle);
 }
 
 uint8_t		up = 0;
 
-#define SWEEP_VCA	1
 #define STEP	200
 #define HLIMIT	(65500 - STEP)
 #define LLIMIT	(STEP * 2)
