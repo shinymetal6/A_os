@@ -38,8 +38,14 @@
 
 typedef struct
 {
+	/* timer header */
+	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
+	uint32_t 			*next_timer;
+	TIM_HandleTypeDef 	*timer;
+	uint8_t				timer_type;
+	/* timer internals */
 	uint8_t				handle;
 	uint8_t				sensor_id;
 	uint8_t				state_machine;
@@ -48,7 +54,6 @@ typedef struct
 	uint16_t			dhtxx_am230x_length[DHTXX_AM230X_BITBYTES_LEN];
 	uint8_t				dhtxx_data[DHTXX_AM230X_DATALEN];
 	uint8_t				checksum;
-	TIM_HandleTypeDef 	*dht_timer;
 	uint16_t 			dht_timer_channel;
 	GPIO_TypeDef	 	*one_wire_port;
 	uint16_t			one_wire_bit;
@@ -68,11 +73,10 @@ enum DHTXX_AM230X_STATE_MACHINE {
 #define	DHTXX_AM230X_START_TICKS	18
 #define	DHTXX_AM230X_CYCLE_TICKS	6
 
-extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_driver_private_data);
-extern	uint32_t	dhtxx_am230x_init(uint8_t handle_dht);
-extern	uint32_t	dhtxx_am230x_start(uint8_t handle_dht);
-extern	uint32_t	get_handle_from_dht_workers(uint32_t device_index);
-extern	uint32_t	dhtxx_am230x_get_status(uint8_t handle_dht);
+extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_init(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_start(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_get_status(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

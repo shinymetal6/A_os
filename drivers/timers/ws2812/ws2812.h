@@ -38,11 +38,16 @@
 
 typedef struct
 {
-	uint8_t					status;
-	uint8_t					flags;
-	uint8_t					handle;
-	TIM_HandleTypeDef 		*ws2812_timer;
-	uint32_t 				ws2812_channel;
+	/* timer header */
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_timer;
+	TIM_HandleTypeDef 	*timer;
+	uint8_t				timer_type;
+	/* timer internals */
+	uint8_t				handle;
+	uint32_t 			ws2812_channel;
 }WS2812_Drv_TypeDef;
 
 extern uint32_t	ws2812_register(WS2812_Drv_TypeDef *private_data);

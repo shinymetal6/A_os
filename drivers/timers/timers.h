@@ -38,12 +38,25 @@ typedef struct
 #define TIM_TYPE_ENCODER		1
 #define TIM_TYPE_DHT11			2
 
+typedef struct
+{
+	/* timer header */
+	uint8_t 				process;
+	uint8_t					status;
+	uint8_t					flags;
+	uint32_t 				*next_timer;
+	TIM_HandleTypeDef 		*timer;
+	uint8_t					timer_type;
+}TIMER_DriverStruct_t;
+
 #include "dcc/dcc.h"
 #include "pwm/pwm.h"
 #include "servo/servo.h"
 #include "ws2812/ws2812.h"
 #include "encoder/encoder.h"
 #include "dhtxx_am230x/dhtxx_am230x.h"
+
+extern	TIMER_DriverStruct_t	*timer_drv_ptr;
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

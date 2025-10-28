@@ -29,33 +29,29 @@
 #include "servo.h"
 #include <string.h>
 
-extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
-extern	uint8_t				last_tim_used_handle,tim_driver_request;
-
-ITCM_AREA_CODE uint32_t servo_start(uint8_t handle)
+ITCM_AREA_CODE uint32_t servo_start(SERVO_Control_Drv_TypeDef *servo_drv)
 {
-SERVO_Control_Drv_TypeDef	*servo_driver_data = (SERVO_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;
-	HAL_TIM_PWM_Start(servo_driver_data->servo_timer,servo_driver_data->servo_channel);
-	__HAL_TIM_DISABLE(servo_driver_data->servo_timer);
+	HAL_TIM_PWM_Start(servo_drv->timer,servo_drv->servo_channel);
+	__HAL_TIM_DISABLE(servo_drv->timer);
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_stop(uint8_t handle)
+ITCM_AREA_CODE uint32_t servo_stop(SERVO_Control_Drv_TypeDef *servo_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_get_status(uint8_t handle)
+ITCM_AREA_CODE uint32_t servo_get_status(SERVO_Control_Drv_TypeDef *servo_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_set_prescaler(uint8_t handle,uint32_t prescaler)
+ITCM_AREA_CODE uint32_t servo_set_prescaler(SERVO_Control_Drv_TypeDef *servo_drv,uint32_t prescaler)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_set_position(uint8_t handle,uint8_t servo_position,uint8_t servo_pulses)
+ITCM_AREA_CODE uint32_t servo_set_position(SERVO_Control_Drv_TypeDef *servo_drv,uint8_t servo_position,uint8_t servo_pulses)
 {
 uint16_t				span_time;
 uint16_t				servo_pulse_len;
@@ -64,45 +60,40 @@ uint16_t				servo_pulse_len;
 	if ( servo_position > 100 )
 		return DRIVER_STATUS_FAILED;
 
-	SERVO_Control_Drv_TypeDef	*servo_driver_data = (SERVO_Control_Drv_TypeDef *)TIM_DriverStruct[handle].private_data;
-	__HAL_TIM_DISABLE(servo_driver_data->servo_timer);
-	span_time = servo_driver_data->max_time - servo_driver_data->min_time;
-	servo_pulse_len = servo_driver_data->min_time + ((span_time / 100 ) * servo_position);
-	servo_driver_data->servo_timer->Instance->CNT = 0;
-	servo_driver_data->servo_timer->Instance->ARR = servo_driver_data->cycle_time;
-	servo_driver_data->servo_timer->Instance->CCR1 = servo_driver_data->cycle_time - servo_pulse_len;
-	servo_driver_data->servo_timer->Instance->RCR = servo_driver_data->repetition;
-    __HAL_TIM_ENABLE(servo_driver_data->servo_timer);
-
-	//HAL_TIM_PWM_Start(servo_driver_data->servo_timer,servo_driver_data->servo_channel);
+	__HAL_TIM_DISABLE(servo_drv->timer);
+	span_time = servo_drv->max_time - servo_drv->min_time;
+	servo_pulse_len = servo_drv->min_time + ((span_time / 100 ) * servo_position);
+	servo_drv->timer->Instance->CNT = 0;
+	servo_drv->timer->Instance->ARR = servo_drv->cycle_time;
+	servo_drv->timer->Instance->CCR1 = servo_drv->cycle_time - servo_pulse_len;
+	servo_drv->timer->Instance->RCR = servo_drv->repetition;
+    __HAL_TIM_ENABLE(servo_drv->timer);
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	servo_register(SERVO_Control_Drv_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	servo_register(SERVO_Control_Drv_TypeDef *servo_drv)
 {
-SERVO_Control_Drv_TypeDef	*servo_driver_data;
-	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
+TIMER_DriverStruct_t *eptr, *pre_eptr;
+
+	if ( servo_drv->timer == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if ( timer_drv_ptr == NULL)
 	{
-		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
-		TIM_DriverStruct[last_tim_used_handle].flags = 0;
-		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
-
-		servo_driver_data = (SERVO_Control_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
-		if ( servo_driver_data->servo_timer == NULL )
-			return DRIVER_REQUEST_FAILED;
-		if ( servo_driver_data->repetition == 0 )
-			servo_driver_data->repetition = 7;
-		else
-			servo_driver_data->repetition --;
-		servo_driver_data->servo_timer->Instance->ARR = servo_driver_data->cycle_time;
-		servo_driver_data->flags = 0;
-		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
-
-		last_tim_used_handle++;
-		tim_driver_request++;
-		return last_tim_used_handle-1;
+		timer_drv_ptr = (TIMER_DriverStruct_t *)servo_drv;
+		servo_drv->next_timer = NULL;
 	}
-	return DRIVER_REQUEST_FAILED;
+	else
+	{
+		eptr = pre_eptr = timer_drv_ptr;
+		while(eptr->next_timer != NULL)
+		{
+			pre_eptr = eptr;
+			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
+		}
+		pre_eptr->next_timer = (uint32_t *)servo_drv;
+		servo_drv->next_timer = NULL;
+	}
+	return 0;
 }
 
 #endif // #ifdef A_OS_TIMERS_ENABLED

@@ -25,51 +25,60 @@
 #include "../../kernel/A_exported_functions.h"
 
 #ifdef A_OS_TIMERS_ENABLED
-SYSTEM_RAM	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
-SYSTEM_RAM	uint8_t				last_tim_used_handle=0,tim_driver_request = 0;
+
+
+TIMER_DriverStruct_t	*timer_drv_ptr;
+
+ITCM_AREA_CODE TIMER_DriverStruct_t *get_ptr_from_workers(TIM_HandleTypeDef 	*timer)
+{
+TIMER_DriverStruct_t *eptr, *pre_eptr;
+
+	eptr = pre_eptr = timer_drv_ptr;
+	while(eptr != NULL)
+	{
+		if ( eptr->timer == timer )
+			return eptr;
+		pre_eptr = eptr;
+		if ( eptr->next_timer == NULL )
+			return NULL;
+		eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
+	}
+	return NULL;
+}
 
 ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-uint32_t i,j;
+uint32_t j;
 
-	if ( last_tim_used_handle )
+TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
+
+	if ( tim_ic->timer_type == TIM_TYPE_DHT11 )
 	{
-		for(i=0;i<MAX_TIM_DRIVERS;i++)
+		for(j=0;j<MAX_DHT11_DEVICES;j++)
 		{
-			if ( TIM_DriverStruct[i].timer_type == TIM_TYPE_DHT11 )
+			tim_ic->status = DHTXX_AM230X_ACQDONE;
+		}
+	}
+	if ( tim_ic->timer_type == TIM_TYPE_ENCODER )
+	{
+		if ( tim_ic->timer == htim)
+		{
+			Encoder_Drv_TypeDef	*encoder_driver_data = (Encoder_Drv_TypeDef *)tim_ic;
+			encoder_driver_data->encoder_value = (htim->Instance->CNT>>2);
+			if ( encoder_driver_data->encoder_value != encoder_driver_data->encoder_last_value )
 			{
-				for(j=0;j<MAX_DHT11_DEVICES;j++)
-				{
-					uint32_t handle_dht = get_handle_from_dht_workers(j);
-					if ( handle_dht != 255)
-					{
-						Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv = (Dhtxx_am230x_Drv_TypeDef *)TIM_DriverStruct[handle_dht].private_data;
-						dhtxx_am230x_Drv->status = DHTXX_AM230X_ACQDONE;
-					}
-				}
-			}
-			if ( TIM_DriverStruct[i].timer_type == TIM_TYPE_ENCODER )
-			{
-				Encoder_Drv_TypeDef	*encoder_driver_data = (Encoder_Drv_TypeDef *)TIM_DriverStruct[i].private_data;
-				if ( encoder_driver_data->encoder_timer == htim)
-				{
-					encoder_driver_data->encoder_value = (htim->Instance->CNT>>2);
-					if ( encoder_driver_data->encoder_value != encoder_driver_data->encoder_last_value )
-					{
-						encoder_driver_data->status &= ~(ENCODER_UP | ENCODER_DOWN);
+				encoder_driver_data->status &= ~(ENCODER_UP | ENCODER_DOWN);
 
-						if ( encoder_driver_data->encoder_value > encoder_driver_data->encoder_last_value)
-							encoder_driver_data->status |= ENCODER_UP;
-						else
-							encoder_driver_data->status |= ENCODER_DOWN;
-						encoder_driver_data->status |= ENCODER_READY;
-						encoder_driver_data->encoder_last_value = encoder_driver_data->encoder_value;
-						if ( encoder_driver_data->irq_encoder_callback != NULL )
-							encoder_driver_data->irq_encoder_callback(encoder_driver_data->encoder_value);
-						if ( encoder_driver_data->wakeup_id )
-							activate_process(TIM_DriverStruct[i].process,encoder_driver_data->wakeup_id,0x01);
-					}
-				}
+				if ( encoder_driver_data->encoder_value > encoder_driver_data->encoder_last_value)
+					encoder_driver_data->status |= ENCODER_UP;
+				else
+					encoder_driver_data->status |= ENCODER_DOWN;
+				encoder_driver_data->status |= ENCODER_READY;
+				encoder_driver_data->encoder_last_value = encoder_driver_data->encoder_value;
+				if ( encoder_driver_data->irq_encoder_callback != NULL )
+					encoder_driver_data->irq_encoder_callback(encoder_driver_data->encoder_value);
+				if ( encoder_driver_data->wakeup_id )
+					activate_process(encoder_driver_data->process,encoder_driver_data->wakeup_id,0x01);
 			}
 		}
 	}

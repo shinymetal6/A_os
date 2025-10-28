@@ -29,8 +29,8 @@
 #include "dcc.h"
 #include <string.h>
 
-extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
-extern	uint8_t				last_tim_used_handle,tim_driver_request;
+SYSTEM_RAM	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
+SYSTEM_RAM	uint8_t				last_tim_used_handle=0,tim_driver_request = 0;
 
 extern void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma);
 extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);

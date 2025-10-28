@@ -25,11 +25,16 @@
 
 typedef struct
 {
+	/* timer header */
+	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
+	uint32_t 			*next_timer;
+	TIM_HandleTypeDef 	*timer;
+	uint8_t				timer_type;
+	/* timer internals */
 	uint8_t				handle;
 	uint32_t			wakeup_id;
-	TIM_HandleTypeDef 	*encoder_timer;
 	GPIO_TypeDef	 	*button_port;
 	uint16_t			button_bit;
 	uint32_t 			encoder_last_value;
@@ -45,6 +50,5 @@ typedef struct
 #define	ENCODER_READY				0x80
 
 extern uint32_t	encoder_register(Encoder_Drv_TypeDef *private_data);
-extern uint32_t get_handle_from_encoder_workers(TIM_HandleTypeDef 	*encoder_timer);
 
 #endif /* DRIVERS_TIMERS_ENCODER_ENCODER_H_ */

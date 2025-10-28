@@ -24,23 +24,27 @@
 
 typedef struct
 {
-	uint8_t					status;
-	uint8_t					flags;
-	uint8_t					handle;
-	uint8_t					repetition;
-	uint32_t				cycle_time;
-	uint16_t				min_time;
-	uint16_t				max_time;
-	TIM_HandleTypeDef 		*servo_timer;
-	uint32_t 				servo_channel;
-
+	/* timer header */
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_timer;
+	TIM_HandleTypeDef 	*timer;
+	uint8_t				timer_type;
+	/* timer internals */
+	uint8_t				handle;
+	uint8_t				repetition;
+	uint32_t			cycle_time;
+	uint16_t			min_time;
+	uint16_t			max_time;
+	uint32_t 			servo_channel;
 }SERVO_Control_Drv_TypeDef;
 
-extern uint32_t servo_start(uint8_t handle);
-extern uint32_t servo_stop(uint8_t handle);
-extern uint32_t servo_get_status(uint8_t handle);
-extern uint32_t servo_set_prescaler(uint8_t handle,uint32_t prescaler);
-extern uint32_t servo_set_position(uint8_t handle,uint8_t servo_position,uint8_t servo_pulses);
+extern uint32_t servo_start(SERVO_Control_Drv_TypeDef *servo_drv);
+extern uint32_t servo_stop(SERVO_Control_Drv_TypeDef *servo_drv);
+extern uint32_t servo_get_status(SERVO_Control_Drv_TypeDef *servo_drv);
+extern uint32_t servo_set_prescaler(SERVO_Control_Drv_TypeDef *servo_drv,uint32_t prescaler);
+extern uint32_t servo_set_position(SERVO_Control_Drv_TypeDef *servo_drv,uint8_t servo_position,uint8_t servo_pulses);
 extern uint32_t	servo_register(SERVO_Control_Drv_TypeDef *private_data);
 
 #endif /* DRIVERS_TIMERS_SERVO_SERVO_H_ */

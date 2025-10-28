@@ -29,13 +29,9 @@
 #include "pwm.h"
 #include <string.h>
 
-extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
-extern	uint8_t				last_tim_used_handle,tim_driver_request;
-
-ITCM_AREA_CODE uint32_t pwm_start(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_start(Pwm_Control_TypeDef *pwm_drv)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
-TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
+TIM_HandleTypeDef	*timer = pwm_drv->timer;
 
 	switch(pwm_drv->pwm_channel)
 	{
@@ -52,32 +48,28 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_stop(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_stop(Pwm_Control_TypeDef *pwm_drv)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
-	if ( HAL_TIM_PWM_Stop(pwm_drv->pwm_timer,pwm_drv->pwm_channel) == 0 )
+	if ( HAL_TIM_PWM_Stop(pwm_drv->timer,pwm_drv->pwm_channel) == 0 )
 		pwm_drv->status &= ~PWM_CHANNEL_RUNNING;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_get_status(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_get_status(Pwm_Control_TypeDef *pwm_drv)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
 	return pwm_drv->status;
 }
 
-ITCM_AREA_CODE uint32_t pwm_set_prescaler(uint8_t handle,uint32_t prescaler)
+ITCM_AREA_CODE uint32_t pwm_set_prescaler(Pwm_Control_TypeDef *pwm_drv,uint32_t prescaler)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
-TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
+TIM_HandleTypeDef	*timer = pwm_drv->timer;
 	pwm_drv->prescaler = timer->Instance->PSC = prescaler;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_set_width(uint8_t handle,uint32_t pulse_width)
+ITCM_AREA_CODE uint32_t pwm_set_width(Pwm_Control_TypeDef *pwm_drv,uint32_t pulse_width)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
-TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
+TIM_HandleTypeDef	*timer = pwm_drv->timer;
 	switch(pwm_drv->pwm_channel)
 	{
 	case	TIM_CHANNEL_1	:	pwm_drv->pulse_width[0] = timer->Instance->CCR1 = pulse_width; break;
@@ -91,9 +83,8 @@ TIM_HandleTypeDef	*timer = pwm_drv->pwm_timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_set_direction(uint8_t handle,uint8_t pwm_direction)
+ITCM_AREA_CODE uint32_t pwm_set_direction(Pwm_Control_TypeDef *pwm_drv,uint8_t pwm_direction)
 {
-Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].private_data;
 	if ( pwm_drv->enable_port != NULL )
 	{
 		pwm_drv->pwm_direction = pwm_direction;
@@ -107,28 +98,34 @@ Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[handle].p
 		return 1;
 }
 
-ITCM_AREA_CODE uint32_t pwm_init(uint8_t handle)
+ITCM_AREA_CODE uint32_t pwm_init(Pwm_Control_TypeDef *pwm_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_TypeDef *pwm_drv)
 {
-	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
+TIMER_DriverStruct_t *eptr, *pre_eptr;
+
+	if ( pwm_drv->timer == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if ( timer_drv_ptr == NULL)
 	{
-		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
-		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
-
-		Pwm_Control_TypeDef	*pwm_drv = (Pwm_Control_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
-		if ( pwm_drv->pwm_timer == NULL )
-			return DRIVER_REQUEST_FAILED;
-		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
-
-		last_tim_used_handle++;
-		tim_driver_request++;
-		return last_tim_used_handle-1;
+		timer_drv_ptr = (TIMER_DriverStruct_t *)pwm_drv;
+		pwm_drv->next_timer = NULL;
 	}
-	return DRIVER_REQUEST_FAILED;
+	else
+	{
+		eptr = pre_eptr = timer_drv_ptr;
+		while(eptr->next_timer != NULL)
+		{
+			pre_eptr = eptr;
+			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
+		}
+		pre_eptr->next_timer = (uint32_t *)pwm_drv;
+		pwm_drv->next_timer = NULL;
+	}
+	return 0;
 }
 
 #endif // #ifdef A_OS_TIMERS_ENABLED

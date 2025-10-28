@@ -28,9 +28,6 @@
 
 #include "ws2812.h"
 
-extern	TIM_DriverStruct_t	TIM_DriverStruct[MAX_TIM_DRIVERS];
-extern	uint8_t				last_tim_used_handle,tim_driver_request;
-
 __attribute__	((aligned (16)))	uint16_t	ws2812_FrameBuffer[BUFLEN][LEDBPP]; /* 0GRB */
 
 ITCM_AREA_CODE static void ws2812_compile_sync(void)
@@ -69,33 +66,37 @@ int16_t	i,k;
 	ws2812_compile_sync();
 }
 
-ITCM_AREA_CODE uint32_t ws2812_init(uint8_t handle)
+ITCM_AREA_CODE uint32_t ws2812_init(WS2812_Drv_TypeDef *ws2812_drv)
 {
 int16_t	location;
-WS2812_Drv_TypeDef	*ws2812_drv = (WS2812_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
-
 	for(location=SYNCLEN;location<SYNCLEN+NUMLEDS;location++)
 		ws2812_CompilePixel(location, 0,0,0);
-	HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_channel,(uint32_t *)ws2812_FrameBuffer,BUFLEN);
+	HAL_TIM_PWM_Start_DMA(ws2812_drv->timer, ws2812_drv->ws2812_channel,(uint32_t *)ws2812_FrameBuffer,BUFLEN);
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_Drv_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_Drv_TypeDef *ws2812_drv)
 {
-	if ( TIM_DriverStruct[last_tim_used_handle].process == 0 )
+TIMER_DriverStruct_t *eptr, *pre_eptr;
+
+	if ( ws2812_drv->timer == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if ( timer_drv_ptr == NULL)
 	{
-		TIM_DriverStruct[last_tim_used_handle].process = get_current_process();
-		TIM_DriverStruct[last_tim_used_handle].private_data = (uint32_t *)private_data;
-
-		WS2812_Drv_TypeDef	*ws2812_drv = (WS2812_Drv_TypeDef *)TIM_DriverStruct[last_tim_used_handle].private_data;
-		if ( ws2812_drv->ws2812_timer == NULL )
-			return DRIVER_REQUEST_FAILED;
-		TIM_DriverStruct[last_tim_used_handle].status = DRIVER_STATUS_IN_USE;
-
-		last_tim_used_handle++;
-		tim_driver_request++;
-		return last_tim_used_handle-1;
+		timer_drv_ptr = (TIMER_DriverStruct_t *)ws2812_drv;
+		ws2812_drv->next_timer = NULL;
 	}
-	return DRIVER_REQUEST_FAILED;
+	else
+	{
+		eptr = pre_eptr = timer_drv_ptr;
+		while(eptr->next_timer != NULL)
+		{
+			pre_eptr = eptr;
+			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
+		}
+		pre_eptr->next_timer = (uint32_t *)ws2812_drv;
+		ws2812_drv->next_timer = NULL;
+	}
+	return 0;
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED
