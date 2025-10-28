@@ -16,9 +16,10 @@
 /*
  * i2c.h
  *
- *  Created on: Dec 21, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
+
 #ifndef DRIVERS_I2C_I2C_H_
 #define DRIVERS_I2C_I2C_H_
 
@@ -26,48 +27,22 @@
 
 typedef struct
 {
-	uint8_t 			process;
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				handle;
 	I2C_HandleTypeDef 	*bus;
-	uint32_t			*private_data;
-	uint32_t			(*read)  (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
-	uint32_t			(*write) (uint8_t handle, uint32_t address,uint8_t *data,uint16_t data_len);
-	uint32_t			(*erase_blocks) (uint8_t handle, uint32_t start_block, uint32_t number_of_blocks);
-	uint32_t			(*erase_chip) (uint8_t handle);
-	uint32_t			(*get_id) (uint8_t handle,uint8_t *data);
-	uint32_t			(*get_status) (uint8_t handle);
-	uint32_t			(*get_flags) (uint8_t handle);
-	uint32_t			(*set_flags) (uint8_t handle, uint32_t flags);
-}I2C_DriverStruct_t;
+	uint16_t 			device_address;
+	uint32_t 			wakeup_id;
+	void 				(*init)(void);
+	uint32_t			*next_drv;
+	/* driver proprietary data */
+} I2C_DriverStruct_t;
 
-/* status */
-#define	I2C_STATUS_DEVICE_ERROR				0x80
-#define	I2C_STATUS_ERROR					0x40
-#define	I2C_STATUS_DEVICE_BUSY				0x20
-#define	I2C_STATUS_DRIVER_NOT_OWNED			0x10
-#define	I2C_STATUS_BUSY						0x08
-#define	I2C_STATUS_READY					0x04
-#define	I2C_STATUS_READ_COMPLETE			0x02
-#define	I2C_STATUS_WRITE_COMPLETE			0x01
+extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 
-/* flags */
-#define	I2C_FLAGS_WAIT_ON_WRITE_COMPLETE	0x80
-#define	I2C_FLAGS_WAIT_ON_READ_COMPLETE		0x40
-#define	I2C_FLAGS_USES_WRITE_DMA			0x08
-#define	I2C_FLAGS_USES_READ_DMA				0x04
-#define	I2C_FLAGS_WAKEUP_ON_READ			0x02
-#define	I2C_FLAGS_WAKEUP_ON_WRITE			0x01
-
-#define	I2C_BUSY_TIMEOUT					100
-#include "sensors/i2c_sensors.h"
-#include "memories/i2c_mem.h"
-
-extern	uint8_t get_and_set_i2c_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
-extern	uint8_t unset_i2c_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
-extern	uint8_t get_and_set_i2cmem_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
-extern	uint8_t unset_i2cmem_bus_lock(I2C_HandleTypeDef *hi2c,uint8_t handle);
+#ifdef SOUND_ENGINE_ENABLED
+	#include "codec/nau88c22.h"
+#endif // #ifdef SOUND_ENABLED
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

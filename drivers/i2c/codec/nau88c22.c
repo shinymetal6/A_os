@@ -16,7 +16,7 @@
 /*
  * nau88c22.c
  *
- *  Created on: Nov 22, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
 
@@ -26,6 +26,7 @@
 #include "../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
 
+#include "../i2c.h"
 #include "nau88c22.h"
 
 extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
@@ -232,9 +233,8 @@ Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[ha
 	return codec_drv->status;
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_init(uint8_t handle)
+ITCM_AREA_CODE uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 uint8_t	i = 0;
 	if ( Nau88c22_CheckPresent(codec_drv->bus , codec_drv->device_address) == 0)
 	{
@@ -331,28 +331,29 @@ uint8_t 	gain				= (uint8_t  )param3;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	int_nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data)
+ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv)
 {
-Nau88C22_Drv_TypeDef	*codec_drv;
-	if ( ANALOG_DriverStruct[last_analog_used_handle].process == 0 )
+I2C_DriverStruct_t *eptr, *pre_eptr;
+
+	if ( codec_drv->bus == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if ( i2c_drv_ptr == NULL)
 	{
-		ANALOG_DriverStruct[last_analog_used_handle].process = get_current_process();
-		ANALOG_DriverStruct[last_analog_used_handle].private_data = (uint32_t *)private_data;
-
-		codec_drv = (Nau88C22_Drv_TypeDef *)ANALOG_DriverStruct[last_analog_used_handle].private_data;
-		if ( codec_drv->bus == NULL)
-			return DRIVER_REQUEST_FAILED;
-		ANALOG_DriverStruct[last_analog_used_handle].status = DRIVER_STATUS_IN_USE;
-		ANALOG_DriverStruct[last_analog_used_handle].codec_start = nau88c22_start;
-		ANALOG_DriverStruct[last_analog_used_handle].codec_stop = nau88c22_stop;
-		ANALOG_DriverStruct[last_analog_used_handle].codec_get_status = nau88c22_get_status;
-		ANALOG_DriverStruct[last_analog_used_handle].codec_init = nau88c22_init;
-		ANALOG_DriverStruct[last_analog_used_handle].codec_internal_ops = nau88c22_internal_ops;
-
-		last_analog_used_handle++;
-		analog_driver_request++;
-		return last_analog_used_handle-1;
+		i2c_drv_ptr = (I2C_DriverStruct_t *)codec_drv;
+		codec_drv->next_drv = NULL;
 	}
-	return DRIVER_REQUEST_FAILED;
+	else
+	{
+		eptr = pre_eptr = i2c_drv_ptr;
+		while(eptr->next_drv != NULL)
+		{
+			pre_eptr = eptr;
+			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
+		}
+		pre_eptr->next_drv = (uint32_t *)codec_drv;
+		codec_drv->next_drv = NULL;
+	}
+	return 0;
 }
 #endif // #ifdef A_OS_I2C_ENABLED
+

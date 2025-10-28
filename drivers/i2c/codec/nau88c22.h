@@ -16,12 +16,12 @@
 /*
  * nau88c22.h
  *
- *  Created on: Nov 22, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_ANALOG_CODEC_NAU88C22_H_
-#define DRIVERS_ANALOG_CODEC_NAU88C22_H_
+#ifndef DRIVERS_I2C_CODEC_NAU88C22_H_
+#define DRIVERS_I2C_CODEC_NAU88C22_H_
 
 #define NAU88C22_I2C_TIMEOUT			100
 #define NAU88C22_NUM_REGS				79
@@ -32,11 +32,16 @@
 
 typedef struct
 {
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
 	uint32_t 			wakeup_id;
+	void 				(*init)(void);
+	I2C_DriverStruct_t	*next_drv;
+	/* driver proprietary data */
 	uint8_t				master_volume;
 	uint16_t			adc_dac_path;
 	uint8_t				band1_frequency;
@@ -124,6 +129,8 @@ typedef struct
 #define NAU88C22_INTOP_SET_VOLUME			0x07
 #define NAU88C22_INTOP_READ_REG				0x08
 
-extern uint32_t	int_nau88c22_codec_register(Nau88C22_Drv_TypeDef *private_data);
+extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv);
+extern uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv);
 
-#endif /* DRIVERS_ANALOG_CODEC_NAU88C22_H_ */
+
+#endif /* DRIVERS_I2C_CODEC_NAU88C22_H_ */

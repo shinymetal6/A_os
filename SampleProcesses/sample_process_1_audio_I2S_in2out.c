@@ -56,7 +56,6 @@ __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 	.device_address = NAU88C22_I2C_ADDR,
 	.master_volume = 100,
 };
-uint8_t codec_handle;
 
 I2S_DriverStruct_t I2S_Driver =
 {
@@ -121,8 +120,8 @@ VCA_Effect_TypeDef	VCA2_Left =
 
 void sample_process_1_init(uint32_t process_id)
 {
-	codec_handle = nau88c22_codec_register(&Nau88C22_Drv);
-	codec_init(codec_handle);
+	nau88c22_codec_register(&Nau88C22_Drv);
+	nau88c22_init(&Nau88C22_Drv);
 	bzero(i2s_tx_buffer,I2S_BUFFER_SIZE);
 	bzero(i2s_rx_buffer,I2S_BUFFER_SIZE);
 	i2s_driver_register(&I2S_Driver);

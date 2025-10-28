@@ -16,11 +16,12 @@
 /*
  * i2c_24xx.h
  *
- *  Created on: Nov 4, 2024
+ *  Created on: Oct 28, 2025
  *      Author: fil
  */
-#ifndef DRIVERS_EXTERNAL_FLASH_I2C_24XX_H_
-#define DRIVERS_EXTERNAL_FLASH_I2C_24XX_H_
+
+#ifndef DRIVERS_I2C_MEMORIES_I2C_24XX_H_
+#define DRIVERS_I2C_MEMORIES_I2C_24XX_H_
 
 #ifdef A_OS_I2C_ENABLED
 
@@ -31,18 +32,23 @@
 
 typedef struct
 {
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
 	I2C_HandleTypeDef 	*bus;
+	uint16_t 			device_address;
+	uint32_t 			wakeup_id;
+	void 				(*init)(void);
+	I2C_DriverStruct_t	*next_drv;
+	/* driver proprietary data */
 	GPIO_TypeDef	 	*i2c_scl_port;
 	uint16_t			i2c_scl_bit;
-	uint16_t 			device_address;
 	uint8_t 			device_address_size;
 	uint32_t 			device_size;
 	GPIO_TypeDef	 	*power_port;
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
-	uint32_t 			wakeup_id;
 	uint32_t 			timeout;
 }I2C_24xx_Drv_TypeDef;
 
@@ -66,4 +72,5 @@ extern uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *driver_private_data);
 
 #endif // #ifdef A_OS_I2C_ENABLED
 
-#endif /* DRIVERS_EXTERNAL_FLASH_I2C_24XX_H_ */
+
+#endif /* DRIVERS_I2C_MEMORIES_I2C_24XX_H_ */
