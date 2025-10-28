@@ -408,6 +408,11 @@ AUDIO_Source_TypeDef *synth;
 }
 
 extern	uint8_t number_of_synths;
+#ifdef SOUND_ENGINE_I2S_ENABLED
+extern void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
+#else
+extern void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth)
 {
@@ -428,6 +433,12 @@ uint32_t	i;
 	synth->active_voices = 0;
 
 	synth->source_type = SOUND_SOURCE_IS_SYNTH;
+
+#ifdef SOUND_ENGINE_I2S_ENABLED
+	synth->OutFunc = to_i2sout;
+#else
+	synth->OutFunc = to_dacout;
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 	if (synth->out_device == SOURCE_TO_I2S_OUT)
 		synth->sample_rate /= 4;

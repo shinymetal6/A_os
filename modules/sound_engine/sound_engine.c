@@ -109,22 +109,27 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 
 uint8_t number_of_synths = 0;
 
-ITCM_AREA_CODE static void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
+#ifdef SOUND_ENGINE_I2S_ENABLED
+ITCM_AREA_CODE void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
 {
 uint32_t i,j;
 	for (i = 4,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
 		audio_out[i + start_sample+channel] = audio_in[j];
 }
-
+#else
+ITCM_AREA_CODE void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
+{
+uint32_t i;
+	for (i = 0; i < num_samples; i++)
+		audio_out[i + start_sample] = (audio_in[i] + 32768) >> 4;
+//		audio_out[i + start_sample] = audio_in[i] >> 4;
+}
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
 PTR_Effect_TypeDef *last_effect;
 uint8_t i=0;
-
-#ifdef TOUCH_CS_GPIO_Port
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_SET);
-#endif // #ifdef TOUCH_CS_GPIO_Port
 
 	for(i=0;i<SOUND_AUDIO_SOURCES;i++)
 	{
@@ -139,17 +144,15 @@ uint8_t i=0;
 				if ( source->next_effect != NULL )
 				{
 					last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
-					if ( last_effect->out_device == SOURCE_TO_I2S_OUT)
-						to_i2sout(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+					source->OutFunc(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+//						to_i2sout(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 				}
 				else
-					to_i2sout(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
+					source->OutFunc(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
+//					to_i2sout(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
 			}
 		}
 	}
-#ifdef TOUCH_CS_GPIO_Port
-	HAL_GPIO_WritePin(TOUCH_CS_GPIO_Port, TOUCH_CS_Pin, GPIO_PIN_RESET);
-#endif // #ifdef TOUCH_CS_GPIO_Port
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED
