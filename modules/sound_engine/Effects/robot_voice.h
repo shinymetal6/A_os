@@ -39,41 +39,41 @@
 //600.0f, 1, 8.0f, 1200.0f, 1.2f); // default: square wave, 8-bit, 1.2kHz BP
 typedef struct {
 	/* effect header */
-	uint32_t 	*pre_effect;
-	uint32_t 	*next_effect;
-	q15_t		*effect_in_buf;
-	q15_t		*effect_out_buf;
-	void 		(*effect)(uint32_t 	*effect_data);
-	void 		(*effect_init)(uint32_t *effect_data);
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	synth_block_size;
-	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-    uint16_t	*ring_freq;	// Hz (300–1000)
-    uint16_t	*ring_wave;	// 0=sine, 1=square , default square
-    uint16_t	*bit_depth;	// default 8 bit
-    uint16_t	*bp_freq;	// default 1.2KHz , in Hz unit
-    uint16_t	*bp_q;	 	// default 1.2 , in 0.1 unit
+    uint16_t			*ring_freq;	// Hz (300–1000)
+    uint16_t			*ring_wave;	// 0=sine, 1=square , default square
+    uint16_t			*bit_depth;	// default 8 bit
+    uint16_t			*bp_freq;	// default 1.2KHz , in Hz unit
+    uint16_t			*bp_q;	 	// default 1.2 , in 0.1 unit
 
     //float ring_freq, uint8_t ring_wave, float bit_depth, float bp_freq, float bp_q)
-
-    float 		sample_rate;
-
 	/* Internals */
 	// Ring modulator
-    float f_ring_freq;      // Hz (300–1000)
-    float f_ring_phase;
-    uint8_t i_ring_wave;      // 0=sine, 1=square
+    float 				f_ring_freq;      // Hz (300–1000)
+    float 				f_ring_phase;
+    uint8_t				i_ring_wave;      // 0=sine, 1=square
 
     // Bit crusher
-    float f_bit_depth;        // 4–12 bits
+    float 				f_bit_depth;        // 4–12 bits
 
     // Bandpass filter (simple 2-pole)
-    float f_bp_x1, f_bp_x2;
-    float f_bp_y1, f_bp_y2;
-    float f_bp_freq;          // center freq (Hz)
-    float f_bp_q;             // Q factor (0.5–2.0)
+    float 				f_bp_x1, f_bp_x2;
+    float 				f_bp_y1, f_bp_y2;
+    float 				f_bp_freq;          // center freq (Hz)
+    float 				f_bp_q;             // Q factor (0.5–2.0)
 } ROBOT_VOICE_Effect_TypeDef;
 
 extern	void Effect_Robot_Init(uint32_t *effect_s);

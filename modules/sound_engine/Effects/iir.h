@@ -48,22 +48,24 @@ typedef struct {
 
 typedef struct {
 	/* effect header */
-	uint32_t 	*pre_effect;
-	uint32_t 	*next_effect;
-	q15_t		*effect_in_buf;
-	q15_t		*effect_out_buf;
-	void 		(*effect)(uint32_t 	*effect_data);
-	void 		(*effect_init)(uint32_t *effect_data);
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	synth_block_size;
-	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-	float		sample_rate;
-	FilterType	filterType;
+	FilterType			filterType;
     /* Internals */
-	float 		cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
-	float 		bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
+	float 				cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
+	float 				bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
     BiquadFilter biquads[IIR_NUM_BIQUADS];
 } IIR_Effect_TypeDef;
 #define IIR_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)

@@ -51,7 +51,8 @@ const Nau88c22_t	Nau88c22[] =
 			NAU88C22_AUDIO_INTERFACE,
 			//0x0010	// 16-bit word length, I2S format, Stereo 000010000
 			//0x0008	// 16-bit word length, I2S format, Stereo 000010000
-			0x0070	// 16-bit word length on 32 bit frame, I2S format, Stereo 000010000 TESTED
+			//0x0070	// 16-bit word length on 32 bit frame, I2S format, Stereo 000010000 TESTED
+			0x0016		// 16-bit word length on 16 bit frame, I2S format, Stereo
 		},
 		{
 			NAU88C22_COMPANDING_CONTROL,
@@ -60,7 +61,9 @@ const Nau88c22_t	Nau88c22[] =
 		{
 			NAU88C22_CLOCK_CONTROL1,
 			//0x01ad	 // Divide by 6, 16K
-			0x0100	 // Divide by 1 master clock source, fs and bclk are input
+			//0x0100	 // Divide by 1 master clock source, fs and bclk are input TESTED
+			//0x0040	 // Divide by 2 master clock source, fs and bclk are input
+			0x0140	 // Divide by 2 master clock source, fs and bclk are input
 		},
 		{
 			NAU88C22_CLOCK_CONTROL2,

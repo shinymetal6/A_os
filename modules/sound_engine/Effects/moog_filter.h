@@ -37,28 +37,30 @@
 typedef struct
 {
 	/* effect header */
-	uint32_t 	*pre_effect;
-	uint32_t 	*next_effect;
-	q15_t		*effect_in_buf;
-	q15_t		*effect_out_buf;
-	void 		(*effect)(uint32_t 	*effect_data);
-	void 		(*effect_init)(uint32_t *effect_data);
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	synth_block_size;
-	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-	uint16_t	*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
-	uint16_t	*resonance; 				// = 32768	Resonance (0 to 65535)
-	uint16_t	*lfo_rate;					// = 16384	Rate of the LFO [0 .. 65535] easy for user side
-	float		sample_rate;
+	uint16_t			*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
+	uint16_t			*resonance; 				// = 32768	Resonance (0 to 65535)
+	uint16_t			*lfo_rate;					// = 16384	Rate of the LFO [0 .. 65535] easy for user side
 
     /* Internals */
-	float	f_cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
-	float	f_resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
-    float 	g;   // cutoff-related gain
-    float 	k;   // resonance feedback factor
-    float 	y1, y2, y3, y4; // state
+	float				f_cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
+	float				f_resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
+    float 				g;   // cutoff-related gain
+    float 				k;   // resonance feedback factor
+    float 				y1, y2, y3, y4; // state
 } MOOG_F_Effect_TypeDef;
 
 extern	void moog_init(MOOG_F_Effect_TypeDef *f);

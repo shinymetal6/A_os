@@ -46,43 +46,44 @@
 typedef struct
 {
 	/* effect header */
-	uint32_t 	*pre_effect;
-	uint32_t 	*next_effect;
-	q15_t		*effect_in_buf;
-	q15_t		*effect_out_buf;
-	void 		(*effect)(uint32_t 	*effect_data);
-	void 		(*effect_init)(uint32_t *effect_data);
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	synth_block_size;
-	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-    uint16_t 	*delay_time_ms;        // 50–800 ms
-    uint16_t 	*feedback;             // 0.0–0.8 multiplied by 100 , so 0 to 80
-    uint16_t 	*lfo_rate;             // 0.5–3 Hz multiplied by 10, so 5 to 30
-    uint16_t 	*lfo_depth_ms;         // 0–10 ms
-    uint16_t 	*cutoff;               // LPF on feedback (200–5000 Hz)
-    float 		sample_rate;
+    uint16_t 			*delay_time_ms;        // 50–800 ms
+    uint16_t 			*feedback;             // 0.0–0.8 multiplied by 100 , so 0 to 80
+    uint16_t 			*lfo_rate;             // 0.5–3 Hz multiplied by 10, so 5 to 30
+    uint16_t 			*lfo_depth_ms;         // 0–10 ms
+    uint16_t 			*cutoff;               // LPF on feedback (200–5000 Hz)
     /* Internals */
 
 	// Delay buffer (mono for now; duplicate for stereo)
-    float buffer[ECHO_BUFFER_SIZE];
-    uint32_t write_ptr;
+    float 				buffer[ECHO_BUFFER_SIZE];
+    uint32_t 			write_ptr;
 
     // Parameters
-    float f_delay_time_ms;        // 50–800 ms
-    float f_feedback;             // 0.0–0.8
-    float f_lfo_rate;             // 0.5–3 Hz
-    float f_lfo_depth_ms;         // 0–10 ms
-    float f_cutoff;               // LPF on feedback (200–5000 Hz)
+    float 				f_delay_time_ms;        // 50–800 ms
+    float 				f_feedback;             // 0.0–0.8
+    float 				f_lfo_rate;             // 0.5–3 Hz
+    float 				f_lfo_depth_ms;         // 0–10 ms
+    float 				f_cutoff;               // LPF on feedback (200–5000 Hz)
 
     // LFO state
-    float lfo_phase;
+    float 				lfo_phase;
 
     // Moog filter state (for feedback path)
-    float g, k;
-    float y1, y2, y3, y4;
-
+    float 				g, k;
+    float 				y1, y2, y3, y4;
 } SPACE_ECHO_Effect_TypeDef;
 
 extern void Effect_Space_Echo_Init(uint32_t *effect_s);

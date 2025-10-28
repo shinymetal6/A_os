@@ -32,21 +32,23 @@
 typedef struct
 {
 	/* effect header */
-	uint32_t 		*pre_effect;
-	uint32_t 		*next_effect;
-	q15_t			*effect_in_buf;
-	q15_t			*effect_out_buf;
-	void 			(*effect)(uint32_t 	*effect_data);
-	void 			(*effect_init)(uint32_t *effect_data);
-	uint8_t			status;
-	uint8_t			flags;
-	uint16_t		synth_block_size;
-	uint16_t		out_device;						/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
 	uint16_t		*lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
 	uint16_t		*depth;							// Depth of the LFO
 	uint16_t		*mix;
-	float			sample_rate;
 	/* internals */
 	float 			f_lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
 	float 			f_depth;							// Depth of the LFO

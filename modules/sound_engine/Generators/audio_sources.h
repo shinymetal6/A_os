@@ -42,31 +42,33 @@ typedef struct {
     float 		phase;              // Phase accumulator (floating-point format)
     float 		phase_increment;    // Phase increment per sample (floating-point format)
     q15_t 		amplitude;          // Amplitude (Q15 format)
-    int 		active;               // Flag indicating if the voice is active
+    int 		active;				// Flag indicating if the voice is active
     Synth_WaveformType waveform;    // Waveform type
     float 		duty_cycle;         // Duty cycle (0.0 to 1.0)
-    const q15_t *wavetable;   // Pointer to custom wavetable for arbitrary waveform
+    const q15_t *wavetable;   		// Pointer to custom wavetable for arbitrary waveform
 } Synth_Voice_TypeDef;
+
 typedef struct
 {
 	/* effect header */
-	uint32_t 			*pre_effect;
-	uint32_t 			*next_effect;
-	q15_t				*effect_in_buf;	// unused
-	q15_t				*work_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
-	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
-	int16_t 			*out_buf;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
+	/* Source Internals */
 	uint8_t				i2s_handle;
-	/* Internals */
 	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
-	float				sample_rate;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
 	void				(*OutFunc)(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
@@ -74,8 +76,6 @@ typedef struct
 /* status */
 #define		SOURCE_ENABLED		0x01
 #define		SOURCE_DISABLED		0x00
-/* out_device */
-#define		SOURCE_TO_DAC_OUT		1
-#define		SOURCE_TO_I2S_OUT		0
+
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_ */

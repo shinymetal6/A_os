@@ -83,9 +83,9 @@ __attribute__ ((aligned (32))) int16_t	synth0_work_buf_left[EFFECTS_NUM_SAMPLES]
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
 	.work_buf = synth0_work_buf_left,
-	.block_size = I2S_BUFFER_SIZE/2,
+	.block_size = I2S_EFFECT_SIZE,
 	.out_device = SOURCE_TO_I2S_OUT,
-	.out_buf = (int16_t *)left_tx_buffer,
+	.out_buf = (int16_t *)i2s_tx_buffer,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
 uint32_t	synth_left_initialized;
@@ -116,7 +116,7 @@ void sample_process_1_init(uint32_t process_id)
 
 uint8_t		up = 0;
 
-#define SWEEP_VCA	1
+//#define SWEEP_VCA	1
 #define STEP	200
 #define HLIMIT	(65500 - STEP)
 #define LLIMIT	(STEP * 2)

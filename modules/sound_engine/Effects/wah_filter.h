@@ -43,39 +43,41 @@
 typedef struct
 {
 	/* effect header */
-	uint32_t 	*pre_effect;
-	uint32_t 	*next_effect;
-	q15_t		*effect_in_buf;
-	q15_t		*effect_out_buf;
-	void 		(*effect)(uint32_t 	*effect_data);
-	void 		(*effect_init)(uint32_t *effect_data);
-	uint8_t		status;
-	uint8_t		flags;
-	uint16_t	synth_block_size;
-	uint16_t	out_device;		/* for dac is 1 , for codec is 0 */
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-    uint16_t	*attack;		// units : 1 = 0.1 mSec
-    uint16_t	*release;		// units : 1 = 0.1 mSec
-    uint16_t	*min_cutoff;	// units : Hz
-    uint16_t	*max_cutoff;	// units : Hz
-    uint16_t	*resonance;		// units : values 0 - 100
-    uint16_t	*sensitivity;	// units : values 2 - 200
-    float 		sample_rate;
+    uint16_t			*attack;		// units : 1 = 0.1 mSec
+    uint16_t			*release;		// units : 1 = 0.1 mSec
+    uint16_t			*min_cutoff;	// units : Hz
+    uint16_t			*max_cutoff;	// units : Hz
+    uint16_t			*resonance;		// units : values 0 - 100
+    uint16_t			*sensitivity;	// units : values 2 - 200
     /* Internals */
 	// Envelope follower
-    float env;
-    float f_attack;   // ~0.0001 (fast)
-    float f_release;  // ~0.001 (slower)
+    float 				env;
+    float 				f_attack;   // ~0.0001 (fast)
+    float 				f_release;  // ~0.001 (slower)
 
     // Filter
-    float g, k;
-    float y1, y2, y3, y4;
+    float 				g, k;
+    float 				y1, y2, y3, y4;
 
     // Wah parameters
-    float f_min_cutoff;  // Hz (e.g., 300)
-    float f_max_cutoff;  // Hz (e.g., 2000)
-    float f_resonance;   // 0.7–0.95
-    float f_sensitivity; // 0.2–2.0
+    float 				f_min_cutoff;  // Hz (e.g., 300)
+    float 				f_max_cutoff;  // Hz (e.g., 2000)
+    float 				f_resonance;   // 0.7–0.95
+    float 				f_sensitivity; // 0.2–2.0
 } WAH_F_Effect_TypeDef;
 
 extern	void Effect_Wah_Init(uint32_t *effect_s);

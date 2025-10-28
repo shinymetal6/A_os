@@ -42,11 +42,13 @@ typedef struct
 /* flags */
 #define		I2S_FLAGS_ECHO			0x80
 
-#define		I2S_BUFFER_SIZE			512
+#define		I2S_BUFFER_SIZE			2048
+#define		I2S_HALF_BUFFER_SIZE	(I2S_BUFFER_SIZE/2)
 #define		I2S_LEFT_CHANNEL		0
 #define		I2S_RIGHT_CHANNEL		1
 #define		I2S_FIRST_HALF			0
 #define		I2S_SECOND_HALF			(I2S_BUFFER_SIZE/2)
+#define		I2S_EFFECT_SIZE			(I2S_BUFFER_SIZE/16)
 #define		I2S_SAMPLE_FREQUENCY	48000
 
 extern uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s);

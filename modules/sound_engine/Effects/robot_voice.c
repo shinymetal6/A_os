@@ -97,8 +97,8 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 
 	if (( rv->ring_freq == NULL ) || ( rv->bit_depth == NULL ) || ( rv->bp_freq == NULL ) || ( rv->bp_q == NULL ))
 		return;
-	if ( rv->synth_block_size == 0 )
-		rv->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
+	if ( rv->block_size == 0 )
+		rv->block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( rv->sample_rate == 0 )
 		rv->sample_rate = Sound_Sample_Frequency;
 
@@ -118,14 +118,14 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 	if ((( rv->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( rv == NULL ))
 		return;
 	Effect_Robot_Set_Params(rv);
-	for ( i=0;i<rv->synth_block_size;i++)
+	for ( i=0;i<rv->block_size;i++)
 	{
 		if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 		{
-			rv->effect_out_buf[i] = robot_process(rv,__Q15_2_FLOAT(rv->effect_in_buf[i]));
+			rv->out_buf[i] = robot_process(rv,__Q15_2_FLOAT(rv->in_buf[i]));
 		}
 		else
-			rv->effect_out_buf[i]  = rv->effect_in_buf[i];
+			rv->out_buf[i]  = rv->in_buf[i];
 	}
 }
 

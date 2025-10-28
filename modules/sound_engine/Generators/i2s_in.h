@@ -27,7 +27,7 @@
 
 #include "audio_sources.h"
 
-extern uint8_t I2SIn_Register(uint8_t channel,AUDIO_Source_TypeDef *i2s_in);
+extern uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in);
 extern uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in);
 extern uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in);
 

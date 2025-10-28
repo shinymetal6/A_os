@@ -34,10 +34,7 @@ ITCM_AREA_CODE uint32_t	i2s_driver_start(I2S_DriverStruct_t *i2s)
 {
 	if (i2s == NULL)
 		return 1;
-	bzero(i2s->i2s_tx_buffer,I2S_BUFFER_SIZE*2);
-	bzero(i2s->left_tx_buffer,I2S_BUFFER_SIZE);
-	bzero(i2s->right_tx_buffer,I2S_BUFFER_SIZE);
-	return HAL_I2SEx_TransmitReceive_DMA(i2s->i2s,i2s->i2s_tx_buffer,i2s->i2s_rx_buffer,2*I2S_BUFFER_SIZE);
+	return HAL_I2SEx_TransmitReceive_DMA(i2s->i2s,i2s->i2s_tx_buffer,i2s->i2s_rx_buffer,I2S_BUFFER_SIZE);
 }
 
 ITCM_AREA_CODE uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s)
@@ -68,31 +65,24 @@ ITCM_AREA_CODE uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s)
 	return 0;
 }
 
-void i2s_copy_buf(uint32_t *dest, uint32_t *source)
-{
-uint32_t i;
-	for(i=0;i<I2S_BUFFER_SIZE/4;i++)
-		dest[i] = source[i];
-}
-
 ITCM_AREA_CODE static void Process_Audio(I2S_DriverStruct_t *i2s , uint16_t start_sample)
 {
 uint32_t i,j;
-	for(i=0,j=start_sample;i<I2S_BUFFER_SIZE;i+=2,j++)
+
+	for (i = 4,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
 	{
-		i2s->left_rx_buffer[j] = i2s->i2s_rx_buffer[start_sample*2+i+I2S_LEFT_CHANNEL];
-		i2s->right_rx_buffer[j] = i2s->i2s_rx_buffer[start_sample*2+i+I2S_RIGHT_CHANNEL];
+		i2s->left_rx_buffer[j]   = i2s->i2s_rx_buffer[i+start_sample+I2S_LEFT_CHANNEL];
+		i2s->right_rx_buffer[j]  = i2s->i2s_rx_buffer[i+start_sample+I2S_RIGHT_CHANNEL];
 	}
-
-	if (( i2s->flags & I2S_FLAGS_ECHO ) == I2S_FLAGS_ECHO)
-		i2s_copy_buf((uint32_t *)&i2s->left_tx_buffer[start_sample],(uint32_t *)&i2s->left_rx_buffer[start_sample]);
-	else
+	if (( i2s->flags & I2S_FLAGS_ECHO ) != I2S_FLAGS_ECHO)
 		Do_Audio(start_sample);
-
-	for(i=0,j=start_sample;i<I2S_BUFFER_SIZE;i+=2,j++)
+	else
 	{
-		i2s->i2s_tx_buffer[start_sample*2+i+I2S_LEFT_CHANNEL] = i2s->left_tx_buffer[j+I2S_LEFT_CHANNEL];
-		i2s->i2s_tx_buffer[start_sample*2+i+I2S_RIGHT_CHANNEL] = i2s->right_tx_buffer[j+I2S_RIGHT_CHANNEL];
+		for (i = 4,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
+		{
+			i2s->i2s_tx_buffer[i+start_sample+I2S_LEFT_CHANNEL]   = i2s->left_rx_buffer[j];
+			i2s->i2s_tx_buffer[i+start_sample+I2S_RIGHT_CHANNEL]  = i2s->right_rx_buffer[j];
+		}
 	}
 }
 

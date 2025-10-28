@@ -240,7 +240,7 @@ AUDIO_Source_TypeDef *synth = (AUDIO_Source_TypeDef *)the_synt;
 
 q15_t *output;
 
-	output = synth->work_buf; // no, so is half buffer
+	output = synth->out_buf;
 
     // Clear the output buffer
     memset(output, 0, synth->block_size * sizeof(q15_t));
@@ -415,8 +415,6 @@ uint32_t	i;
 
 	if ( synth->out_buf == NULL )
 		return 1;
-	if ( synth->work_buf == NULL )
-			return 1;
 	if ( channel >= SYNTH_CHANNELS )
 		return 1;
 	for(i=0;i<SYNTH_MIDI_NOTES;i++)
@@ -428,13 +426,11 @@ uint32_t	i;
 		synth->sample_rate = Sound_Sample_Frequency;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
-	/*
-	if ( synth->out_device == SOURCE_TO_I2S_OUT)
-		synth->OutFunc = synth_to_i2s_out;
-	else
-		synth->OutFunc = synth_to_dac_out;
-	*/
+
 	synth->source_type = SOUND_SOURCE_IS_SYNTH;
+	if (synth->out_device == SOURCE_TO_I2S_OUT)
+		synth->sample_rate /= 4;
+
 	// Initialize all voices
 	for (int i = 0; i < SYNTH_MAX_VOICES; i++)
 	{

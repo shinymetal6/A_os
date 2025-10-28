@@ -37,26 +37,40 @@
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
-/* source_type */
-#define		SOUND_SOURCE_IS_SYNTH		0
-#define		SOUND_SOURCE_IS_I2S_IN		1
+
 
 typedef struct
 {
-	uint32_t 			*pre_effect;
-	uint32_t 			*next_effect;
-	q15_t				*effect_in_buf;
-	q15_t				*effect_out_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
+	/* effect header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
-	uint16_t			out_device;				/* from previous module : for dac is 1 , for codec is 0 */
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* Here finishes the common area */
-	int16_t 			*codec_buf;
 	uint8_t				i2s_handle;
 }PTR_Effect_TypeDef;
+
+/* source_type */
+#define		SOUND_SOURCE_IS_SYNTH		0
+#define		SOUND_SOURCE_IS_I2S_IN		1
+/* out_device */
+#define		SOURCE_TO_DAC_OUT			1
+#define		SOURCE_TO_I2S_OUT			0
+/* channel_in */
+#define		AUDIO_SOURCE_LEFT			0
+#define		AUDIO_SOURCE_RIGHT			1
+/* channel_out */
+#define		AUDIO_DESTINATION_LEFT		0
+#define		AUDIO_DESTINATION_RIGHT		1
 
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80

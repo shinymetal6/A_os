@@ -40,16 +40,15 @@ extern	ADC_HandleTypeDef hadc2;
 #else
 	#define	SAMPLE_FREQUENCY	48000
 #endif
-#define	ADC1_CHANNELS	6
-#define	ADC2_CHANNELS	3
+//#define	EFFECTS_NUM_SAMPLES		I2S_EFFECT_SIZE/2
 
-__attribute__((aligned(32))) uint16_t i2s_tx_buffer[I2S_BUFFER_SIZE*2];
-__attribute__((aligned(32))) uint16_t i2s_rx_buffer[I2S_BUFFER_SIZE*2];
+__attribute__((aligned(32))) uint16_t i2s_tx_buffer[I2S_BUFFER_SIZE];
+__attribute__((aligned(32))) uint16_t i2s_rx_buffer[I2S_BUFFER_SIZE];
 
-__attribute__((aligned(32))) uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
+__attribute__((aligned(32))) uint16_t left_tx_buffer[I2S_EFFECT_SIZE];
+__attribute__((aligned(32))) uint16_t right_tx_buffer[I2S_EFFECT_SIZE];
+__attribute__((aligned(32))) uint16_t left_rx_buffer[I2S_EFFECT_SIZE];
+__attribute__((aligned(32))) uint16_t right_rx_buffer[I2S_EFFECT_SIZE];
 
 __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 {
@@ -68,15 +67,76 @@ I2S_DriverStruct_t I2S_Driver =
 		.left_tx_buffer = left_tx_buffer,
 		.right_tx_buffer = right_tx_buffer,
 		.i2s = &hi2s2,
-		.flags = I2S_FLAGS_ECHO,
+		//.flags = I2S_FLAGS_ECHO,
+};
+
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
+{
+	.in_buf = (int16_t *)left_rx_buffer,
+	.out_buf = (int16_t *)left_tx_buffer,
+	.device_out_buf = (int16_t *)i2s_tx_buffer,
+	.channel_in = AUDIO_SOURCE_LEFT,
+	.channel_out = AUDIO_DESTINATION_LEFT,
+	.sample_rate = SAMPLE_FREQUENCY,
+};
+
+AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca0_ampl_left = 1000;
+uint16_t			vca0_offset = 0;
+VCA_Effect_TypeDef	VCA0_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca0_buf_left,
+	.amplitude = &vca0_ampl_left,
+	.offset = &vca0_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	vca1_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca1_ampl_left = 65535;
+uint16_t			vca1_offset = 0;
+VCA_Effect_TypeDef	VCA1_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca1_buf_left,
+	.amplitude = &vca1_ampl_left,
+	.offset = &vca1_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	vca2_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca2_ampl_left = 65535;
+uint16_t			vca2_offset = 0;
+VCA_Effect_TypeDef	VCA2_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca2_buf_left,
+	.amplitude = &vca2_ampl_left,
+	.offset = &vca2_offset,
+	.flags = SOUND_EFFECT_ENABLED,
 };
 
 void sample_process_1_init(uint32_t process_id)
 {
 	codec_handle = nau88c22_codec_register(&Nau88C22_Drv);
 	codec_init(codec_handle);
+	bzero(i2s_tx_buffer,I2S_BUFFER_SIZE);
+	bzero(i2s_rx_buffer,I2S_BUFFER_SIZE);
 	i2s_driver_register(&I2S_Driver);
+	I2SIn_Register(&Audio_I2Sin_left);
 }
+
+
+#define SWEEP_VCA	1
+#ifdef SWEEP_VCA
+uint8_t		up = 0;
+#define STEP	200
+#define HLIMIT	(65500 - STEP)
+#define LLIMIT	(STEP * 2)
+#endif // #ifdef SWEEP_VCA
 
 void sample_process_1_audio_I2S_in2out(uint32_t process_id)
 {
@@ -85,6 +145,11 @@ uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
+	I2SIn_Start(&Audio_I2Sin_left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA1_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA2_Left);
+
 	while(1)
 	{
 		wait_event(EVENT_TIMER);
@@ -97,6 +162,20 @@ uint8_t		cntr = 0;
 				cntr = 0;
 				process_led();
 			}
+#ifdef SWEEP_VCA
+			if ( up )
+			{
+				vca0_ampl_left += STEP;
+				if ( vca0_ampl_left > HLIMIT )
+					up = 0;
+			}
+			else
+			{
+				vca0_ampl_left -= STEP;
+				if ( vca0_ampl_left < LLIMIT )
+					up = 1;
+			}
+#endif // #ifdef SWEEP_VCA
 		}
 	}
 }

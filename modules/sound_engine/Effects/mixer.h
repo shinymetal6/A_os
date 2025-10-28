@@ -28,18 +28,21 @@
 typedef struct
 {
 	/* effect header */
-	uint32_t 			*pre_effect;
-	uint32_t 			*next_effect;
-	q15_t				*effect_in_buf;
-	q15_t				*effect_out_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
 	uint8_t				status;
 	uint8_t				flags;
-	uint16_t			synth_block_size;
-	uint16_t			out_device;		/* for dac is 1 , for codec is 0 */
+	uint32_t 			*next_effect;
+	q15_t				*in_buf;
+	q15_t				*out_buf;
+	int16_t				*device_out_buf;
+	void 				(*effect)(uint32_t 	*effect_data);
+	void 				(*effect_init)(uint32_t *effect_data);
+	uint16_t			block_size;
+	float				sample_rate;
+	uint8_t				in_device;
+	uint8_t				out_device;
+	uint8_t				channel_in,channel_out;
 	/* effect data */
-	q15_t				*effect_in_buf_2ndch;
+	q15_t				*in_buf_2ndch;
 	uint16_t			*pan;
 }MIXER_Effect_TypeDef;
 

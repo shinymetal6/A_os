@@ -33,7 +33,7 @@ ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser
     float delayed = phaser->buffer[phaser->write_pos];
     float output = feedback * input + delayed - feedback * phaser->buffer[phaser->write_pos];
     phaser->buffer[phaser->write_pos] = input;
-    phaser->write_pos = (phaser->write_pos + 1) % phaser->synth_block_size; // Circular buffer
+    phaser->write_pos = (phaser->write_pos + 1) % phaser->block_size; // Circular buffer
     return output;
 }
 
@@ -90,8 +90,8 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 
 	if (( phaser->lfo_rate == NULL ) || ( phaser->depth == NULL ) || ( phaser->mix == NULL ))
 		return;
-	if ( phaser->synth_block_size == 0 )
-		phaser->synth_block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
+	if ( phaser->block_size == 0 )
+		phaser->block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( phaser->sample_rate == 0 )
 		phaser->sample_rate = Sound_Sample_Frequency;
 	phaser->lfo_phase = 0.0F;
@@ -108,12 +108,12 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 
 	if ((( phaser->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( phaser == NULL ))
 		return;
-	for ( i=0;i<phaser->synth_block_size;i++)
+	for ( i=0;i<phaser->block_size;i++)
 	{
 		if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			phaser->effect_out_buf[i] = phaser_effect(phaser,__Q15_2_FLOAT(phaser->effect_in_buf[i]));
+			phaser->out_buf[i] = phaser_effect(phaser,__Q15_2_FLOAT(phaser->in_buf[i]));
 		else
-			phaser->effect_out_buf[i]  = phaser->effect_in_buf[i];
+			phaser->out_buf[i]  = phaser->in_buf[i];
 	}
 }
 #endif // #ifdef SOUND_ENGINE_ENABLED
