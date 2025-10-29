@@ -58,6 +58,9 @@
 #ifdef	STM32F746xx
 		#include "../processors/STM32F746xx.h"
 #endif
+#ifdef	STM32N657xx
+		#include "../processors/STM32N657xx.h"
+#endif
 
 #if __has_include("user_config.h") && __has_include(<stdint.h>)
 	#include "user_config.h"
@@ -71,5 +74,5 @@
 #endif
 
 // versioning
-#define	A_OS_VERSION			"v2025.12-rc0"
+#define	A_OS_VERSION			"v2025.12-rc1"
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

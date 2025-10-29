@@ -246,7 +246,7 @@ void A_start(void)
 	A_enable_processor_faults();
 	A_IrqPriority_Init();
 
-	init_scheduler_stack(SCHED_STACK_START);
+	//init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
 #ifndef AOS_USER_SHORT_INIT
 	user_processes_init();

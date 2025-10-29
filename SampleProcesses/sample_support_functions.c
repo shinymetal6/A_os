@@ -45,7 +45,10 @@ uint8_t 	sample_led_cntr = 0;
 #define	LED_GPIO_Port	GREEN_LED__GPIO_Port
 #define	LED_Pin			GREEN_LED__Pin
 #endif
-
+#ifdef	STM32N657xx
+#define	LED_GPIO_Port	LED1_GPIO_Port
+#define	LED_Pin			LED1_Pin
+#endif
 void process_led(void)
 {
 #ifdef LED_GPIO_Port
@@ -56,14 +59,22 @@ void process_led(void)
 #ifdef AU100825
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
 #else
+#ifdef	STM32N657xx
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+#else
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+#endif
 #endif
 		break;
 	default :
 #ifdef AU100825
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
 #else
+#ifdef	STM32N657xx
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+#else
 		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+#endif
 #endif
 		break;
 	}

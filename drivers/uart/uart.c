@@ -193,6 +193,11 @@ UART_Drv_TypeDef	*uarts_Drv;
 		uarts_Drv->flags &= ~UART_USES_DMA_TX;
 		#define	SKIP_DMA_UART 1
 #endif
+#ifdef	STM32N657xx
+		uarts_Drv->flags &= ~UART_USES_DMA_RX;
+		uarts_Drv->flags &= ~UART_USES_DMA_TX;
+		#define	SKIP_DMA_UART 1
+#endif
 #ifndef	SKIP_DMA_UART
 		if ( uarts_Drv->uart->hdmarx == NULL )
 		{

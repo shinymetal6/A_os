@@ -1,5 +1,5 @@
 # A_os
-v2025.12-rc0<br>
+v2025.12-rc1<br>
 !!! NOTE !!!<br>
 Still this runs with <br>
 STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
@@ -11,7 +11,7 @@ Java version: 21.0.3<br>
 <br><br>
 Latest 19.x has some severe bugs both on IDE and libraries.<br>
 DON'T USE 19.x<br>
-<br><br>
+<br>
 # New tree<br>
 From v2025.10.00 onward, the directory "board" has been replaced with the directory "processors" with a different logic<br>
 The "processors" directory contains one include file for each supported processor.<br>
@@ -38,6 +38,11 @@ Please note : the path of the user processes tree MUST be explicitly declared in
 # Added QtConfigurator<br>
 QtConfigurator is a simple tool to generate user_config.h file. Still in wip.<br>
 QtConfigurator is in Qt directory.<br>
+# New drivers functionality<br>
+Initialization is now done with linked list in user struct<br>
+# New processor support<br>
+Initial support for STM32N657xx<br>
+
 
 # Quick start<br>
 1) Copy processor ld file from LdFiles folder in kernel overwiriting the .ld file from Cube<br>
@@ -59,6 +64,7 @@ STM32L152xE : Nucleo and other hardware<br>
 STM32H563xx : Nucleo<br>
 STM32G431RB : Nucleo<br>
 STM32G491RE : Nucleo<br>
+STM32N657xx : Nucleo : NOTE: Still in wip<br>
 <br>
 Please note:<br>
 The iodef_common.h file is not yet complete, so some definitions maybe not correct<br>
