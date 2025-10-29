@@ -67,12 +67,6 @@ A_IpAddr_t	A_DhcpIpAddr;
 uint32_t	UsbDeviceId0 = 0xdeadbeef;
 uint32_t	UsbDeviceId1 = 0xbeefdead;
 
-__attribute__((naked)) void init_scheduler_stack(uint32_t sched_top_of_stack)
-{
-     __set_MSP(sched_top_of_stack);
-     __asm volatile("BX LR");
-}
-
 void init_processes_stacks(void)
 {
 uint32_t *pPSP,i,j;
@@ -246,11 +240,8 @@ void A_start(void)
 	A_enable_processor_faults();
 	A_IrqPriority_Init();
 
-	//init_scheduler_stack(SCHED_STACK_START);
 	init_processes_stacks();
-#ifndef AOS_USER_SHORT_INIT
 	user_processes_init();
-#endif // #ifdef AOS_USER_LONG_INIT
 	init_systick_timer(TICK_HZ);
 #ifdef POOL_ENABLE
 	//A_mem_init();

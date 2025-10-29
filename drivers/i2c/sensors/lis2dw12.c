@@ -133,8 +133,8 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		}
 		pre_eptr->next_drv = (uint32_t *)lis2dw12_Drv;
 		lis2dw12_Drv->next_drv = NULL;
-		lis2dw12_Drv->process = get_current_process();
 	}
+	lis2dw12_Drv->process = get_current_process();
 	return 0;
 }
 

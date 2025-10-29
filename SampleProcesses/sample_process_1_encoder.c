@@ -26,6 +26,7 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef 	SAMPLEPROCESS_1_ENCODER
+
 extern	TIM_HandleTypeDef htim1;
 extern	UART_HandleTypeDef huart3;
 
@@ -42,7 +43,7 @@ extern	void irq_encoderbtn_callback(uint16_t value);
 
 Encoder_Drv_TypeDef	Encoder_Drv =
 {
-		.encoder_timer = &htim1,
+		//.encoder_timer = &htim1,
 #ifdef USE_CALLBACK
 		.irq_encoder_callback = irq_encoder_callback,
 #else
@@ -100,6 +101,7 @@ void sample_process_1_encoder(uint32_t process_id)
 uint32_t	wakeup,flags;
 uint8_t	logo_cnt=0;
 
+	Encoder_Drv.timer = &htim1;
 	encoder_driver_handle = encoder_register(&Encoder_Drv);
 	button_driver_handle = gpio_int_register(&Button_Driver);
 	uart_driver_handle = uart_register(&Uart_Drv);

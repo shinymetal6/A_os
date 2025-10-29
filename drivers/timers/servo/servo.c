@@ -93,6 +93,7 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_timer = (uint32_t *)servo_drv;
 		servo_drv->next_timer = NULL;
 	}
+	servo_drv->process = get_current_process();
 	return 0;
 }
 

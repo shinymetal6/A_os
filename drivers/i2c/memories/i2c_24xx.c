@@ -251,8 +251,8 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		}
 		pre_eptr->next_drv = (uint32_t *)i2c_24xx_Drv;
 		i2c_24xx_Drv->next_drv = NULL;
-		i2c_24xx_Drv->process = get_current_process();
 	}
+	i2c_24xx_Drv->process = get_current_process();
 	return 0;
 }
 

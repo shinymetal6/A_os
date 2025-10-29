@@ -146,8 +146,8 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		}
 		pre_eptr->next_drv = (uint32_t *)sht40_Drv;
 		sht40_Drv->next_drv = NULL;
-		sht40_Drv->process = get_current_process();
 	}
+	sht40_Drv->process = get_current_process();
 	return 0;
 }
 #endif // #ifdef A_OS_I2C_ENABLED

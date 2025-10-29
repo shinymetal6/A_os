@@ -46,7 +46,7 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	return NULL;
 }
 
-ITCM_AREA_CODE void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 uint32_t j;
 

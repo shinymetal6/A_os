@@ -162,6 +162,7 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_timer = (uint32_t *)dhtxx_am230x_drv;
 		dhtxx_am230x_drv->next_timer = NULL;
 	}
+	dhtxx_am230x_drv->process = get_current_process();
 	return 0;
 }
 

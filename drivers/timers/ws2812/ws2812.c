@@ -97,6 +97,7 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_timer = (uint32_t *)ws2812_drv;
 		ws2812_drv->next_timer = NULL;
 	}
+	ws2812_drv->process = get_current_process();
 	return 0;
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED

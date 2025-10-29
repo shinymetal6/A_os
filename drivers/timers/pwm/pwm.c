@@ -125,6 +125,7 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_timer = (uint32_t *)pwm_drv;
 		pwm_drv->next_timer = NULL;
 	}
+	pwm_drv->process = get_current_process();
 	return 0;
 }
 

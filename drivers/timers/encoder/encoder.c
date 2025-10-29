@@ -49,6 +49,9 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_timer = (uint32_t *)encoder_drv;
 		encoder_drv->next_timer = NULL;
 	}
+	encoder_drv->timer_type = TIM_TYPE_ENCODER;
+	encoder_drv->process =  get_current_process();
+	HAL_TIM_Encoder_Start_IT(encoder_drv->timer, TIM_CHANNEL_ALL);
 	return 0;
 }
 

@@ -138,8 +138,8 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		}
 		pre_eptr->next_drv = (uint32_t *)stts22h_Drv;
 		stts22h_Drv->next_drv = NULL;
-		stts22h_Drv->process = get_current_process();
 	}
+	stts22h_Drv->process = get_current_process();
 	return 0;
 }
 #endif // #ifdef A_OS_I2C_ENABLED
