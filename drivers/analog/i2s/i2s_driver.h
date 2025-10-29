@@ -22,7 +22,6 @@
 
 #ifndef DRIVERS_ANALOG_I2S_I2S_DRIVER_H_
 #define DRIVERS_ANALOG_I2S_I2S_DRIVER_H_
-#ifdef SOUND_ENGINE_I2S_ENABLED
 
 typedef struct
 {
@@ -53,7 +52,5 @@ typedef struct
 
 extern uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s);
 extern uint32_t	i2s_driver_start(I2S_DriverStruct_t *i2s);
-
-#endif //#ifdef SOUND_ENGINE_I2S_ENABLED
 
 #endif /* DRIVERS_ANALOG_I2S_I2S_DRIVER_H_ */

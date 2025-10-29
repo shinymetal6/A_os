@@ -131,6 +131,7 @@ typedef struct
 
 extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv);
 extern uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv);
+extern uint32_t nau88c22_internal_ops(Nau88C22_Drv_TypeDef	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain);
 
 
 #endif /* DRIVERS_I2C_CODEC_NAU88C22_H_ */

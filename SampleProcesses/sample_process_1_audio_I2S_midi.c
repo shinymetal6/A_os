@@ -103,7 +103,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 uint32_t	synth_left_initialized;
 
 __attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
-__attribute__ ((aligned (32))) ADC_Drv_TypeDef	ADC1_Drv =
+__attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
 {
 	.adc = &hadc1,
 	.adc_timer = &htim6,
@@ -187,8 +187,8 @@ void sample_process_1_init(uint32_t process_id)
 	if ( synth_left_initialized == 0 )
 		Synth_Start(&Audio_Synth_left);
 	i2s_driver_start(&I2S_Driver);
-	adc1_handle = int_adc_register(&ADC1_Drv);
-	adc_start(adc1_handle);
+	adc_register(&ADC1_Drv);
+	adc_start(&ADC1_Drv);
 	usb_driver_handle = usb_device_driver_register(&USB_Drv);
 	midi_initialized = MidiInit(&MIDI);
 }

@@ -29,9 +29,6 @@
 #include "../i2c.h"
 #include "nau88c22.h"
 
-extern	ANALOG_DriverStruct_t			ANALOG_DriverStruct[MAX_ANALOG_DRIVERS];
-extern	uint8_t							last_analog_used_handle,analog_driver_request;
-
 const Nau88c22_t	Nau88c22[] =
 {
 		{
@@ -253,9 +250,8 @@ uint8_t	i = 0;
 	return 0;
 }
 
-uint32_t nau88c22_internal_ops(uint8_t handle,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain)
+uint32_t nau88c22_internal_ops(Nau88C22_Drv_TypeDef	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain)
 {
-Nau88C22_Drv_TypeDef	*codec_drv = (Nau88C22_Drv_TypeDef	*)ANALOG_DriverStruct[handle].private_data;
 I2C_HandleTypeDef		*bus = codec_drv->bus;
 uint16_t 				device_address = codec_drv->device_address;
 /* params order

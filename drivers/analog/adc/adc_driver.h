@@ -14,29 +14,29 @@
  * Project : A_os
 */
 /*
- * int_adc_driver.h
+ * adc_driver.h
  *
- *  Created on: Nov 22, 2024
+ *  Created on: Oct 29, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_
-#define DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_
-
-#ifdef A_OS_ADC_ENABLED
+#ifndef DRIVERS_ANALOG_ADC_ADC_DRIVER_H_
+#define DRIVERS_ANALOG_ADC_ADC_DRIVER_H_
 
 typedef struct
 {
+	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
-	uint8_t				handle;
+	uint32_t			*pre_drv;
+	uint32_t			*next_drv;
 	ADC_HandleTypeDef 	*adc;
 	TIM_HandleTypeDef 	*adc_timer;
 	uint16_t 			*adc_buffer;
 	uint16_t 			num_channels;
 	uint32_t 			wakeup_id;
 	uint32_t			calibration;
-}ADC_Drv_TypeDef;
+}ADC_DriverStruct_t;
 
 /* status */
 #define		ADC_STATUS_HALF			0x01
@@ -50,7 +50,11 @@ typedef struct
 #define		ADC_FLAGS_FULL_WAKEUP			0x40
 #define		ADC_FLAGS_ALL_WAKEUP			0x80
 
-extern uint32_t	int_adc_register(ADC_Drv_TypeDef *analog_driver_private_data);
-#endif // #ifdef A_OS_ADC_ENABLED
+extern	uint32_t	adc_register(ADC_DriverStruct_t *adc_drv);
+extern	uint32_t	adc_start(ADC_DriverStruct_t *adc_drv);
+extern	uint32_t	adc_stop(ADC_DriverStruct_t *adc_drv);
+extern	uint32_t	adc_get_status(ADC_DriverStruct_t *adc_drv);
+extern	uint32_t	adc_init(ADC_DriverStruct_t *adc_drv);
 
-#endif /* DRIVERS_ANALOG_INT_ADC_DRIVER_INT_ADC_DRIVER_H_ */
+
+#endif /* DRIVERS_ANALOG_ADC_ADC_DRIVER_H_ */
