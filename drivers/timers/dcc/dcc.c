@@ -375,7 +375,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	return drv_ret;
 }
 
-ITCM_AREA_CODE void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
+void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 {
 uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*dcc_driver_data;
@@ -419,7 +419,7 @@ DCC_Control_Drv_TypeDef	*dcc_driver_data;
 	}
 }
 
-ITCM_AREA_CODE void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
+void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
 {
 uint32_t handle_dcc , handle_cutout;
 DCC_Control_Drv_TypeDef	*dcc_driver_data;

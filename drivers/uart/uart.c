@@ -274,7 +274,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 /****	Interrupt functions 	****/
 /***********************************/
 
-ITCM_AREA_CODE void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 UART_Drv_TypeDef	*uarts_Drv;
@@ -293,7 +293,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 	}
 }
 
-ITCM_AREA_CODE void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 UART_Drv_TypeDef	*uarts_Drv;
@@ -311,7 +311,7 @@ UART_Drv_TypeDef	*uarts_Drv;
 	__enable_irq();
 }
 
-ITCM_AREA_CODE void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 uint8_t	handle;
 UART_Drv_TypeDef	*uarts_Drv;
