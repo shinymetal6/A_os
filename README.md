@@ -65,7 +65,9 @@ The iodef_common.h file is not yet complete, so some definitions maybe not corre
 
 # Samples : <br>
 sample_process_1_adc.c<br>
-sample_process_1_audio_insert_remove.c<br>
+sample_process_1_audio_I2S_in2out.c<br>
+sample_process_1_audio_I2S_oscillator.c<br>
+sample_process_1_audio_I2S_midi.c<br>
 sample_process_1_audio_oscillator.c<br>
 sample_process_1_audiomidi.c<br>
 sample_process_1_basic.c<br>

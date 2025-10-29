@@ -28,7 +28,6 @@
 extern	DAC_HandleTypeDef hdac1;
 extern	TIM_HandleTypeDef htim6;
 
-#define	USB_BUF_LEN	64
 
 #define	DUAL_CHANNEL	1
 #define	SWEEP_VCA		1
@@ -38,6 +37,8 @@ extern	TIM_HandleTypeDef htim6;
 
 //#define	SAMPLE_FREQUENCY	48000
 #define	SAMPLE_FREQUENCY	96000
+
+#define	USB_BUF_LEN	64
 
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
 uint8_t	usb_tx_buffer[USB_BUF_LEN];
