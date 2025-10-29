@@ -54,9 +54,11 @@ extern	uint8_t					*_osSysRam_start,*_osSysRam_end;
 #define VERSIONING				__attribute__((section(".aos_nver"))) __attribute__ ((aligned (32))) const
 #define AOS_FLASH_END			__attribute__((section(".aos_flash_end"))) __attribute__ ((aligned (32))) const
 #ifdef	STM32H743xx
-	#define	ITCM_AREA_CODE			__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+	#define	ITCM_AREA_CODE		__attribute__((section(".RamITCMFunc"))) __attribute__ ((aligned (32)))
+	#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
 #else
-	#define	ITCM_AREA_CODE
+#define	ITCM_AREA_CODE
+#define	AUDIO_FAST_RAM
 #endif
 
 #endif /* BOARDS_MEMDEF_COMMON_H_ */

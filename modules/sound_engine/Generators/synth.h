@@ -26,8 +26,6 @@
 #ifdef SOUND_ENGINE_ENABLED
 #include "audio_sources.h"
 
-#define AUDIO_FAST_RAM		__attribute__((section(".dtcm_user_data"))) __attribute__ ((aligned (16)))
-
 #define	SYNTH_WAVETABLE_256		256
 #define	SYNTH_WAVETABLE_1024	1024
 #define	SYNTH_MIDI_NOTES		128

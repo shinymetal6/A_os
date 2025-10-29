@@ -81,11 +81,7 @@ ITCM_AREA_CODE  uint32_t adc_init(ADC_DriverStruct_t *adc_drv)
 
 ITCM_AREA_CODE uint32_t	adc_register(ADC_DriverStruct_t *adc)
 {
-	if (adc == NULL)
-		return 1;
-	if (adc->adc_buffer == NULL)
-		return 1;
-	if ( (adc->adc == NULL) || (adc->adc_timer == NULL))
+	if ((adc == NULL) || (adc->adc_buffer == NULL) || ( adc->adc == NULL) || (adc->adc_timer == NULL))
 		return 1;
 
 	if ( first_adc == NULL )
@@ -104,9 +100,44 @@ ITCM_AREA_CODE uint32_t	adc_register(ADC_DriverStruct_t *adc)
 		adc->next_drv = NULL;
 	}
 	adc->process = get_current_process();
+
 	return 0;
 }
 
+/************ Interrupt *************/
+void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef *hadc)
+{
+ADC_DriverStruct_t *adc_drv = (ADC_DriverStruct_t *)first_adc;
+	if ( adc_drv != NULL )
+	{
+		while((adc_drv != NULL) && (adc_drv->adc != hadc))
+			adc_drv = (ADC_DriverStruct_t *)adc_drv->next_drv;
+		if (adc_drv != NULL)
+		{
+			adc_drv->status |= ADC_STATUS_HALF;
+			adc_drv->status &= ~ADC_STATUS_FULL;
+			if ( adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
+				activate_process(adc_drv->process,adc_drv->wakeup_id,adc_drv->wakeup_id);
+		}
+	}
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+ADC_DriverStruct_t *adc_drv = (ADC_DriverStruct_t *)first_adc;
+	if ( adc_drv != NULL )
+	{
+		while((adc_drv != NULL) && (adc_drv->adc != hadc))
+			adc_drv = (ADC_DriverStruct_t *)adc_drv->next_drv;
+		if (adc_drv != NULL)
+		{
+			adc_drv->status |= ADC_STATUS_FULL;
+			adc_drv->status &= ~ADC_STATUS_HALF;
+			if ( adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
+				activate_process(adc_drv->process,adc_drv->wakeup_id,adc_drv->wakeup_id);
+		}
+	}
+}
 #endif // #ifdef A_OS_ADC_ENABLED
 
 

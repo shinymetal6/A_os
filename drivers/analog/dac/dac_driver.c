@@ -44,6 +44,31 @@ TIM_HandleTypeDef	*timer = dac_drv->dac_timer;
 	return 0;
 }
 
+/* forward declaration */
+extern   uint32_t dac_timer_set(DAC_DriverStruct_t *dac_drv,float frequency);
+
+ITCM_AREA_CODE  uint32_t dac_play_wav(DAC_DriverStruct_t *dac_drv,uint16_t *wav_ptr)
+{
+Wav_Header_TypeDef  *Wav = (Wav_Header_TypeDef *)wav_ptr;
+	if ((Wav->FileTypeBlocID[0] == 'R') && (Wav->FileTypeBlocID[1] == 'I')&&(Wav->FileTypeBlocID[2] == 'F') &&(Wav->FileTypeBlocID[3] == 'F'))
+	{
+		dac_drv->wav_ptr = &Wav->first_audio_sample;
+		dac_drv->wav_len = Wav->DataSize;
+		dac_drv->wav_samples_counter = 0;
+		dac_timer_set(dac_drv,Wav->Frequency);//
+		dac_drv->wav_volume = 1.0F;
+		dac_drv->dac_wav_flags |= DAC_WAV_FLAGS_DO_PLAY;
+		return 0;
+	}
+	return 1;
+}
+
+ITCM_AREA_CODE  uint32_t dac_stop_wav(DAC_DriverStruct_t *dac_drv)
+{
+	dac_drv->dac_wav_flags &= ~DAC_WAV_FLAGS_DO_PLAY;
+	dac_timer_set(dac_drv,DEFAULT_SAMPLE_FREQUENCY);
+	return 0;
+}
 ITCM_AREA_CODE  uint32_t dac_init(DAC_DriverStruct_t *dac_drv)
 {
 	dac_drv->status = HAL_DAC_Start_DMA(dac_drv->dac, dac_drv->channel, (uint32_t *)dac_drv->dac_buffer, dac_drv->len,dac_drv->alignment);
@@ -102,6 +127,109 @@ ITCM_AREA_CODE uint32_t	dac_register(DAC_DriverStruct_t *dac)
 	dac_timer_set(dac,dac->dac_sample_frequency);
 
 	return 0;
+}
+
+/************ Interrupt *************/
+
+#define DAC_WAV_ADAPTWND_SAMPLES_NUM	4096
+uint32_t	dac_time_usec;
+uint32_t	dac_samples=0;
+uint32_t limit_hi;
+uint32_t limit_lo;
+
+void dac_irq_common(DAC_DriverStruct_t *dac_drv)
+{
+uint32_t	i , start_sample;
+	dac_time_usec = A_get_timelapse_end();
+	A_get_timelapse_start();
+
+	start_sample = (dac_drv->status & DAC_STATUS_HALF) ? 0 : dac_drv->len/2;
+	if (( dac_drv->dac_wav_flags & DAC_WAV_FLAGS_DO_PLAY) == DAC_WAV_FLAGS_DO_PLAY)
+	{
+		for(i=0;i<dac_drv->len/2;i++)
+		{
+			dac_drv->dac_buffer[i+start_sample] = (int16_t )((float )(dac_drv->wav_ptr[i] + 0x8000) * dac_drv->wav_volume);
+		}
+		dac_drv->wav_ptr += dac_drv->len/2;
+		dac_drv->wav_samples_counter += dac_drv->len;
+		if ( dac_drv->wav_samples_counter >= dac_drv->wav_len)
+		{
+			dac_stop_wav(dac_drv);
+		}
+	}
+	else
+	{
+#ifdef SOUND_ENGINE_ENABLED
+		if (( dac_drv->flags & DAC_FLAGS_USE_SYNTHMODULE) == DAC_FLAGS_USE_SYNTHMODULE)
+		{
+			Do_Audio( start_sample);
+		}
+#ifdef	USB_AUDIO
+		if (( dac_drv->flags & DAC_FLAGS_USE_USBMODULE) == DAC_FLAGS_USE_USBMODULE)
+		{
+			__disable_irq();
+			limit_hi = dac_drv->len/2 + dac_drv->len/4;
+			limit_lo = dac_drv->len/4;
+			if ( usb_pkt > limit_hi)
+			{
+				int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency-1.0F);
+			}
+			if ( usb_pkt < limit_lo)
+			{
+				int_dac_timer_set(dac_drv,dac_drv->dac_sample_frequency+1.0F);
+			}
+	    	for(i=0;i<dac_drv->len/2;i++)
+			{
+				dac_drv->dac_buffer[i+start_sample] = dac_drv->usbaudio_buffer[dac_drv->usbaudio_index] + 32768;
+				dac_drv->usbaudio_index++;
+				if ( dac_drv->usbaudio_index >= dac_drv->usbaudio_size)
+					dac_drv->usbaudio_index= 0;
+			}
+			if ( start_sample == 0)
+				TransferComplete_CallBack_FS();
+			else
+				HalfTransfer_CallBack_FS();
+			dac_samples += dac_drv->len/2;
+			__enable_irq();
+		}
+#endif // #ifdef	USB_AUDIO
+#endif // #ifdef SOUND_ENGINE_ENABLED
+
+	}
+}
+
+void HAL_DAC_ConvHalfCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+{
+DAC_DriverStruct_t *dac_drv = (DAC_DriverStruct_t *)first_dac;
+	if ( dac_drv != NULL )
+	{
+		while((dac_drv != NULL) && (dac_drv->dac != hdac))
+			dac_drv = (DAC_DriverStruct_t *)dac_drv->next_drv;
+		if (dac_drv != NULL)
+		{
+			dac_drv->status |= DAC_STATUS_HALF;
+			dac_drv->status &= ~DAC_STATUS_FULL;
+			dac_irq_common(dac_drv);
+		}
+	}
+}
+
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac)
+{
+DAC_DriverStruct_t *dac_drv = (DAC_DriverStruct_t *)first_dac;
+	if ( dac_drv != NULL )
+	{
+		while((dac_drv != NULL) && (dac_drv->dac != hdac))
+			dac_drv = (DAC_DriverStruct_t *)dac_drv->next_drv;
+		if (dac_drv != NULL)
+		{
+			dac_drv->status |= DAC_STATUS_FULL;
+			dac_drv->status &= ~DAC_STATUS_HALF;
+			dac_irq_common(dac_drv);
+			if ( dac_drv->flags & DAC_FLAGS_WAKEUP)
+				activate_process(dac_drv->process,EVENT_DAC_IRQ,HW_DAC);
+		}
+	}
 }
 
 #endif // #ifdef A_OS_DAC_ENABLED

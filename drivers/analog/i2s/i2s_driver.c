@@ -86,7 +86,7 @@ uint32_t i,j;
 	}
 }
 
-ITCM_AREA_CODE void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
+void HAL_I2SEx_TxRxCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 I2S_DriverStruct_t *i2s = (I2S_DriverStruct_t *)first_i2s;
 	if ( i2s != NULL )
@@ -98,7 +98,7 @@ I2S_DriverStruct_t *i2s = (I2S_DriverStruct_t *)first_i2s;
 	}
 }
 
-ITCM_AREA_CODE void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+void HAL_I2SEx_TxRxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
 {
 I2S_DriverStruct_t *i2s = (I2S_DriverStruct_t *)first_i2s;
 	if ( i2s != NULL )

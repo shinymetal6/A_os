@@ -145,11 +145,9 @@ uint8_t i=0;
 				{
 					last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
 					source->OutFunc(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
-//						to_i2sout(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 				}
 				else
 					source->OutFunc(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
-//					to_i2sout(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
 			}
 		}
 	}

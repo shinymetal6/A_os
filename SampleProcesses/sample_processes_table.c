@@ -53,9 +53,6 @@ extern	void sample_process_1_qspi(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_SERVO
 extern	void sample_process_1_servo(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_SERVO
-#ifdef	SAMPLEPROCESS_1_REF0
-extern	void sample_process_1_ref0(uint32_t process_id);	//This is process1
-#endif // #define	SAMPLEPROCESS_1_REF0
 #ifdef	SAMPLEPROCESS_1_I2CMEM
 extern	void sample_process_1_i2cmem(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_I2CMEM
@@ -94,8 +91,8 @@ extern	void sample_process_1_init(uint32_t process_id);
 #ifdef	SAMPLEPROCESS_1_ENCODER
 extern	void sample_process_1_encoder(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_ENCODER
-#ifdef	SAMPLEPROCESS_1_AUDIO_MIDI
-extern	void sample_process_1_audiomidi(uint32_t process_id);	//This is process1
+#ifdef	SAMPLEPROCESS_1_AUDIO_DAC_MIDI
+extern	void sample_process_1_audio_DAC_midi(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_MIDI
 #ifdef	SAMPLEPROCESS_1_AUDIO_INSERT_REMOVE
@@ -118,10 +115,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_dac_waveforms(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_DAC_WAVEFORMS
-#ifdef	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
-extern	void sample_process_1_audio_oscillator(uint32_t process_id);	//This is process1
+#ifdef	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
+extern	void sample_process_1_audio_dac_oscillator(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
-#endif // #define	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
+#endif // #define	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -173,9 +170,6 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_SERVO
 				.user_process = sample_process_1_servo,
 #endif // #define	SAMPLEPROCESS_1_SERVO
-#ifdef	SAMPLEPROCESS_1_REF0
-				.user_process = sample_process_1_ref0,
-#endif // #define	SAMPLEPROCESS_1_REF0
 #ifdef	SAMPLEPROCESS_1_I2CMEM
 				.user_process = sample_process_1_i2cmem,
 #endif // #define	SAMPLEPROCESS_1_I2CMEM
@@ -213,8 +207,8 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_ENCODER
 				.user_process = sample_process_1_encoder,
 #endif // #define	SAMPLEPROCESS_1_ENCODER
-#ifdef	SAMPLEPROCESS_1_AUDIO_MIDI
-				.user_process = sample_process_1_audiomidi,
+#ifdef	SAMPLEPROCESS_1_AUDIO_DAC_MIDI
+				.user_process = sample_process_1_audio_DAC_midi,
 				.user_init = sample_process_1_init,
 #endif
 #ifdef	SAMPLEPROCESS_1_AUDIO_INSERT_REMOVE
@@ -234,8 +228,8 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_MIDI
 
-#ifdef	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
-				.user_process = sample_process_1_audio_oscillator,
+#ifdef	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
+				.user_process = sample_process_1_audio_dac_oscillator,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
 				.stack_size = 1024,
