@@ -1,5 +1,5 @@
 # A_os
-v2025.12-rc1<br>
+v2025.12-rc2<br>
 !!! NOTE !!!<br>
 Still this runs with <br>
 STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
@@ -96,7 +96,6 @@ sample_process_1_qspi.c<br>
 sample_process_1_rx_DMA_UART.c<br>
 sample_process_1_servo.c<br>
 sample_process_1_switch_midi_cdc.c<br>
-sample_process_1_uart_queuetest.c<br>
 sample_process_1_usbclass_switch.c<br>
 sample_process_1_usbecho.c<br>
 sample_process_1_xmodem_rx_UART.c<br>

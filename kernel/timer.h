@@ -32,9 +32,9 @@ extern	uint32_t 	stop_timer(uint8_t timer_id);
 extern	uint32_t 	destroy_timer(uint8_t timer_id);
 extern	uint8_t 	get_timer_expired(void);
 extern	int32_t 	A_GetTick(void);
-extern	uint32_t 	set_before_check_timers_callback(void (*callback)(void));
-extern	uint32_t 	unset_before_check_timers_callback(void (*callback)(void));
-extern	uint32_t 	set_after_check_timers_callback(void (*callback)(void));
-extern	uint32_t 	unset_after_check_timers_callback(void (*callback)(void));
+extern	uint32_t 	set_before_check_timers_callback(void (*callback)(uint32_t *param),uint32_t *param);
+extern	uint32_t 	unset_before_check_timers_callback(void (*callback)(uint32_t *param));
+extern	uint32_t 	set_after_check_timers_callback(void (*callback)(uint32_t *param),uint32_t *param);
+extern	uint32_t 	unset_after_check_timers_callback(void (*callback)(uint32_t *param));
 
 #endif /* KERNEL_TIMER_H_ */

@@ -96,37 +96,37 @@ ITCM_AREA_CODE	void xmodem_rx_set_data_area(uint8_t *dest_data_ptr,uint32_t max_
 uint8_t		xnak=X_NAK,xack=X_ACK;
 
 #ifdef A_OS_UART_ENABLED
-ITCM_AREA_CODE	uint8_t xmodem_uart_data_process(uint8_t mode,uint32_t uart_driver_handle,uint8_t *uart_rx_buffer)
+ITCM_AREA_CODE	uint8_t xmodem_uart_data_process(UART_Drv_TypeDef *uart_drv,uint8_t mode,uint8_t *uart_rx_buffer)
 {
 uint8_t		xmodem_rx_uart_reply,rxlen;
 	if ( mode == 1 )
 	{
-		uart_send(uart_driver_handle,&xnak,1);
+		uart_send(uart_drv,&xnak,1);
 		return 0;
 	}
 	if ( mode == 0 )
 	{
-		rxlen = uart_get_rxlen(uart_driver_handle);
+		rxlen = uart_get_rxlen(uart_drv);
 		if ( rxlen > 1 )
 		{
 			if (( uart_rx_buffer[0] == X_SOH ) || ( uart_rx_buffer[0] == X_EOT ))
 				xmodem_rx_uart_reply = xmodem_rx_line_parser(uart_rx_buffer);
 			else
 				xmodem_rx_uart_reply = xmodem_rx_line_parser(&uart_rx_buffer[1]);
-			uart_restart_DMA_on_RX(uart_driver_handle);
+			uart_restart_DMA_on_RX(uart_drv);
 			switch(xmodem_rx_uart_reply)
 			{
 			case	X_NAK:
-				uart_send(uart_driver_handle,&xnak,1);
+				uart_send(uart_drv,&xnak,1);
 				break;
 			case	X_EOT:
-				uart_send(uart_driver_handle,&xack,1);
+				uart_send(uart_drv,&xack,1);
 				break;
 			case	X_ACK:
-				uart_send(uart_driver_handle,&xack,1);
+				uart_send(uart_drv,&xack,1);
 				break;
 			default:
-				uart_send(uart_driver_handle,&xnak,1);
+				uart_send(uart_drv,&xnak,1);
 				return 0xff;
 				break;
 			}
@@ -138,12 +138,12 @@ uint8_t		xmodem_rx_uart_reply,rxlen;
 #endif // #ifdef A_OS_UART_ENABLED
 
 #ifdef USB_DEVICE_ENABLED
-ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(uint8_t mode,uint32_t usb_handle,uint8_t *usb_rx_buffer)
+ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(USB_Drv_TypeDef *usb_drv,uint8_t mode,uint8_t *usb_rx_buffer)
 {
 uint8_t		xmodem_usb_uart_reply;
 	if ( mode )
 	{
-		usb_send(usb_handle,&xnak,1);
+		usb_send(usb_drv,&xnak,1);
 		return 0;
 	}
 	else
@@ -152,16 +152,16 @@ uint8_t		xmodem_usb_uart_reply;
 		switch(xmodem_usb_uart_reply)
 		{
 		case	X_NAK:
-			usb_send(usb_handle,&xnak,1);
+			usb_send(usb_drv,&xnak,1);
 			break;
 		case	X_EOT:
-			usb_send(usb_handle,&xack,1);
+			usb_send(usb_drv,&xack,1);
 			break;
 		case	X_ACK:
-			usb_send(usb_handle,&xack,1);
+			usb_send(usb_drv,&xack,1);
 			break;
 		default:
-			usb_send(usb_handle,&xnak,1);
+			usb_send(usb_drv,&xnak,1);
 			return 0xff;
 			break;
 		}
@@ -172,15 +172,15 @@ uint8_t		xmodem_usb_uart_reply;
 #endif // #ifdef USB_DEVICE_ENABLED
 
 
-ITCM_AREA_CODE	uint8_t xmodem_data_process(uint8_t mode,uint8_t type,uint32_t handle,uint8_t *rx_buffer)
+ITCM_AREA_CODE	uint8_t xmodem_data_process(uint32_t *driver,uint8_t mode,uint8_t type,uint8_t *rx_buffer)
 {
 #ifdef USB_DEVICE_ENABLED
 	if ( type == XMODEM_IF_USB)
-		return xmodem_usb_data_process(mode,handle,rx_buffer);
+		return xmodem_usb_data_process((USB_Drv_TypeDef *)driver,mode,rx_buffer);
 #endif
 #ifdef A_OS_UART_ENABLED
 	if ( type == XMODEM_IF_UART)
-		return xmodem_uart_data_process(mode,handle,rx_buffer);
+		return xmodem_uart_data_process((UART_Drv_TypeDef *)driver,mode,rx_buffer);
 #endif // #ifdef A_OS_UART_ENABLED
 	return 1;
 }

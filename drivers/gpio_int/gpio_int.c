@@ -48,7 +48,7 @@ GPIO_Interrupt_DriverStruct_t *private_data;
 	return NULL;
 }
 
-static void gpio_int_Driver_RxTimeoutCheckCallback(void)
+static void gpio_int_Driver_RxTimeoutCheckCallback(uint32_t *param)
 {
 uint32_t	i;
 GPIO_Interrupt_DriverStruct_t *private_data;
@@ -112,7 +112,7 @@ uint32_t	i;
 			if ( private_data->debounce )
 			{
 				private_data->debounce_counter = private_data->debounce;
-				set_before_check_timers_callback(gpio_int_Driver_RxTimeoutCheckCallback);
+				set_before_check_timers_callback(gpio_int_Driver_RxTimeoutCheckCallback,NULL);
 			}
 			GPIO_Int_DriverStruct[i].private_data = (uint32_t *)private_data;
 			GPIO_Int_DriverStruct[i].process = private_data->process = get_current_process();

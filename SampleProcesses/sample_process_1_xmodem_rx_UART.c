@@ -29,6 +29,10 @@
 #ifdef	STM32H743xx
 #define	xmodem_rx_data_area	0x30000000
 #define	xmodem_rx_data_len		0x2ffff
+extern	UART_HandleTypeDef	huart3;
+#define	UART				huart3
+#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
+#define	UART_EVENT			EVENT_UART3_IRQ
 #else
 #ifdef	STM32F446xx
 #define	xmodem_rx_data_len		0xffff
@@ -95,7 +99,6 @@ UART_Drv_TypeDef Uart_Drv =
 	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
-uint32_t	uart_driver_handle;
 uint8_t		xmodem_rx_uart_enable_poll;
 uint8_t		tim_downscale=0;
 uint32_t	rx_len;
@@ -103,8 +106,8 @@ uint32_t	rx_len;
 void sample_process_1_xmodem_rx_UART(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-	uart_driver_handle = uart_register(&Uart_Drv);
-	uart_start_receive(uart_driver_handle);
+	uart_register(&Uart_Drv);
+	uart_start_receive(&Uart_Drv);
 	xmodem_rx_uart_enable_poll = 1;
 
 	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
@@ -122,7 +125,7 @@ uint32_t	wakeup,flags;
 				tim_downscale ++;
 				if ( tim_downscale > 10 )
 				{
-					xmodem_data_process(xmodem_rx_uart_enable_poll,XMODEM_IF_UART,uart_driver_handle,uart_rx_buffer);
+					xmodem_data_process((uint32_t *)&Uart_Drv,xmodem_rx_uart_enable_poll,XMODEM_IF_UART,uart_rx_buffer);
 					tim_downscale = 0;
 				}
 			}
@@ -134,11 +137,11 @@ uint32_t	wakeup,flags;
 			{
 				if ( uart_rx_buffer[0] != '<')
 				{
-					if ((rx_len = uart_get_rxlen(uart_driver_handle)) > 1 )
+					if ((rx_len = uart_get_rxlen(&Uart_Drv)) > 1 )
 						xmodem_rx_uart_enable_poll = 0;
 				}
 				if ( xmodem_rx_uart_enable_poll == 0 )
-					if ( xmodem_data_process(xmodem_rx_uart_enable_poll,XMODEM_IF_UART,uart_driver_handle,uart_rx_buffer) == X_EOT)
+					if ( xmodem_data_process((uint32_t *)&Uart_Drv,xmodem_rx_uart_enable_poll,XMODEM_IF_UART,uart_rx_buffer) == X_EOT)
 						xmodem_rx_uart_enable_poll = 1;
 			}
 		}

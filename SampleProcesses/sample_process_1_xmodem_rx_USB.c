@@ -47,7 +47,6 @@ USB_Drv_TypeDef	USB_Drv =
 		.timeout = 250,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
 };
-uint32_t		usb_driver_handle;
 
 uint8_t		xmodem_rx_usb_enable;
 uint8_t		xmodem_rx_usb_enable_poll;
@@ -55,7 +54,7 @@ uint8_t		tim_downscale=0;
 
 void sample_process_1_init(uint32_t process_id)
 {
-	usb_driver_handle = usb_device_driver_register(&USB_Drv);
+	usb_device_driver_register(&USB_Drv);
 }
 
 void sample_process_1_xmodem_rx_USB(uint32_t process_id)
@@ -81,7 +80,7 @@ uint32_t	wakeup,flags;
 					tim_downscale ++;
 					if ( tim_downscale > 10 )
 					{
-						xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer);
+						xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer);
 						tim_downscale = 0;
 					}
 				}
@@ -97,7 +96,7 @@ uint32_t	wakeup,flags;
 			}
 			else
 			{
-				if ( xmodem_data_process(xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_driver_handle,usb_rx_buffer) == X_EOT)
+				if (xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer) == X_EOT)
 				{
 					xmodem_rx_usb_enable = 0;
 					xmodem_rx_usb_enable_poll = 0;

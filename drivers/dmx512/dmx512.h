@@ -28,6 +28,8 @@ typedef struct
 {
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t				process;
+	uint32_t 			wakeup_id;
 	uint8_t				rx_char;
 	uint16_t			rx_index;
 	uint16_t			rx_max_len;
@@ -38,18 +40,17 @@ typedef struct
 	uint8_t				sentinel_end;
 	uint8_t				sentinel_flags;
 	uint32_t			uart_error;
-	UART_HandleTypeDef 	*uart;
 	GPIO_TypeDef	 	*tx_port;
 	uint16_t			tx_bit;
 	GPIO_TypeDef	 	*rx_port;
 	uint16_t			rx_bit;
 	uint32_t			break_length;
-	uint32_t 			wakeup_id;
+	UART_Drv_TypeDef	*uart_drv;
 }DMX512_Drv_TypeDef;
 
 extern	uint32_t	dmx512_register(DMX512_Drv_TypeDef *driver_private_data);
 extern	uint32_t 	dmx512_init(UART_HandleTypeDef	*huart,uint32_t wakeup_id,GPIO_TypeDef *tx_port,uint16_t tx_bit);
-extern	void 		dmx512_send(uint8_t handle, uint8_t *buffer, uint16_t buffer_len);
+extern	void 		dmx512_send(DMX512_Drv_TypeDef *dmx512_drv, uint8_t *buffer, uint16_t buffer_len);
 
 #endif // #ifdef A_OS_UART_ENABLED
 

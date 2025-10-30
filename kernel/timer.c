@@ -29,10 +29,12 @@ extern	Asys_t		Asys;
 
 extern	__IO uint32_t uwTick;
 
-SYSTEM_RAM	void 		(*before_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
-SYSTEM_RAM	void 		(*after_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(void);
+SYSTEM_RAM	void 		(*before_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(uint32_t *param);
+SYSTEM_RAM	uint32_t *	before_check_timers_callback_array_param[TIMER_CALLBACK_ARRAY_SIZE];
+SYSTEM_RAM	void 		(*after_check_timers_callback_array[TIMER_CALLBACK_ARRAY_SIZE])(uint32_t *param);
+SYSTEM_RAM	uint32_t *	after_check_timers_callback_array_param[TIMER_CALLBACK_ARRAY_SIZE];
 
-ITCM_AREA_CODE uint32_t set_before_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t set_before_check_timers_callback(void (*callback)(uint32_t *param),uint32_t *param)
 {
 uint32_t	i;
 	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
@@ -40,13 +42,14 @@ uint32_t	i;
 		if ( before_check_timers_callback_array[i] == NULL )
 		{
 			before_check_timers_callback_array[i] = callback;
+			before_check_timers_callback_array_param[i] = param;
 			return 0;
 		}
 	}
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t unset_before_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t unset_before_check_timers_callback(void (*callback)(uint32_t *param))
 {
 uint32_t	i;
 	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
@@ -54,13 +57,14 @@ uint32_t	i;
 		if ( before_check_timers_callback_array[i] == callback )
 		{
 			before_check_timers_callback_array[i] = NULL;
+			before_check_timers_callback_array_param[i] = NULL;
 			return 0;
 		}
 	}
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t set_after_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t set_after_check_timers_callback(void (*callback)(uint32_t *param),uint32_t *param)
 {
 uint32_t	i;
 	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
@@ -68,13 +72,14 @@ uint32_t	i;
 		if ( after_check_timers_callback_array[i] == NULL )
 		{
 			after_check_timers_callback_array[i] = callback;
+			after_check_timers_callback_array_param[i] = param;
 			return 0;
 		}
 	}
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t unset_after_check_timers_callback(void (*callback)(void))
+ITCM_AREA_CODE uint32_t unset_after_check_timers_callback(void (*callback)(uint32_t *param))
 {
 uint32_t	i;
 	for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
@@ -191,7 +196,7 @@ uint32_t	i;
 		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
 		{
 			if ( before_check_timers_callback_array[i] != NULL )
-				before_check_timers_callback_array[i]();
+				before_check_timers_callback_array[i](before_check_timers_callback_array_param[i]);
 		}
 
 		check_timers();
@@ -199,7 +204,7 @@ uint32_t	i;
 		for(i=0;i<TIMER_CALLBACK_ARRAY_SIZE;i++)
 		{
 			if ( after_check_timers_callback_array[i] != NULL )
-				after_check_timers_callback_array[i]();
+				after_check_timers_callback_array[i](after_check_timers_callback_array_param[i]);
 		}
 		//pend the pendsv exception after all processes started
 		if (( Asys.system_flags & SYS_FLAGS_SKIP_TICK) == SYS_FLAGS_SKIP_TICK )
