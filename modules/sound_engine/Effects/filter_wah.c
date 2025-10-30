@@ -14,9 +14,9 @@
  * Project : A_os
 */
 /*
- * wah_filter.c
+ * filter_wah.c
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
 
@@ -26,7 +26,7 @@
 #ifdef SOUND_ENGINE_ENABLED
 #include "../sound_engine.h"
 #include "effects.h"
-#include "wah_filter.h"
+#include "filter_wah.h"
 
 /*
 ITCM_AREA_CODE void Wah_Set_Params(WAH_F_Effect_TypeDef *wah, float min_fc, float max_fc, float res, float sens)
@@ -150,3 +150,4 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED
+

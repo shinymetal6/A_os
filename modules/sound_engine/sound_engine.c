@@ -94,6 +94,8 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 
 ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect)
 {
+PTR_Effect_TypeDef		*effect = (PTR_Effect_TypeDef *)remove_effect , *pre_effect;
+AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 	return 0;
 }
 

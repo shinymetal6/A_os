@@ -14,12 +14,11 @@
  * Project : A_os
 */
 /*
- * moog_filter.c
+ * filter_moog.c
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
@@ -27,7 +26,7 @@
 #ifdef SOUND_ENGINE_ENABLED
 #include "../sound_engine.h"
 #include "effects.h"
-#include "moog_filter.h"
+#include "filter_moog.h"
 
 void update_g_and_k(MOOG_F_Effect_TypeDef* moog_f)
 {
@@ -104,3 +103,5 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 }
 
 #endif // #ifdef SOUND_ENABLED
+
+

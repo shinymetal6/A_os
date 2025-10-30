@@ -14,11 +14,12 @@
  * Project : A_os
 */
 /*
- * iir.c
+ * filter_iir.c
  *
- *  Created on: Apr 30, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
+
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
@@ -26,7 +27,7 @@
 #ifdef SOUND_ENGINE_ENABLED
 #include "../sound_engine.h"
 #include "effects.h"
-#include "iir.h"
+#include "filter_iir.h"
 
 ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoffFreq, float bw, float sample_rate)
 {
@@ -176,3 +177,4 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 	}
 }
 #endif // #ifdef SOUND_ENABLED
+

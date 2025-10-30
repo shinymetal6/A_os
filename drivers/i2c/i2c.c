@@ -28,7 +28,7 @@
 #include "i2c.h"
 I2C_DriverStruct_t	*i2c_drv_ptr;
 
-I2C_DriverStruct_t *i2c_irq_common(I2C_HandleTypeDef *hi2c)
+ITCM_AREA_CODE static void i2c_irq_common(I2C_HandleTypeDef *hi2c,uint32_t flag)
 {
 I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_drv_ptr;
 	while(i2c_drv_ptr_L->bus != hi2c)
@@ -36,34 +36,31 @@ I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_drv_ptr;
 		if ( i2c_drv_ptr_L->next_drv != NULL )
 			i2c_drv_ptr_L = (I2C_DriverStruct_t *)i2c_drv_ptr->next_drv;
 	}
-	if ( i2c_drv_ptr_L->process == 0 )
-		return NULL;
-	__DSB ();
-	return i2c_drv_ptr_L;
+	if (i2c_drv_ptr_L != NULL)
+	{
+		if ( i2c_drv_ptr_L->process != 0 )
+			i2c_drv_ptr_L->flags |= flag;
+	}
 }
 
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_irq_common(hi2c);
-	i2c_drv_ptr_L->flags |= I2C_STATUS_READ_COMPLETE;
+	i2c_irq_common(hi2c,I2C_STATUS_READ_COMPLETE);
 }
 
 void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_irq_common(hi2c);
-	i2c_drv_ptr_L->flags |= I2C_STATUS_WRITE_COMPLETE;
+	i2c_irq_common(hi2c,I2C_STATUS_WRITE_COMPLETE);
 }
 
 void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_irq_common(hi2c);
-	i2c_drv_ptr_L->status |= I2C_STATUS_READ_COMPLETE;
+	i2c_irq_common(hi2c,I2C_STATUS_READ_COMPLETE);
 }
 
 void HAL_I2C_MemTxCpltCallback(I2C_HandleTypeDef *hi2c)
 {
-I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_irq_common(hi2c);
-	i2c_drv_ptr_L->status |= I2C_STATUS_WRITE_COMPLETE;
+	i2c_irq_common(hi2c,I2C_STATUS_WRITE_COMPLETE);
 }
 #endif //#ifdef A_OS_I2C_ENABLED
 

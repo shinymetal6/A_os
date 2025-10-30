@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * wah_filter.h
+ * filter_wah.h
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_WAH_FILTER_H_
-#define MODULES_SOUND_EFFECTS_WAH_FILTER_H_
+#ifndef MODULES_SOUND_ENGINE_EFFECTS_FILTER_WAH_H_
+#define MODULES_SOUND_ENGINE_EFFECTS_FILTER_WAH_H_
 
 #include <stdint.h>
 #include <math.h>
@@ -84,4 +84,5 @@ extern	void Effect_Wah_Init(uint32_t *effect_s);
 extern	void Effect_Wah(uint32_t *effect_s, uint32_t start_sample);
 
 
-#endif /* MODULES_SOUND_EFFECTS_WAH_FILTER_H_ */
+
+#endif /* MODULES_SOUND_ENGINE_EFFECTS_FILTER_WAH_H_ */

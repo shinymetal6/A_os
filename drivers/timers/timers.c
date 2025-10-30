@@ -49,15 +49,14 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 uint32_t j;
-
 TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 
+	if ( tim_ic == NULL )
+		return;
 	if ( tim_ic->timer_type == TIM_TYPE_DHT11 )
 	{
 		for(j=0;j<MAX_DHT11_DEVICES;j++)
-		{
 			tim_ic->status = DHTXX_AM230X_ACQDONE;
-		}
 	}
 	if ( tim_ic->timer_type == TIM_TYPE_ENCODER )
 	{

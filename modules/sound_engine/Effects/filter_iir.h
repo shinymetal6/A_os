@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * iir.h
+ * filter_iir.h
  *
- *  Created on: Apr 30, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_IIR_H_
-#define MODULES_SOUND_EFFECTS_IIR_H_
+#ifndef MODULES_SOUND_ENGINE_EFFECTS_FILTER_IIR_H_
+#define MODULES_SOUND_ENGINE_EFFECTS_FILTER_IIR_H_
 
 #define IIR_BLOCK_SIZE 		SOUND_BLOCK_SIZE	// Block size (number of samples per block)
 #define IIR_NUM_BIQUADS 	4           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
@@ -75,4 +75,4 @@ extern void Effect_IIR_Init(uint32_t *effect_s);
 extern void Effect_IIR_SetParams(uint32_t *effect_s,uint32_t *params );
 
 
-#endif /* MODULES_SOUND_EFFECTS_IIR_H_ */
+#endif /* MODULES_SOUND_ENGINE_EFFECTS_FILTER_IIR_H_ */

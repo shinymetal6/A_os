@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * moog_filter.h
+ * filter_moog.h
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Oct 30, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_MOOG_FILTER_H_
-#define MODULES_SOUND_EFFECTS_MOOG_FILTER_H_
+#ifndef MODULES_SOUND_ENGINE_EFFECTS_FILTER_MOOG_H_
+#define MODULES_SOUND_ENGINE_EFFECTS_FILTER_MOOG_H_
 
 #include <stdint.h>
 #include <math.h>
@@ -69,4 +69,5 @@ extern	float moog_process(MOOG_F_Effect_TypeDef *f, float input);
 extern	void Effect_MOOG_F(uint32_t *effect_s);
 
 
-#endif /* MODULES_SOUND_EFFECTS_MOOG_FILTER_H_ */
+
+#endif /* MODULES_SOUND_ENGINE_EFFECTS_FILTER_MOOG_H_ */
