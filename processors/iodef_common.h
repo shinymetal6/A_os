@@ -43,6 +43,10 @@
 	#ifdef STM32H7xx_HAL_DAC_H
 		#define A_OS_DAC_ENABLED	1
 	#endif
+	#ifdef HAL_FDCAN_MODULE_ENABLED
+		#define A_OS_CAN_ENABLED	1
+	#endif
+
 	#ifdef STM32H7xx_HAL_I2S_H
 		#define A_OS_I2S_ENABLED	1
 	#endif

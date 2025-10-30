@@ -65,9 +65,8 @@ FDCAN_TxHeaderTypeDef FDCAN_TxHeader =
 };
 
 FDCAN_RxHeaderTypeDef	FDCAN_RxHeader;
-CAN_Drv_TypeDef	CAN_Drv =
+FDCAN_Drv_TypeDef	FDCAN_Drv =
 {
-		.channel = 1,
 		.hfdcan = &hfdcan1,
 		.TxData = can_txbuf,
 		.RxData = can_rxbuf,
@@ -83,7 +82,7 @@ uint8_t	can_pkt = 0;
 void sample_process_1_can(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-	can_register(&CAN_Drv);
+	can_register(&FDCAN_Drv);
 
 	create_timer(TIMER_ID_0,PRC1_TICK,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	create_timer(TIMER_ID_1,PRC1_TICK*100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
@@ -98,7 +97,7 @@ uint32_t	wakeup,flags;
 			if (( flags & TIMER_ID_0) == TIMER_ID_0)
 				process_led();
 			if (( flags & TIMER_ID_1) == TIMER_ID_1)
-				can_send(&CAN_Drv);
+				can_send(&FDCAN_Drv);
 		}
 		if (( wakeup & WAKEUP_FROM_CAN_IRQ) == WAKEUP_FROM_CAN_IRQ)
 		{

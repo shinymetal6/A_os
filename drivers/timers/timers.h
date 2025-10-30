@@ -34,6 +34,7 @@ typedef struct
 	uint32_t	*private_data;
 	uint8_t		timer_type;
 }TIM_DriverStruct_t;
+
 /* timer_type */
 #define TIM_TYPE_ENCODER		1
 #define TIM_TYPE_DHT11			2
