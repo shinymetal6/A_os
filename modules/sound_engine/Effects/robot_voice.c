@@ -109,7 +109,6 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
     rv->status |= SOUND_EFFECT_INITIALIZED;
 }
 
-
 ITCM_AREA_CODE void Effect_Robot(uint32_t *effect_s)
 {
 uint32_t	i;

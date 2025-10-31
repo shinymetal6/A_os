@@ -44,7 +44,7 @@ ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterT
 
     // Calculate coefficients based on filter type
     switch (type) {
-        case FILTER_TYPE_LOW_PASS:
+        case IIR_FILTER_LOW_PASS:
             bq->b0 = (1.0f - cosW0) / (2.0f * a0);
             bq->b1 = (1.0f - cosW0) / a0;
             bq->b2 = bq->b0;
@@ -52,7 +52,7 @@ ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterT
             bq->a2 = (1.0f - alpha) / a0;
             break;
 
-        case FILTER_TYPE_HIGH_PASS:
+        case IIR_FILTER_HIGH_PASS:
             bq->b0 = (1.0f + cosW0) / (2.0f * a0);
             bq->b1 = -(1.0f + cosW0) / a0;
             bq->b2 = bq->b0;
@@ -60,7 +60,7 @@ ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterT
             bq->a2 = (1.0f - alpha) / a0;
             break;
 
-        case FILTER_TYPE_BAND_PASS:
+        case IIR_FILTER_BAND_PASS:
             // Normalize bandwidth
             float bwNorm = 2.0f * M_PI * bw / sample_rate;
             alpha = sinW0 * sinh((logf(2.0f) / 2.0f) * bwNorm * w0 / sinW0);
@@ -73,7 +73,7 @@ ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterT
             bq->a2 = (1.0f - alpha) / a0;
             break;
 
-        case FILTER_TYPE_NOTCH:
+        case IIR_FILTER_NOTCH:
             // Normalize bandwidth
             bwNorm = 2.0f * M_PI * bw / sample_rate;
             alpha = sinW0 * sinh((logf(2.0f) / 2.0f) * bwNorm * w0 / sinW0);

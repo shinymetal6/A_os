@@ -27,10 +27,10 @@
 #define IIR_NUM_BIQUADS 	4           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
 
 typedef enum {
-    FILTER_TYPE_LOW_PASS,
-    FILTER_TYPE_HIGH_PASS,
-    FILTER_TYPE_BAND_PASS,
-    FILTER_TYPE_NOTCH
+    IIR_FILTER_LOW_PASS,
+	IIR_FILTER_HIGH_PASS,
+	IIR_FILTER_BAND_PASS,
+	IIR_FILTER_NOTCH
 } FilterType;
 
 typedef struct {

@@ -92,8 +92,8 @@ VCA_Effect_TypeDef	VCA0_Left =
 };
 
 AUDIO_FAST_RAM int16_t	iir_buf_left[I2S_EFFECT_SIZE];
-uint16_t			cutoffFrequency = 1000;
-uint16_t			bandwidth = 500;
+uint16_t			cutoffFrequency = 2000;
+uint16_t			bandwidth = 600;
 IIR_Effect_TypeDef	IIR_Left =
 {
 	.effect = Effect_IIR,
@@ -101,6 +101,8 @@ IIR_Effect_TypeDef	IIR_Left =
 	.out_buf = iir_buf_left,
 	.cutoffFrequency = &cutoffFrequency,
 	.bandwidth = &bandwidth,
+	.filterType = IIR_FILTER_BAND_PASS,
+	.sample_rate = SAMPLE_FREQUENCY,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
@@ -135,8 +137,8 @@ uint8_t		effect_cntr= 0;
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
 	I2SIn_Start(&Audio_I2Sin_left);
-	//Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
-	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+	//Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
 
 	while(1)
 	{

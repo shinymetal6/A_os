@@ -39,7 +39,7 @@ const Nau88c22_t	Nau88c22[] =
 		{
 			NAU88C22_POWER_MANAGEMENT_2,
 			//0x01b3	// Enable L/R Headphone, ADC Mix/Boost, ADC
-			0x01bf		// Disable L/R Headphone, ADC Mix/Boost, ADC
+			0x01bf		// Disable L/R Headphone, ADC Mix/Boost, ADC TESTED
 		},
 		{
 			NAU88C22_POWER_MANAGEMENT_3,
@@ -93,11 +93,11 @@ const Nau88c22_t	Nau88c22[] =
 		},
 		{
 			NAU88C22_LEFT_ADC_DIGITAL_VOLUME,
-			0x01ff	// ADC left digital volume control
+			0x01ee	// ADC left digital volume control
 		},
 		{
 			NAU88C22_RIGHT_ADC_DIGITAL_VOLUME,
-			0x01ff	// ADC right digital volume control
+			0x01ee	// ADC right digital volume control
 		},
 		{
 			NAU88C22_INPUT_CONTROL,
