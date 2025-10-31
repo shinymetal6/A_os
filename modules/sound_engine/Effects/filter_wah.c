@@ -28,18 +28,8 @@
 #include "effects.h"
 #include "filter_wah.h"
 
-/*
-ITCM_AREA_CODE void Wah_Set_Params(WAH_F_Effect_TypeDef *wah, float min_fc, float max_fc, float res, float sens)
-{
-    wah->f_min_cutoff = (min_fc < 50.0f) ? 50.0f : min_fc;
-    wah->f_max_cutoff = (max_fc > 8000.0f) ? 8000.0f : max_fc;
-    wah->f_resonance = (res < 0.0f) ? 0.0f : (res > 0.99f ? 0.99f : res);
-    wah->f_sensitivity = sens;
-}
-*/
 ITCM_AREA_CODE static void wah_set_params(WAH_F_Effect_TypeDef *wah)
 {
-
     if (( *wah->attack == 0 ) | ( *wah->attack > 100 ))
     	wah->f_attack = 1.0f - expf(-1.0f / (0.0001f * wah->sample_rate));   // ~0.1 ms f_attack
     else
@@ -113,6 +103,11 @@ ITCM_AREA_CODE static q15_t wah_process(WAH_F_Effect_TypeDef *wah, float input)
     return __FLOAT_2_Q15(wah->y4);
 }
 
+ITCM_AREA_CODE void Effect_Wah_UpdateParams(WAH_F_Effect_TypeDef *wah )
+{
+	wah->flags |= WAH_UPDATE_PARAMS;
+
+}
 ITCM_AREA_CODE void Effect_Wah_Init(uint32_t *effect_s)
 {
 WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
@@ -137,6 +132,12 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 
 	if ((( wah->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( wah == NULL ))
 		return;
+	wah->time_start = DWT->CYCCNT;
+	if (( wah->flags & WAH_UPDATE_PARAMS) == WAH_UPDATE_PARAMS)
+	{
+		wah_set_params(wah);
+		wah->flags &= ~WAH_UPDATE_PARAMS;
+	}
 	for ( i=0;i<wah->block_size;i++)
 	{
 		if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -147,6 +148,7 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 		else
 			wah->out_buf[i]  = wah->in_buf[i];
 	}
+	wah->effect_time = (DWT->CYCCNT - wah->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

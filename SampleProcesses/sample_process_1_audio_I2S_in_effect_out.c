@@ -14,9 +14,9 @@
  * Project : A_os
 */
 /*
- * sample_process_1_audio_I2S_in2out.c
+ * sample_process_1_audio_I2S_in_effect_out.c
  *
- *  Created on: Oct 22, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
@@ -24,7 +24,7 @@
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN2OUT
+#ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_EFFECT_OUT
 
 extern	TIM_HandleTypeDef htim6;
 extern	I2C_HandleTypeDef hi2c1;
@@ -79,7 +79,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
 };
 
 AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
-uint16_t			vca0_ampl_left = 1000;
+uint16_t			vca0_ampl_left = 65535;
 uint16_t			vca0_offset = 0;
 VCA_Effect_TypeDef	VCA0_Left =
 {
@@ -88,6 +88,31 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.out_buf = vca0_buf_left,
 	.amplitude = &vca0_ampl_left,
 	.offset = &vca0_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	iir_buf_left[I2S_EFFECT_SIZE];
+uint16_t			cutoffFrequency = 1000;
+uint16_t			bandwidth = 500;
+IIR_Effect_TypeDef	IIR_Left =
+{
+	.effect = Effect_IIR,
+	.effect_init = Effect_IIR_Init,
+	.out_buf = iir_buf_left,
+	.cutoffFrequency = &cutoffFrequency,
+	.bandwidth = &bandwidth,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+
+AUDIO_FAST_RAM int16_t	OVERDRIVE_buf_left[I2S_EFFECT_SIZE];
+uint16_t			overdrive = 32768;
+OVERDRIVE_Effect_TypeDef	OVERDRIVE_Left =
+{
+	.effect = Effect_Overdrive,
+	.effect_init = Effect_Overdrive_Init,
+	.out_buf = OVERDRIVE_buf_left,
+	.overdrive = &overdrive,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
@@ -101,24 +126,17 @@ void sample_process_1_init(uint32_t process_id)
 	I2SIn_Register(&Audio_I2Sin_left);
 }
 
-
-#define SWEEP_VCA	1
-#ifdef SWEEP_VCA
-uint8_t		up = 0;
-#define STEP	200
-#define HLIMIT	(65500 - STEP)
-#define LLIMIT	(STEP * 2)
-#endif // #ifdef SWEEP_VCA
-
-void sample_process_1_audio_I2S_in2out(uint32_t process_id)
+void sample_process_1_audio_I2S_in_effect_out(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
+uint8_t		effect_cntr= 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
 	I2SIn_Start(&Audio_I2Sin_left);
-	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+	//Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
 
 	while(1)
 	{
@@ -131,24 +149,30 @@ uint8_t		cntr = 0;
 			{
 				cntr = 0;
 				process_led();
+				effect_cntr++;
 			}
-#ifdef SWEEP_VCA
-			if ( up )
+			/* for overdrive */
+			/*
+			switch(effect_cntr)
 			{
-				vca0_ampl_left += STEP;
-				if ( vca0_ampl_left > HLIMIT )
-					up = 0;
+			case 0	:	OVERDRIVE_Left.flags &= ~SOUND_EFFECT_ENABLED;break;
+			case 20	:	OVERDRIVE_Left.flags |=  SOUND_EFFECT_ENABLED;break;
+			case 40	:	OVERDRIVE_Left.flags |=  FLAGS_OVERDIVE_ASYMMETRIC;break;
+			case 60	:	OVERDRIVE_Left.flags &= ~FLAGS_OVERDIVE_ASYMMETRIC;break;
+			case 80	:	OVERDRIVE_Left.flags &= ~SOUND_EFFECT_ENABLED;break;
+			case 100:	effect_cntr = 0;break;
 			}
-			else
+			*/
+			switch(effect_cntr)
 			{
-				vca0_ampl_left -= STEP;
-				if ( vca0_ampl_left < LLIMIT )
-					up = 1;
+			//case 0	:	IIR_Left.flags &= ~SOUND_EFFECT_ENABLED;break;
+			case 20	:	IIR_Left.flags |=  SOUND_EFFECT_ENABLED;break;
+			case 40:	effect_cntr = 0;break;
 			}
-#endif // #ifdef SWEEP_VCA
 		}
 	}
 }
-#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN2OUT
+#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_EFFECT_OUT
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
+
 

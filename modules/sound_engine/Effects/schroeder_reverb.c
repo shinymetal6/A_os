@@ -83,6 +83,7 @@ SCHROEDER_REVERB_Effect_TypeDef *schroeder_reverb = (SCHROEDER_REVERB_Effect_Typ
 
 	if ((( schroeder_reverb->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( schroeder_reverb == NULL ))
 		return;
+	schroeder_reverb->time_start = DWT->CYCCNT;
 	for ( i=0;i<schroeder_reverb->block_size;i++)
 	{
 		if (( schroeder_reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -95,5 +96,6 @@ SCHROEDER_REVERB_Effect_TypeDef *schroeder_reverb = (SCHROEDER_REVERB_Effect_Typ
 		schroeder_reverb_init(effect_s);
 		schroeder_reverb->flags &= ~SCHROEDER_REVERB_UPDATE_PARAMS;
 	}
+	schroeder_reverb->effect_time = (DWT->CYCCNT - schroeder_reverb->time_start) / (HSI_CLOCK / 1000000);
 }
 #endif // #ifdef SOUND_ENABLED

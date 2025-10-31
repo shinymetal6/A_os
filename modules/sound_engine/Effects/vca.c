@@ -46,6 +46,7 @@ VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
 float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
 	if ((( vca->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( vca == NULL ))
 		return;
+	vca->time_start = DWT->CYCCNT;
 	for ( i=0;i<vca->block_size;i++)
 	{
 		if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -53,6 +54,7 @@ float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
 		else
 			vca->out_buf[i]  = vca->in_buf[i];
 	}
+	vca->effect_time = (DWT->CYCCNT - vca->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENABLED

@@ -32,12 +32,18 @@
 
 ITCM_AREA_CODE static q15_t overdrive_effect(OVERDRIVE_Effect_TypeDef* overdrive, float input)
 {
-	if ( *overdrive->overdrive == 0 )
-		overdrive->f_overdrive = 1.0F;
-	else
-		overdrive->f_overdrive = (float )*overdrive->overdrive;
+	overdrive->f_overdrive = (float )*overdrive->overdrive / 16384.0F;
+	return __FLOAT_2_Q15((fast_tanh(input) * overdrive->f_overdrive));
+}
 
-	return __FLOAT_2_Q15((tanhf(input) * overdrive->f_overdrive));
+ITCM_AREA_CODE static q15_t overdrive_asymmetric(OVERDRIVE_Effect_TypeDef* overdrive, float input)
+{
+	overdrive->f_overdrive = (float )*overdrive->overdrive / 32768.0F;
+	input *= overdrive->f_overdrive;
+	if (input > 0.0f)
+		return __FLOAT_2_Q15(1.0f - expf(-input));           // Soft knee for positive
+	else
+		return __FLOAT_2_Q15(-1.0f + expf(input)) * 0.7f;    // Softer negative (asymmetry)
 }
 
 ITCM_AREA_CODE void Effect_Overdrive_Init(uint32_t *effect_s)
@@ -57,13 +63,19 @@ OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect_s;
 
 	if ( overdrive == NULL )
 		return;
-
+	overdrive->time_start = DWT->CYCCNT;
 	for ( i=0;i<overdrive->block_size;i++)
 	{
 		if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			overdrive->out_buf[i] = overdrive_effect(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
+		{
+			if (( overdrive->flags & FLAGS_OVERDIVE_ASYMMETRIC) == FLAGS_OVERDIVE_ASYMMETRIC)
+				overdrive->out_buf[i] = overdrive_asymmetric(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
+			else
+				overdrive->out_buf[i] = overdrive_effect(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
+		}
 		else
 			overdrive->out_buf[i]  = overdrive->in_buf[i];
 	}
+	overdrive->effect_time = (DWT->CYCCNT - overdrive->time_start) / (HSI_CLOCK / 1000000);
 }
 #endif // #ifdef SOUND_ENGINE_ENABLED

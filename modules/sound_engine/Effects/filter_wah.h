@@ -56,6 +56,8 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
     uint16_t			*attack;		// units : 1 = 0.1 mSec
     uint16_t			*release;		// units : 1 = 0.1 mSec
@@ -79,6 +81,7 @@ typedef struct
     float 				f_resonance;   // 0.7–0.95
     float 				f_sensitivity; // 0.2–2.0
 } WAH_F_Effect_TypeDef;
+#define WAH_UPDATE_PARAMS 	0x01
 
 extern	void Effect_Wah_Init(uint32_t *effect_s);
 extern	void Effect_Wah(uint32_t *effect_s, uint32_t start_sample);

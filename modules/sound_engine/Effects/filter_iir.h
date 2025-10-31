@@ -41,12 +41,6 @@ typedef struct {
 } BiquadFilter;
 
 typedef struct {
-	float 		cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
-	float 		bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
-	FilterType	filterType;
-} IIR_Effect_Params_TypeDef;
-
-typedef struct {
 	/* effect header */
 	uint8_t				status;
 	uint8_t				flags;
@@ -61,18 +55,23 @@ typedef struct {
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
+	uint16_t			*cutoffFrequency;
+	uint16_t			*bandwidth;
 	FilterType			filterType;
     /* Internals */
-	float 				cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
-	float 				bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
-    BiquadFilter biquads[IIR_NUM_BIQUADS];
+	float 				f_cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
+	float 				f_bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
+    BiquadFilter 		biquads[IIR_NUM_BIQUADS];
+    BiquadFilter 		new_biquads[IIR_NUM_BIQUADS];
 } IIR_Effect_TypeDef;
 #define IIR_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
 
 extern void Effect_IIR(uint32_t *effect_s);
 extern void Effect_IIR_Init(uint32_t *effect_s);
-extern void Effect_IIR_SetParams(uint32_t *effect_s,uint32_t *params );
+extern void Effect_IIR_UpdateParams(IIR_Effect_TypeDef *iir );
 
 
 #endif /* MODULES_SOUND_ENGINE_EFFECTS_FILTER_IIR_H_ */

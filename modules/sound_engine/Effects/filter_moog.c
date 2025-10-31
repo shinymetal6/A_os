@@ -93,6 +93,7 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 
 	if ((( moog_f->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( moog_f == NULL ))
 		return;
+	moog_f->time_start = DWT->CYCCNT;
 	for ( i=0;i<moog_f->block_size;i++)
 	{
 		if (( moog_f->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -100,6 +101,7 @@ MOOG_F_Effect_TypeDef *moog_f = (MOOG_F_Effect_TypeDef *)effect_s;
 		else
 			moog_f->out_buf[i]  = moog_f->in_buf[i];
 	}
+	moog_f->effect_time = (DWT->CYCCNT - moog_f->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENABLED

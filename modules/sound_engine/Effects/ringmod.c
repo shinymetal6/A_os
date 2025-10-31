@@ -77,6 +77,7 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect_s;
 
 	if ((( ringmod->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( ringmod == NULL ))
 		return;
+	ringmod->time_start = DWT->CYCCNT;
 	for ( i=0;i<ringmod->block_size;i++)
 	{
 		if (( ringmod->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -84,6 +85,7 @@ RINGMOD_Effect_TypeDef *ringmod = (RINGMOD_Effect_TypeDef *)effect_s;
 		else
 			ringmod->out_buf[i]  = ringmod->in_buf[i];
 	}
+	ringmod->effect_time = (DWT->CYCCNT - ringmod->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

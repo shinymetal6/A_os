@@ -45,17 +45,19 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
 	uint16_t		*lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
 	uint16_t		*depth;							// Depth of the LFO
-	uint16_t		*mix;
+	uint16_t		*mix;							// 0.0F to 1.0F
 	/* internals */
 	float 			f_lfo_rate;						// Rate of the LFO [0 .. 1.0F] easy for user side
+	float			f_lfo_increment;
+	float 			f_lfo_phase;						// Phase of the LFO
 	float 			f_depth;							// Depth of the LFO
 	float 			f_mix;
 	int32_t			allpass_number;					// Read position in the buffer
-	float 			lfo_phase;						// Phase of the LFO
-	float			lfo_increment;
 	float 			depth_sum,depth_mul;							// Depth of the LFO
 	float 			buffer[PHASER_BUFFER_SIZE];	// Circular buffer for delay line
 	int32_t			write_pos;						// Write position in the buffer

@@ -59,6 +59,8 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
     uint16_t 			*delay_time_ms;        // 50–800 ms
     uint16_t 			*feedback;             // 0.0–0.8 multiplied by 100 , so 0 to 80
@@ -85,6 +87,7 @@ typedef struct
     float 				g, k;
     float 				y1, y2, y3, y4;
 } SPACE_ECHO_Effect_TypeDef;
+#define SPACE_ECHO_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
 
 extern void Effect_Space_Echo_Init(uint32_t *effect_s);
 extern void Effect_Space_Echo(uint32_t *effect_s);

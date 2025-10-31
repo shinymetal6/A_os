@@ -47,6 +47,7 @@ ITCM_AREA_CODE uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in)
 	AudioSource[i2s_in->channel_in] = i2s_in;
 	i2s_in->source_type = SOUND_SOURCE_IS_I2S_IN;
 	i2s_in->block_size = I2S_EFFECT_SIZE;
+	i2s_in->OutFunc = to_i2sout;
 	return 0;
 }
 

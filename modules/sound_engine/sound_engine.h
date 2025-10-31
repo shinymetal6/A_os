@@ -37,8 +37,6 @@
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
-
-
 typedef struct
 {
 	/* effect header */
@@ -79,12 +77,20 @@ extern	float					Sound_Sample_Frequency;
 
 #include	"Generators/synth.h"
 #include	"Generators/i2s_in.h"
+#include	"Effects/phaser.h"
 #include	"Effects/vca.h"
+#include	"Effects/filter_iir.h"
+#include	"Effects/overdrive.h"
 
-extern void synth_to_i2s_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
-extern void synth_to_dac_out(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
-extern void i2sin_to_i2sout(uint8_t synth_number,int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples);
+extern	uint32_t			audio_pipe_time;
 
+#ifdef SOUND_ENGINE_I2S_ENABLED
+extern void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
+#else
+extern void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
+#endif
+
+extern 	float 				fast_tanh(float x);
 extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);
 extern	uint8_t				Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect);

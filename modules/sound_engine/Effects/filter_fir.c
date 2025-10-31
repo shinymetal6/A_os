@@ -195,6 +195,7 @@ FIR_Effect_TypeDef *fir = (FIR_Effect_TypeDef *)effect_s;
 
 	if ((( fir->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( fir == NULL ))
 		return;
+	fir->time_start = DWT->CYCCNT;
 	for ( i=0;i<fir->block_size;i++)
 	{
 		if (( fir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -206,6 +207,7 @@ FIR_Effect_TypeDef *fir = (FIR_Effect_TypeDef *)effect_s;
 	{
 		fir->flags &= ~FIR_UPDATE_PARAMS;
 	}
+	fir->effect_time = (DWT->CYCCNT - fir->time_start) / (HSI_CLOCK / 1000000);
 }
 #endif //#ifdef SOUND_ENGINE_ENABLED
 

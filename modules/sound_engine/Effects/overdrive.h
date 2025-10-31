@@ -39,10 +39,13 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
 	uint16_t	*overdrive;
 	float		f_overdrive;
 }OVERDRIVE_Effect_TypeDef;
+#define FLAGS_OVERDIVE_ASYMMETRIC 	0x01
 
 extern void Effect_Overdrive_Init(uint32_t *effect_s);
 extern void Effect_Overdrive(uint32_t *effect_s);

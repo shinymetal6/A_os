@@ -50,6 +50,8 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
 	uint16_t			*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
 	uint16_t			*resonance; 				// = 32768	Resonance (0 to 65535)

@@ -87,7 +87,9 @@ typedef struct {
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
-    /* Internals */
+	uint32_t			time_start;
+	uint32_t			effect_time;
+	/* effect data */
 	uint16_t			num_taps;
     float				coeffs[FIR_TAPS];
 	fir_float_t			fir_coeffs;

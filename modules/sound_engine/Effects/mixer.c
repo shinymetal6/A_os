@@ -46,6 +46,7 @@ float pan_left  = 1.0F - ((float )(*mixer->pan) / FULL_SCALE_F_FACTOR);
 float pan_right = (float )(*mixer->pan) / FULL_SCALE_F_FACTOR;
 	if ((( mixer->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( mixer == NULL ))
 		return;
+	mixer->time_start = DWT->CYCCNT;
 	for ( i=0;i<mixer->block_size;i++)
 	{
 		if (( mixer->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -53,6 +54,7 @@ float pan_right = (float )(*mixer->pan) / FULL_SCALE_F_FACTOR;
 		else
 			mixer->out_buf[i]  = mixer->in_buf[i];
 	}
+	mixer->effect_time = (DWT->CYCCNT - mixer->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENABLED

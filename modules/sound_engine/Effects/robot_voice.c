@@ -117,7 +117,9 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 
 	if ((( rv->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( rv == NULL ))
 		return;
-	Effect_Robot_Set_Params(rv);
+	if (( rv->flags & RV_UPDATE_PARAMS) == RV_UPDATE_PARAMS)
+			Effect_Robot_Set_Params(rv);
+	rv->time_start = DWT->CYCCNT;
 	for ( i=0;i<rv->block_size;i++)
 	{
 		if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -127,6 +129,7 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 		else
 			rv->out_buf[i]  = rv->in_buf[i];
 	}
+	rv->effect_time = (DWT->CYCCNT - rv->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

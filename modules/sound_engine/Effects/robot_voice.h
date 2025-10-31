@@ -52,6 +52,8 @@ typedef struct {
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
     uint16_t			*ring_freq;	// Hz (300–1000)
     uint16_t			*ring_wave;	// 0=sine, 1=square , default square
@@ -75,6 +77,7 @@ typedef struct {
     float 				f_bp_freq;          // center freq (Hz)
     float 				f_bp_q;             // Q factor (0.5–2.0)
 } ROBOT_VOICE_Effect_TypeDef;
+#define RV_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
 
 extern	void Effect_Robot_Init(uint32_t *effect_s);
 extern	void Effect_Robot(uint32_t *effect_s);

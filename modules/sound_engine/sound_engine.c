@@ -27,16 +27,21 @@ float	Sound_Sample_Frequency = DEFAULT_SAMPLE_FREQUENCY;
 #ifdef SOUND_ENGINE_ENABLED
 #include "sound_engine.h"
 
-uint8_t	num_effects=0;
-
 AUDIO_Source_TypeDef *AudioSource[2] = {NULL,NULL};
+
+ITCM_AREA_CODE inline float fast_tanh(float x)
+{
+    if (x > 1.5f) return 1.0f;
+    if (x < -1.5f) return -1.0f;
+    float x2 = x * x;
+    return x * (27.0f + x2) / (27.0f + 9.0f * x2);
+}
 
 ITCM_AREA_CODE PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
 {
 uint8_t		done=0;
 PTR_Effect_TypeDef	*PTR_Effect = (PTR_Effect_TypeDef *)effect;
-	num_effects=0;
-	while( done < 8 )
+	while( done < 32 )
 	{
 		if ( (PTR_Effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
 			PTR_Effect->effect( (uint32_t *)PTR_Effect);
@@ -44,7 +49,6 @@ PTR_Effect_TypeDef	*PTR_Effect = (PTR_Effect_TypeDef *)effect;
 			PTR_Effect = (PTR_Effect_TypeDef *)PTR_Effect->next_effect;
 		else
 			return PTR_Effect;
-		num_effects++;
 		done++;
 	}
 	return NULL;
@@ -142,11 +146,17 @@ uint32_t i;
 }
 #endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
+AUDIO_FAST_RAM	uint32_t			audio_pipe_time_start;
+AUDIO_FAST_RAM	uint32_t			audio_pipe_time;
+
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
 PTR_Effect_TypeDef *last_effect;
 uint8_t i=0;
-
+#ifdef LCD_SS_GPIO_Port
+	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
+#endif // #ifdef LCD_SS_GPIO_Port
+	audio_pipe_time_start = DWT->CYCCNT;
 	for(i=0;i<SOUND_AUDIO_SOURCES;i++)
 	{
 		if ( AudioSource[i] != NULL)
@@ -169,6 +179,10 @@ uint8_t i=0;
 			}
 		}
 	}
+	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
+#ifdef LCD_SS_GPIO_Port
+	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);
+#endif // #ifdef LCD_SS_GPIO_Port
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

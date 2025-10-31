@@ -137,7 +137,9 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
 
 	if ((( echo->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( echo == NULL ))
 		return;
-    Effect_Space_Echo_Set_params(echo);
+    echo->time_start = DWT->CYCCNT;
+	if (( echo->flags & SPACE_ECHO_UPDATE_PARAMS) == SPACE_ECHO_UPDATE_PARAMS)
+		Effect_Space_Echo_Set_params(echo);
 	for ( i=0;i<echo->block_size;i++)
 	{
 		if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -145,6 +147,7 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
 		else
 			echo->out_buf[i]  = echo->in_buf[i];
 	}
+	echo->effect_time = (DWT->CYCCNT - echo->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

@@ -119,7 +119,6 @@ float sample = input;
 		// Pass the output of this stage as the input to the next stage
 		sample = y0;
 	}
-
 	// Write output sample
 	return __FLOAT_2_Q15(sample);
 }
@@ -128,30 +127,46 @@ ITCM_AREA_CODE void Effect_IIR_Init(uint32_t *effect_s)
 {
 IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 
-	if ( iir->block_size == 0 )
-		iir->block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( iir->sample_rate == 0 )
 		iir->sample_rate = Sound_Sample_Frequency;
-	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++) {
-		calculateBiquadCoefficients(&iir->biquads[i], iir->filterType, iir->cutoffFrequency, iir->bandwidth,iir->sample_rate);
+
+	if (( iir->cutoffFrequency == NULL ) || (*iir->cutoffFrequency > (uint16_t)(iir->sample_rate/2.0F) ))
+		return;
+	if (( iir->bandwidth == NULL ) || (*iir->cutoffFrequency > (uint16_t)(iir->sample_rate/2.0F) ))
+		return;
+	iir->f_cutoffFrequency = (float )*iir->cutoffFrequency;
+	iir->f_bandwidth = (float )*iir->bandwidth;
+	if ( iir->f_cutoffFrequency == 0.0F )
+			iir->f_cutoffFrequency = 1000.0F;
+	if ( iir->f_bandwidth == 0.0F )
+			iir->f_bandwidth = 200.0F;
+
+	if ( iir->block_size == 0 )
+		iir->block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
+	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++)
+	{
+		calculateBiquadCoefficients(&iir->biquads[i], iir->filterType, iir->f_cutoffFrequency, iir->f_bandwidth,iir->sample_rate);
 		iir->biquads[i].x1 = iir->biquads[i].x2 = 0.0f;
 		iir->biquads[i].y1 = iir->biquads[i].y2 = 0.0f;
 	}
-	if ( iir->cutoffFrequency == 0.0F )
-			iir->cutoffFrequency = 1000.0F;
-	if ( iir->bandwidth == 0.0F )
-			iir->bandwidth = 200.0F;
 	iir->status |= SOUND_EFFECT_INITIALIZED;
 }
 
-ITCM_AREA_CODE void Effect_IIR_SetParams(uint32_t *effect_s,uint32_t *params )
+ITCM_AREA_CODE void Effect_IIR_UpdateParams(IIR_Effect_TypeDef *iir	)
 {
-IIR_Effect_Params_TypeDef *new_params = (IIR_Effect_Params_TypeDef *)params;
-IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
+	if (( iir->cutoffFrequency == NULL ) || (*iir->cutoffFrequency > (uint16_t)(iir->sample_rate/2.0F) ))
+		return;
+	if (( iir->bandwidth == NULL ) || (*iir->cutoffFrequency > (uint16_t)(iir->sample_rate/2.0F) ))
+		return;
+	iir->f_cutoffFrequency = (float )*iir->cutoffFrequency;
+	iir->f_bandwidth = (float )*iir->bandwidth;
 
-	iir->cutoffFrequency = new_params->cutoffFrequency;
-	iir->bandwidth = new_params->bandwidth;
-	iir->filterType = new_params->filterType;
+	for (uint8_t i = 0; i < IIR_NUM_BIQUADS; i++)
+	{
+		calculateBiquadCoefficients(&iir->new_biquads[i], iir->filterType, iir->f_cutoffFrequency, iir->f_bandwidth,iir->sample_rate);
+		iir->new_biquads[i].x1 = iir->new_biquads[i].x2 = 0.0f;
+		iir->new_biquads[i].y1 = iir->new_biquads[i].y2 = 0.0f;
+	}
 	iir->flags |= IIR_UPDATE_PARAMS;
 }
 
@@ -163,6 +178,15 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 
 	if ((( iir->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( iir == NULL ))
 		return;
+
+	iir->time_start = DWT->CYCCNT;
+
+	if (( iir->flags & IIR_UPDATE_PARAMS) == IIR_UPDATE_PARAMS)
+	{
+		memcpy(iir->biquads,iir->new_biquads,sizeof(BiquadFilter));
+		iir->flags &= ~IIR_UPDATE_PARAMS;
+	}
+
 	for ( i=0;i<iir->block_size;i++)
 	{
 		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -170,11 +194,13 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 		else
 			iir->out_buf[i]  = iir->in_buf[i];
 	}
+	iir->effect_time = (DWT->CYCCNT - iir->time_start) / (HSI_CLOCK / 1000000);
 	if (( iir->flags & IIR_UPDATE_PARAMS) == IIR_UPDATE_PARAMS)
 	{
 		Effect_IIR_Init(effect_s);
 		iir->flags &= ~IIR_UPDATE_PARAMS;
 	}
+
 }
 #endif // #ifdef SOUND_ENABLED
 

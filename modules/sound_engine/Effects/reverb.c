@@ -113,6 +113,7 @@ ITCM_AREA_CODE void Effect_Reverb(uint32_t *effect_s)
 uint32_t	i;
 REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect_s;
 
+	reverb->time_start = DWT->CYCCNT;
 	for ( i=0;i<reverb->block_size;i++)
 	{
 		if (( reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -121,6 +122,7 @@ REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect_s;
 			reverb->out_buf[i]  = reverb->in_buf[i];
 
 	}
+	reverb->effect_time = (DWT->CYCCNT - reverb->time_start) / (HSI_CLOCK / 1000000);
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

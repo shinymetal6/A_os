@@ -39,12 +39,12 @@ ITCM_AREA_CODE static float phaser_all_pass_filter(PHASER_Effect_TypeDef *phaser
 
 ITCM_AREA_CODE static void phaser_update_lfo(PHASER_Effect_TypeDef *phaser)
 {
-	phaser->lfo_phase = 0.0F;
+	phaser->f_lfo_phase = 0.0F;
 	if ( phaser->f_lfo_rate == 0.0F)
 		phaser->f_lfo_rate = 1.0F;
 	else
 		phaser->f_lfo_rate = (float )*phaser->lfo_rate;
-	phaser->lfo_increment = 2.0f * M_PI * phaser->f_lfo_rate / phaser->sample_rate;
+	phaser->f_lfo_increment = 2.0f * M_PI * phaser->f_lfo_rate / phaser->sample_rate;
 	if ( phaser->depth == 0)
 		phaser->f_depth = 0.5F;
 	else
@@ -64,12 +64,12 @@ ITCM_AREA_CODE static q15_t phaser_effect(PHASER_Effect_TypeDef *phaser,float in
     // Update LFO phase
 
 	phaser_update_lfo(phaser);
-	phaser->lfo_phase += phaser->lfo_increment; // Increment phase (adjust for desired LFO rate) , 0.001f default
-    if (phaser->lfo_phase >= 2.0f * M_PI)
-    	phaser->lfo_phase -= 2.0f * M_PI;
+	phaser->f_lfo_rate += phaser->f_lfo_increment; // Increment phase (adjust for desired LFO rate) , 0.001f default
+    if (phaser->f_lfo_rate >= 2.0f * M_PI)
+    	phaser->f_lfo_rate -= 2.0f * M_PI;
 
     // Generate LFO signal (sinusoidal modulation)
-    float lfo_signal = sinf(phaser->lfo_phase);
+    float lfo_signal = sinf(phaser->f_lfo_phase);
 
     // Modulate feedback coefficient
     //float feedback = 0.7f + 0.3f * lfo_signal; // Base + modulation
@@ -90,11 +90,14 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 
 	if (( phaser->lfo_rate == NULL ) || ( phaser->depth == NULL ) || ( phaser->mix == NULL ))
 		return;
+	phaser->f_lfo_rate = (float )*phaser->lfo_rate / 65535.0F;
+	phaser->f_depth    = (float )*phaser->depth    / 65535.0F;
+	phaser->f_mix      = (float )*phaser->mix      / 65535.0F;
 	if ( phaser->block_size == 0 )
 		phaser->block_size = DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES;
 	if ( phaser->sample_rate == 0 )
 		phaser->sample_rate = Sound_Sample_Frequency;
-	phaser->lfo_phase = 0.0F;
+	phaser->f_lfo_phase = 0.0F;
 	phaser_update_lfo(phaser);
 
 	phaser->allpass_number = PHASER_NUM_ALLPASS;
@@ -108,6 +111,7 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 
 	if ((( phaser->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( phaser == NULL ))
 		return;
+	phaser->time_start = DWT->CYCCNT;
 	for ( i=0;i<phaser->block_size;i++)
 	{
 		if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
@@ -115,5 +119,6 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 		else
 			phaser->out_buf[i]  = phaser->in_buf[i];
 	}
+	phaser->effect_time = (DWT->CYCCNT - phaser->time_start) / (HSI_CLOCK / 1000000);
 }
 #endif // #ifdef SOUND_ENGINE_ENABLED

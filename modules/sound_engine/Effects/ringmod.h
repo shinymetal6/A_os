@@ -43,9 +43,10 @@ typedef struct
 	uint8_t				in_device;
 	uint8_t				out_device;
 	uint8_t				channel_in,channel_out;
+	uint32_t			time_start;
+	uint32_t			effect_time;
 	/* effect data */
 	uint16_t			*carrierFrequency;					// Phase of the LFO
-
 	/* internals */
 	float 				f_carrierFrequency;					// Phase of the LFO
 	float 				carrierPhase;						// Phase of the LFO
