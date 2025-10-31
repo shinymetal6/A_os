@@ -16,15 +16,15 @@
 /*
  * stts22h.c
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
 #include "main.h"
-#include "../../../kernel/A.h"
-#include "../../../kernel/A_exported_functions.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
-#include "../i2c.h"
+#include "../../i2c.h"
 #include "stts22h.h"
 
 ITCM_AREA_CODE	uint8_t	stts22h_read_reg(I2C_Stts22H_Drv_TypeDef *stts22h_Drv,uint8_t address,uint8_t size)
@@ -143,4 +143,5 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	return 0;
 }
 #endif // #ifdef A_OS_I2C_ENABLED
+
 

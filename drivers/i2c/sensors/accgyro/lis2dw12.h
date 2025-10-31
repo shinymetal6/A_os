@@ -16,12 +16,12 @@
 /*
  * lis2dw12.h
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_I2C_SENSORS_LIS2DW12_H_
-#define DRIVERS_I2C_SENSORS_LIS2DW12_H_
+#ifndef DRIVERS_I2C_SENSORS_ACCGYRO_LIS2DW12_H_
+#define DRIVERS_I2C_SENSORS_ACCGYRO_LIS2DW12_H_
 
 #define	LIS2DW12_ADDR			0x32
 #define	LIS2DW12_I2C_TIMEOUT	100
@@ -229,4 +229,4 @@ typedef struct
 extern uint32_t lis2dw12_register(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv);
 
 
-#endif /* DRIVERS_I2C_SENSORS_LIS2DW12_H_ */
+#endif /* DRIVERS_I2C_SENSORS_ACCGYRO_LIS2DW12_H_ */

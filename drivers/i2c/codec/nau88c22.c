@@ -25,6 +25,7 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 
 #include "../i2c.h"
 #include "nau88c22.h"
@@ -350,5 +351,6 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	return 0;
 }
+#endif // #ifdef SOUND_ENGINE_ENABLED
 #endif // #ifdef A_OS_I2C_ENABLED
 

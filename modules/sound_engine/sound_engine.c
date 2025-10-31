@@ -94,7 +94,7 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 
 ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect)
 {
-PTR_Effect_TypeDef		*effect = (PTR_Effect_TypeDef *)remove_effect , *pre_effect;
+PTR_Effect_TypeDef		*pre_effect;
 AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 
 	if (( ext_source == NULL ) || ( remove_effect == NULL ) || ( sound_source->next_effect == NULL ))
@@ -152,7 +152,7 @@ uint8_t i=0;
 		if ( AudioSource[i] != NULL)
 		{
 			AUDIO_Source_TypeDef *source = AudioSource[i];
-			if ( source->status == SOURCE_ENABLED )
+			if ( (source->status == SOURCE_ENABLED ) && ( source->OutFunc != NULL ))
 			{
 				if ( AudioSource[i]->source_type == SOUND_SOURCE_IS_SYNTH)
 					Synth_Process_Block((uint32_t *)source);
@@ -163,7 +163,9 @@ uint8_t i=0;
 					source->OutFunc(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 				}
 				else
+				{
 					source->OutFunc(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
+				}
 			}
 		}
 	}

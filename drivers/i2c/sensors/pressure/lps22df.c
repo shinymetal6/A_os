@@ -16,14 +16,15 @@
 /*
  * lps22df.c
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
 #include "main.h"
-#include "../../../kernel/A.h"
-#include "../../../kernel/A_exported_functions.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
+#include "../../i2c.h"
 #include "lps22df.h"
 
 ITCM_AREA_CODE	static uint8_t	read_lps22df_reg(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv,uint8_t address)
@@ -130,4 +131,5 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	return 0;
 }
 #endif // #ifdef A_OS_I2C_ENABLED
+
 

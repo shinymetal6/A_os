@@ -29,7 +29,6 @@
 #define	NAU88C22_EXT_FREQ_12_288MHZ		1
 #define	NAU88C22_SAMPLE_FREQUENCY		48000
 
-
 typedef struct
 {
 	/* driver header */

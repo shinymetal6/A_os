@@ -45,10 +45,10 @@ extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 	#include "codec/nau88c22.h"
 #endif // #ifdef SOUND_ENABLED
 #include "memories/i2c_24xx.h"
-#include "sensors/lis2dw12.h"
-#include "sensors/sht40.h"
-#include "sensors/stts22h.h"
-#include "sensors/lps22df.h"
+#include "sensors/accgyro/lis2dw12.h"
+#include "sensors/humidity/sht40.h"
+#include "sensors/temperature/stts22h.h"
+#include "sensors/pressure/lps22df.h"
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

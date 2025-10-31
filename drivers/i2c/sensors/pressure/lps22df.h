@@ -16,12 +16,12 @@
 /*
  * lps22df.h
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_I2C_SENSORS_LPS22DF_H_
-#define DRIVERS_I2C_SENSORS_LPS22DF_H_
+#ifndef DRIVERS_I2C_SENSORS_PRESSURE_LPS22DF_H_
+#define DRIVERS_I2C_SENSORS_PRESSURE_LPS22DF_H_
 
 #define	LPS22DF_I2C_TIMEOUT				1000
 #define	LPS22DF_ADDR					0xb8
@@ -120,4 +120,4 @@ typedef struct
 extern uint32_t lps22df_register(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv);
 
 
-#endif /* DRIVERS_I2C_SENSORS_LPS22DF_H_ */
+#endif /* DRIVERS_I2C_SENSORS_PRESSURE_LPS22DF_H_ */

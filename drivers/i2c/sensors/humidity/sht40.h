@@ -16,12 +16,12 @@
 /*
  * sht40.h
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_I2C_SENSORS_SHT40_H_
-#define DRIVERS_I2C_SENSORS_SHT40_H_
+#ifndef DRIVERS_I2C_SENSORS_HUMIDITY_SHT40_H_
+#define DRIVERS_I2C_SENSORS_HUMIDITY_SHT40_H_
 
 /* status */
 #define	SHT40_STARTED		0x80
@@ -78,4 +78,5 @@ typedef struct
 
 extern uint32_t sht40_register(I2C_Sht40_Drv_TypeDef *sht40_Drv);
 
-#endif /* DRIVERS_I2C_SENSORS_SHT40_H_ */
+
+#endif /* DRIVERS_I2C_SENSORS_HUMIDITY_SHT40_H_ */

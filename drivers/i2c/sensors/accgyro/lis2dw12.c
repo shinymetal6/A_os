@@ -16,14 +16,15 @@
 /*
  * lis2dw12.c
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
+
 #include "main.h"
-#include "../../../kernel/A.h"
-#include "../../../kernel/A_exported_functions.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
 #ifdef A_OS_I2C_ENABLED
-#include "../i2c.h"
+#include "../../i2c.h"
 #include "lis2dw12.h"
 
 ITCM_AREA_CODE static uint8_t	write_lis_reg(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv,uint8_t address,uint8_t data)
@@ -139,5 +140,6 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 }
 
 #endif // #ifdef A_OS_I2C_ENABLED
+
 
 

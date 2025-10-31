@@ -16,12 +16,12 @@
 /*
  * stts22h.h
  *
- *  Created on: Oct 28, 2025
+ *  Created on: Oct 31, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_I2C_SENSORS_STTS22H_H_
-#define DRIVERS_I2C_SENSORS_STTS22H_H_
+#ifndef DRIVERS_I2C_SENSORS_TEMPERATURE_STTS22H_H_
+#define DRIVERS_I2C_SENSORS_TEMPERATURE_STTS22H_H_
 
 #define	STTS22H_I2C_TIMEOUT				1000
 
@@ -74,4 +74,5 @@ typedef struct
 
 extern uint32_t stts22h_register(I2C_Stts22H_Drv_TypeDef *stts22h_Drv);
 
-#endif /* DRIVERS_I2C_SENSORS_STTS22H_H_ */
+
+#endif /* DRIVERS_I2C_SENSORS_TEMPERATURE_STTS22H_H_ */
