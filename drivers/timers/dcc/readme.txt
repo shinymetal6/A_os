@@ -3,11 +3,13 @@ Driver usage
 1) The control structure is:
 typedef struct
 {
+	uint8_t 				process;
 	uint8_t					status;
 	uint8_t					flags;
-	uint8_t					handle;
-	uint8_t					repetition;
-	uint8_t					repetition_counter;
+	uint32_t 				wakeup_id;
+	uint32_t 				*next_dcc;
+	uint8_t					command_repeat_number;
+	uint8_t					command_repeat_counter;
 	uint32_t				dma_dcc_value;
 	uint32_t				dma_cutout_value;
 	uint32_t				dma_dcc_index;
@@ -22,12 +24,12 @@ typedef struct
 	DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
-}DCC_Control_Drv_TypeDef;
+}DCC_Drv_TypeDef;
 
 2) Example:
 a - define the control structure and the related handle:
 
-DCC_Control_Drv_TypeDef	DCC_Control =
+DCC_Drv_TypeDef	DCC_Control =
 {
 	.dcc_timer = &htim1,
 	.timer_dcc_channel = TIM_CHANNEL_3,
@@ -35,17 +37,15 @@ DCC_Control_Drv_TypeDef	DCC_Control =
 	.enable_port = DCC_ENABLE_GPIO_Port,
 	.enable_bit = DCC_ENABLE_Pin,
 };
-uint32_t		dcc_driver_handle;
 	
 b - register the driver and start it:
 
-	dcc_driver_handle = dcc_register(&DCC_Control,0,0);
-	dcc_init(dcc_driver_handle);
-	dcc_start(dcc_driver_handle);	
+	dcc_register(&DCC_Control);
+	dcc_start(&DCC_Control);	
 
 c - when needed stop it:
 
-	dcc_stop(dcc_driver_handle);	
+	dcc_stop(&DCC_Control);	
 			
 Notes:
 

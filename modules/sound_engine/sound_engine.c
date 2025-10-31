@@ -96,6 +96,20 @@ ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove
 {
 PTR_Effect_TypeDef		*effect = (PTR_Effect_TypeDef *)remove_effect , *pre_effect;
 AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
+
+	if (( ext_source == NULL ) || ( remove_effect == NULL ) || ( sound_source->next_effect == NULL ))
+		return 1;
+
+	while((sound_source != NULL) && (sound_source != (AUDIO_Source_TypeDef *)remove_effect))
+	{
+		pre_effect = (PTR_Effect_TypeDef *)sound_source;
+		sound_source = (AUDIO_Source_TypeDef *)sound_source->next_effect;
+	}
+	if ((pre_effect == NULL) || (sound_source == NULL))
+		return 1;
+	pre_effect->next_effect = sound_source->next_effect;
+
+
 	return 0;
 }
 

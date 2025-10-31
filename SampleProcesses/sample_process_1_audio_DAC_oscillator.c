@@ -76,6 +76,32 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
+
+AUDIO_FAST_RAM int16_t	vca1_buf_left[EFFECTS_BUF_SIZE];
+uint16_t			vca1_ampl_left = 1000;
+uint16_t			vca1_offset = 0;
+VCA_Effect_TypeDef	VCA1_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca1_buf_left,
+	.amplitude = &vca1_ampl_left,
+	.offset = &vca1_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	vca2_buf_left[EFFECTS_BUF_SIZE];
+uint16_t			vca2_ampl_left = 1000;
+uint16_t			vca2_offset = 0;
+VCA_Effect_TypeDef	VCA2_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca2_buf_left,
+	.amplitude = &vca2_ampl_left,
+	.offset = &vca2_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
 void sample_process_1_init(uint32_t process_id)
 {
 	dac_register(&DAC_Drv_Left);
@@ -100,6 +126,12 @@ uint8_t		cntr = 0;
 	Synth_Start(&Audio_Synth_left);
 	dac_init(&DAC_Drv_Left);
 	dac_start(&DAC_Drv_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA1_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA2_Left);
+	Sound_Remove_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
+	Sound_Remove_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA1_Left);
+	Sound_Remove_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA2_Left);
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
 	NoteOn(0,69,127);
 	while(1)

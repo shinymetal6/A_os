@@ -49,9 +49,11 @@ typedef struct {
 
 typedef struct
 {
+	uint8_t 				process;
 	uint8_t					status;
 	uint8_t					flags;
-	uint8_t					handle;
+	uint32_t 				wakeup_id;
+	uint32_t 				*next_dcc;
 	uint8_t					command_repeat_number;
 	uint8_t					command_repeat_counter;
 	uint32_t				dma_dcc_value;
@@ -68,7 +70,7 @@ typedef struct
 	DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
-}DCC_Control_Drv_TypeDef;
+}DCC_Drv_TypeDef;
 
 /* status */
 #define	DCC_INITIALIZED			0x01
@@ -91,11 +93,12 @@ typedef struct
 #define	DCC_DATAH	3
 #define	DCC_DATAL	4
 
-extern	uint32_t	dcc_register(DCC_Control_Drv_TypeDef *tim_driver_private_data);
-extern	uint32_t	dcc_init(uint8_t handle);
-extern	uint32_t	dcc_start(uint8_t handle);
-extern	uint32_t	dcc_stop(uint8_t handle);
-extern	uint32_t	dcc_get_status(uint8_t handle);
-extern	uint32_t	dcc_commands(uint8_t handle,uint8_t *values,uint16_t values_number);
+extern	uint32_t	dcc_register(DCC_Drv_TypeDef *dcc_drv);
+extern	uint32_t	dcc_start(DCC_Drv_TypeDef *dcc_drv);
+extern	uint32_t	dcc_stop(DCC_Drv_TypeDef *dcc_drv);
+extern	uint32_t	dcc_get_status(DCC_Drv_TypeDef *dcc_drv);
+extern	uint32_t	dcc_commands(DCC_Drv_TypeDef *dcc_drv,uint8_t *values,uint16_t values_number);
+extern 	void 		dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
+extern 	void 		dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma);
 
 #endif /* DRIVERS_ACTUATORS_DCC_DCC_H_ */

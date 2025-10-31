@@ -26,10 +26,10 @@
 #ifdef SAMPLEPROCESS_1_DCCPWM
 /*
  * for nucleo 743zi
- * cn10-10 : pe13 -> tim1 ch3
- * cn10-8  : pe14 -> tim1 ch4
- * cn10-26 : pe12 -> tim1 ch3
  * cn10-6  : pe11 -> DCC_ENABLE
+ * cn10-8  : pe14 -> tim1 ch4
+ * cn10-10 : pe13 -> tim1 ch3
+ * cn10-26 : pe12 -> tim1 ch3
  *
  * Please note : on nucleo 743 cube generates wrong led pins, those are the corrected ones
  */
@@ -51,13 +51,13 @@ extern	TIM_HandleTypeDef 		CH2_DCC_TIMER;
 extern	TIM_HandleTypeDef 		BACKLIGHT_TIMER;
 #endif //#ifdef BACKLIGHT_PWM_ENABLE
 
-DCC_Control_Drv_TypeDef	DCC_Control_ch1 =
+DCC_Drv_TypeDef	DCC_Control_ch1 =
 {
 	.dcc_timer = &CH1_DCC_TIMER,
 	.timer_dcc_channel = CH1_DCC_TIMER_PWM,
 	.timer_cutout_channel = CH1_DCC_TIMER_CUTOUT,
 	.flags = DCC_TIMER_DUAL_PHASE,
-	//.command_repeat_number = 3,
+	.wakeup_id = WAKEUP_FROM_TIM_IRQ,
 	.enable_port = DCC_ENABLE_GPIO_Port,
 	.enable_bit = DCC_ENABLE_Pin,
 };
@@ -95,13 +95,11 @@ uint32_t	wakeup,flags;
 uint32_t	dir = 0, pw=0;
 #endif //#ifdef BACKLIGHT_PWM_ENABLE
 
-	dcc_ch1_driver_handle = dcc_register(&DCC_Control_ch1);
-	dcc_init(dcc_ch1_driver_handle);
-	dcc_start(dcc_ch1_driver_handle);
+	dcc_register(&DCC_Control_ch1);
+	dcc_start(&DCC_Control_ch1);
 #ifdef DCC_CH2_ENABLE
-	dcc_ch2_driver_handle = dcc_register(&DCC_Control_ch2);
-	dcc_init(dcc_ch2_driver_handle);
-	dcc_start(dcc_ch2_driver_handle);
+	dcc_register(&DCC_Control_ch2);
+	dcc_start(&DCC_Control_ch2);
 #endif // #ifdef DCC_CH2_ENABLE
 
 #ifdef BACKLIGHT_PWM_ENABLE
@@ -140,26 +138,26 @@ uint32_t	dir = 0, pw=0;
 			{
 				commands[0] = 'R';
 				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_SET);
-				dcc_commands(dcc_ch1_driver_handle,commands,1);
+				dcc_commands(&DCC_Control_ch1,commands,1);
 			}
 			if ( reset_time == 10)
 			{
 				commands[0] = 'A';
 				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_SET);
 				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_RESET);
-				dcc_commands(dcc_ch1_driver_handle,commands,1);
+				dcc_commands(&DCC_Control_ch1,commands,1);
 			}
 			if ( reset_time == 15)
 			{
 				commands[0] = 'R';
 				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin,GPIO_PIN_SET);
-				dcc_commands(dcc_ch1_driver_handle,commands,1);
+				dcc_commands(&DCC_Control_ch1,commands,1);
 			}
 			if ( reset_time == 20)
 			{
 				commands[0] = 'a';
 				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin,GPIO_PIN_RESET);
-				dcc_commands(dcc_ch1_driver_handle,commands,1);
+				dcc_commands(&DCC_Control_ch1,commands,1);
 			}
 			if ( reset_time > 25)
 				reset_time = 0;

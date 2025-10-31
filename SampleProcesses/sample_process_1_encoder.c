@@ -26,7 +26,11 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef 	SAMPLEPROCESS_1_ENCODER
-
+/*
+ * for nucleo 743zi
+ * cn10-6  : pe11 -> tim1 ch2
+ * cn10-4  : pe9 -> tim1 ch1
+ * */
 extern	TIM_HandleTypeDef htim1;
 extern	UART_HandleTypeDef huart3;
 
