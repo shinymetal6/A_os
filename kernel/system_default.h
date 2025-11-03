@@ -74,5 +74,5 @@
 #endif
 
 // versioning
-#define	A_OS_VERSION			"v2025.12-rc2"
+#define	A_OS_VERSION			"v2025.12-rc3"
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */
