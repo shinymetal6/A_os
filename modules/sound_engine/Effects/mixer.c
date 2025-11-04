@@ -32,7 +32,7 @@
 ITCM_AREA_CODE void Effect_MIXER_Init(uint32_t *effect_s)
 {
 MIXER_Effect_TypeDef *mixer = (MIXER_Effect_TypeDef *)effect_s;
-	if ( mixer->in_buf_2ndch == NULL )
+	if ( mixer->in_buf_ch2 == NULL )
 		return;
 	mixer->status |= SOUND_EFFECT_INITIALIZED;
 }
@@ -50,9 +50,9 @@ float pan_right = (float )(*mixer->pan) / FULL_SCALE_F_FACTOR;
 	for ( i=0;i<mixer->block_size;i++)
 	{
 		if (( mixer->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-			mixer->out_buf[i]  = (q15_t )(((float )mixer->in_buf[i]*pan_left ) + ((float )mixer->in_buf_2ndch[i]*pan_right ) );
+			mixer->out_buf[i]  = (q15_t )(((float )mixer->in_buf_ch1[i]*pan_left ) + ((float )mixer->in_buf_ch2[i]*((float )pan_right )/65536.0F) );
 		else
-			mixer->out_buf[i]  = mixer->in_buf[i];
+			mixer->out_buf[i]  = mixer->in_buf_ch1[i];
 	}
 	mixer->effect_time = (DWT->CYCCNT - mixer->time_start) / (HSI_CLOCK / 1000000);
 }

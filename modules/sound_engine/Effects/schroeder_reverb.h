@@ -41,14 +41,11 @@ typedef struct {
 	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
-	int16_t				*device_out_buf;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
 	float				sample_rate;
-	uint8_t				in_device;
-	uint8_t				out_device;
-	uint8_t				channel_in,channel_out;
+	/* Here finishes the common area */
 	uint32_t			time_start;
 	uint32_t			effect_time;
 	/* effect data */

@@ -57,10 +57,10 @@ extern	ADC_HandleTypeDef hadc2;
 __attribute__((aligned(32))) uint16_t i2s_tx_buffer[I2S_BUFFER_SIZE*2];
 __attribute__((aligned(32))) uint16_t i2s_rx_buffer[I2S_BUFFER_SIZE*2];
 
-__attribute__((aligned(32))) uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
 
 __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 {
@@ -80,11 +80,9 @@ I2S_DriverStruct_t I2S_Driver =
 	.i2s = &hi2s2,
 };
 
-__attribute__ ((aligned (32))) int16_t	synth0_work_buf_left[EFFECTS_NUM_SAMPLES];
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
 	.block_size = I2S_EFFECT_SIZE,
-	.in_buf = synth0_work_buf_left,
 	.out_device = SOURCE_TO_I2S_OUT,
 	.out_buf = (q15_t *)left_tx_buffer,
 	.device_out_buf = (int16_t *)i2s_tx_buffer,
@@ -93,7 +91,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 uint32_t	synth_left_initialized;
 
 __attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
-__attribute__ ((aligned (32))) ADC_Drv_TypeDef	ADC1_Drv =
+__attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
 {
 	.adc = &hadc1,
 	.adc_timer = &htim6,
@@ -130,8 +128,8 @@ void sample_process_1_init(uint32_t process_id)
 	if ( synth_left_initialized == 0 )
 		Synth_Start(&Audio_Synth_left);
 	i2s_driver_start(&I2S_Driver);
-	adc1_handle = int_adc_register(&ADC1_Drv);
-	adc_start(adc1_handle);
+	adc_register(&ADC1_Drv);
+	adc_start(&ADC1_Drv);
 }
 
 uint8_t		up = 0;

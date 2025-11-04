@@ -56,22 +56,18 @@ typedef struct
 	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
-	int16_t				*device_out_buf;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
 	float				sample_rate;
-	uint8_t				in_device;
-	uint8_t				out_device;
-	uint8_t				channel_in,channel_out;
 	/* Source Internals */
-	uint8_t				i2s_handle;
+	uint8_t				channel_in;
+	uint8_t				channel_out;
 	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
 	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
     uint32_t 			wavetable_size;    //Wavetable size
-	void				(*OutFunc)(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
 } AUDIO_Source_TypeDef;
 /* status */
 #define		SOURCE_ENABLED		0x01

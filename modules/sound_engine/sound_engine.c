@@ -27,7 +27,10 @@ float	Sound_Sample_Frequency = DEFAULT_SAMPLE_FREQUENCY;
 #ifdef SOUND_ENGINE_ENABLED
 #include "sound_engine.h"
 
-AUDIO_Source_TypeDef *AudioSource[2] = {NULL,NULL};
+AUDIO_Source_TypeDef	*AudioSourceLeft[2] = {NULL,NULL};
+AUDIO_Source_TypeDef	*AudioSourceRight[2] = {NULL,NULL};
+AUDIO_Dest_TypeDef		*AudioDestLeft  = NULL;
+AUDIO_Dest_TypeDef		*AudioDestRight = NULL;
 
 ITCM_AREA_CODE inline float fast_tanh(float x)
 {
@@ -67,7 +70,6 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 		effect->next_effect = NULL;
 		effect->in_buf = sound_source->in_buf;
 		sound_source->out_buf = effect->out_buf;
-		effect->device_out_buf = sound_source->device_out_buf;
 		sound_source->out_buf = effect->in_buf;
 	}
 	else
@@ -81,12 +83,7 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 		sound_source->next_effect = (uint32_t *)effect;
 		effect->next_effect = NULL;
 		effect->in_buf = pre_effect->out_buf;
-		effect->device_out_buf = sound_source->device_out_buf;
 	}
-	effect->in_device = sound_source->in_device;
-	effect->out_device = sound_source->out_device;
-	effect->channel_in = sound_source->channel_in;
-	effect->channel_out = sound_source->channel_out;
 	effect->block_size = sound_source->block_size;
 	if ( effect->effect_init != NULL )
 	{
@@ -129,55 +126,56 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 
 uint8_t number_of_synths = 0;
 
-#ifdef SOUND_ENGINE_I2S_ENABLED
-ITCM_AREA_CODE void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
+
+
+ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
-uint32_t i,j;
-	for (i = 4,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
-		audio_out[i + start_sample+channel] = audio_in[j];
+PTR_Effect_TypeDef *last_effect;
+	if ( device == SOUND_SOURCE_IS_SYNTH )
+		Synth_Process_Block((uint32_t *)source);
+	last_effect = (PTR_Effect_TypeDef *)source;
+	if ( source->next_effect != NULL )
+	{
+		last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
+		dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+	}
+	else
+		dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
 }
-#else
-ITCM_AREA_CODE void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
-{
-uint32_t i;
-	for (i = 0; i < num_samples; i++)
-		audio_out[i + start_sample] = (audio_in[i] + 32768) >> 4;
-//		audio_out[i + start_sample] = audio_in[i] >> 4;
-}
-#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
 
 AUDIO_FAST_RAM	uint32_t			audio_pipe_time_start;
 AUDIO_FAST_RAM	uint32_t			audio_pipe_time;
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
-PTR_Effect_TypeDef *last_effect;
-uint8_t i=0;
+AUDIO_Source_TypeDef *source;
+AUDIO_Dest_TypeDef *dest;
+
 #ifdef LCD_SS_GPIO_Port
 	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
 #endif // #ifdef LCD_SS_GPIO_Port
 	audio_pipe_time_start = DWT->CYCCNT;
-	for(i=0;i<SOUND_AUDIO_SOURCES;i++)
+
+	dest = AudioDestLeft;
+	if ( dest != NULL)
 	{
-		if ( AudioSource[i] != NULL)
-		{
-			AUDIO_Source_TypeDef *source = AudioSource[i];
-			if ( (source->status == SOURCE_ENABLED ) && ( source->OutFunc != NULL ))
-			{
-				if ( AudioSource[i]->source_type == SOUND_SOURCE_IS_SYNTH)
-					Synth_Process_Block((uint32_t *)source);
-				last_effect = (PTR_Effect_TypeDef *)source;
-				if ( source->next_effect != NULL )
-				{
-					last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
-					source->OutFunc(last_effect->device_out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
-				}
-				else
-				{
-					source->OutFunc(source->device_out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
-				}
-			}
-		}
+		source = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
+		if ( source != NULL)
+			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
+		source = AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN];
+		if ( source != NULL)
+			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
+
+		source = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
+		if ( source != NULL)
+			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
+		source = AudioSourceRight[SOUND_SOURCE_IS_I2S_IN];
+		if ( source != NULL)
+			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
 	}
 	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
 #ifdef LCD_SS_GPIO_Port

@@ -39,30 +39,29 @@
 
 typedef struct
 {
-	/* effect header */
+	/* Common with effects header */
 	uint8_t				status;
 	uint8_t				flags;
 	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
-	int16_t				*device_out_buf;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
 	float				sample_rate;
-	uint8_t				in_device;
-	uint8_t				out_device;
-	uint8_t				channel_in,channel_out;
 	/* Here finishes the common area */
-	uint8_t				i2s_handle;
+	uint8_t				out_device;
+	uint8_t				channel_in;
+	uint8_t				channel_out;
 }PTR_Effect_TypeDef;
 
 /* source_type */
 #define		SOUND_SOURCE_IS_SYNTH		0
 #define		SOUND_SOURCE_IS_I2S_IN		1
 /* out_device */
+#define		SOURCE_TO_INTERNAL_BUF		0
 #define		SOURCE_TO_DAC_OUT			1
-#define		SOURCE_TO_I2S_OUT			0
+#define		SOURCE_TO_I2S_OUT			2
 /* channel_in */
 #define		AUDIO_SOURCE_LEFT			0
 #define		AUDIO_SOURCE_RIGHT			1
@@ -73,22 +72,29 @@ typedef struct
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80
 
+
+
 extern	float					Sound_Sample_Frequency;
 
+#include	"OutStage/out_stage.h"
 #include	"Generators/synth.h"
 #include	"Generators/i2s_in.h"
 #include	"Effects/phaser.h"
 #include	"Effects/vca.h"
 #include	"Effects/filter_iir.h"
 #include	"Effects/overdrive.h"
+#include	"Effects/mixer.h"
+
+extern	AUDIO_Source_TypeDef	*AudioSourceLeft[2];
+extern	AUDIO_Source_TypeDef	*AudioSourceRight[2];
+extern	AUDIO_Dest_TypeDef		*AudioDestLeft;
+extern	AUDIO_Dest_TypeDef		*AudioDestRight;
 
 extern	uint32_t			audio_pipe_time;
 
-#ifdef SOUND_ENGINE_I2S_ENABLED
 extern void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
-#else
 extern void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
-#endif
+extern void to_intbuf(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
 
 extern 	float 				fast_tanh(float x);
 extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);

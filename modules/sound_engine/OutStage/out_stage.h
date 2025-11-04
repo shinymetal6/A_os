@@ -14,38 +14,28 @@
  * Project : A_os
 */
 /*
- * vca.h
+ * out_stage.h
  *
- *  Created on: Apr 24, 2025
+ *  Created on: Nov 4, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_VCA_H_
-#define MODULES_SOUND_EFFECTS_VCA_H_
-#ifdef SOUND_ENGINE_ENABLED
+#ifndef MODULES_SOUND_ENGINE_OUTSTAGE_OUT_STAGE_H_
+#define MODULES_SOUND_ENGINE_OUTSTAGE_OUT_STAGE_H_
 
 typedef struct
 {
-	/* effect header */
+	/* Common with effects header */
 	uint8_t				status;
 	uint8_t				flags;
-	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
-	float				sample_rate;
-	/* Here finishes the common area */
-	uint32_t			time_start;
-	uint32_t			effect_time;
-	/* effect data */
-	uint16_t			*amplitude;
-	uint16_t			*offset;
-}VCA_Effect_TypeDef;
+	uint8_t				out_device;
+	uint8_t				channel;
+	void				(*OutFunc)(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
+}AUDIO_Dest_TypeDef;
 
-extern void Effect_VCA_Init(uint32_t *effect_s);
-extern void Effect_VCA(uint32_t *effect_s);
+extern uint8_t OutStage_Register(AUDIO_Dest_TypeDef *out_stage);
 
-#endif // #ifdef SOUND_ENGINE_ENABLED
-#endif /* MODULES_SOUND_EFFECTS_VCA_H_ */
+#endif /* MODULES_SOUND_ENGINE_OUTSTAGE_OUT_STAGE_H_ */

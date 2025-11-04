@@ -14,9 +14,9 @@
  * Project : A_os
 */
 /*
- * sample_process_1_audio_I2S_in_effect_out.c
+ * sample_process_1_audio_I2S_in_synth_effect_out.c
  *
- *  Created on: Oct 31, 2025
+ *  Created on: Nov 3, 2025
  *      Author: fil
  */
 
@@ -24,7 +24,7 @@
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_EFFECT_OUT
+#ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_SYNTH_EFFECT_OUT
 
 extern	TIM_HandleTypeDef htim6;
 extern	I2C_HandleTypeDef hi2c1;
@@ -76,9 +76,6 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
 {
 	.in_buf = (int16_t *)left_rx_buffer,
 	.out_buf = (int16_t *)left_tx_buffer,
-	.device_out_buf = (int16_t *)i2s_tx_buffer,
-	.channel_in = AUDIO_SOURCE_LEFT,
-	.channel_out = AUDIO_DESTINATION_LEFT,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
 
@@ -122,6 +119,22 @@ OVERDRIVE_Effect_TypeDef	OVERDRIVE_Left =
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
+AUDIO_FAST_RAM q15_t	Audio_Synth_buf_left[I2S_EFFECT_SIZE];
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
+{
+	.block_size = I2S_EFFECT_SIZE,
+	.out_buf = (q15_t *)Audio_Synth_buf_left,
+	.sample_rate = SAMPLE_FREQUENCY,
+};
+
+AUDIO_Dest_TypeDef Out_Port =
+{
+	.in_buf = vca0_buf_left,
+	.out_buf = (int16_t *)i2s_tx_buffer,
+	.out_device = SOURCE_TO_I2S_OUT,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
 __attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
 {
 	.adc = &hadc1,
@@ -138,11 +151,13 @@ void sample_process_1_init(uint32_t process_id)
 	bzero(i2s_rx_buffer,I2S_BUFFER_SIZE);
 	i2s_driver_register(&I2S_Driver);
 	I2SIn_Register(&Audio_I2Sin_left);
+	Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
+	OutStage_Register(&Out_Port);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
 }
 
-void sample_process_1_audio_I2S_in_effect_out(uint32_t process_id)
+void sample_process_1_audio_I2S_in_synth_effect_out(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
@@ -188,7 +203,8 @@ uint8_t		effect_cntr= 0;
 		}
 	}
 }
-#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_EFFECT_OUT
+#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_IN_SYNTH_EFFECT_OUT
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
+
 
 
