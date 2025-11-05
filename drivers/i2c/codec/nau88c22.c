@@ -230,6 +230,30 @@ ITCM_AREA_CODE uint32_t nau88c22_get_status(Nau88C22_Drv_TypeDef *codec_drv)
 	return codec_drv->status;
 }
 
+ITCM_AREA_CODE uint32_t nau88c22_set_volume(Nau88C22_Drv_TypeDef *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume)
+{
+uint8_t reg;
+	switch(volume_channel)
+	{
+	case NAU88C22_VOLUME_IN_LEFT:
+		reg = NAU88C22_LEFT_ADC_DIGITAL_VOLUME;
+		break;
+	case NAU88C22_VOLUME_IN_RIGHT:
+		reg = NAU88C22_RIGHT_ADC_DIGITAL_VOLUME;
+		break;
+	case NAU88C22_VOLUME_OUT_LEFT:
+		reg = NAU88C22_LEFT_DAC_DIGITAL_VOLUME;
+		break;
+	case NAU88C22_VOLUME_OUT_RIGHT:
+		reg = NAU88C22_RIGHT_DAC_DIGITAL_VOLUME;
+		break;
+	default : return 1;
+	}
+	if ( Nau88c22_WriteReg(codec_drv->bus , codec_drv->device_address,reg, volume & 0x1ff) )
+			return 1;
+	return 0;
+}
+
 ITCM_AREA_CODE uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv)
 {
 uint8_t	i = 0;

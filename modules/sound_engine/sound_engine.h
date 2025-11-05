@@ -72,8 +72,6 @@ typedef struct
 #define	SOUND_EFFECT_INITIALIZED		0x40
 #define SOUND_EFFECT_ENABLED	 		0x80
 
-
-
 extern	float					Sound_Sample_Frequency;
 
 #include	"OutStage/out_stage.h"

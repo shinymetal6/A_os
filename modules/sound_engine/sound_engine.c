@@ -61,6 +61,7 @@ ITCM_AREA_CODE uint8_t Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_ef
 {
 PTR_Effect_TypeDef		*effect = (PTR_Effect_TypeDef *)new_effect , *pre_effect;
 AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
+AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 
 	if (( ext_source == NULL ) || ( new_effect == NULL ))
 			return 1;
@@ -70,7 +71,7 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 		effect->next_effect = NULL;
 		effect->in_buf = sound_source->in_buf;
 		sound_source->out_buf = effect->out_buf;
-		sound_source->out_buf = effect->in_buf;
+		sound_source->out_buf = effect->out_buf;
 	}
 	else
 	{
@@ -84,6 +85,7 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 		effect->next_effect = NULL;
 		effect->in_buf = pre_effect->out_buf;
 	}
+	dest->in_buf = effect->out_buf;
 	effect->block_size = sound_source->block_size;
 	if ( effect->effect_init != NULL )
 	{
@@ -157,24 +159,24 @@ AUDIO_Dest_TypeDef *dest;
 	audio_pipe_time_start = DWT->CYCCNT;
 
 	dest = AudioDestLeft;
-	if ( dest != NULL)
+	if (( dest != NULL) && ( dest->out_buf != NULL) && ( dest->in_buf != NULL) && ( dest->OutFunc != NULL ))
 	{
 		source = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
 		if ( source != NULL)
-			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+			if ( (source->status == SOURCE_ENABLED ) )
 				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
 		source = AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN];
 		if ( source != NULL)
-			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+			if (source->status == SOURCE_ENABLED )
 				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
 
 		source = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
 		if ( source != NULL)
-			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+			if (source->status == SOURCE_ENABLED )
 				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
 		source = AudioSourceRight[SOUND_SOURCE_IS_I2S_IN];
 		if ( source != NULL)
-			if ( (source->status == SOURCE_ENABLED ) && ( dest->OutFunc != NULL ))
+			if (source->status == SOURCE_ENABLED )
 				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
 	}
 	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);

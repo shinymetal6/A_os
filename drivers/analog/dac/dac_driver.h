@@ -48,6 +48,7 @@ typedef struct
 	int16_t 			*usbaudio_buffer;
 	uint32_t 			usbaudio_index;
 	uint32_t 			usbaudio_size;
+	uint32_t 			wakeup_id;
 }DAC_DriverStruct_t;
 /* status */
 #define		DAC_STATUS_HALF			0x01

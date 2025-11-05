@@ -28,6 +28,7 @@ typedef struct
 	uint8_t 			process;
 	uint8_t				status;
 	uint8_t				flags;
+	uint32_t 			wakeup_id;
 	uint32_t			*pre_drv;
 	uint32_t			*next_drv;
 	uint16_t 			*i2s_rx_buffer;
@@ -39,7 +40,10 @@ typedef struct
 	I2S_HandleTypeDef 	*i2s;
 }I2S_DriverStruct_t;
 /* flags */
-#define		I2S_FLAGS_ECHO			0x80
+#define		I2S_FLAGS_ALL_WAKEUP			0x10
+#define		I2S_FLAGS_HALF_WAKEUP			0x20
+#define		I2S_FLAGS_FULL_WAKEUP			0x40
+#define		I2S_FLAGS_ECHO					0x80
 
 #define		I2S_BUFFER_SIZE			2048
 #define		I2S_HALF_BUFFER_SIZE	(I2S_BUFFER_SIZE/2)

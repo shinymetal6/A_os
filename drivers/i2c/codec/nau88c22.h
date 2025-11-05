@@ -128,9 +128,17 @@ typedef struct
 #define NAU88C22_INTOP_SET_VOLUME			0x07
 #define NAU88C22_INTOP_READ_REG				0x08
 
+typedef enum {
+	NAU88C22_VOLUME_IN_LEFT,
+	NAU88C22_VOLUME_IN_RIGHT,
+	NAU88C22_VOLUME_OUT_LEFT,
+	NAU88C22_VOLUME_OUT_RIGHT
+} Nau88c22_Volume;
+
 extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv);
 extern uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv);
 extern uint32_t nau88c22_internal_ops(Nau88C22_Drv_TypeDef	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain);
+extern uint32_t nau88c22_set_volume(Nau88C22_Drv_TypeDef *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume);
 
 
 #endif /* DRIVERS_I2C_CODEC_NAU88C22_H_ */

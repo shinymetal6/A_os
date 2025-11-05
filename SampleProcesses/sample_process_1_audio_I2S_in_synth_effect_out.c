@@ -70,6 +70,8 @@ I2S_DriverStruct_t I2S_Driver =
 	.left_tx_buffer = left_tx_buffer,
 	.right_tx_buffer = right_tx_buffer,
 	.i2s = &hi2s2,
+	.flags = I2S_FLAGS_ALL_WAKEUP,
+	.wakeup_id = WAKEUP_FROM_I2S2_IRQ,
 };
 
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
@@ -129,7 +131,6 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 
 AUDIO_Dest_TypeDef Out_Port =
 {
-	.in_buf = vca0_buf_left,
 	.out_buf = (int16_t *)i2s_tx_buffer,
 	.out_device = SOURCE_TO_I2S_OUT,
 	.flags = SOUND_EFFECT_ENABLED,
@@ -157,21 +158,21 @@ void sample_process_1_init(uint32_t process_id)
 	adc_start(&ADC1_Drv);
 }
 
+uint32_t i2s_wakeup_cntr = 0;
 void sample_process_1_audio_I2S_in_synth_effect_out(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
 uint8_t		effect_cntr= 0;
+uint32_t	effect_done= 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
 	I2SIn_Start(&Audio_I2Sin_left);
-	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
-	//Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
 
 	while(1)
 	{
-		wait_event(EVENT_TIMER);
+		wait_event(EVENT_TIMER | EVENT_I2S2_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
@@ -194,11 +195,33 @@ uint8_t		effect_cntr= 0;
 			case 100:	effect_cntr = 0;break;
 			}
 			*/
+			/*
 			switch(effect_cntr)
 			{
 			//case 0	:	IIR_Left.flags &= ~SOUND_EFFECT_ENABLED;break;
 			case 20	:	IIR_Left.flags |=  SOUND_EFFECT_ENABLED;break;
 			case 40:	effect_cntr = 0;break;
+			}
+			*/
+		}
+		if (( wakeup & WAKEUP_FROM_I2S2_IRQ) == WAKEUP_FROM_I2S2_IRQ)
+		{
+			if (( flags & WAKEUP_FLAGS_I2S_FULL) == WAKEUP_FLAGS_I2S_FULL)
+			{
+				i2s_wakeup_cntr++;
+				switch(effect_done)
+				{
+				case 1000 :
+					Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+					break;
+				case 3000:
+					Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
+					break;
+				default:
+					break;
+				}
+				if (  effect_done < 3001 )
+					effect_done++;
 			}
 		}
 	}

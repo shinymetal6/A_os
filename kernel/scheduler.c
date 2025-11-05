@@ -126,6 +126,8 @@ ITCM_AREA_CODE __attribute__((naked)) void update_next_task(void)
 
 ITCM_AREA_CODE uint32_t inline activate_process(uint8_t dest_process,uint32_t rsn , uint32_t flags)
 {
+	if ( dest_process == 0 )
+		return 1;
 	if (( process[dest_process].current_state & PROCESS_KILLED_STATE ) != PROCESS_KILLED_STATE)
 	{
 		SCHED_DISABLE_IRQS();

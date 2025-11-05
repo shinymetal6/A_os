@@ -48,27 +48,19 @@ uint32_t i;
 
 ITCM_AREA_CODE uint8_t OutStage_Register(AUDIO_Dest_TypeDef *out_stage)
 {
-	if (( out_stage->in_buf == NULL ) || ( out_stage->out_buf == NULL ))
+	if ( out_stage->out_buf == NULL )
 		return 1;
 	if (( out_stage->out_device != SOURCE_TO_DAC_OUT ) && ( out_stage->out_device != SOURCE_TO_I2S_OUT ))
 		return 1;
 
 	if ( out_stage->channel == AUDIO_DESTINATION_LEFT)
-	{
 		AudioDestLeft = out_stage;
-	}
 	if ( out_stage->channel == AUDIO_DESTINATION_RIGHT)
-	{
 		AudioDestRight = out_stage;
-	}
 	if ( out_stage->out_device == SOURCE_TO_DAC_OUT)
-	{
 		out_stage->OutFunc = to_dacout;
-	}
-	if ( out_stage->out_device == SOURCE_TO_I2S_OUT)
-	{
+	else
 		out_stage->OutFunc = to_i2sout;
-	}
 	return 0;
 }
 #endif // #ifdef SOUND_ENGINE_I2S_ENABLED

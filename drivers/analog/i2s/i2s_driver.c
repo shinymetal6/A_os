@@ -62,6 +62,9 @@ ITCM_AREA_CODE uint32_t	i2s_driver_register(I2S_DriverStruct_t *i2s)
 		i2s->pre_drv = (uint32_t *)current_i2s;
 		i2s->next_drv = NULL;
 	}
+	i2s->process = get_current_process();
+	if ( i2s->wakeup_id == 0 )
+		i2s->flags &= ~(I2S_FLAGS_HALF_WAKEUP | I2S_FLAGS_FULL_WAKEUP | I2S_FLAGS_ALL_WAKEUP );
 	return 0;
 }
 
@@ -94,7 +97,11 @@ I2S_DriverStruct_t *i2s = (I2S_DriverStruct_t *)first_i2s;
 		while((i2s != NULL) && (i2s->i2s != hi2s))
 			i2s = (I2S_DriverStruct_t *)i2s->next_drv;
 		if (i2s != NULL)
+		{
 			Process_Audio(i2s,I2S_SECOND_HALF);
+			if ( i2s->flags & (I2S_FLAGS_FULL_WAKEUP | I2S_FLAGS_ALL_WAKEUP))
+				activate_process(i2s->process,i2s->wakeup_id,WAKEUP_FLAGS_I2S_FULL);
+		}
 	}
 }
 
@@ -106,7 +113,11 @@ I2S_DriverStruct_t *i2s = (I2S_DriverStruct_t *)first_i2s;
 		while((i2s != NULL) && (i2s->i2s != hi2s))
 			i2s = (I2S_DriverStruct_t *)i2s->next_drv;
 		if (i2s != NULL)
+		{
 			Process_Audio(i2s,I2S_FIRST_HALF);
+			if ( i2s->flags & (I2S_FLAGS_HALF_WAKEUP | I2S_FLAGS_ALL_WAKEUP))
+				activate_process(i2s->process,i2s->wakeup_id,WAKEUP_FLAGS_I2S_HALF);
+		}
 	}
 }
 
