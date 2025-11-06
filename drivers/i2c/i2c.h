@@ -42,7 +42,7 @@ typedef struct
 extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 
 #ifdef SOUND_ENGINE_ENABLED
-	#include "codec/nau88c22.h"
+	#include "codecs/nau88c22.h"
 #endif // #ifdef SOUND_ENABLED
 #include "memories/i2c_24xx.h"
 #include "sensors/accgyro/lis2dw12.h"

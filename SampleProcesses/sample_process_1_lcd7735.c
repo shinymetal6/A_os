@@ -29,7 +29,7 @@
 extern	TIM_HandleTypeDef 	htim16;
 extern	SPI_HandleTypeDef 	hspi1;
 
-__attribute__((section(".table"))) const uint16_t logo[12800] =
+__attribute__((section(".table"))) const uint16_t sample_logo[12800] =
 {
 0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,
 0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,0x5b0f,
@@ -858,7 +858,7 @@ void sample_process_1_init(void)
 	spi_lcd_off(spi_lcd_handle);
 	spi_lcd_init(spi_lcd_handle);
 	spi_lcd_clear_screen(spi_lcd_handle);
-	spi_lcd_draw_image(spi_lcd_handle,0,0,SPI_LCD_Driver.lcd_width,SPI_LCD_Driver.lcd_height,(uint16_t *)logo);
+	spi_lcd_draw_image(spi_lcd_handle,0,0,SPI_LCD_Driver.lcd_width,SPI_LCD_Driver.lcd_height,(uint16_t *)sample_logo);
 	spi_lcd_on(spi_lcd_handle);
 }
 

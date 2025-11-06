@@ -62,7 +62,7 @@ uint32_t	wakeup,flags;
 				if ( tim_downscale == 0 )
 				{
 					USB_Drv.usb_interface_class = USB_MIDI_CLASS;
-					usb_device_driver_unregister();
+					usb_device_driver_unregister(&USB_Drv);
 				}
 				tim_downscale ++;
 				if ( tim_downscale > 5 )
