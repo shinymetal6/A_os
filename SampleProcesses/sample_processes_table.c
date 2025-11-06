@@ -83,6 +83,7 @@ extern	void sample_process_2_mbxFromPrc1(uint32_t process_id);	//This is process
 #endif // #define	SAMPLEPROCESS_TIMDELAY_DEBUG
 #ifdef	SAMPLEPROCESS_1_LCD7735
 extern	void sample_process_1_lcd7735(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_LCD7735
 #ifdef	SAMPLEPROCESS_1_MIDI
 extern	void sample_process_1_midi(uint32_t process_id);	//This is process1
@@ -207,6 +208,7 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #endif // #define	SAMPLEPROCESS_MBX
 #ifdef	SAMPLEPROCESS_1_LCD7735
 				.user_process = sample_process_1_lcd7735,
+				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_LCD7735
 #ifdef	SAMPLEPROCESS_1_MIDI
 				.user_process = sample_process_1_midi,

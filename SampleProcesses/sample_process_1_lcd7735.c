@@ -24,6 +24,7 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_LCD7735
+#ifdef AU100825
 
 extern	TIM_HandleTypeDef 	htim16;
 extern	SPI_HandleTypeDef 	hspi1;
@@ -851,20 +852,20 @@ SPI_LCD_DriverStruct_t	SPI_LCD_Driver =
 };
 uint8_t	spi_lcd_handle;
 
-void process_1_init(void)
+void sample_process_1_init(void)
 {
 	spi_lcd_handle = spi_lcd_register(&SPI_LCD_Driver);
 	spi_lcd_off(spi_lcd_handle);
 	spi_lcd_init(spi_lcd_handle);
 	spi_lcd_clear_screen(spi_lcd_handle);
-	spi_lcd_on(spi_lcd_handle);
-
 	spi_lcd_draw_image(spi_lcd_handle,0,0,SPI_LCD_Driver.lcd_width,SPI_LCD_Driver.lcd_height,(uint16_t *)logo);
+	spi_lcd_on(spi_lcd_handle);
 }
 
 void sample_process_1_lcd7735(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -874,12 +875,18 @@ uint32_t	wakeup,flags;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			process_led();
+			cntr++;
+			if ( cntr == 10)
+			{
+				cntr = 0;
+				process_led();
+			}
 		}
 	}
 }
-#endif // #ifdef 	SAMPLEPROCESS_1_LCD7735
 
+#endif // #ifdef AU100825
+#endif // #ifdef SAMPLEPROCESS_1_LCD7735
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 
 
