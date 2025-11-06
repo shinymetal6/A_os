@@ -31,6 +31,8 @@ AUDIO_Source_TypeDef	*AudioSourceLeft[2] = {NULL,NULL};
 AUDIO_Source_TypeDef	*AudioSourceRight[2] = {NULL,NULL};
 AUDIO_Dest_TypeDef		*AudioDestLeft  = NULL;
 AUDIO_Dest_TypeDef		*AudioDestRight = NULL;
+AUDIO_FAST_RAM	uint32_t			audio_pipe_time_start;
+AUDIO_FAST_RAM	uint32_t			audio_pipe_time;
 
 ITCM_AREA_CODE inline float fast_tanh(float x)
 {
@@ -68,10 +70,8 @@ AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 	if ( sound_source->next_effect == NULL )
 	{
 		sound_source->next_effect = (uint32_t *)effect;
+		effect->in_buf = sound_source->out_buf;
 		effect->next_effect = NULL;
-		effect->in_buf = sound_source->in_buf;
-		sound_source->out_buf = effect->out_buf;
-		sound_source->out_buf = effect->out_buf;
 	}
 	else
 	{
@@ -86,6 +86,7 @@ AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 		effect->in_buf = pre_effect->out_buf;
 	}
 	dest->in_buf = effect->out_buf;
+
 	effect->block_size = sound_source->block_size;
 	if ( effect->effect_init != NULL )
 	{
@@ -126,10 +127,6 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 	return 1;
 }
 
-uint8_t number_of_synths = 0;
-
-
-
 ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
 PTR_Effect_TypeDef *last_effect;
@@ -142,47 +139,46 @@ PTR_Effect_TypeDef *last_effect;
 		dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 	}
 	else
-		dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
+	{
+		if ( device == SOUND_SOURCE_IS_SYNTH )
+			dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
+		else
+			dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
+	}
 }
-
-AUDIO_FAST_RAM	uint32_t			audio_pipe_time_start;
-AUDIO_FAST_RAM	uint32_t			audio_pipe_time;
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
 AUDIO_Source_TypeDef *source;
 AUDIO_Dest_TypeDef *dest;
 
-#ifdef LCD_SS_GPIO_Port
-	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
-#endif // #ifdef LCD_SS_GPIO_Port
-	audio_pipe_time_start = DWT->CYCCNT;
+	#ifdef LCD_SS_GPIO_Port
+		HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
+	#endif // #ifdef LCD_SS_GPIO_Port
+		audio_pipe_time_start = DWT->CYCCNT;
 
-	dest = AudioDestLeft;
-	if (( dest != NULL) && ( dest->out_buf != NULL) && ( dest->in_buf != NULL) && ( dest->OutFunc != NULL ))
-	{
-		source = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
-		if ( source != NULL)
-			if ( (source->status == SOURCE_ENABLED ) )
-				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
-		source = AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN];
-		if ( source != NULL)
-			if (source->status == SOURCE_ENABLED )
-				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
-
-		source = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
-		if ( source != NULL)
-			if (source->status == SOURCE_ENABLED )
-				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
-		source = AudioSourceRight[SOUND_SOURCE_IS_I2S_IN];
-		if ( source != NULL)
-			if (source->status == SOURCE_ENABLED )
-				audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
-	}
-	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
-#ifdef LCD_SS_GPIO_Port
-	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);
-#endif // #ifdef LCD_SS_GPIO_Port
+		dest = AudioDestLeft;
+		if (( dest != NULL) && ( dest->out_buf != NULL) && ( dest->in_buf != NULL) && ( dest->OutFunc != NULL ))
+		{
+			if ((( dest->mixer_config & OUT_SYNTH_FROM_LEFT) == OUT_SYNTH_FROM_LEFT) && (( dest->mixer_config & OUT_I2S_FROM_LEFT) == 0 ))
+			{
+				source = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
+				if ( source != NULL)
+					if ( (source->status == SOURCE_ENABLED ) )
+						audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
+			}
+			if ((( dest->mixer_config & OUT_I2S_FROM_LEFT) == OUT_I2S_FROM_LEFT) && (( dest->mixer_config & OUT_SYNTH_FROM_LEFT) == 0 ))
+			{
+				source = AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN];
+				if ( source != NULL)
+					if ( (source->status == SOURCE_ENABLED ) )
+						audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
+			}
+		}
+		audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
+	#ifdef LCD_SS_GPIO_Port
+		HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);
+	#endif // #ifdef LCD_SS_GPIO_Port
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

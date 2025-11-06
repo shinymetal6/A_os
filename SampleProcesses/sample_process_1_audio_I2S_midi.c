@@ -16,7 +16,7 @@
 /*
  * sample_process_1_audio_I2S_midi.c
  *
- *  Created on: Oct 29, 2025
+ *  Created on: Nov 6, 2025
  *      Author: fil
  */
 #include "main.h"
@@ -51,12 +51,10 @@ extern	ADC_HandleTypeDef hadc2;
 __attribute__((aligned(32))) uint16_t i2s_tx_buffer[I2S_BUFFER_SIZE*2];
 __attribute__((aligned(32))) uint16_t i2s_rx_buffer[I2S_BUFFER_SIZE*2];
 
-__attribute__((aligned(32))) uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
-__attribute__((aligned(32))) uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
-
-#define	USB_BUF_LEN	64
+AUDIO_FAST_RAM uint16_t left_tx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
+AUDIO_FAST_RAM uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
 
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
 uint8_t	usb_tx_buffer[USB_BUF_LEN];
@@ -70,13 +68,21 @@ __attribute__ ((aligned (32)))	USB_Drv_TypeDef	USB_Drv =
 		.timeout = 100,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
 };
-uint32_t		usb_driver_handle;
 
 __attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
 {
 	.bus = &hi2c1,
 	.device_address = NAU88C22_I2C_ADDR,
 	.master_volume = 100,
+};
+
+__attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
+__attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
+{
+	.adc = &hadc1,
+	.adc_timer = &htim6,
+	.adc_buffer = adc1_buf,
+	.num_channels = ADC1_CHANNELS,
 };
 
 I2S_DriverStruct_t I2S_Driver =
@@ -90,27 +96,18 @@ I2S_DriverStruct_t I2S_Driver =
 	.i2s = &hi2s2,
 };
 
-__attribute__ ((aligned (32))) int16_t	synth0_work_buf_left[EFFECTS_NUM_SAMPLES];
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
+{
+	.out_buf = (int16_t *)left_rx_buffer,
+};
+
+AUDIO_FAST_RAM q15_t	Audio_Synth_buf_left[I2S_EFFECT_SIZE];
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 {
 	.block_size = I2S_EFFECT_SIZE,
-	.in_buf = synth0_work_buf_left,
-	.out_device = SOURCE_TO_I2S_OUT,
-	.out_buf = (q15_t *)left_tx_buffer,
-	.device_out_buf = (int16_t *)i2s_tx_buffer,
+	.out_buf = (q15_t *)Audio_Synth_buf_left,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
-uint32_t	synth_left_initialized;
-
-__attribute__ ((aligned (32)))	uint16_t	adc1_buf[ADC1_CHANNELS];
-__attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
-{
-	.adc = &hadc1,
-	.adc_timer = &htim6,
-	.adc_buffer = adc1_buf,
-	.num_channels = ADC1_CHANNELS,
-};
-uint8_t	adc1_handle;
 
 AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
 uint16_t			vca0_ampl_left = 1000;
@@ -126,6 +123,27 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.amplitude = &adc1_buf[2],
 #endif
 	.offset = &vca0_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	vca1_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca1_ampl_left = 1000;
+uint16_t			vca1_offset = 0;
+VCA_Effect_TypeDef	VCA1_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca1_buf_left,
+	.amplitude = &adc1_buf[2],
+	.offset = &vca1_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+AUDIO_Dest_TypeDef Out_Port =
+{
+	.in_buf = (int16_t *)Audio_Synth_buf_left,
+	.out_buf = (int16_t *)i2s_tx_buffer,
+	.out_device = SOURCE_TO_I2S_OUT,
+	.mixer_config = OUT_SYNTH_FROM_LEFT,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
@@ -174,7 +192,7 @@ A_midi_decoder_t	MIDI =
 	.SysEx = SysEx,
 	.midi_received_sysex_buffer = rx_sysex_buffer,
 };
-uint32_t	midi_initialized;
+uint8_t		midi_initialized = 0;
 
 void sample_process_1_init(uint32_t process_id)
 {
@@ -183,21 +201,16 @@ void sample_process_1_init(uint32_t process_id)
 
 	i2s_driver_register(&I2S_Driver);
 
-	synth_left_initialized = Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left);
-	if ( synth_left_initialized == 0 )
+	if ( Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left) == 0 )
 		Synth_Start(&Audio_Synth_left);
-	i2s_driver_start(&I2S_Driver);
+	i2s_driver_register(&I2S_Driver);
+	I2SIn_Register(&Audio_I2Sin_left);
+	OutStage_Register(&Out_Port);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
-	usb_driver_handle = usb_device_driver_register(&USB_Drv);
+	usb_device_driver_register(&USB_Drv);
 	midi_initialized = MidiInit(&MIDI);
 }
-
-uint8_t		up = 0;
-
-#define STEP	200
-#define HLIMIT	(65500 - STEP)
-#define LLIMIT	(STEP * 2)
 
 void sample_process_1_audio_I2S_midi(uint32_t process_id)
 {
@@ -205,9 +218,11 @@ uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	if ( I2SIn_Start(&Audio_I2Sin_left) == 0 )
+		i2s_driver_start(&I2S_Driver);
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA1_Left);
 
-	//NoteOn(0,69,127);
 	while(1)
 	{
 		wait_event(EVENT_TIMER|EVENT_USB_DEVICE_IRQ);
@@ -220,26 +235,12 @@ uint8_t		cntr = 0;
 				cntr = 0;
 				process_led();
 			}
-#ifdef SWEEP_VCA
-			if ( up )
-			{
-				vca0_ampl_left += STEP;
-				if ( vca0_ampl_left > HLIMIT )
-					up = 0;
-			}
-			else
-			{
-				vca0_ampl_left -= STEP;
-				if ( vca0_ampl_left < LLIMIT )
-					up = 1;
-			}
-#endif // #ifdef SWEEP_VCA
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
 #ifndef USB_DIRECT_CALLBACK
 			if ( midi_initialized == 0 )
-				MidiParser(usb_rx_buffer, usb_get_rx_len(usb_driver_handle));
+				MidiParser(usb_rx_buffer, usb_get_rx_len(&USB_Drv));
 #endif
 		}
 	}

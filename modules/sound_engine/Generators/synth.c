@@ -193,7 +193,8 @@ ITCM_AREA_CODE static void synth_note_on(AUDIO_Source_TypeDef *synth, uint8_t no
         if (!synth->voices[i].active)
         {
             synth->voices[i].phase = 0.0f;
-            synth->voices[i].phase_increment = midi_freq[note] / (synth->sample_rate*8.0F); // Phase increment per sample
+//            synth->voices[i].phase_increment = midi_freq[note] / (synth->sample_rate*2.0F); // Phase increment per sample
+            synth->voices[i].phase_increment = midi_freq[note] / (synth->sample_rate); // Phase increment per sample
             synth->voices[i].amplitude = (q15_t)((velocity / 127.0f) * 32768.0f); // Scale velocity to Q15 , max val = 127
             synth->voices[i].waveform = waveform;
             synth->voices[i].duty_cycle = duty_cycle;
@@ -411,9 +412,6 @@ AUDIO_Source_TypeDef *synth;
 	synth_all_note_off(synth);
 }
 
-extern	uint8_t number_of_synths;
-
-
 ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth)
 {
 uint32_t	i;
@@ -434,6 +432,7 @@ uint32_t	i;
 		synth->wavetable_size = SYNTH_WAVETABLE_1024;
 	if ( synth->sample_rate == 0 )
 		synth->sample_rate = Sound_Sample_Frequency;
+	synth->sample_rate *= 2;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
 
@@ -448,7 +447,6 @@ uint32_t	i;
 		synth->voices[i].wavetable = NULL;        // No custom wavetable by default
 		synth->voices[i].note = 0;
 	}
-	number_of_synths++;
 	return 0;
 }
 

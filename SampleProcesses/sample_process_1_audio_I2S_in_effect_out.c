@@ -74,11 +74,7 @@ I2S_DriverStruct_t I2S_Driver =
 
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_I2Sin_left =
 {
-	.in_buf = (int16_t *)left_rx_buffer,
-	.out_buf = (int16_t *)left_tx_buffer,
-	.device_out_buf = (int16_t *)i2s_tx_buffer,
-	.channel_in = AUDIO_SOURCE_LEFT,
-	.channel_out = AUDIO_DESTINATION_LEFT,
+	.out_buf = (int16_t *)left_rx_buffer,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
 
@@ -92,6 +88,19 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.out_buf = vca0_buf_left,
 	.amplitude = &adc1_buf[2],
 	.offset = &vca0_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
+AUDIO_FAST_RAM int16_t	vca1_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca1_ampl_left = 65535;
+uint16_t			vca1_offset = 0;
+VCA_Effect_TypeDef	VCA1_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca1_buf_left,
+	.amplitude = &vca1_ampl_left,
+	.offset = &vca1_offset,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
@@ -130,6 +139,16 @@ __attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
 	.num_channels = ADC1_CHANNELS,
 };
 
+
+AUDIO_Dest_TypeDef Out_Port =
+{
+	.in_buf = (int16_t *)left_rx_buffer,
+	.out_buf = (int16_t *)i2s_tx_buffer,
+	.out_device = SOURCE_TO_I2S_OUT,
+	.mixer_config = OUT_I2S_FROM_LEFT,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
 void sample_process_1_init(uint32_t process_id)
 {
 	nau88c22_codec_register(&Nau88C22_Drv);
@@ -138,6 +157,7 @@ void sample_process_1_init(uint32_t process_id)
 	bzero(i2s_rx_buffer,I2S_BUFFER_SIZE);
 	i2s_driver_register(&I2S_Driver);
 	I2SIn_Register(&Audio_I2Sin_left);
+	OutStage_Register(&Out_Port);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
 }
@@ -149,11 +169,11 @@ uint8_t		cntr = 0;
 uint8_t		effect_cntr= 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	i2s_driver_start(&I2S_Driver);
-	I2SIn_Start(&Audio_I2Sin_left);
+	if ( I2SIn_Start(&Audio_I2Sin_left) == 0 )
+		i2s_driver_start(&I2S_Driver);
 	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&VCA1_Left);
 	//Sound_Insert_Effect((uint32_t *)&Audio_I2Sin_left,(uint32_t *)&IIR_Left);
-
 	while(1)
 	{
 		wait_event(EVENT_TIMER);

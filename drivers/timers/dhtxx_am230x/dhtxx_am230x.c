@@ -118,7 +118,7 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_init(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x
 	dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_IDLE;
 	dhtxx_am230x_Drv->ticks = 0;
 	set_gpio_type(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,OUTPUT_OD,GPIO_PULLUP,GPIO_SPEED_FREQ_HIGH );
-	set_before_check_timers_callback(dhtxx_am230x_worker,NULL);
+	set_before_check_timers_callback(dhtxx_am230x_worker,(uint32_t *)dhtxx_am230x_Drv);
 
 	return 0;
 }

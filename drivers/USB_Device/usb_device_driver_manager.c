@@ -68,7 +68,7 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_drv)
 		usb_drv->timeout_reload_value = usb_drv->timeout;
 	else
 		usb_drv->timeout_reload_value = usb_drv->timeout = 0;
-	set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback,NULL);
+	set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback,(uint32_t *)usb_drv);
 	if ( usb_drv->Rx_CallbackPtr != NULL)
 	{
 		if ( usb_drv->usb_interface_class == USB_CDC_CLASS )
