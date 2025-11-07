@@ -14,19 +14,18 @@
  * Project : A_os
 */
 /*
- * spi_lcd.h
+ * lcd.h
  *
- *  Created on: Nov 23, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
-#define DRIVERS_SPI_SPI_LCD_SPI_LCD_H_
+#ifndef DRIVERS_SPI_LCD_LCD_H_
+#define DRIVERS_SPI_LCD_LCD_H_
 
-#include "../../../kernel/A.h"
-#include "../../../kernel/A_exported_functions.h"
-
-#ifdef LCD_ENABLED
+#include "../spi.h"
+#include <string.h>
+#include "fonts.h"
 
 #define	LCD_IS_7735		0x7735
 #define	LCD_IS_9341		0x9341
@@ -34,26 +33,31 @@
 #define MAX_WIDTH  240
 #define MAX_HEIGHT 320
 
-#define MIN_BRIGHTNESS		0
-#define STD_BRIGHTNESS		50
-#define MAX_BRIGHTNESS		100
+#define	ZERO_BRIGHTNESS		0
+#define	LOW_BRIGHTNESS		30
+#define	HALF_BRIGHTNESS		500
+#define	Hi_BRIGHTNESS		750
+#define	FULL_BRIGHTNESS		1000
 
 #define	DEFAULT_RESET_TIME	100
 #define	SPI_LCD_DMA_TIMEOUT	250
 
-#include	"fonts.h"
-
 typedef struct
 {
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
+	SPI_HandleTypeDef 	*bus;
+	GPIO_TypeDef	 	*cs_port;
+	uint16_t			cs_bit;
+	uint32_t 			wakeup_id;
+	uint32_t			*next_drv;
+	/* driver proprietary data */
 #ifdef A_OS_TIMERS_ENABLED
 	TIM_HandleTypeDef	*backlight_timer;
 	uint32_t			backlight_timer_channel;
 #endif
-	SPI_HandleTypeDef 	*bus;
-	GPIO_TypeDef	 	*cs_port;
-	uint16_t			cs_bit;
 	GPIO_TypeDef	 	*reset_port;
 	uint16_t			reset_bit;
 	uint16_t			reset_time;
@@ -74,6 +78,8 @@ typedef struct
 	uint32_t			(*lcd_fill_rect)  	(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 	uint32_t			(*lcd_draw_image)  	(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
 	uint8_t				dma_timeout;
+	uint32_t			time_start;
+	uint32_t			op_time;
 }SPI_LCD_DriverStruct_t;
 
 /* flags */
@@ -103,22 +109,16 @@ extern	uint8_t				*ILI9341_flags;
 extern	uint8_t				*ILI9341_dma_timeout;
 
 extern	uint16_t	framebuffer_rect[MAX_WIDTH*MAX_HEIGHT];
+#include "st7735/st7735.h"
+#include "ili9341/ili9341.h"
 
-extern uint32_t	spi_lcd_init(uint8_t handle);
-extern uint32_t	spi_lcd_on(uint8_t handle);
-extern uint32_t	spi_lcd_off(uint8_t handle);
-extern uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *driver_private_data);
-extern uint32_t	spi_lcd_clear_screen(uint8_t handle);
-extern uint32_t	spi_lcd_fill_rect(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
-extern uint32_t	spi_lcd_fill_screen(uint8_t handle, uint16_t color);
-extern uint32_t	spi_lcd_reset(uint8_t handle);
-extern uint32_t	spi_lcd_set_brightness(uint8_t handle,uint16_t brightness);
-extern uint32_t	spi_lcd_draw_image(uint8_t handle,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
-extern uint32_t	spi_lcd_write_string(uint8_t handle,uint16_t x, uint16_t y, char* str, FontDef font, uint16_t color, uint16_t bgcolor);
-extern uint32_t	spi_lcd_draw_logo(uint8_t handle,uint16_t* image);
+extern uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *spi_lcd_Drv);
+extern uint32_t	spi_lcd_on(SPI_LCD_DriverStruct_t *spi_lcd_Drv );
+extern uint32_t	spi_lcd_off(SPI_LCD_DriverStruct_t *spi_lcd_Drv );
+extern uint32_t	spi_lcd_init(SPI_LCD_DriverStruct_t *spi_lcd_Drv );
+extern uint32_t	spi_lcd_clear_screen(SPI_LCD_DriverStruct_t *spi_lcd_Drv );
+extern uint32_t	spi_lcd_draw_image(SPI_LCD_DriverStruct_t *spi_lcd_Drv, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t* image);
 
-#include	"lcd_st7735/lcd_7735.h"
-#include	"lcd_ili9341/lcd_ili9341.h"
-#endif // #ifdef LCD_ENABLED
 
-#endif /* DRIVERS_SPI_SPI_LCD_SPI_LCD_H_ */
+
+#endif /* DRIVERS_SPI_LCD_LCD_H_ */

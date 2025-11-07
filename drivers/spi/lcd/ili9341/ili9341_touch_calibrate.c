@@ -14,11 +14,12 @@
  * Project : A_os
 */
 /*
- * touch_calibrate_ili9341.c
+ * ili9341_touch_calibrate.c
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
+
 #include "main.h"
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
@@ -26,7 +27,8 @@
 #ifdef TOUCH_ENABLED
 #ifdef LCD_ENABLED
 
-#include "lcd_ili9341.h"
+#include "ili9341.h"
+#include "ili9341_touch_calibrate.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -99,3 +101,4 @@ char		calibration_string[CALIBRATION_STRING_LEN];
 
 #endif // #ifdef LCD_ENABLED
 #endif // #ifdef TOUCH_ENABLED
+

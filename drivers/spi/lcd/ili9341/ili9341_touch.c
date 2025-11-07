@@ -14,14 +14,11 @@
  * Project : A_os
 */
 /*
- * touch_ili9341.c
+ * ili9341_touch.c
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
-
-
-/* vim: set ai et ts=4 sw=4: */
 
 #include "main.h"
 #include "../../../../kernel/A.h"
@@ -29,6 +26,7 @@
 #ifdef TOUCH_ENABLED
 
 #ifdef A_OS_SPI_ENABLED
+#include "ili9341_touch.h"
 
 #define READ_X 0xD0
 #define READ_Y 0x90
@@ -124,3 +122,4 @@ uint32_t ret_val = 0;
 #endif // #ifdef	A_OS_SPI_ENABLED
 
 #endif // #ifdef TOUCH_ENABLED
+

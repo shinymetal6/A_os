@@ -26,19 +26,28 @@
 #ifdef A_OS_SPI_ENABLED
 typedef struct
 {
-	uint8_t 			process;
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
 	SPI_HandleTypeDef 	*bus;
-	uint32_t			*driver_private_data;
+	GPIO_TypeDef	 	*cs_port;
+	uint16_t			cs_bit;
+	uint32_t 			wakeup_id;
+	uint32_t			*next_drv;
 }SPI_DriverStruct_t;
 
 /* flags */
 #define	SPI_TX_DMA_COMPLETE	0x80
-
+#define	SPI_TX_COMPLETE		0x01
+/*
 #include "spi_lcd/spi_lcd.h"
 #include "LoRa/LoRa.h"
 #include "nrf24l01/nrf24l01.h"
+*/
+#include "lcd/lcd.h"
+
+extern	SPI_DriverStruct_t 	*spi_drv_ptr;
 
 #endif // #ifdef A_OS_SPI_ENABLED
 

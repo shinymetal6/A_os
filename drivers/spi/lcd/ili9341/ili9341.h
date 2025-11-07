@@ -14,20 +14,19 @@
  * Project : A_os
 */
 /*
- * lcd_ili9341.h
+ * ili9341.h
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ILI9341_LCD_ILI9341_H_
-#define DRIVERS_LCD_ILI9341_LCD_ILI9341_H_
+#ifndef DRIVERS_SPI_LCD_ILI9341_ILI9341_H_
+#define DRIVERS_SPI_LCD_ILI9341_ILI9341_H_
 
 #include "main.h"
 #ifdef A_OS_SPI_ENABLED
 #ifdef LCD_ENABLED
 
-#include "lcd_ili9341.h"
 #include "../fonts.h"
 
 #define	LCD_NOT_OWNED	1
@@ -108,4 +107,5 @@ extern	void ILI9341_ClearScreen(void);
 #endif // #ifdef LCD_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 
-#endif /* DRIVERS_LCD_ILI9341_LCD_ILI9341_H_ */
+
+#endif /* DRIVERS_SPI_LCD_ILI9341_ILI9341_H_ */

@@ -14,15 +14,15 @@
  * Project : A_os
 */
 /*
- * touch_calibrate_ili9341.h
+ * ili9341_touch_calibrate.h
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
-#define DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_
+#ifndef DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_CALIBRATE_H_
+#define DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_CALIBRATE_H_
 
-void ILI9341_calibrate_touch(void);
 
-#endif /* DRIVERS_LCD_ILI9341_TOUCH_CALIBRATE_ILI9341_H_ */
+
+#endif /* DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_CALIBRATE_H_ */

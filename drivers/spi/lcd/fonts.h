@@ -16,13 +16,12 @@
 /*
  * fonts.h
  *
- *  Created on: Dec 20, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
-#ifndef DRIVERS_SPI_SPI_LCD_FONTS_H_
-#define DRIVERS_SPI_SPI_LCD_FONTS_H_
 
-#ifdef LCD_ENABLED
+#ifndef DRIVERS_SPI_LCD_FONTS_H_
+#define DRIVERS_SPI_LCD_FONTS_H_
 
 typedef struct {
     const uint8_t width;
@@ -36,6 +35,4 @@ extern 	FontDef Font_7x11;
 extern  FontDef Font_11x18;
 extern 	FontDef Font_16x26;
 
-#endif // #ifdef LCD_ENABLED
-
-#endif /* DRIVERS_SPI_SPI_LCD_FONTS_H_ */
+#endif /* DRIVERS_SPI_LCD_FONTS_H_ */

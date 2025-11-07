@@ -98,7 +98,7 @@ typedef struct
 	I2C_HandleTypeDef 	*bus;
 	uint16_t 			device_address;
 	uint32_t 			wakeup_id;
-	void 				(*init)(void);
+	//void 				(*init)(void);
 	I2C_DriverStruct_t	*next_drv;
 	/* driver proprietary data */
 	uint8_t				device_flags;

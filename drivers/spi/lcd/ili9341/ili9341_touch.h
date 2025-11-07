@@ -14,16 +14,15 @@
  * Project : A_os
 */
 /*
- * touch_ili9341.h
+ * ili9341_touch.h
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_LCD_ILI9341_TOUCH_ILI9341_H_
-#define DRIVERS_LCD_ILI9341_TOUCH_ILI9341_H_
+#ifndef DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_H_
+#define DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_H_
 
-/* vim: set ai et ts=4 sw=4: */
 #ifndef __ILI9341_TOUCH_H__
 #define __ILI9341_TOUCH_H__
 
@@ -61,9 +60,4 @@ uint32_t ILI9341_GetTouch(uint32_t* raw_x, uint32_t* raw_y);
 
 extern	uint32_t	touch_flag;
 
-
-
-#endif // __ILI9341_TOUCH_H__
-
-
-#endif /* DRIVERS_LCD_ILI9341_TOUCH_ILI9341_H_ */
+#endif /* DRIVERS_SPI_LCD_ILI9341_ILI9341_TOUCH_H_ */

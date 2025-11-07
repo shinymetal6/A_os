@@ -14,14 +14,14 @@
  * Project : A_os
 */
 /*
- * lcd_7735.h
+ * st7735.h
  *
- *  Created on: Nov 23, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
 
-#ifndef DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
-#define DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_
+#ifndef DRIVERS_SPI_LCD_ST7735_ST7735_H_
+#define DRIVERS_SPI_LCD_ST7735_ST7735_H_
 
 #ifdef LCD_ENABLED
 
@@ -291,4 +291,5 @@ extern	void 	A_os_7735_SPI_TxCpltCallback(void);
 
 #endif // #ifdef LCD_ENABLED
 
-#endif /* DRIVERS_SPI_SPI_LCD_ST7735_LCD_LCD_7735_H_ */
+
+#endif /* DRIVERS_SPI_LCD_ST7735_ST7735_H_ */

@@ -16,10 +16,9 @@
 /*
  * fonts.c
  *
- *  Created on: Dec 20, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
-
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
@@ -429,4 +428,6 @@ FontDef Font_11x18 = {11,18,Font11x18};
 FontDef Font_16x26 = {16,26,Font16x26};
 
 #endif // #ifdef LCD_ENABLED
+
+
 

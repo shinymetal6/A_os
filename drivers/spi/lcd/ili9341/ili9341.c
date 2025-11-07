@@ -14,14 +14,11 @@
  * Project : A_os
 */
 /*
- * lcd_ili9341.c
+ * ili9341.c
  *
- *  Created on: Feb 16, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
- *      https://github.com/afiskon/stm32-ili9341/blob/master/Lib/ili9341/ili9341.c#L268
  */
-
-
 #include "main.h"
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
@@ -29,7 +26,8 @@
 #ifdef A_OS_SPI_ENABLED
 #ifdef LCD_ENABLED
 
-#include "lcd_ili9341.h"
+#include "../lcd.h"
+#include "ili9341.h"
 
 //uint16_t		framebuffer_rect[ILI9341_WIDTH*ILI9341_HEIGHT];
 GPIO_TypeDef	*ILI9341_cs_port;
@@ -389,3 +387,5 @@ uint32_t ILI9341_InvertColors(uint8_t invert)
 
 #endif // #ifdef LCD_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
+
+

@@ -855,11 +855,11 @@ uint8_t	spi_lcd_handle;
 void sample_process_1_init(void)
 {
 	spi_lcd_handle = spi_lcd_register(&SPI_LCD_Driver);
-	spi_lcd_off(spi_lcd_handle);
-	spi_lcd_init(spi_lcd_handle);
-	spi_lcd_clear_screen(spi_lcd_handle);
-	spi_lcd_draw_image(spi_lcd_handle,0,0,SPI_LCD_Driver.lcd_width,SPI_LCD_Driver.lcd_height,(uint16_t *)sample_logo);
-	spi_lcd_on(spi_lcd_handle);
+	spi_lcd_off(&SPI_LCD_Driver);
+	spi_lcd_init(&SPI_LCD_Driver);
+	spi_lcd_clear_screen(&SPI_LCD_Driver);
+	spi_lcd_draw_image(&SPI_LCD_Driver,0,0,SPI_LCD_Driver.lcd_width,SPI_LCD_Driver.lcd_height,(uint16_t *)sample_logo);
+	spi_lcd_on(&SPI_LCD_Driver);
 }
 
 void sample_process_1_lcd7735(uint32_t process_id)

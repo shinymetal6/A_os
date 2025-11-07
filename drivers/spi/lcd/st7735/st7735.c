@@ -14,12 +14,11 @@
  * Project : A_os
 */
 /*
- * lcd_7735.c
+ * st7735.c
  *
- *  Created on: Nov 23, 2024
+ *  Created on: Nov 7, 2025
  *      Author: fil
  */
-
 
 #include "main.h"
 #include "../../../../kernel/A.h"
@@ -28,7 +27,8 @@
 #ifdef A_OS_SPI_ENABLED
 #ifdef LCD_ENABLED
 
-#include "lcd_7735.h"
+#include "st7735.h"
+#include "../lcd.h"
 
 GPIO_TypeDef	*ST7735_cs_port;
 uint16_t		ST7735_cs_bit;
@@ -414,4 +414,5 @@ ITCM_AREA_CODE uint8_t ST7735_GetFontWidth(FontDef font)
 #endif // #ifdef LCD_ENABLED
 
 #endif // #ifdef A_OS_SPI_ENABLED
+
 

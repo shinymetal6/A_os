@@ -1,0 +1,3 @@
+1) Remove 	void (*init)(void); from all includes
+2) Change spi driver to the new ptrs system
+3) Remove TIM_DriverStruct_t, useless

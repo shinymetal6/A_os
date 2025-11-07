@@ -53,7 +53,6 @@ typedef struct
 	uint16_t			*cutoffFrequency;			// = 1000	Initial cutoff frequency (1 kHz)
 	uint16_t			*resonance; 				// = 32768	Resonance (0 to 65535)
 	uint16_t			*lfo_rate;					// = 16384	Rate of the LFO [0 .. 65535] easy for user side
-
     /* Internals */
 	float				f_cutoffFrequency;// = 1000.0f; // Initial cutoff frequency (1 kHz)
 	float				f_resonance; // = 0.5f;          // Resonance (0.0 to 1.0)
