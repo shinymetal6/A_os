@@ -27,8 +27,8 @@ float	Sound_Sample_Frequency = DEFAULT_SAMPLE_FREQUENCY;
 #ifdef SOUND_ENGINE_ENABLED
 #include "sound_engine.h"
 
-AUDIO_Source_TypeDef	*AudioSourceLeft[2] = {NULL,NULL};
-AUDIO_Source_TypeDef	*AudioSourceRight[2] = {NULL,NULL};
+AUDIO_Source_TypeDef	*AudioSourceLeft = NULL;
+AUDIO_Source_TypeDef	*AudioSourceRight = NULL;
 AUDIO_Dest_TypeDef		*AudioDestLeft  = NULL;
 AUDIO_Dest_TypeDef		*AudioDestRight = NULL;
 AUDIO_FAST_RAM	uint32_t			audio_pipe_time_start;
@@ -42,18 +42,18 @@ ITCM_AREA_CODE inline float fast_tanh(float x)
     return x * (27.0f + x2) / (27.0f + 9.0f * x2);
 }
 
-ITCM_AREA_CODE PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
+ITCM_AREA_CODE AUDIO_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
 {
 uint8_t		done=0;
-PTR_Effect_TypeDef	*PTR_Effect = (PTR_Effect_TypeDef *)effect;
+AUDIO_Effect_TypeDef	*AUDIO_Effect = (AUDIO_Effect_TypeDef *)effect;
 	while( done < 32 )
 	{
-		if ( (PTR_Effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
-			PTR_Effect->effect( (uint32_t *)PTR_Effect);
-		if ( PTR_Effect->next_effect != NULL )
-			PTR_Effect = (PTR_Effect_TypeDef *)PTR_Effect->next_effect;
+		if ( (AUDIO_Effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
+			AUDIO_Effect->effect( (uint32_t *)AUDIO_Effect);
+		if ( AUDIO_Effect->next_effect != NULL )
+			AUDIO_Effect = (AUDIO_Effect_TypeDef *)AUDIO_Effect->next_effect;
 		else
-			return PTR_Effect;
+			return AUDIO_Effect;
 		done++;
 	}
 	return NULL;
@@ -61,7 +61,7 @@ PTR_Effect_TypeDef	*PTR_Effect = (PTR_Effect_TypeDef *)effect;
 
 ITCM_AREA_CODE uint8_t Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect)
 {
-PTR_Effect_TypeDef		*effect = (PTR_Effect_TypeDef *)new_effect , *pre_effect;
+AUDIO_Effect_TypeDef	*effect = (AUDIO_Effect_TypeDef *)new_effect , *pre_effect;
 AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 
@@ -75,10 +75,10 @@ AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 	}
 	else
 	{
-		pre_effect = (PTR_Effect_TypeDef *)sound_source;
+		pre_effect = (AUDIO_Effect_TypeDef *)sound_source;
 		while ( sound_source->next_effect != NULL)
 		{
-			pre_effect = (PTR_Effect_TypeDef *)sound_source->next_effect;
+			pre_effect = (AUDIO_Effect_TypeDef *)sound_source->next_effect;
 			sound_source = (AUDIO_Source_TypeDef *)sound_source->next_effect;
 		}
 		sound_source->next_effect = (uint32_t *)effect;
@@ -98,7 +98,7 @@ AUDIO_Dest_TypeDef 		*dest = AudioDestLeft;
 
 ITCM_AREA_CODE uint8_t Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect)
 {
-PTR_Effect_TypeDef		*pre_effect;
+AUDIO_Effect_TypeDef	*pre_effect;
 AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 
 	if (( ext_source == NULL ) || ( remove_effect == NULL ) || ( sound_source->next_effect == NULL ))
@@ -106,7 +106,7 @@ AUDIO_Source_TypeDef	*sound_source = (AUDIO_Source_TypeDef *)ext_source;
 
 	while((sound_source != NULL) && (sound_source != (AUDIO_Source_TypeDef *)remove_effect))
 	{
-		pre_effect = (PTR_Effect_TypeDef *)sound_source;
+		pre_effect = (AUDIO_Effect_TypeDef *)sound_source;
 		sound_source = (AUDIO_Source_TypeDef *)sound_source->next_effect;
 	}
 	if ((pre_effect == NULL) || (sound_source == NULL))
@@ -129,22 +129,19 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 
 ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
-PTR_Effect_TypeDef *last_effect;
-	if ( device == SOUND_SOURCE_IS_SYNTH )
-		Synth_Process_Block((uint32_t *)source);
-	last_effect = (PTR_Effect_TypeDef *)source;
-	if ( source->next_effect != NULL )
+AUDIO_Effect_TypeDef *last_effect;
+	if ( source->source_type == SOUND_SOURCE_IS_SYNTH )
 	{
-		last_effect = (PTR_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
-		dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+		Synth_Process_Block((uint32_t *)source);
+		last_effect = (AUDIO_Effect_TypeDef *)source;
+		if ( source->next_effect != NULL )
+		{
+			last_effect = (AUDIO_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
+			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+		}
 	}
 	else
-	{
-		if ( device == SOUND_SOURCE_IS_SYNTH )
-			dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
-		else
-			dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
-	}
+		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
 }
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
@@ -152,33 +149,27 @@ ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 AUDIO_Source_TypeDef *source;
 AUDIO_Dest_TypeDef *dest;
 
-	#ifdef LCD_SS_GPIO_Port
-		HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
-	#endif // #ifdef LCD_SS_GPIO_Port
-		audio_pipe_time_start = DWT->CYCCNT;
+#ifdef LCD_SS_GPIO_Port
+	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
+#endif // #ifdef LCD_SS_GPIO_Port
+	audio_pipe_time_start = DWT->CYCCNT;
 
-		dest = AudioDestLeft;
-		if (( dest != NULL) && ( dest->out_buf != NULL) && ( dest->in_buf != NULL) && ( dest->OutFunc != NULL ))
-		{
-			if ((( dest->mixer_config & OUT_SYNTH_FROM_LEFT) == OUT_SYNTH_FROM_LEFT) && (( dest->mixer_config & OUT_I2S_FROM_LEFT) == 0 ))
-			{
-				source = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
-				if ( source != NULL)
-					if ( (source->status == SOURCE_ENABLED ) )
-						audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
-			}
-			if ((( dest->mixer_config & OUT_I2S_FROM_LEFT) == OUT_I2S_FROM_LEFT) && (( dest->mixer_config & OUT_SYNTH_FROM_LEFT) == 0 ))
-			{
-				source = AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN];
-				if ( source != NULL)
-					if ( (source->status == SOURCE_ENABLED ) )
-						audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_I2S_IN);
-			}
-		}
-		audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
-	#ifdef LCD_SS_GPIO_Port
-		HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);
-	#endif // #ifdef LCD_SS_GPIO_Port
+	source = AudioSourceLeft;
+	if ( source == NULL )
+		return;
+	dest = AudioDestLeft;
+	if (( dest == NULL) || ( dest->out_buf == NULL) || ( dest->in_buf == NULL) || ( dest->OutFunc == NULL ))
+		return;
+	while(source != NULL )
+	{
+		if ( (source->flags == SOURCE_ENABLED ) )
+			audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
+		source = (AUDIO_Source_TypeDef *)source->next_source;
+	}
+	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
+#ifdef LCD_SS_GPIO_Port
+	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);
+#endif // #ifdef LCD_SS_GPIO_Port
 }
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

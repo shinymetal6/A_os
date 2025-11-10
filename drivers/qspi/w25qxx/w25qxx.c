@@ -25,11 +25,10 @@
 #include "../../../kernel/A_exported_functions.h"
 #ifdef STM32H7xx_HAL_QSPI_H
 
+#include "../qspi.h"
 #include "w25qxx.h"
 #include "w25qxx_defs.h"
 
-extern	ExtFlash_DriverStruct_t		ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
-extern	uint8_t						last_qspi_used_handle;
 
 ITCM_AREA_CODE static uint8_t w25qxx_seterror(W25Qxx_Drv_TypeDef	*w25qxx_Drv,uint8_t error)
 {
@@ -75,8 +74,9 @@ ITCM_AREA_CODE static uint8_t set_qspi_com(W25Qxx_Drv_TypeDef *w25qxx_Drv, uint8
 	return send_qspi_com(w25qxx_Drv);
 }
 
-ITCM_AREA_CODE static uint8_t w25qxx_ReadStatusReg(W25Qxx_Drv_TypeDef *w25qxx_Drv,uint8_t reg,uint16_t timeout)
+ITCM_AREA_CODE uint32_t w25qxx_ReadStatusReg(uint32_t *w25qxx_Drv_e,uint8_t reg,uint16_t timeout)
 {
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 uint32_t			Instruction;
 
 	switch(reg)
@@ -94,8 +94,9 @@ uint32_t			Instruction;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint8_t w25qxx_WriteStatusReg(W25Qxx_Drv_TypeDef *w25qxx_Drv,uint8_t reg,uint16_t timeout)
+ITCM_AREA_CODE uint32_t w25qxx_WriteStatusReg(uint32_t *w25qxx_Drv_e,uint8_t reg,uint16_t timeout)
 {
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 uint32_t			Instruction;
 
 	switch(reg)
@@ -113,8 +114,9 @@ uint32_t			Instruction;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint8_t w25qxx_ReadAllStatusRegs(W25Qxx_Drv_TypeDef *w25qxx_Drv,uint16_t timeout)
+ITCM_AREA_CODE uint32_t w25qxx_ReadAllStatusRegs(uint32_t *w25qxx_Drv_e,uint16_t timeout)
 {
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 	if ( set_qspi_com(w25qxx_Drv, W25Q_READ_SR1, QSPI_INSTRUCTION_1_LINE, 0, QSPI_ADDRESS_NONE, 1, QSPI_DATA_1_LINE,W25Q_DUMMY_0) )
 		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 	if (HAL_QSPI_Receive(w25qxx_Drv->qspi_bus, &w25qxx_Drv->qspi_status_reg1, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
@@ -142,7 +144,7 @@ ITCM_AREA_CODE static uint8_t w25qxx_WaitIfFlashBusy(W25Qxx_Drv_TypeDef *w25qxx_
 		timeout--;
 		if ( timeout == 0 )
 			return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
-		w25qxx_ReadStatusReg(w25qxx_Drv,1,W25Q_READ_TIMEOUT);
+		w25qxx_ReadStatusReg((uint32_t *)w25qxx_Drv,1,W25Q_READ_TIMEOUT);
 	}
 	return 0;
 }
@@ -167,9 +169,9 @@ ITCM_AREA_CODE static uint32_t w25qxx_read_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv,
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_read(uint8_t handle, uint32_t address,uint8_t *data,uint32_t data_len)
+ITCM_AREA_CODE uint32_t w25qxx_read(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len)
 {
-W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 uint32_t			Instruction;
 uint32_t 			p_data_len;
 
@@ -276,9 +278,9 @@ ITCM_AREA_CODE static uint32_t w25qxx_write_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_write(uint8_t handle, uint32_t address,uint8_t *data,uint32_t data_len)
+ITCM_AREA_CODE uint32_t w25qxx_write(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len)
 {
-W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 uint32_t			Instruction;
 uint32_t 			p_data_len;
 
@@ -359,9 +361,9 @@ uint32_t 			p_data_len;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_erasesectors(uint8_t handle, uint32_t start_sector, uint32_t number_of_sectors)
+ITCM_AREA_CODE uint32_t w25qxx_erasesectors(uint32_t *w25qxx_Drv_e, uint32_t start_sector, uint32_t number_of_sectors)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 uint32_t Address, Instruction , i;
 
 	if ( start_sector+number_of_sectors >= W25Q_BLOCK_COUNT)
@@ -395,13 +397,13 @@ uint32_t Address, Instruction , i;
     return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_eraseblocks(uint8_t handle, uint32_t start_block, uint32_t number_of_blocks)
+ITCM_AREA_CODE uint32_t w25qxx_eraseblocks(uint32_t *w25qxx_Drv_e, uint32_t start_block, uint32_t number_of_blocks)
 {
-W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
 uint32_t			Address,Instruction,i;
 
 	if ( start_block+number_of_blocks >= W25Q_BLOCK_COUNT)
 		return W25Q_PARAM_ERR;
+	W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
 		return 1;
 	if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_ERASEBLOCKS_TIMEOUT) )
@@ -429,9 +431,9 @@ uint32_t			Address,Instruction,i;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_erasechip(uint8_t handle)
+ITCM_AREA_CODE uint32_t w25qxx_erasechip(uint32_t *w25qxx_Drv_e)
 {
-W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 	w25qxx_Drv->status = 0;
 
 	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
@@ -451,9 +453,9 @@ W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[hand
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_GetID(uint8_t handle, uint8_t *data)
+ITCM_AREA_CODE uint32_t w25qxx_GetID(uint32_t *w25qxx_Drv_e, uint8_t *data)
 {
-W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
+W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 
 	if ( set_qspi_com(w25qxx_Drv, W25Q_DEVID, QSPI_INSTRUCTION_1_LINE, 0,  QSPI_ADDRESS_1_LINE, 1, QSPI_DATA_1_LINE,W25Q_DUMMY_0) )
 		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
@@ -466,106 +468,6 @@ W25Qxx_Drv_TypeDef	*w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[hand
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	w25qxx_register(W25Qxx_Drv_TypeDef *private_data)
-{
-W25Qxx_Drv_TypeDef	*w25qxx_Drv;
-uint8_t id = 0;
-	if ( ExtFlashDriverStruct[last_qspi_used_handle].process == 0 )
-	{
-		if ( private_data->wakeup_id == 0 )
-			return DRIVER_REQUEST_FAILED;
-		ExtFlashDriverStruct[last_qspi_used_handle].process = get_current_process();
-		ExtFlashDriverStruct[last_qspi_used_handle].private_data = (uint32_t *)private_data;
-		ExtFlashDriverStruct[last_qspi_used_handle].read = w25qxx_read;
-		ExtFlashDriverStruct[last_qspi_used_handle].write = w25qxx_write;
-		ExtFlashDriverStruct[last_qspi_used_handle].erase_sectors = w25qxx_erasesectors;
-		ExtFlashDriverStruct[last_qspi_used_handle].erase_blocks = w25qxx_eraseblocks;
-		ExtFlashDriverStruct[last_qspi_used_handle].erase_chip = w25qxx_erasechip;
-		ExtFlashDriverStruct[last_qspi_used_handle].get_id = w25qxx_GetID;
-
-		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[last_qspi_used_handle].private_data;
-
-		if ( w25qxx_Drv->qspi_bus->hmdma == NULL )
-		{
-			/* disable dma if it's not configured in hw */
-			w25qxx_Drv->flags &= ~QSPI_USES_DMA;
-		}
-
-		w25qxx_Drv->com.InstructionMode = 0;
-		w25qxx_Drv->com.Instruction = 0;	 				// Command
-		w25qxx_Drv->com.AddressMode = 0;
-		w25qxx_Drv->com.AddressSize = w25qxx_Drv->FlashSize > 128U ? QSPI_ADDRESS_32_BITS : QSPI_ADDRESS_24_BITS;
-		w25qxx_Drv->com.Address = 0;
-		w25qxx_Drv->com.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-		w25qxx_Drv->com.AlternateBytes = QSPI_ALTERNATE_BYTES_NONE;
-		w25qxx_Drv->com.AlternateBytesSize = QSPI_ALTERNATE_BYTES_NONE;
-		w25qxx_Drv->com.DataMode = 0;
-		w25qxx_Drv->com.NbData = 0;
-		w25qxx_Drv->com.DdrMode = QSPI_DDR_MODE_DISABLE;
-		w25qxx_Drv->com.DdrHoldHalfCycle = QSPI_DDR_HHC_ANALOG_DELAY;
-		w25qxx_Drv->com.SIOOMode = QSPI_SIOO_INST_EVERY_CMD;
-		w25qxx_Drv->com.DummyCycles = W25Q_DUMMY_0;
-
-		ExtFlashDriverStruct[last_qspi_used_handle].status = DRIVER_STATUS_IN_USE;
-
-		w25qxx_ReadStatusReg(w25qxx_Drv, 1,W25Q_READ_TIMEOUT);
-		w25qxx_Drv->qspi_status_reg &= ~W25Q_NO_PROTECTION_MASK;
-		w25qxx_WriteStatusReg(w25qxx_Drv, 1,W25Q_WRITE_TIMEOUT);
-
-		w25qxx_ReadStatusReg(w25qxx_Drv, 2,W25Q_READ_TIMEOUT);
-		w25qxx_Drv->qspi_status_reg |= 0x02;
-		w25qxx_WriteStatusReg(w25qxx_Drv, 2,W25Q_WRITE_TIMEOUT);
 
 
-		w25qxx_ReadAllStatusRegs(w25qxx_Drv,W25Q_READ_TIMEOUT);
-		w25qxx_GetID(last_qspi_used_handle,&id);
-		last_qspi_used_handle++;
-		return last_qspi_used_handle-1;
-	}
-	return DRIVER_REQUEST_FAILED;
-}
-
-/***** Interrupts ********/
-ITCM_AREA_CODE static uint8_t find_handle_from_qspi(QSPI_HandleTypeDef *qspi)
-{
-uint8_t	i;
-W25Qxx_Drv_TypeDef	*w25qxx_Drv;
-
-	for(i=0;i<MAX_EXTMEM_DRIVERS;i++)
-	{
-		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[i].private_data;
-		if ( qspi == w25qxx_Drv->qspi_bus)
-			return i;
-	}
-	return 255;
-}
-void HAL_QSPI_RxCpltCallback(QSPI_HandleTypeDef *hqspi)
-{
-uint8_t	handle;
-W25Qxx_Drv_TypeDef	*w25qxx_Drv;
-
-	__disable_irq();
-	if ( (handle = find_handle_from_qspi(hqspi)) != 255)
-	{
-		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
-		w25qxx_Drv->status |= QSPI_READ_COMPLETE;
-		activate_process(ExtFlashDriverStruct[handle].process,w25qxx_Drv->wakeup_id,WAKEUP_FLAGS_QSPI_RX);
-	}
-	__enable_irq();
-}
-
-void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi)
-{
-uint8_t	handle;
-W25Qxx_Drv_TypeDef	*w25qxx_Drv;
-
-	__disable_irq();
-	if ( (handle = find_handle_from_qspi(hqspi)) != 255)
-	{
-		w25qxx_Drv = (W25Qxx_Drv_TypeDef *)ExtFlashDriverStruct[handle].private_data;
-		w25qxx_Drv->status |= QSPI_WRITE_COMPLETE;
-		activate_process(ExtFlashDriverStruct[handle].process,w25qxx_Drv->wakeup_id,WAKEUP_FLAGS_QSPI_TX);
-	}
-	__enable_irq();
-}
 #endif // #ifdef QSPI_ENABLED

@@ -29,20 +29,19 @@
 #ifdef STM32H7xx_HAL_QSPI_H
 
 extern	QSPI_HandleTypeDef hqspi;
-extern	ExtFlash_DriverStruct_t	ExtFlashDriverStruct[MAX_EXTMEM_DRIVERS];
 
-W25Qxx_Drv_TypeDef W25Qxx_Drv =
+QSPI_DriverStruct_t W25Qxx_Drv =
 {
-		.qspi_bus = &hqspi,
-		.flags = QSPI_USES_DMA,
-		.FlashSize = 128,
-		.wakeup_id = WAKEUP_FROM_QSPI_IRQ,
+	.qspi_bus = &hqspi,
+	.flags = QSPI_USES_DMA,
+	.FlashSize = 128,
+	.wakeup_id = WAKEUP_FROM_QSPI_IRQ,
+	.qspi_id = QSPI_25XX,
 };
-uint32_t	w25_handle;
 
 #define D2_QSPI_RAM				__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
 
-#define		DATALEN			32768
+#define		DATALEN			256
 #define		DATAOFFSET		0
 D2_QSPI_RAM	uint8_t		w25_bufw[DATALEN];
 D2_QSPI_RAM	uint8_t		w25_bufr[DATALEN];
@@ -55,7 +54,7 @@ uint32_t	wakeup,flags;
 uint32_t	i,j=1;
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	w25_handle = w25qxx_register(&W25Qxx_Drv);
+	qspi_register(&W25Qxx_Drv);
 	qspi_address = 0+DATAOFFSET;
 	qspi_len = DATALEN-DATAOFFSET;
 	qspi_error = 0;
@@ -72,26 +71,33 @@ uint32_t	i,j=1;
 			switch(qspi_state)
 			{
 			case 0 :
-				qspi_error += qspi_erase_blocks(w25_handle,0,1);
+				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
+				qspi_state++;
+				break;
+			case 1 :
+				qspi_error += qspi_erase_blocks(&W25Qxx_Drv,0,1);
 				if (( W25Qxx_Drv.status & QSPI_BUSY ) != QSPI_BUSY )
 					qspi_state++;
 				break;
-			case 1 :
-				qspi_error += qspi_read(w25_handle,0,w25_bufr,DATALEN);
-				qspi_state++;
-				break;
 			case 2 :
-				qspi_error += qspi_write(w25_handle,0,w25_bufw,DATALEN);
+				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
 				qspi_state++;
 				break;
 			case 3 :
-				qspi_error += qspi_read(w25_handle,0,w25_bufr,DATALEN);
+				qspi_error += qspi_write(&W25Qxx_Drv,0,w25_bufw,DATALEN);
+				qspi_state++;
+				break;
+			case 4 :
+				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
 				qspi_state = 0;
 				j++;
 				for(i=0;i<DATALEN;i++)
 					w25_bufw[i] = j;
+				for(i=0;i<DATALEN;i++)
+					w25_bufr[i] = 0;
 				break;
 			default :
+				qspi_state = 0;
 				break;
 			}
 		}

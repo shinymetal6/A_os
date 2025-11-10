@@ -37,6 +37,7 @@
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
+#ifdef OLDOLDOLD
 typedef struct
 {
 	/* Common with effects header */
@@ -54,6 +55,7 @@ typedef struct
 	uint8_t				channel_in;
 	uint8_t				channel_out;
 }PTR_Effect_TypeDef;
+#endif //#ifdef OLDOLDOLD
 
 /* source_type */
 #define		SOUND_SOURCE_IS_SYNTH		0
@@ -77,14 +79,15 @@ extern	float					Sound_Sample_Frequency;
 #include	"OutStage/out_stage.h"
 #include	"Generators/synth.h"
 #include	"Generators/i2s_in.h"
+#include	"Effects/effects.h"
 #include	"Effects/phaser.h"
 #include	"Effects/vca.h"
 #include	"Effects/filter_iir.h"
 #include	"Effects/overdrive.h"
 #include	"Effects/mixer.h"
 
-extern	AUDIO_Source_TypeDef	*AudioSourceLeft[2];
-extern	AUDIO_Source_TypeDef	*AudioSourceRight[2];
+extern	AUDIO_Source_TypeDef	*AudioSourceLeft;
+extern	AUDIO_Source_TypeDef	*AudioSourceRight;
 extern	AUDIO_Dest_TypeDef		*AudioDestLeft;
 extern	AUDIO_Dest_TypeDef		*AudioDestRight;
 
@@ -95,7 +98,7 @@ extern void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,u
 extern void to_intbuf(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
 
 extern 	float 				fast_tanh(float x);
-extern 	PTR_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
+extern 	AUDIO_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);
 extern	uint8_t				Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect);
 extern	uint8_t				Sound_Change_Sample_Frequency(uint32_t new_sample_frequency);

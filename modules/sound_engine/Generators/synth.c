@@ -373,43 +373,43 @@ ITCM_AREA_CODE void synth_load_custom_wavetable(Synth_Voice_TypeDef *voice, cons
 
 ITCM_AREA_CODE void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity)
 {
-AUDIO_Source_TypeDef *synth;
-	if ( channel > AUDIO_SOURCE_RIGHT )
-		return;
-	if ( channel == AUDIO_DESTINATION_LEFT)
-		synth = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
-	else
-		synth = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
-	if ( synth == NULL )
-		return;
-	synth_note_on(synth, note, velocity,SYNTH_WAVEFORM_SINE,0.50F);
+AUDIO_Source_TypeDef *synth = AudioSourceLeft;
+
+	while ( synth != NULL )
+	{
+		if (( synth->source_type == SOUND_SOURCE_IS_SYNTH ) && ( synth->channel == channel ))
+		{
+			synth_note_on(synth, note, velocity,SYNTH_WAVEFORM_SINE,0.50F);
+			return;
+		}
+		synth = (AUDIO_Source_TypeDef *)synth->next_source;
+	}
 }
 
 ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 {
-AUDIO_Source_TypeDef *synth;
-	if ( channel > AUDIO_SOURCE_RIGHT )
-		return;
-	if ( channel == AUDIO_DESTINATION_LEFT)
-		synth = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
-	else
-		synth = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
-	if ( synth == NULL )
-		return;
-	synth_note_off(synth, note);
+AUDIO_Source_TypeDef *synth = AudioSourceLeft;
+	while ( synth != NULL )
+	{
+		if (( synth->source_type == SOUND_SOURCE_IS_SYNTH ) && ( synth->channel == channel ))
+		{
+			synth_note_off(synth, note);
+			return;
+		}
+		synth = (AUDIO_Source_TypeDef *)synth->next_source;
+	}
 }
 
 ITCM_AREA_CODE void AllNoteOFF(void)
 {
-AUDIO_Source_TypeDef *synth;
-	synth = AudioSourceLeft[SOUND_SOURCE_IS_SYNTH];
-	if ( synth == NULL )
-		return;
-	synth_all_note_off(synth);
-	synth = AudioSourceRight[SOUND_SOURCE_IS_SYNTH];
-	if ( synth == NULL )
-		return;
-	synth_all_note_off(synth);
+AUDIO_Source_TypeDef *synth = AudioSourceLeft;
+
+	while ( synth != NULL )
+	{
+		if ( synth->source_type == SOUND_SOURCE_IS_SYNTH )
+			synth_all_note_off(synth);
+		synth = (AUDIO_Source_TypeDef *)synth->next_source;
+	}
 }
 
 ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth)
@@ -423,10 +423,24 @@ uint32_t	i;
 	for(i=0;i<SYNTH_MIDI_NOTES;i++)
 		midi_freq[i] =	rom_midi_freq[i];
 
+
 	if ( synth->channel_in == AUDIO_SOURCE_LEFT)
-		AudioSourceLeft[AUDIO_SOURCE_LEFT] = synth;
-	else
-		AudioSourceRight[AUDIO_SOURCE_RIGHT] = synth;
+	{
+		if ( AudioSourceLeft == NULL )
+		{
+			AudioSourceLeft = synth;
+			synth->next_source = NULL;
+		}
+		else
+		{
+			AUDIO_Source_TypeDef *source = AudioSourceLeft;
+			while(source->next_source != NULL)
+				source = (AUDIO_Source_TypeDef *)source->next_source;
+			source->next_source = (uint32_t *)synth;
+			synth->next_source = NULL;
+		}
+		synth->source_type = SOUND_SOURCE_IS_SYNTH;
+	}
 
 	if ( synth->wavetable_size == 0 )
 		synth->wavetable_size = SYNTH_WAVETABLE_1024;
@@ -436,7 +450,6 @@ uint32_t	i;
 	synth_sine_wavetable_init(synth);
 	synth->active_voices = 0;
 
-	synth->source_type = SOUND_SOURCE_IS_SYNTH;
 
 	// Initialize all voices
 	for (int i = 0; i < SYNTH_MAX_VOICES; i++)

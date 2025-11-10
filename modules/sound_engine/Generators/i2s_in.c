@@ -27,9 +27,6 @@
 #include "../sound_engine.h"
 #include "i2s_in.h"
 
-extern	AUDIO_Source_TypeDef *AudioSourceLeft[2];
-extern	AUDIO_Source_TypeDef *AudioSourceRight[2];
-
 ITCM_AREA_CODE uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in)
 {
 	i2s_in->status = SOURCE_ENABLED;
@@ -47,10 +44,21 @@ ITCM_AREA_CODE uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in)
 	if ( i2s_in->out_buf == NULL )
 		return 1;
 	if ( i2s_in->channel_in == AUDIO_SOURCE_LEFT)
-		AudioSourceLeft[SOUND_SOURCE_IS_I2S_IN] = i2s_in;
-	else
-		AudioSourceRight[SOUND_SOURCE_IS_I2S_IN] = i2s_in;
-
+	{
+		if ( AudioSourceLeft == NULL )
+		{
+			AudioSourceLeft = i2s_in;
+			i2s_in->next_source = NULL;
+		}
+		else
+		{
+			AUDIO_Source_TypeDef *source = AudioSourceLeft;
+			while(source->next_source != NULL)
+				source = (AUDIO_Source_TypeDef *)source->next_source;
+			source->next_source = (uint32_t *)i2s_in;
+			i2s_in->next_source = NULL;
+		}
+	}
 	i2s_in->source_type = SOUND_SOURCE_IS_I2S_IN;
 	i2s_in->block_size = I2S_EFFECT_SIZE;
 	return 0;

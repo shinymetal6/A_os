@@ -104,6 +104,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_audio_I2S_oscillator(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_OSCILLATOR
+#ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DUAL_OSCILLATOR
+extern	void sample_process_1_audio_I2S_dual_oscillator(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DUAL_OSCILLATOR
 #ifdef	SAMPLEPROCESS_1_AUDIO_I2S_MIDI
 extern	void sample_process_1_audio_I2S_midi(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
@@ -229,6 +233,11 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_audio_I2S_oscillator,
 				.user_init = sample_process_1_init,
 #endif
+#ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DUAL_OSCILLATOR
+				.user_process = sample_process_1_audio_I2S_dual_oscillator,
+				.user_init = sample_process_1_init,
+#endif
+
 #ifdef	SAMPLEPROCESS_1_AUDIO_I2S_MIDI
 				.user_process = sample_process_1_audio_I2S_midi,
 				.user_init = sample_process_1_init,

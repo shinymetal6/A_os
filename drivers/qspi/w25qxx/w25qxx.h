@@ -25,12 +25,15 @@
 
 typedef struct
 {
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
+	uint8_t 			process;
 	QSPI_HandleTypeDef 	*qspi_bus;
-	uint32_t 			wakeup_id;
-	uint32_t 			timeout;
 	uint8_t				qspi_id;
+	uint32_t 			wakeup_id;
+	uint32_t			*next_drv;
+	/* driver proprietary data */
 	uint8_t				qspi_status_reg;
 	uint8_t				qspi_status_reg1;
 	uint8_t				qspi_status_reg2;
@@ -42,6 +45,18 @@ typedef struct
 	uint32_t 			ProgPagesNumber;    /*!< Number of pages for the program operation */
 	uint32_t 			BlockSize;    	   	/*!< Size of the block */
 	QSPI_CommandTypeDef com;
+	/* Internals */
+	/*
+	uint32_t			(*read)  (uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len);
+	uint32_t			(*write) ( uint32_t *w25qxx_Drv_e,uint32_t address,uint8_t *data,uint32_t data_len);
+	uint32_t			(*erase_blocks) ( uint32_t *w25qxx_Drv_e,uint32_t start_block, uint32_t number_of_blocks);
+	uint32_t			(*erase_sectors) ( uint32_t *w25qxx_Drv_e,uint32_t start_sector, uint32_t number_of_sectors);
+	uint32_t			(*erase_chip) (uint32_t *w25qxx_Drv_e);
+	uint32_t			(*get_id) (uint32_t *w25qxx_Drv_e,uint8_t *data);
+	uint32_t			(*get_status) (uint32_t *w25qxx_Drv_e);
+	uint32_t			(*get_flags) (uint32_t *w25qxx_Drv_e);
+	uint32_t			(*set_flags) (uint32_t *w25qxx_Drv_e, uint32_t flags);
+	*/
 }W25Qxx_Drv_TypeDef;
 
 /* status */
@@ -56,6 +71,15 @@ typedef struct
 #define	QSPI_WAKEUP_ON_READ			0x20
 #define	QSPI_WAKEUP_ON_WRITE		0x10
 
-extern uint32_t	w25qxx_register(W25Qxx_Drv_TypeDef *driver_private_data);
+extern uint32_t w25qxx_read(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len);
+extern uint32_t w25qxx_write(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len);
+extern uint32_t w25qxx_erasesectors(uint32_t *w25qxx_Drv_e, uint32_t start_sector, uint32_t number_of_sectors);
+extern uint32_t w25qxx_eraseblocks(uint32_t *w25qxx_Drv_e, uint32_t start_block, uint32_t number_of_blocks);
+extern uint32_t w25qxx_erasechip(uint32_t *w25qxx_Drv_e);
+extern uint32_t w25qxx_GetID(uint32_t *w25qxx_Drv_e, uint8_t *data);
+extern uint32_t w25qxx_ReadStatusReg(uint32_t *w25qxx_Drv,uint8_t reg,uint16_t timeout);
+extern uint32_t w25qxx_WriteStatusReg(uint32_t *w25qxx_Drv,uint8_t reg,uint16_t timeout);
+extern uint32_t	w25qxx_ReadAllStatusRegs(uint32_t *w25qxx_Drv_e,uint16_t timeout);
+
 
 #endif /* DRIVERS_EXTERNAL_FLASH_QSPI_W25QXX_H_ */
