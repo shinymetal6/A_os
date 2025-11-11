@@ -33,10 +33,6 @@ typedef struct
 	uint16_t			block_size;
 	uint8_t				out_device;
 	uint8_t				channel;
-	/*
-	uint8_t				mixer_config;
-	uint16_t			*mixer_pan;
-	*/
 	void				(*OutFunc)(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
 }AUDIO_Dest_TypeDef;
 /* mixer_config */

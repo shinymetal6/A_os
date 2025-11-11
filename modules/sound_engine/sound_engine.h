@@ -60,11 +60,7 @@ extern	float					Sound_Sample_Frequency;
 #include	"Generators/synth.h"
 #include	"Generators/i2s_in.h"
 #include	"Effects/effects.h"
-#include	"Effects/phaser.h"
-#include	"Effects/vca.h"
-#include	"Effects/filter_iir.h"
-#include	"Effects/overdrive.h"
-#include	"Effects/mixer.h"
+
 
 extern	AUDIO_Source_TypeDef	*AudioSourceLeft;
 extern	AUDIO_Source_TypeDef	*AudioSourceRight;

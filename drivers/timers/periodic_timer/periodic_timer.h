@@ -23,6 +23,24 @@
 #ifndef DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_
 #define DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_
 
+typedef struct
+{
+	/* timer header */
+	uint8_t 			process;
+	uint8_t				status;
+	uint8_t				flags;
+	uint32_t 			*next_timer;
+	TIM_HandleTypeDef 	*timer;
+	uint8_t				timer_type;
+	/* timer internals */
+	uint32_t			timer_channel;
+	void				(*User_Callback)(void);
+}PERIODIC_Timer_Drv_TypeDef;
+/* status */
+#define	PERIODIC_TIMER_INITIALIZED		0x01
+#define	PERIODIC_TIMER_RUNNING			0x80
 
+extern uint32_t	periodic_timer_register(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv);
+extern uint32_t periodic_timer_start(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv);
 
 #endif /* DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_ */

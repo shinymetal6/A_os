@@ -14,28 +14,18 @@
  * Project : A_os
 */
 /*
- * effects.h
+ * flanger.h
  *
- *  Created on: Oct 16, 2025
+ *  Created on: Nov 11, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_EFFECTS_EFFECTS_H_
-#define MODULES_SOUND_EFFECTS_EFFECTS_H_
-
-/* for limits -1.0F < v < 1.0F */
-#define	FULL_SCALE_F_FACTOR			65535.0F
-#define	HALF_SCALE_F_FACTOR			(FULL_SCALE_F_FACTOR / 2.0F)
-#define	HUNDRED_SCALE_F_FACTOR		100
-#define	HALF_HUNDRED_SCALE_F_FACTOR	(HUNDRED_SCALE_F_FACTOR / 2)
-
-
-#define __Q15_2_FLOAT(input) ((float)input / 32768.0F)
-#define __FLOAT_2_Q15(output) ((q15_t)(output * 32768.0F))
+#ifndef MODULES_SOUND_ENGINE_EFFECTS_FLANGER_H_
+#define MODULES_SOUND_ENGINE_EFFECTS_FLANGER_H_
 
 typedef struct
 {
-	/* Common with effects header */
+	/* effect header */
 	uint8_t				status;
 	uint8_t				flags;
 	uint32_t 			*next_effect;
@@ -46,16 +36,23 @@ typedef struct
 	uint16_t			block_size;
 	float				sample_rate;
 	/* Here finishes the common area */
-	uint8_t				out_device;
-	uint8_t				channel_in;
-	uint8_t				channel_out;
-}AUDIO_Effect_TypeDef;
+	uint16_t			*lfoFreq;
+	uint16_t			*depth;
+	uint16_t			*maxDelay;
+	uint16_t			flanger_maxDelay;
+	uint32_t			time_start;
+	uint32_t			effect_time;
+	/* effect data */
+	float				phase;
+	float				f_lfoFreq;
+	float				f_lfoDepth;
+	uint16_t			*offset;
+}FLANGER_Effect_TypeDef;
 
-#include	"phaser.h"
-#include	"vca.h"
-#include	"filter_iir.h"
-#include	"overdrive.h"
-#include	"mixer.h"
-#include	"vibrato.h"
-#include	"tremolo.h"
-#endif /* MODULES_SOUND_EFFECTS_EFFECTS_H_ */
+#define FLANGER_MAX_FREQ_LFO		7.0F
+#define FLANGER_MAX_DEPTH			100
+
+extern void Effect_FLANGER_Init(uint32_t *effect_s);
+extern void Effect_FLANGER(uint32_t *effect_s);
+
+#endif /* MODULES_SOUND_ENGINE_EFFECTS_FLANGER_H_ */

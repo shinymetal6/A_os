@@ -45,6 +45,20 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	return NULL;
 }
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
+
+	if ( tim_ic == NULL )
+		return;
+	if ( tim_ic->timer_type == TIM_TYPE_PERIODIC )
+	{
+		PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv = (PERIODIC_Timer_Drv_TypeDef *)tim_ic;
+		if ( periodic_timer_drv->User_Callback != NULL)
+			periodic_timer_drv->User_Callback();
+	}
+}
+
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 uint32_t j;

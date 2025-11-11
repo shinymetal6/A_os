@@ -43,12 +43,11 @@ void PID_SetTunings(PIDController_TypeDef *pid, float kp, float ki, float kd)
 }
 
 // Compute the PID output based on the current input and time step dt
-float PID_Compute(PIDController_TypeDef *pid, float input, float dt)
+float PID_Compute(PIDController_TypeDef *pid, float input)
 {
-    if (dt <= 0.0f) {
-        // Avoid division by zero or negative time step
+    // Avoid division by zero or negative time step
+    if (pid->dt <= 0.0f)
         return pid->output;
-    }
 
     pid->input = input;
     pid->error = pid->setpoint - pid->input;
@@ -57,14 +56,14 @@ float PID_Compute(PIDController_TypeDef *pid, float input, float dt)
     float proportional = pid->Kp * pid->error;
 
     // --- Integral Term ---
-    pid->integral += pid->error * dt;
+    pid->integral += pid->error * pid->dt;
     // Anti-windup: Limit integral term if output is saturated
     // Check if the output *would* be saturated based on P and I terms alone
     float potential_output = proportional + pid->Ki * pid->integral;
     if (potential_output > pid->output_max && pid->error > 0) {
-        pid->integral -= pid->error * dt; // Don't add to integral if already saturated high
+        pid->integral -= pid->error * pid->dt; // Don't add to integral if already saturated high
     } else if (potential_output < pid->output_min && pid->error < 0) {
-        pid->integral -= pid->error * dt; // Don't subtract from integral if already saturated low
+        pid->integral -= pid->error * pid->dt; // Don't subtract from integral if already saturated low
     }
     float integral_term = pid->Ki * pid->integral;
 
@@ -74,7 +73,7 @@ float PID_Compute(PIDController_TypeDef *pid, float input, float dt)
         pid->derivative = 0.0f; // Avoid large derivative on first run
         pid->first_run = 0;
     } else {
-        pid->derivative = -(pid->input - pid->last_input) / dt; // d(input)/dt
+        pid->derivative = -(pid->input - pid->last_input) / pid->dt; // d(input)/dt
     }
     float derivative_term = pid->Kd * pid->derivative;
 
@@ -107,7 +106,7 @@ void PID_Reset(PIDController_TypeDef *pid)
 }
 
 // Initialize the PID controller structure
-void PID_Init(PIDController_TypeDef *pid, float kp, float ki, float kd, float min_out, float max_out)
+ITCM_AREA_CODE void PID_Set(PIDController_TypeDef *pid, float kp, float ki, float kd, float min_out, float max_out)
 {
 	/* user params */
     pid->Kp = kp;
@@ -120,11 +119,13 @@ void PID_Init(PIDController_TypeDef *pid, float kp, float ki, float kd, float mi
     pid->output_max = max_out;
 }
 
-ITCM_AREA_CODE uint32_t	pid_register(PIDController_TypeDef *pid)
+ITCM_AREA_CODE uint32_t	PID_register(PIDController_TypeDef *pid)
 {
 PIDController_TypeDef *eptr, *pre_eptr;
 
-	if ( pid_drv_ptr->timer == NULL)
+	if ( pid->periodic_timer == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if ( pid->User_Callback == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( pid_drv_ptr == NULL)
 	{
@@ -143,6 +144,9 @@ PIDController_TypeDef *eptr, *pre_eptr;
 		pid->next_pid = NULL;
 	}
 	pid->process = get_current_process();
+	pid->periodic_timer->User_Callback = pid->User_Callback;
+	periodic_timer_register(pid->periodic_timer);
+	periodic_timer_start(pid->periodic_timer);
     /* internal variables */
     pid->error = 0.0f;
     pid->last_error = 0.0f;

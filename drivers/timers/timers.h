@@ -28,6 +28,7 @@
 /* timer_type */
 #define TIM_TYPE_ENCODER		1
 #define TIM_TYPE_DHT11			2
+#define TIM_TYPE_PERIODIC		3
 
 typedef struct
 {
@@ -46,6 +47,7 @@ typedef struct
 #include "ws2812/ws2812.h"
 #include "encoder/encoder.h"
 #include "dhtxx_am230x/dhtxx_am230x.h"
+#include "periodic_timer/periodic_timer.h"
 
 extern	TIMER_DriverStruct_t	*timer_drv_ptr;
 

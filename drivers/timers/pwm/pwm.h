@@ -38,6 +38,7 @@ typedef struct
 	GPIO_TypeDef	 	*enable_port;
 	uint16_t			enable_bit;
 	uint32_t 			prescaler;
+	uint32_t 			period;
 	uint32_t 			pulse_width[6];
 	uint8_t 			pwm_direction;
 }Pwm_Control_TypeDef;
@@ -51,6 +52,7 @@ extern	uint32_t pwm_start(Pwm_Control_TypeDef *pwm_drv);
 extern	uint32_t pwm_stop(Pwm_Control_TypeDef *pwm_drv);
 extern	uint32_t pwm_get_status(Pwm_Control_TypeDef *pwm_drv);
 extern	uint32_t pwm_set_prescaler(Pwm_Control_TypeDef *pwm_drv,uint32_t prescaler);
+extern	uint32_t pwm_set_period(Pwm_Control_TypeDef *pwm_drv,uint32_t period);
 extern	uint32_t pwm_set_width(Pwm_Control_TypeDef *pwm_drv,uint32_t pulse_width);
 extern	uint32_t pwm_set_direction(Pwm_Control_TypeDef *pwm_drv,uint8_t pwm_direction);
 extern	uint32_t pwm_register(Pwm_Control_TypeDef *tim_driver_private_data);
