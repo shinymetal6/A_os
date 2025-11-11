@@ -70,36 +70,44 @@ Please note:<br>
 The iodef_common.h file is not yet complete, so some definitions maybe not correct<br>
 
 # Samples : <br>
-sample_process_1_adc.c<br>
-sample_process_1_audio_DAC_midi.c<br>
-sample_process_1_audio_DAC_oscillator.c<br>
-sample_process_1_audio_I2S_in_effect_out.c<br>
-sample_process_1_audio_I2S_midi.c<br>
-sample_process_1_audio_I2S_oscillator.c<br>
-sample_process_1_basic.c<br>
-sample_process_1_can.c<br>
-sample_process_1_dccpwm.c<br>
-sample_process_1_Dhtxx_am230x.c<br>
-sample_process_1_encoder.c<br>
-sample_process_1_gpio.c<br>
-sample_process_1_i2c.c<br>
-sample_process_1_i2cmem.c<br>
-sample_process_1_i2csensors.c<br>
-sample_process_1_intflash.c<br>
-sample_process_1_lcd7735.c<br>
-sample_process_1_lora_scanner.c<br>
-sample_process_1_lora.c<br>
-sample_process_1_mbxToPrc1.c : MUST be used with sample_process_2_mbxFromPrc2.c<br>
-sample_process_1_midi.c<br>
-sample_process_1_nrf24l01_ping.c<br>
-sample_process_1_qspi.c<br>
-sample_process_1_rx_DMA_UART.c<br>
-sample_process_1_servo.c<br>
-sample_process_1_switch_midi_cdc.c<br>
-sample_process_1_usbclass_switch.c<br>
-sample_process_1_usbecho.c<br>
-sample_process_1_xmodem_rx_UART.c<br>
-sample_process_1_xmodem_rx_USB.c<br>
+SampleProcesses/sample_process_1_adc.c<br>
+SampleProcesses/sample_process_1_audio_DAC_midi.c<br>
+SampleProcesses/sample_process_1_audio_DAC_oscillator.c<br>
+SampleProcesses/sample_process_1_audio_I2S_dual_oscillator.c<br>
+SampleProcesses/sample_process_1_audio_I2S_in_effect_out.c<br>
+SampleProcesses/sample_process_1_audio_I2S_midi.c<br>
+SampleProcesses/sample_process_1_audio_I2S_oscillator.c<br>
+SampleProcesses/sample_process_1_basic.c<br>
+SampleProcesses/sample_process_1_can.c<br>
+SampleProcesses/sample_process_1_dccpwm.c<br>
+SampleProcesses/sample_process_1_Dhtxx_am230x.c<br>
+SampleProcesses/sample_process_1_encoder.c<br>
+SampleProcesses/sample_process_1_gpio.c<br>
+SampleProcesses/sample_process_1_i2c.c<br>
+SampleProcesses/sample_process_1_i2cmem.c<br>
+SampleProcesses/sample_process_1_i2csensors.c<br>
+SampleProcesses/sample_process_1_intflash.c<br>
+SampleProcesses/sample_process_1_lcd7735.c<br>
+SampleProcesses/sample_process_1_lora.c<br>
+SampleProcesses/sample_process_1_lora_scanner.c<br>
+SampleProcesses/sample_process_1_mbxToPrc2.c<br>
+SampleProcesses/sample_process_1_midi.c<br>
+SampleProcesses/sample_process_1_nrf24l01_ping.c<br>
+SampleProcesses/sample_process_1_pid.c<br>
+SampleProcesses/sample_process_1_qspi.c<br>
+SampleProcesses/sample_process_1_rx_DMA_UART.c<br>
+SampleProcesses/sample_process_1_servo.c<br>
+SampleProcesses/sample_process_1_switch_midi_cdc.c<br>
+SampleProcesses/sample_process_1_usbclass_switch.c<br>
+SampleProcesses/sample_process_1_usbecho.c<br>
+SampleProcesses/sample_process_1_xmodem_rx_UART.c<br>
+SampleProcesses/sample_process_1_xmodem_rx_USB.c<br>
+SampleProcesses/sample_process_2.c<br>
+SampleProcesses/sample_process_2_mbxFromPrc1.c<br>
+SampleProcesses/sample_process_3.c<br>
+SampleProcesses/sample_process_4.c<br>
+SampleProcesses/sample_processes_table.c<br>
+SampleProcesses/sample_support_functions.c<br>
 
 
 
