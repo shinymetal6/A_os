@@ -1,18 +1,19 @@
-chorus
-echo
-iir
-lfo
-moog_filter
-overdrive		T
-passthrough
-phaser			T
-reverb
-ringmod
-robot_voice
-space_echo
-tape_freak
-vca				T
-wah_filter
-
-Legend : 
-	T = tested
+bitcrusher.c
+filter_feedback_comb.c
+filter_fir.c
+filter_iir.c
+filter_lattice.c
+filter_moog.c
+filter_wah.c
+flanger.c
+mixer.c
+overdrive.c
+phaser.c
+reverb.c
+ringmod.c
+robot_voice.c
+schroeder_reverb.c
+space_echo.c
+tremolo.c
+vca.c
+vibrato.c
