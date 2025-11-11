@@ -112,11 +112,14 @@ PHASER_Effect_TypeDef *phaser = (PHASER_Effect_TypeDef *)effect_s;
 	if ((( phaser->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( phaser == NULL ))
 		return;
 	phaser->time_start = DWT->CYCCNT;
-	for ( i=0;i<phaser->block_size;i++)
+	if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( phaser->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<phaser->block_size;i++)
 			phaser->out_buf[i] = phaser_effect(phaser,__Q15_2_FLOAT(phaser->in_buf[i]));
-		else
+	}
+	else
+	{
+		for ( i=0;i<phaser->block_size;i++)
 			phaser->out_buf[i]  = phaser->in_buf[i];
 	}
 	phaser->effect_time = (DWT->CYCCNT - phaser->time_start) / (HSI_CLOCK / 1000000);

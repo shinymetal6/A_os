@@ -196,13 +196,18 @@ FIR_Effect_TypeDef *fir = (FIR_Effect_TypeDef *)effect_s;
 	if ((( fir->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( fir == NULL ))
 		return;
 	fir->time_start = DWT->CYCCNT;
-	for ( i=0;i<fir->block_size;i++)
+
+	if (( fir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( fir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<fir->block_size;i++)
 			fir->out_buf[i] = (q15_t ) fir_effect(fir,__Q15_2_FLOAT(fir->in_buf[i]));
-		else
+	}
+	else
+	{
+		for ( i=0;i<fir->block_size;i++)
 			fir->out_buf[i]  = fir->in_buf[i];
 	}
+
 	if (( fir->flags & FIR_UPDATE_PARAMS) == FIR_UPDATE_PARAMS)
 	{
 		fir->flags &= ~FIR_UPDATE_PARAMS;

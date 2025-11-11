@@ -187,11 +187,14 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 		iir->flags &= ~IIR_UPDATE_PARAMS;
 	}
 
-	for ( i=0;i<iir->block_size;i++)
+	if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( iir->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<iir->block_size;i++)
 			iir->out_buf[i] = (q15_t ) iir_effect(iir,__Q15_2_FLOAT(iir->in_buf[i]));
-		else
+	}
+	else
+	{
+		for ( i=0;i<iir->block_size;i++)
 			iir->out_buf[i]  = iir->in_buf[i];
 	}
 	iir->effect_time = (DWT->CYCCNT - iir->time_start) / (HSI_CLOCK / 1000000);

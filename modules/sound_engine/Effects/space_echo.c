@@ -140,11 +140,14 @@ SPACE_ECHO_Effect_TypeDef *echo = (SPACE_ECHO_Effect_TypeDef *)effect_s;
     echo->time_start = DWT->CYCCNT;
 	if (( echo->flags & SPACE_ECHO_UPDATE_PARAMS) == SPACE_ECHO_UPDATE_PARAMS)
 		Effect_Space_Echo_Set_params(echo);
-	for ( i=0;i<echo->block_size;i++)
+	if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( echo->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<echo->block_size;i++)
 			echo->out_buf[i] = space_echo_process(echo,__Q15_2_FLOAT(echo->in_buf[i]));
-		else
+	}
+	else
+	{
+		for ( i=0;i<echo->block_size;i++)
 			echo->out_buf[i]  = echo->in_buf[i];
 	}
 	echo->effect_time = (DWT->CYCCNT - echo->time_start) / (HSI_CLOCK / 1000000);

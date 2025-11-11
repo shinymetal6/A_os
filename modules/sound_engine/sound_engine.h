@@ -98,7 +98,6 @@ extern void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,u
 extern void to_intbuf(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel);
 
 extern 	float 				fast_tanh(float x);
-extern 	AUDIO_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect);
 extern	uint8_t				Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect);
 extern	uint8_t				Sound_Remove_Effect(uint32_t *ext_source,uint32_t *remove_effect);
 extern	uint8_t				Sound_Change_Sample_Frequency(uint32_t new_sample_frequency);

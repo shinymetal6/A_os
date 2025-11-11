@@ -119,13 +119,14 @@ ROBOT_VOICE_Effect_TypeDef *rv = (ROBOT_VOICE_Effect_TypeDef *)effect_s;
 	if (( rv->flags & RV_UPDATE_PARAMS) == RV_UPDATE_PARAMS)
 			Effect_Robot_Set_Params(rv);
 	rv->time_start = DWT->CYCCNT;
-	for ( i=0;i<rv->block_size;i++)
+	if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( rv->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-		{
+		for ( i=0;i<rv->block_size;i++)
 			rv->out_buf[i] = robot_process(rv,__Q15_2_FLOAT(rv->in_buf[i]));
-		}
-		else
+	}
+	else
+	{
+		for ( i=0;i<rv->block_size;i++)
 			rv->out_buf[i]  = rv->in_buf[i];
 	}
 	rv->effect_time = (DWT->CYCCNT - rv->time_start) / (HSI_CLOCK / 1000000);

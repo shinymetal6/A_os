@@ -42,23 +42,6 @@ ITCM_AREA_CODE inline float fast_tanh(float x)
     return x * (27.0f + x2) / (27.0f + 9.0f * x2);
 }
 
-ITCM_AREA_CODE AUDIO_Effect_TypeDef *Sound_Apply_Effect(uint32_t *effect)
-{
-uint8_t		done=0;
-AUDIO_Effect_TypeDef	*AUDIO_Effect = (AUDIO_Effect_TypeDef *)effect;
-	while( done < 32 )
-	{
-		if ( (AUDIO_Effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
-			AUDIO_Effect->effect( (uint32_t *)AUDIO_Effect);
-		if ( AUDIO_Effect->next_effect != NULL )
-			AUDIO_Effect = (AUDIO_Effect_TypeDef *)AUDIO_Effect->next_effect;
-		else
-			return AUDIO_Effect;
-		done++;
-	}
-	return NULL;
-}
-
 ITCM_AREA_CODE uint8_t Sound_Insert_Effect(uint32_t *ext_source,uint32_t *new_effect)
 {
 AUDIO_Effect_TypeDef	*effect = (AUDIO_Effect_TypeDef *)new_effect , *pre_effect;
@@ -127,6 +110,25 @@ ITCM_AREA_CODE uint8_t Sound_Change_Sample_Frequency(uint32_t new_sample_frequen
 	return 1;
 }
 
+/* Called from interrupt */
+
+ITCM_AREA_CODE static AUDIO_Effect_TypeDef *apply_effect(uint32_t *effect)
+{
+uint8_t		done=0;
+AUDIO_Effect_TypeDef	*AUDIO_Effect = (AUDIO_Effect_TypeDef *)effect;
+	while( done < 32 )
+	{
+		if ( (AUDIO_Effect->status & SOUND_EFFECT_INITIALIZED) == SOUND_EFFECT_INITIALIZED)
+			AUDIO_Effect->effect( (uint32_t *)AUDIO_Effect);
+		if ( AUDIO_Effect->next_effect != NULL )
+			AUDIO_Effect = (AUDIO_Effect_TypeDef *)AUDIO_Effect->next_effect;
+		else
+			return AUDIO_Effect;
+		done++;
+	}
+	return NULL;
+}
+
 ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
 AUDIO_Effect_TypeDef *last_effect;
@@ -136,7 +138,7 @@ AUDIO_Effect_TypeDef *last_effect;
 		last_effect = (AUDIO_Effect_TypeDef *)source;
 		if ( source->next_effect != NULL )
 		{
-			last_effect = (AUDIO_Effect_TypeDef *)Sound_Apply_Effect(source->next_effect);
+			last_effect = (AUDIO_Effect_TypeDef *)apply_effect(source->next_effect);
 			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 		}
 	}

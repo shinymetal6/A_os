@@ -84,11 +84,14 @@ SCHROEDER_REVERB_Effect_TypeDef *schroeder_reverb = (SCHROEDER_REVERB_Effect_Typ
 	if ((( schroeder_reverb->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( schroeder_reverb == NULL ))
 		return;
 	schroeder_reverb->time_start = DWT->CYCCNT;
-	for ( i=0;i<schroeder_reverb->block_size;i++)
+	if (( schroeder_reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( schroeder_reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<schroeder_reverb->block_size;i++)
 			schroeder_reverb->out_buf[i] = (q15_t ) schroeder_reverb_effect(schroeder_reverb,__Q15_2_FLOAT(schroeder_reverb->in_buf[i]));
-		else
+	}
+	else
+	{
+		for ( i=0;i<schroeder_reverb->block_size;i++)
 			schroeder_reverb->out_buf[i]  = schroeder_reverb->in_buf[i];
 	}
 	if (( schroeder_reverb->flags & SCHROEDER_REVERB_UPDATE_PARAMS) == SCHROEDER_REVERB_UPDATE_PARAMS)

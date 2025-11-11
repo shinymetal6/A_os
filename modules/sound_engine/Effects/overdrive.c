@@ -60,20 +60,23 @@ ITCM_AREA_CODE void Effect_Overdrive(uint32_t *effect_s)
 {
 uint32_t	i;
 OVERDRIVE_Effect_TypeDef *overdrive = (OVERDRIVE_Effect_TypeDef *)effect_s;
+q15_t 	(*ovdrive_ptr)(OVERDRIVE_Effect_TypeDef* overdrive, float input);
 
 	if ( overdrive == NULL )
 		return;
 	overdrive->time_start = DWT->CYCCNT;
-	for ( i=0;i<overdrive->block_size;i++)
+	if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( overdrive->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
-		{
-			if (( overdrive->flags & FLAGS_OVERDIVE_ASYMMETRIC) == FLAGS_OVERDIVE_ASYMMETRIC)
-				overdrive->out_buf[i] = overdrive_asymmetric(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
-			else
-				overdrive->out_buf[i] = overdrive_effect(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
-		}
+		if (( overdrive->flags & FLAGS_OVERDIVE_ASYMMETRIC) == FLAGS_OVERDIVE_ASYMMETRIC)
+			ovdrive_ptr = overdrive_asymmetric;
 		else
+			ovdrive_ptr = overdrive_effect;
+		for ( i=0;i<overdrive->block_size;i++)
+			overdrive->out_buf[i] = ovdrive_ptr(overdrive,__Q15_2_FLOAT(overdrive->in_buf[i]));
+	}
+	else
+	{
+		for ( i=0;i<overdrive->block_size;i++)
 			overdrive->out_buf[i]  = overdrive->in_buf[i];
 	}
 	overdrive->effect_time = (DWT->CYCCNT - overdrive->time_start) / (HSI_CLOCK / 1000000);

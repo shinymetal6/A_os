@@ -138,14 +138,17 @@ WAH_F_Effect_TypeDef *wah = (WAH_F_Effect_TypeDef *)effect_s;
 		wah_set_params(wah);
 		wah->flags &= ~WAH_UPDATE_PARAMS;
 	}
-	for ( i=0;i<wah->block_size;i++)
+	if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( wah->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<wah->block_size;i++)
 		{
 			wah_set_params(wah);
 			wah->out_buf[i] = wah_process(wah,__Q15_2_FLOAT(wah->in_buf[i]));
 		}
-		else
+	}
+	else
+	{
+		for ( i=0;i<wah->block_size;i++)
 			wah->out_buf[i]  = wah->in_buf[i];
 	}
 	wah->effect_time = (DWT->CYCCNT - wah->time_start) / (HSI_CLOCK / 1000000);

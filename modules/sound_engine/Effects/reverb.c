@@ -114,13 +114,15 @@ uint32_t	i;
 REVERB_Effect_TypeDef *reverb = (REVERB_Effect_TypeDef *)effect_s;
 
 	reverb->time_start = DWT->CYCCNT;
-	for ( i=0;i<reverb->block_size;i++)
+	if (( reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( reverb->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		for ( i=0;i<reverb->block_size;i++)
 			reverb->out_buf[i]  = reverb_process(reverb,reverb->in_buf[i]);
-		else
+	}
+	else
+	{
+		for ( i=0;i<reverb->block_size;i++)
 			reverb->out_buf[i]  = reverb->in_buf[i];
-
 	}
 	reverb->effect_time = (DWT->CYCCNT - reverb->time_start) / (HSI_CLOCK / 1000000);
 }

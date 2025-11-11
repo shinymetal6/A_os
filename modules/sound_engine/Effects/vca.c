@@ -42,16 +42,18 @@ ITCM_AREA_CODE void Effect_VCA(uint32_t *effect_s)
 uint32_t	i;
 VCA_Effect_TypeDef *vca = (VCA_Effect_TypeDef *)effect_s;
 
-
-float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
 	if ((( vca->status & SOUND_EFFECT_INITIALIZED) != SOUND_EFFECT_INITIALIZED) || ( vca == NULL ))
 		return;
 	vca->time_start = DWT->CYCCNT;
-	for ( i=0;i<vca->block_size;i++)
+	if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
 	{
-		if (( vca->flags & SOUND_EFFECT_ENABLED) == SOUND_EFFECT_ENABLED)
+		float gain = (float )(*vca->amplitude - *vca->offset) / FULL_SCALE_F_FACTOR;
+		for ( i=0;i<vca->block_size;i++)
 			vca->out_buf[i]  = (q15_t )((float )vca->in_buf[i]*gain);
-		else
+	}
+	else
+	{
+		for ( i=0;i<vca->block_size;i++)
 			vca->out_buf[i]  = vca->in_buf[i];
 	}
 	vca->effect_time = (DWT->CYCCNT - vca->time_start) / (HSI_CLOCK / 1000000);
