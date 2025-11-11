@@ -14,32 +14,15 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * periodic_timer.h
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Nov 11, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#ifndef DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_
+#define DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_
 
-typedef struct
-{
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-#include "sound_engine/sound_engine.h"
-#include "midi_decoder/midi_decoder.h"
-#include "pid/pid.h"
 
-#endif /* MODULES_MODULES_H_ */
+#endif /* DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_ */

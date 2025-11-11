@@ -37,26 +37,6 @@
 #define	DEFAULT_NUMBER_OF_AUDIO_SAMPLES			512
 #define	DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES	(DEFAULT_NUMBER_OF_AUDIO_SAMPLES/2)
 
-#ifdef OLDOLDOLD
-typedef struct
-{
-	/* Common with effects header */
-	uint8_t				status;
-	uint8_t				flags;
-	uint32_t 			*next_effect;
-	q15_t				*in_buf;
-	q15_t				*out_buf;
-	void 				(*effect)(uint32_t 	*effect_data);
-	void 				(*effect_init)(uint32_t *effect_data);
-	uint16_t			block_size;
-	float				sample_rate;
-	/* Here finishes the common area */
-	uint8_t				out_device;
-	uint8_t				channel_in;
-	uint8_t				channel_out;
-}PTR_Effect_TypeDef;
-#endif //#ifdef OLDOLDOLD
-
 /* source_type */
 #define		SOUND_SOURCE_IS_SYNTH		0
 #define		SOUND_SOURCE_IS_I2S_IN		1

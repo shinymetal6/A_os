@@ -26,7 +26,6 @@
 
 #ifdef A_OS_TIMERS_ENABLED
 
-
 TIMER_DriverStruct_t	*timer_drv_ptr;
 
 ITCM_AREA_CODE TIMER_DriverStruct_t *get_ptr_from_workers(TIM_HandleTypeDef 	*timer)
