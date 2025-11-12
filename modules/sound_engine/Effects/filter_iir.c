@@ -29,7 +29,7 @@
 #include "effects.h"
 #include "filter_iir.h"
 
-ITCM_AREA_CODE static void calculateBiquadCoefficients(BiquadFilter* bq, FilterType type, float cutoffFreq, float bw, float sample_rate)
+ITCM_AREA_CODE static void calculateBiquadCoefficients(IIR_BiquadFilter_TypeDef* bq, FilterType type, float cutoffFreq, float bw, float sample_rate)
 {
     // Normalize the cutoff frequency
     float w0 = 2.0f * M_PI * cutoffFreq / sample_rate;
@@ -103,7 +103,7 @@ float sample = input;
 
 	// Process through each biquad stage
 	for (uint8_t j = 0; j < IIR_NUM_BIQUADS; j++) {
-		BiquadFilter *bq = &iir->biquads[j];
+		IIR_BiquadFilter_TypeDef *bq = &iir->biquads[j];
 
 		// Apply the IIR difference equation:
 		// y[n] = b0 * x[n] + b1 * x[n-1] + b2 * x[n-2] - a1 * y[n-1] - a2 * y[n-2]
@@ -183,7 +183,7 @@ IIR_Effect_TypeDef *iir = (IIR_Effect_TypeDef *)effect_s;
 
 	if (( iir->flags & IIR_UPDATE_PARAMS) == IIR_UPDATE_PARAMS)
 	{
-		memcpy(iir->biquads,iir->new_biquads,sizeof(BiquadFilter));
+		memcpy(iir->biquads,iir->new_biquads,sizeof(IIR_BiquadFilter_TypeDef));
 		iir->flags &= ~IIR_UPDATE_PARAMS;
 	}
 

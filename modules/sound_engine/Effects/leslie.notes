@@ -1,0 +1,16 @@
+Leslie Speaker Effect Concept: 
+
+Rotating Horn (Treble): A high-frequency horn speaker rotates rapidly (typically 350-450 RPM for "Tremolo" speed, 5-10 RPM 
+	for "Chorus" speed).
+Rotating Drum (Bass): A low-frequency woofer inside a rotating drum rotates more slowly (often synchronized or at a 
+	different rate to the horn).
+Acoustic Effects:
+        Doppler Shift: As the speaker moves towards/away from the listener, the pitch slightly shifts up/down.
+        Amplitude Modulation: As the speaker moves side-to-side, the volume appears to vary due to distance changes.
+        Phase Cancellation: The interaction between direct and reflected sound paths in the cabinet creates complex filtering.
+        Comb Filtering: The delay difference between the rotating and stationary positions creates frequency notches that sweep.
+         
+     
+
+A digital simulation typically focuses on amplitude modulation and delay modulation (creating the Doppler effect 
+and comb filtering) using techniques like all-pass filters or delay lines with LFO (Low-Frequency Oscillator) controlled delay times. 

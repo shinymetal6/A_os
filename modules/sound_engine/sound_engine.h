@@ -40,6 +40,7 @@
 /* source_type */
 #define		SOUND_SOURCE_IS_SYNTH		0
 #define		SOUND_SOURCE_IS_I2S_IN		1
+#define		SOUND_SOURCE_IS_DRUM		2
 /* out_device */
 #define		SOURCE_TO_INTERNAL_BUF		0
 #define		SOURCE_TO_DAC_OUT			1
@@ -57,9 +58,9 @@
 extern	float					Sound_Sample_Frequency;
 
 #include	"OutStage/out_stage.h"
-#include	"Generators/synth.h"
-#include	"Generators/i2s_in.h"
+#include	"Generators/generators.h"
 #include	"Effects/effects.h"
+#include	"SFX/sfx.h"
 
 
 extern	AUDIO_Source_TypeDef	*AudioSourceLeft;

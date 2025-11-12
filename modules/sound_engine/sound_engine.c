@@ -142,8 +142,12 @@ AUDIO_Effect_TypeDef *last_effect;
 			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
 		}
 	}
-	else
+	if ( source->source_type == SOUND_SOURCE_IS_I2S_IN )
 		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
+	if ( source->source_type == SOUND_SOURCE_IS_DRUM )
+	{
+
+	}
 }
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)

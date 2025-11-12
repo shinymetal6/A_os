@@ -38,7 +38,7 @@ typedef struct {
     float a1, a2;     // Feedback coefficients
     float x1, x2;     // Past input values
     float y1, y2;     // Past output values
-} BiquadFilter;
+} IIR_BiquadFilter_TypeDef;
 
 typedef struct {
 	/* effect header */
@@ -61,8 +61,8 @@ typedef struct {
     /* Internals */
 	float 				f_cutoffFrequency;// = 1000.0f : cutoff frequency @1 kHz , center frequency for bw filters
 	float 				f_bandwidth;// = 500.0f;        // Bandwidth for band-pass and notch filters
-    BiquadFilter 		biquads[IIR_NUM_BIQUADS];
-    BiquadFilter 		new_biquads[IIR_NUM_BIQUADS];
+	IIR_BiquadFilter_TypeDef 		biquads[IIR_NUM_BIQUADS];
+	IIR_BiquadFilter_TypeDef 		new_biquads[IIR_NUM_BIQUADS];
 } IIR_Effect_TypeDef;
 #define IIR_UPDATE_PARAMS 	0x01           		// Number of cascaded biquad stages (order = 2 * NUM_BIQUADS)
 

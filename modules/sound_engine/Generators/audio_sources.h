@@ -68,12 +68,12 @@ typedef struct
 	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;
-	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES]; // Polyphonic voices
-    uint32_t 			wavetable_size;    //Wavetable size
+	Synth_Voice_TypeDef voices[SYNTH_MAX_VOICES];	// Polyphonic voices
+    uint32_t 			wavetable_size;    			// Wavetable size
+    uint32_t			*ptr_gen_struct;
 } AUDIO_Source_TypeDef;
 /* status */
 #define		SOURCE_ENABLED		0x01
 #define		SOURCE_DISABLED		0x00
-
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_ */

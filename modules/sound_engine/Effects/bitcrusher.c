@@ -27,7 +27,6 @@
 
 #include "../sound_engine.h"
 #include "bitcrusher.h"
-#include "bitcrusher.h"
 
 #include <stdint.h>
 #include <math.h> // For pow() if needed

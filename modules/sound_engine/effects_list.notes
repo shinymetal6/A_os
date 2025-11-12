@@ -6,6 +6,7 @@ filter_lattice.c
 filter_moog.c
 filter_wah.c
 flanger.c
+leslie.c
 mixer.c
 overdrive.c
 phaser.c
