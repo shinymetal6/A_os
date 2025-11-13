@@ -146,7 +146,9 @@ AUDIO_Effect_TypeDef *last_effect;
 		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
 	if ( source->source_type == SOUND_SOURCE_IS_DRUM )
 	{
-
+		q15_t *drum_buffer = Drum_Machine_audio();
+		if ( drum_buffer != NULL )
+			dest->OutFunc(dest->out_buf,drum_buffer,start_sample,source->block_size,source->channel_out);
 	}
 }
 
@@ -169,7 +171,7 @@ AUDIO_Dest_TypeDef *dest;
 	while(source != NULL )
 	{
 		if ( (source->flags == SOURCE_ENABLED ) )
-			audio_gen(source,dest,start_sample,SOUND_SOURCE_IS_SYNTH);
+			audio_gen(source,dest,start_sample,source->source_type);
 		source = (AUDIO_Source_TypeDef *)source->next_source;
 	}
 	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);

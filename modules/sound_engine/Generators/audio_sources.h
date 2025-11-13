@@ -76,4 +76,6 @@ typedef struct
 #define		SOURCE_ENABLED		0x01
 #define		SOURCE_DISABLED		0x00
 
+#include "DrumSamples/drums.h"
+
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_AUDIO_SOURCES_H_ */

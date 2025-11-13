@@ -14,22 +14,17 @@
  * Project : A_os
 */
 /*
- * sample_process_1_audio_I2S_oscillator.c
+ * sample_process_1_audio_I2S_drum.c
  *
- *  Created on: Oct 22, 2025
+ *  Created on: Nov 13, 2025
  *      Author: fil
  */
-/*
-Description:
-I2S Example with direct connection of ad channel to volume ( see .amplitude = &adc1_buf[2] in VCA0_Left struct init )
-The note generated is 440Hz.
-  */
 
 #include "main.h"
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_AUDIO_I2S_OSCILLATOR
+#ifdef SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 
 extern	TIM_HandleTypeDef htim6;
 extern	I2C_HandleTypeDef hi2c1;
@@ -89,36 +84,43 @@ I2S_DriverStruct_t I2S_Driver =
 	.i2s = &hi2s2,
 };
 
-AUDIO_FAST_RAM q15_t	Audio_Synth0_buf_left[I2S_EFFECT_SIZE];
-__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth0_left =
+DrumVoice_TypeDef drum_voices[] =
 {
-	.block_size = I2S_EFFECT_SIZE,
-	.out_buf = (q15_t *)Audio_Synth0_buf_left,
-	.channel = 0,
-	.flags = SOURCE_ENABLED,
-	.sample_rate = SAMPLE_FREQUENCY,
+    { TR_808_boom_kick,   	TR_808_boom_kick_length,0, 1.0f, 0 }, // Boom Kick
+    { TR_808_snare,  		TR_808_snare_length,  	0, 0.9f, 0 }, // Snare
+    { TR_808_hh,     		TR_808_hh_length,     	0, 0.7f, 0 }, // Hi-hat
+    { TR_808_clap,   		TR_808_clap_length,   	0, 0.8f, 0 },  // Clap
+};
+// Simple 16-step pattern (1 = trigger)
+uint8_t drum_pattern[NUM_VOICES][PATTERN_STEPS] = {
+    {1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0}, // Kick: every beat
+    {0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0}, // Snare: backbeat
+    {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}, // Hi-hat: 16ths
+    {0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0},  // Clap: off-beat
 };
 
-AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
-uint16_t			vca0_ampl_left = 1000;
-uint16_t			vca0_offset = 0;
-VCA_Effect_TypeDef	VCA0_Left =
+DrumMachine_TypeDef	DrumMachine =
 {
-	.effect = Effect_VCA,
-	.effect_init = Effect_VCA_Init,
-	.out_buf = vca0_buf_left,
-#ifdef SWEEP_VCA
-	.amplitude = &vca0_ampl_left,
-#else
-	.amplitude = &adc1_buf[2],
-#endif
-	.offset = &vca0_offset,
-	.flags = SOUND_EFFECT_ENABLED,
+	.model = TR_808,
+	.pattern = (uint8_t *)&drum_pattern,
+	.pattern_size = sizeof(drum_pattern),
+	.pattern_steps = 4,
+	.step_interval = 100,
+};
+
+AUDIO_FAST_RAM q15_t	Drum_buf_left[I2S_EFFECT_SIZE];
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Drum_left =
+{
+	.block_size = I2S_EFFECT_SIZE,
+	.out_buf = (q15_t *)Drum_buf_left,
+	.flags = SOURCE_ENABLED,
+	.sample_rate = SAMPLE_FREQUENCY,
+	.ptr_gen_struct = (uint32_t *)&DrumMachine,
 };
 
 AUDIO_Dest_TypeDef Out_Port =
 {
-	.in_buf = (int16_t *)vca0_buf_left,
+	.in_buf = (int16_t *)Drum_buf_left,
 	.out_buf = (int16_t *)i2s_tx_buffer,
 	.out_device = SOURCE_TO_I2S_OUT,
 	.flags = SOUND_EFFECT_ENABLED,
@@ -130,29 +132,20 @@ void sample_process_1_init(uint32_t process_id)
 	nau88c22_init(&Nau88C22_Drv);
 
 	i2s_driver_register(&I2S_Driver);
-
-	Synth_Register(LEFT_CHANNEL ,&Audio_Synth0_left);
 	OutStage_Register(&Out_Port);
+	Drum_Machine_Register(&Audio_Drum_left);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
 }
 
-uint8_t		up = 0;
-
-#define STEP	200
-#define HLIMIT	(65500 - STEP)
-#define LLIMIT	(STEP * 2)
-
-void sample_process_1_audio_I2S_oscillator(uint32_t process_id)
+void sample_process_1_audio_I2S_drum(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
-	Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA0_Left);
 
-	NoteOn(0,69,127);
 	while(1)
 	{
 		wait_event(EVENT_TIMER);
@@ -165,24 +158,12 @@ uint8_t		cntr = 0;
 				cntr = 0;
 				process_led();
 			}
-#ifdef SWEEP_VCA
-			if ( up )
-			{
-				vca0_ampl_left += STEP;
-				if ( vca0_ampl_left > HLIMIT )
-					up = 0;
-			}
-			else
-			{
-				vca0_ampl_left -= STEP;
-				if ( vca0_ampl_left < LLIMIT )
-					up = 1;
-			}
-#endif // #ifdef SWEEP_VCA
+			Drum_Machine_Update_sequencer();
 		}
 	}
 }
-#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_OSCILLATOR
+#endif // #ifdef SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
+
 
 

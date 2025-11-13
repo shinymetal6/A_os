@@ -136,6 +136,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_audio_dac_oscillator(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
+#ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
+extern	void sample_process_1_audio_I2S_drum(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -265,6 +269,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_audio_dac_oscillator,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
+#ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
+				.user_process = sample_process_1_audio_I2S_drum,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 				.stack_size = 1024,
 		},
 		{

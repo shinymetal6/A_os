@@ -27,7 +27,8 @@
 
 #include "DrumSamples/drums.h"
 
-ITCM_AREA_CODE static void play_drum(uint8_t drum_id)
+
+ITCM_AREA_CODE void Start_Drum_Sequence(uint8_t drum_id)
 {
 AUDIO_Source_TypeDef *drum_machine = AudioSourceLeft;
 
@@ -38,8 +39,8 @@ AUDIO_Source_TypeDef *drum_machine = AudioSourceLeft;
 		if ( drum_machine->source_type == SOUND_SOURCE_IS_DRUM )
 		{
 			DrumMachine_TypeDef *drum_machine_voices = (DrumMachine_TypeDef *)drum_machine->ptr_gen_struct;
-			drum_machine_voices->voices[drum_id].pos = 0;
-			drum_machine_voices->voices[drum_id].playing = 1;
+			drum_machine_voices->drum_voices[drum_id].pos = 0;
+			drum_machine_voices->drum_voices[drum_id].playing = 1;
 			return;
 		}
 		drum_machine = (AUDIO_Source_TypeDef *)drum_machine->next_source;
@@ -62,16 +63,21 @@ AUDIO_Source_TypeDef *drum_machine = AudioSourceLeft;
 		    {
 		    	drum->step_counter = 0;
 		        for (i = 0; i < NUM_VOICES; i++)
-		            if (drum->pattern[i][drum->current_step])
-		                play_drum(i);
+		        {
+		        	if ( drum->drum_voices[i].sample != NULL )
+		        	{
+			            if (drum->drum_pattern[i][drum->current_step])
+			            	Start_Drum_Sequence(i);
+		        	}
+		        }
 		    }
-		    drum->current_step = (drum->current_step + 1) % PATTERN_STEPS;
+		    drum->current_step = (drum->current_step + 1) % drum->pattern_steps;
 		}
 		drum_machine = (AUDIO_Source_TypeDef *)drum_machine->next_source;
 	}
 }
 
-ITCM_AREA_CODE void Drum_Machine_audio(void)
+ITCM_AREA_CODE q15_t *Drum_Machine_audio(void)
 {
 AUDIO_Source_TypeDef *drum_machine = AudioSourceLeft;
 uint32_t i,v;
@@ -88,67 +94,70 @@ uint32_t i,v;
 
 			for (v = 0; v < NUM_VOICES; v++)
 			{
-				if ( !drum->voices[v].playing)
+				if ( !drum->drum_voices[v].playing)
 					continue;
 
-				const int16_t	*sample = drum->voices[v].sample;
+				const int16_t	*sample = drum->drum_voices[v].sample;
 
 				for (uint32_t i = 0; i < drum_machine->block_size; i++)
 				{
-					if (drum->voices[v].pos < drum->voices[v].length)
+					if (drum->drum_voices[v].pos < drum->drum_voices[v].length)
 					{
-						drum_machine->out_buf[i] += __FLOAT_2_Q15(((float )sample[drum->voices[v].pos] * drum->voices[v].volume));
-						drum->voices[v].pos++;
+						drum_machine->out_buf[i] += __FLOAT_2_Q15(((float )sample[drum->drum_voices[v].pos] * drum->drum_voices[v].volume));
+						drum->drum_voices[v].pos++;
 					}
 					else
 					{
-						drum->voices[v].playing = 0; // Done
-						return;
+						drum->drum_voices[v].playing = 0; // Done
+						return drum_machine->out_buf;
 					}
 				}
+				return NULL;
 			}
+			return NULL;
 		}
 		else
 		{
 			drum_machine = (AUDIO_Source_TypeDef *)drum_machine->next_source;
 		}
 	}
+	return NULL;
 }
 
-DrumVoice_TypeDef sample_voices[] =
+ITCM_AREA_CODE static void init_default_drum_voices(DrumMachine_TypeDef *drum)
 {
-    { TR808_kick,   		TR808_kick_length,   	0, 1.0f, 0 }, // Kick
-    { TR808_snare,  		TR808_snare_length,  	0, 0.9f, 0 }, // Snare
-    { TR808_hh,     		TR808_hh_length,     	0, 0.7f, 0 }, // Hi-hat
-    { TR808_clap,   		TR808_clap_length,   	0, 0.8f, 0 },  // Clap
-};
-
-DrumVoice_TypeDef sample_boom_voices[] =
-{
-    { TR808_boom_kick,   	TR808_boom_kick_length,	0, 1.0f, 0 }, // Boom Kick
-    { TR808_snare,  		TR808_snare_length,  	0, 0.9f, 0 }, // Snare
-    { TR808_hh,     		TR808_hh_length,     	0, 0.7f, 0 }, // Hi-hat
-    { TR808_clap,   		TR808_clap_length,   	0, 0.8f, 0 },  // Clap
-};
-// Simple 16-step pattern (1 = trigger)
-uint8_t sample_pattern[NUM_VOICES][PATTERN_STEPS] = {
-    {1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0}, // Kick: every beat
-    {0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0}, // Snare: backbeat
-    {1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}, // Hi-hat: 16ths
-    {0,0,0,0, 0,0,1,0, 0,0,0,0, 0,0,1,0}  // Clap: off-beat
-};
-
-ITCM_AREA_CODE static void init_default_data(DrumMachine_TypeDef *drum)
-{
-	bcopy(drum->pattern , sample_pattern, sizeof(sample_pattern));
-	bcopy(drum->voices , sample_voices, sizeof(sample_voices));
+	bcopy(drum->pattern, drum->drum_pattern, drum->pattern_size);
+	switch(drum->model)
+	{
+	case	TR_606	:
+		bcopy(TR_606_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*TR_606_NUM_VOICES);
+		break;
+	case	TR_707	:
+		bcopy(TR_707_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*TR_707_NUM_VOICES);
+		break;
+	case	TR_808	:
+		bcopy(TR_808_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*TR_808_NUM_VOICES);
+		break;
+	case	TR_909	:
+		bcopy(TR_909_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*TR_909_NUM_VOICES);
+		break;
+	case	HR_16B	:
+		bcopy(HR_16B_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*HR_16B_NUM_VOICES);
+		break;
+	case	LM1	:
+		bcopy(LM1_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*LM1_NUM_VOICES);
+		break;
+	default	:
+		bcopy(TR_808_voices,  drum->drum_voices , sizeof(DrumVoice_TypeDef)*TR_808_NUM_VOICES);
+		break;
+	}
 }
 
 ITCM_AREA_CODE uint8_t Drum_Machine_Register(AUDIO_Source_TypeDef *drum_machine)
 {
 	if ( drum_machine->out_buf == NULL )
 		return 1;
-	if ( drum_machine->ptr_gen_struct == NULL )	// pointer to the user space voices drum machine
+	if ( drum_machine->ptr_gen_struct == NULL )	// pointer to the user space drum_voices drum machine
 		return 1;
 
 	if ( drum_machine->channel_in == AUDIO_SOURCE_LEFT)
@@ -168,16 +177,14 @@ ITCM_AREA_CODE uint8_t Drum_Machine_Register(AUDIO_Source_TypeDef *drum_machine)
 		}
 	}
 	drum_machine->block_size = I2S_EFFECT_SIZE;
-    // Initialize all voices
 	DrumMachine_TypeDef *drum = (DrumMachine_TypeDef *)drum_machine->ptr_gen_struct;
-    for (int i = 0; i < NUM_VOICES; i++)
-    {
-    	drum->voices[i].pos = 0;
-    	drum->voices[i].playing = 0;
-    }
-    drum->step_interval = 10;
+	if ( drum->step_interval == 0 )
+		drum->step_interval = 10;
+	if ( drum->pattern_steps == 0 )
+		drum->pattern_steps = PATTERN_STEPS;
+
     drum->current_step = drum->step_counter = 0;
-    init_default_data(drum);
+    init_default_drum_voices(drum);
 	drum_machine->source_type = SOUND_SOURCE_IS_DRUM;
 	return 0;
 }

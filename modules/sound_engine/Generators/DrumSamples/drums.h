@@ -23,11 +23,14 @@
 #ifndef MODULES_SOUND_ENGINE_GENERATORS_DRUMSAMPLES_DRUMS_H_
 #define MODULES_SOUND_ENGINE_GENERATORS_DRUMSAMPLES_DRUMS_H_
 
+#include "../drum_machine.h"
+
 #include "tr_606_samples.h"
 #include "tr_707_samples.h"
 #include "tr_808_samples.h"
 #include "tr_909_samples.h"
 #include "hr16b_samples.h"
+#include "linndrum_lm1_samples.h"
 
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_DRUMSAMPLES_DRUMS_H_ */

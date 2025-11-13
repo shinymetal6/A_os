@@ -14,19 +14,20 @@
  * Project : A_os
 */
 /*
- * tr_samples.h
+ * tr_808_samples.c
  *
- *  Created on: Nov 12, 2025
+ *  Created on: Nov 13, 2025
  *      Author: fil
  */
-
-#ifndef MODULES_SOUND_ENGINE_GENERATORS_TR_SAMPLES_H_
-#define MODULES_SOUND_ENGINE_GENERATORS_TR_SAMPLES_H_
+#include "main.h"
+#include "../../../../kernel/A.h"
+#include "../../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
 
 // ===========================
-// TR808 STYLE KICK (Sine Sweep + Decay)
+// TR_808 STYLE KICK (Sine Sweep + Decay)
 // ===========================
-const int16_t TR808_kick_sample[] = {
+const int16_t TR_808_kick[] = {
      0,   354,   699,  1026,  1326,  1591,  1814,  1988,
   2109,  2175,  2184,  2136,  2034,  1881,  1683,  1447,
   1182,   896,   598,   297,    -4,   -300,   -586,   -858,
@@ -53,9 +54,8 @@ const int16_t TR808_kick_sample[] = {
     -6,    -3,     0,     2,     3,     4,     4,     3,
      2,     1,     0,     0,     0,     0,     0,     0
 };
-const uint32_t TR808_kick_length = 128;
 
-const int16_t TR808_boom_kick_sample[] = {
+const int16_t TR_808_boom_kick[] = {
      0,   354,   699,  1026,  1326,  1591,  1814,  1988,
   2109,  2175,  2184,  2136,  2034,  1881,  1683,  1447,
   1182,   896,   598,   297,    -4,   -300,   -586,   -858,
@@ -82,14 +82,13 @@ const int16_t TR808_boom_kick_sample[] = {
     -6,    -3,     0,     2,     3,     4,     4,     3,
      2,     1,     0,     0,     0,     0,     0,     0
 };
-const uint32_t TR808_boom_kick_length = 128;
 
 
 // ===========================
-// TR808 STYLE SNARE (White noise burst + tone)
+// TR_808 STYLE SNARE (White noise burst + tone)
 // ===========================
 // We'll simulate noise with pseudo-random pattern
-const int16_t TR808_snare_sample[] = {
+const int16_t TR_808_snare[] = {
    1200, -1500,  2000, -1800,  1000, -800,  500, -1200,
    -300,  1400, -900,   700, -1100,  600, -400,  1300,
     200, -1000,  800,  -600,   900, -700,  500, -1100,
@@ -99,28 +98,32 @@ const int16_t TR808_snare_sample[] = {
    -100,   150, -200,   180, -120,   80,  -60,   40,
    -30,    20,  -10,     5,   -3,    2,   -1,    0
 };
-const uint32_t TR808_snare_length = 64;
 
 // ===========================
 // CLOSED HI-HAT (Short metallic burst)
 // ===========================
-const int16_t TR808_hh_sample[] = {
+const int16_t TR_808_hh[] = {
     800, -600,  700, -500,  400, -300,  250, -200,
     150, -120,  100,  -80,   60,  -50,   40,  -30,
      25,  -20,   15,  -12,   10,   -8,    6,   -5,
       4,   -3,    2,   -2,    1,   -1,    1,    0
 };
-const uint32_t TR808_hh_length = 32;
 
 // ===========================
 // CLAP (Multi-tap noise burst)
 // ===========================
-const int16_t TR808_clap_sample[] = {
+const int16_t TR_808_clap[] = {
     500, -400,  600, -300,  200, -100,  300, -250,
     200, -150,  100,  -80,   60,  -50,   40,  -30,
      20,  -15,   10,   -8,    6,   -5,    4,   -3,
       2,   -1,    1,    0
 };
-const uint32_t TR808_clap_length = 28;
 
-#endif /* MODULES_SOUND_ENGINE_GENERATORS_TR_SAMPLES_H_ */
+DrumVoice_TypeDef TR_808_voices[TR_808_NUM_VOICES] =
+{
+    { TR_808_boom_kick,   	TR_808_boom_kick_length,0, 1.0f, 0 }, // Boom Kick
+    { TR_808_snare,  		TR_808_snare_length,  	0, 0.9f, 0 }, // Snare
+    { TR_808_hh,     		TR_808_hh_length,     	0, 0.7f, 0 }, // Hi-hat
+    { TR_808_clap,   		TR_808_clap_length,   	0, 0.8f, 0 },  // Clap
+};
+#endif // #ifdef SOUND_ENGINE_ENABLED
