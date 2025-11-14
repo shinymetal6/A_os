@@ -14,21 +14,24 @@
  * Project : A_os
 */
 /*
- * sample_A_os_includes.h
+ * i2s_io.h
  *
- *  Created on: Dec 4, 2024
+ *  Created on: Nov 13, 2025
  *      Author: fil
  */
 
-#ifndef SAMPLEPROCESSES_A_OS_INCLUDES_H_
-#define SAMPLEPROCESSES_A_OS_INCLUDES_H_
+#ifndef MODULES_SOUND_ENGINE_GENERATORS_I2S_IO_H_
+#define MODULES_SOUND_ENGINE_GENERATORS_I2S_IO_H_
 
-#include "../kernel/A.h"
-#include "../kernel/A_exported_functions.h"
-#include "../modules/modules.h"
+#ifdef SOUND_ENGINE_I2S_ENABLED
 
-#ifdef SAMPLE_PROCESSES_ENABLED
-	extern void process_led(void);
-#endif
+#include "audio_sources.h"
 
-#endif /* SAMPLEPROCESSES_A_OS_INCLUDES_H_ */
+extern uint8_t I2SIO_Register(AUDIO_Source_TypeDef *i2s_in);
+extern uint8_t I2SIO_Start(AUDIO_Source_TypeDef *i2s_in);
+extern uint8_t I2SIO_Stop(AUDIO_Source_TypeDef *i2s_in);
+
+#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
+
+
+#endif /* MODULES_SOUND_ENGINE_GENERATORS_I2S_IO_H_ */

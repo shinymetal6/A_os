@@ -14,9 +14,9 @@
  * Project : A_os
 */
 /*
- * i2s_in.c
+ * i2s_io.c
  *
- *  Created on: Oct 22, 2025
+ *  Created on: Nov 13, 2025
  *      Author: fil
  */
 
@@ -25,21 +25,21 @@
 #include "../../../kernel/A_exported_functions.h"
 #ifdef SOUND_ENGINE_I2S_ENABLED
 #include "../sound_engine.h"
-#include "i2s_in.h"
+#include "i2s_io.h"
 
-ITCM_AREA_CODE uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in)
+ITCM_AREA_CODE uint8_t I2SIO_Start(AUDIO_Source_TypeDef *i2s_in)
 {
 	i2s_in->status = SOURCE_ENABLED;
     return 0;
 }
 
-ITCM_AREA_CODE uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in)
+ITCM_AREA_CODE uint8_t I2SIO_Stop(AUDIO_Source_TypeDef *i2s_in)
 {
 	i2s_in->status &= ~SOURCE_DISABLED;
     return 0;
 }
 
-ITCM_AREA_CODE uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in)
+ITCM_AREA_CODE uint8_t I2SIO_Register(AUDIO_Source_TypeDef *i2s_in)
 {
 	if ( i2s_in->out_buf == NULL )
 		return 1;
@@ -65,6 +65,7 @@ ITCM_AREA_CODE uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in)
 }
 
 #endif // #ifdef SOUND_ENGINE_I2S_ENABLED
+
 
 
 

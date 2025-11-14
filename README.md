@@ -1,5 +1,5 @@
 # A_os
-v2025.12-rc4<br>
+v2025.12-rc5<br>
 !!! NOTE !!!<br>
 Still this runs with <br>
 STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
@@ -35,6 +35,8 @@ This leaves A_os untouched when switching from Sample Processes to user processe
 Just having a "user_config.h" in the user processes area disables the Sample Processes<br>
 It's still under user responsibility to have a conveniently compiled "user_config.h".<br>
 Please note : the path of the user processes tree MUST be explicitly declared in the "Include File" tab in Compiler Settings
+# Added sd card driver in drivers and fat fs in modules<br>
+Remember to disable the generated FATFS and Middlewares/Third_Party in compilation<br>
 # Added QtConfigurator<br>
 QtConfigurator is a simple tool to generate user_config.h file. Still in wip.<br>
 QtConfigurator is in Qt directory.<br>

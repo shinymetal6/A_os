@@ -24,7 +24,8 @@
 #define MODULES_SOUND_ENGINE_GENERATORS_GENERATORS_H_
 
 #include	"synth.h"
-#include	"i2s_in.h"
+#include	"i2s_io.h"
 #include	"drum_machine.h"
+#include	"sample_player.h"
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_GENERATORS_H_ */

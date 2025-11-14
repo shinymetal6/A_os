@@ -78,7 +78,12 @@
 		#define	SOUND_ENGINE_I2S_ENABLED	1
 		#define	MIDI_ENABLED	1
 	#endif
-	#ifdef SAMPLEPROCESS_1_LCD7735
+	#ifdef SAMPLEPROCESS_1_SDCARD
+		#define	SOUND_ENGINE_ENABLED	1
+		#define	SOUND_ENGINE_I2S_ENABLED	1
+		#define	MIDI_ENABLED	1
+	#endif
+#ifdef SAMPLEPROCESS_1_LCD7735
 		#define	LCD_ENABLED	1
 	#endif
 #endif // #ifdef AU100825

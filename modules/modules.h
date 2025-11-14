@@ -32,6 +32,7 @@ typedef struct
 	uint32_t			*private_data;
 }MODULES_Struct_t;
 
+#include "fat/fat.h"
 #include "serial_transfers/xmodem_rx.h"
 #include "hex_decoders/hex_decoders_common.h"
 #include "hex_decoders/ihex.h"

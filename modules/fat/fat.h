@@ -14,23 +14,24 @@
  * Project : A_os
 */
 /*
- * i2s_in.h
+ * fat.h
  *
- *  Created on: Oct 22, 2025
+ *  Created on: Nov 14, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_
-#define MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_
+#ifndef MODULES_FAT_FAT_H_
+#define MODULES_FAT_FAT_H_
 
-#ifdef SOUND_ENGINE_I2S_ENABLED
+#include "App/fatfs.h"
+#include "Target/bsp_driver_sd.h"
+#include "Target/fatfs_platform.h"
+#include "Target/ffconf.h"
+#include "Target/sd_diskio.h"
+#include "FatFs/diskio.h"
+#include "FatFs/ff_gen_drv.h"
+#include "FatFs/ff.h"
+#include "FatFs/integer.h"
 
-#include "audio_sources.h"
 
-extern uint8_t I2SIn_Register(AUDIO_Source_TypeDef *i2s_in);
-extern uint8_t I2SIn_Start(AUDIO_Source_TypeDef *i2s_in);
-extern uint8_t I2SIn_Stop(AUDIO_Source_TypeDef *i2s_in);
-
-#endif // #ifdef SOUND_ENGINE_I2S_ENABLED
-
-#endif /* MODULES_SOUND_ENGINE_GENERATORS_I2S_IN_H_ */
+#endif /* MODULES_FAT_FAT_H_ */

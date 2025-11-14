@@ -35,7 +35,7 @@ HARMONY_DUAL	+5th + octave	Rich, chorus-like effect
 
 #define BLOCK_SIZE      64
 //#define GRAIN_SIZE      128
-#define MAX_VOICES      3   // Dry + up to two harmony voices
+//#define MAX_VOICES      3   // Dry + up to two harmony voices
 
 extern float32_t audioIn[BLOCK_SIZE];
 extern float32_t audioOut[BLOCK_SIZE];

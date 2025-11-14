@@ -140,7 +140,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_audio_I2S_drum(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
-
+#ifdef	SAMPLEPROCESS_1_SDCARD
+extern	void sample_process_1_sdcard(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_SDCARD
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
 extern	void sample_process_4(uint32_t process_id);	//This is process4 of the application
@@ -271,6 +274,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #endif // #define	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
 #ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 				.user_process = sample_process_1_audio_I2S_drum,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
+#ifdef	SAMPLEPROCESS_1_SDCARD
+				.user_process = sample_process_1_sdcard,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 				.stack_size = 1024,
