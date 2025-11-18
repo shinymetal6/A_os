@@ -14,26 +14,17 @@
  * Project : A_os
 */
 /*
- * fat.h
+ * sd_diskio.h
  *
  *  Created on: Nov 14, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_FAT_FAT_H_
-#define MODULES_FAT_FAT_H_
+#ifndef DRIVERS_SDCARD_SD_DISKIO_H_
+#define DRIVERS_SDCARD_SD_DISKIO_H_
 
-/*
-#include "App/fatfs.h"
-#include "Target/bsp_driver_sd.h"
-#include "Target/fatfs_platform.h"
-#include "Target/ffconf.h"
-#include "Target/sd_diskio.h"
-*/
-#include "FatFs/diskio.h"
-#include "FatFs/ff_gen_drv.h"
-#include "FatFs/ff.h"
-#include "FatFs/integer.h"
+extern	void AOS_SD_ReadCpltCallback(void);
+extern	void AOS_SD_WriteCpltCallback(void);
 
 
-#endif /* MODULES_FAT_FAT_H_ */
+#endif /* DRIVERS_SDCARD_SD_DISKIO_H_ */

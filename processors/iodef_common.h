@@ -59,7 +59,11 @@
 	#ifdef STM32H7xx_HAL_SPI_H
 		#define A_OS_SPI_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_SD_H
+		#define A_OS_SDCARD_ENABLED	1
+	#endif
 #endif
+
 
 #ifdef	STM32H753xx
 	#define A_OS_STM32H753_PROCESSOR	1

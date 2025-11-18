@@ -48,6 +48,7 @@ extern	void sample_process_1_dccpwm(uint32_t process_id);	//This is process1
 extern	void sample_process_1_Dhtxx_am230x(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_DHTxx
 #ifdef	SAMPLEPROCESS_1_QSPI
+extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_qspi(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_QSPI
 #ifdef	SAMPLEPROCESS_1_SERVO
@@ -144,6 +145,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_sdcard(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_SDCARD
+#ifdef	SAMPLEPROCESS_1_USBAUDIO
+extern	void sample_process_1_usbaudio(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_USBAUDIO
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
 extern	void sample_process_4(uint32_t process_id);	//This is process4 of the application
@@ -190,6 +195,7 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #endif // #define	SAMPLEPROCESS_1_DHTxx
 #ifdef	SAMPLEPROCESS_1_QSPI
 				.user_process = sample_process_1_qspi,
+				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_QSPI
 #ifdef	SAMPLEPROCESS_1_SERVO
 				.user_process = sample_process_1_servo,
@@ -271,7 +277,7 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
 				.user_process = sample_process_1_audio_dac_oscillator,
 				.user_init = sample_process_1_init,
-#endif // #define	SAMPLEPROCESS_1_AUDIO_OSCILLATOR
+#endif // #define	SAMPLEPROCESS_1_AUDIO_DAC_OSCILLATOR
 #ifdef	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
 				.user_process = sample_process_1_audio_I2S_drum,
 				.user_init = sample_process_1_init,
@@ -279,7 +285,11 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_SDCARD
 				.user_process = sample_process_1_sdcard,
 				.user_init = sample_process_1_init,
-#endif // #define	SAMPLEPROCESS_1_AUDIO_I2S_DRUM
+#endif // #define	SAMPLEPROCESS_1_SDCARD
+#ifdef	SAMPLEPROCESS_1_USBAUDIO
+				.user_process = sample_process_1_usbaudio,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_USBAUDIO
 				.stack_size = 1024,
 		},
 		{

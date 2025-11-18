@@ -23,8 +23,7 @@
 / Additional user header to be used
 /-----------------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32h7xx_hal.h"
-#include "bsp_driver_sd.h"
+//#include "bsp_driver_sd.h"
 
 /*-----------------------------------------------------------------------------/
 / Function Configurations

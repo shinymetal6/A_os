@@ -14,26 +14,35 @@
  * Project : A_os
 */
 /*
- * fat.h
+ * usbd_audio_if.h
  *
  *  Created on: Nov 14, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_FAT_FAT_H_
-#define MODULES_FAT_FAT_H_
+#ifndef DRIVERS_USB_DEVICE_STM32H743_APP_USBD_AUDIO_IF_H_
+#define DRIVERS_USB_DEVICE_STM32H743_APP_USBD_AUDIO_IF_H_
 
-/*
-#include "App/fatfs.h"
-#include "Target/bsp_driver_sd.h"
-#include "Target/fatfs_platform.h"
-#include "Target/ffconf.h"
-#include "Target/sd_diskio.h"
-*/
-#include "FatFs/diskio.h"
-#include "FatFs/ff_gen_drv.h"
-#include "FatFs/ff.h"
-#include "FatFs/integer.h"
+#ifdef	STM32H743xx
+#ifdef	USB_DEVICE_ENABLED
+#ifdef __cplusplus
+ extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#include "../Class/AUDIO/usbd_audio.h"
+
+extern USBD_AUDIO_ItfTypeDef USBD_AUDIO_fops_FS;
+
+void TransferComplete_CallBack_FS(void);
+
+void HalfTransfer_CallBack_FS(void);
+
+#ifdef __cplusplus
+}
+#endif
+#endif // #ifdef	USB_DEVICE_ENABLED
+#endif // #ifdef	STM32H743xx
 
 
-#endif /* MODULES_FAT_FAT_H_ */
+#endif /* DRIVERS_USB_DEVICE_STM32H743_APP_USBD_AUDIO_IF_H_ */

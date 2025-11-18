@@ -78,12 +78,18 @@ void card_test(void)
 	else
 		file_found = 1;
 }
+
+SDCARD_DriverStruct_t	SDCARD_Driver_t =
+{
+	.sd_detect_bit = SD_DETECT_Pin,
+	.sd_detect_port = SD_DETECT_GPIO_Port,
+};
 void sample_process_1_init(uint32_t process_id)
 {
-	BSP_SD_Init();
+	AOS_SD_Register(&SDCARD_Driver_t);
 	HAL_SD_GetCardCID(&hsd1, &pCID);
 	HAL_SD_GetCardCSD(&hsd1, &pCSD);
-	BSP_SD_GetCardInfo(&CardInfo);
+	AOS_SD_GetCardInfo(&CardInfo);
 
 	card_test();
 }

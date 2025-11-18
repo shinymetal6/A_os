@@ -96,12 +96,11 @@ uint32_t	i;
 
 ITCM_AREA_CODE void update_global_tick_count(void)
 {
-	__disable_irq();
+	//__disable_irq();
 	Asys.g_tick_count++;
 	// update the HAL timer, if someone need it
 	uwTick++;
-
-	__enable_irq();
+	//__enable_irq();
 }
 
 ITCM_AREA_CODE int32_t A_GetTick(void)
@@ -111,12 +110,15 @@ ITCM_AREA_CODE int32_t A_GetTick(void)
 
 ITCM_AREA_CODE uint32_t HAL_GetTick(void)
 {
+	/*
 uint32_t	ret_val;
 	if (( Asys.system_flags & SYS_FLAGS_OS_STARTED) == SYS_FLAGS_OS_STARTED )
 		ret_val =  Asys.g_tick_count;
 	else
 		ret_val =  uwTick;
 	return ret_val;
+	*/
+	return uwTick;
 }
 
 uint32_t	imem;
