@@ -29,7 +29,6 @@
 #include "qspi_w25q128.h"
 #include "string.h"
 
-//extern	QSPI_HandleTypeDef hqspi;
 uint32_t W25Q128JV_ReadID(uint32_t *qspi_Drv_in)
 {
     uint8_t buffer[3];

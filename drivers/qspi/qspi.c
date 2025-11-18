@@ -120,7 +120,6 @@ QSPI_DriverStruct_t *eptr, *pre_eptr;
 	return 0;
 }
 
-//void HAL_QSPI_TxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
 void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi)
 {
 QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
@@ -129,13 +128,12 @@ QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
 		activate_process(w25qxx_Drv->process,EVENT_QSPI_IRQ,HW_QSPI);
 }
 
-
-//void HAL_QSPI_RxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
 void HAL_QSPI_RxCpltCallback(QSPI_HandleTypeDef *hqspi)
 {
 QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
 	w25qxx_Drv->status |= QSPI_DMA_READ_COMPLETE;
 }
+
 void HAL_QSPI_ErrorCallback(QSPI_HandleTypeDef *hqspi)
 {
 QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
