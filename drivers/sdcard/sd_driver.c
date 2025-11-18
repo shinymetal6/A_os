@@ -26,6 +26,7 @@
 #ifdef A_OS_SDCARD_ENABLED
 
 #include "sd_driver.h"
+#include "sd_diskio.h"
 
 /* Extern variables ---------------------------------------------------------*/
 

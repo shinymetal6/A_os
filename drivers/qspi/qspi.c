@@ -55,12 +55,27 @@ ITCM_AREA_CODE uint32_t	qspi_get_id(QSPI_DriverStruct_t *qspi_Drv)
 	return 1;
 }
 
+ITCM_AREA_CODE uint32_t	qspi_chip_erase(QSPI_DriverStruct_t *qspi_Drv)
+{
+	if ( qspi_Drv->chip_erase != NULL)
+		return qspi_Drv->chip_erase((uint32_t *)qspi_Drv);
+	return 1;
+}
+
 ITCM_AREA_CODE uint32_t	qspi_memory_map(QSPI_DriverStruct_t *qspi_Drv)
 {
 	if ( qspi_Drv->memory_map != NULL)
 		return qspi_Drv->memory_map((uint32_t *)qspi_Drv);
 	return 1;
 }
+
+ITCM_AREA_CODE uint32_t	qspi_reset_chip(QSPI_DriverStruct_t *qspi_Drv)
+{
+	if ( qspi_Drv->chip_reset != NULL)
+		return qspi_Drv->chip_reset((uint32_t *)qspi_Drv);
+	return 1;
+}
+
 
 ITCM_AREA_CODE uint32_t	qspi_register(QSPI_DriverStruct_t *qspi_Drv)
 {
@@ -97,21 +112,25 @@ QSPI_DriverStruct_t *eptr, *pre_eptr;
 		qspi_Drv->erase_sector = W25Q128JV_EraseSector;
 		qspi_Drv->get_id = W25Q128JV_ReadID;
 		qspi_Drv->memory_map = W25Q128JV_EnableMemoryMappedMode;
+		qspi_Drv->chip_erase = W25Q128JV_ChipErase;
+		qspi_Drv->chip_reset = W25Q128JV_ResetChip;
 	}
     bzero((uint8_t *)&qspi_Drv->cmd,sizeof(QSPI_CommandTypeDef));
 
 	return 0;
 }
 
-void HAL_QSPI_TxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
+//void HAL_QSPI_TxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
 void HAL_QSPI_TxCpltCallback(QSPI_HandleTypeDef *hqspi)
 {
 QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
 	w25qxx_Drv->status |= QSPI_DMA_WRITE_COMPLETE;
+	if ( w25qxx_Drv->flags & QSPI_FLAGS_WAKEUP)
+		activate_process(w25qxx_Drv->process,EVENT_QSPI_IRQ,HW_QSPI);
 }
 
 
-void HAL_QSPI_RxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
+//void HAL_QSPI_RxHalfCpltCallback(QSPI_HandleTypeDef *hqspi) {}
 void HAL_QSPI_RxCpltCallback(QSPI_HandleTypeDef *hqspi)
 {
 QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;

@@ -49,10 +49,11 @@ QSPI_DriverStruct_t W25Qxx_Drv =
 __attribute__ ((aligned (32)))	uint8_t		w25_bufw[DATALEN*4] = "FIL & read DMA & write DMA on Aos : Hello from STM32H7 QSPI! This is a test write on 256 bytes!!!!";
 __attribute__ ((aligned (32)))	uint8_t		w25_bufr[DATALEN*4];
 
-uint8_t qspi_state = 0,qspi_irqs=0 , qspi_errs = 0;
+uint8_t qspi_state = 0,qspi_irqs=0 , qspi_errs = 0 , ret_ce_val;
 void sample_process_1_init(uint32_t process_id)
 {
 	qspi_register(&W25Qxx_Drv);
+	qspi_reset_chip(&W25Qxx_Drv);
 }
 
 void sample_process_1_qspi(uint32_t process_id)
@@ -75,21 +76,24 @@ uint32_t	wakeup,flags;
 				qspi_state++;
 				break;
 			case 1:
+				//ret_ce_val = qspi_chip_erase(&W25Qxx_Drv);
+				qspi_state++;
+			case 2:
 				qspi_erase_sectors(&W25Qxx_Drv,flash_address);
 				qspi_state++;
-			case 2 :
+			case 3 :
 				qspi_read(&W25Qxx_Drv,flash_address, rx_data, W25Q128JV_PAGE_SIZE*4);
-				qspi_state++;
-				break;
-			case 3:
-				qspi_write(&W25Qxx_Drv,flash_address, tx_data, W25Q128JV_PAGE_SIZE*4);
 				qspi_state++;
 				break;
 			case 4:
-				qspi_read(&W25Qxx_Drv,flash_address, rx_data, W25Q128JV_PAGE_SIZE*4);
+				qspi_write(&W25Qxx_Drv,flash_address, tx_data, W25Q128JV_PAGE_SIZE*4);
 				qspi_state++;
 				break;
 			case 5:
+				qspi_read(&W25Qxx_Drv,flash_address, rx_data, W25Q128JV_PAGE_SIZE*4);
+				qspi_state++;
+				break;
+			case 6:
 				qspi_memory_map(&W25Qxx_Drv);
 				qspi_state++;
 				break;

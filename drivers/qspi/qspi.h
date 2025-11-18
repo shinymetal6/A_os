@@ -43,12 +43,17 @@ typedef struct
 	uint32_t			(*erase_sector) ( uint32_t *qspi_Drv,uint32_t sector_addr);
 	uint32_t			(*get_id) (uint32_t *qspi_Drv);
 	uint32_t			(*memory_map) (uint32_t *qspi_Drv);
+	uint32_t			(*chip_erase) (uint32_t *qspi_Drv);
+	uint32_t			(*chip_reset) (uint32_t *qspi_Drv);
 	uint8_t				wait_dma_timeout;
 } QSPI_DriverStruct_t;
 /* status */
 #define	QSPI_DMA_ERROR			0x02
 #define	QSPI_DMA_READ_COMPLETE	0x04
 #define	QSPI_DMA_WRITE_COMPLETE	0x08
+/* flags */
+#define	QSPI_FLAGS_WAKEUP		0x80
+
 
 #define	QSPI_25XX	0x01
 
@@ -56,7 +61,9 @@ extern uint32_t	qspi_register(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_read (QSPI_DriverStruct_t *qspi_Drv, uint32_t address,uint8_t *data,uint32_t data_len);
 extern uint32_t	qspi_write(QSPI_DriverStruct_t *qspi_Drv, uint32_t address,uint8_t *data,uint32_t data_len);
 extern uint32_t	qspi_erase_sectors(QSPI_DriverStruct_t *qspi_Drv,uint32_t sector_addr);
+extern uint32_t	qspi_chip_erase(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_get_id(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_memory_map(QSPI_DriverStruct_t *qspi_Drv);
+extern uint32_t	qspi_reset_chip(QSPI_DriverStruct_t *qspi_Drv);
 
 #endif /* DRIVERS_QSPI_QSPI_H_ */

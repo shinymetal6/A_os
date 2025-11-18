@@ -31,6 +31,8 @@
 #define W25Q128JV_CMD_SECTOR_ERASE     0x20
 #define W25Q128JV_CMD_BLOCK_ERASE_64K  0xD8
 #define W25Q128JV_CMD_CHIP_ERASE       0xC7
+#define W25Q128JV_CMD_ENABLE_RESET     0x66
+#define W25Q128JV_CMD_RESET_DEVICE     0x99
 #define W25Q128JV_CMD_FAST_READ_QUAD   0xEB
 #define W25Q128JV_CMD_ENTER_QPI        0x38
 
@@ -43,23 +45,26 @@
 #define W25Q128JV_BUSY_MASK      0x01
 #define W25Q128JV_WEL_MASK       0x02
 
-#define W25Q128JV_TICK_TIMEOUT      100
+#define W25Q128JV_TICK_TIMEOUT      	100
+#define W25Q128JV_CHIPERASE_TIMEOUT     60000
 
 #define	W25Q_DUMMY_0						0
 #define	W25Q_DUMMY_6						6
 
-// QSPI Handle extern
-extern QSPI_HandleTypeDef hqspi;
-
 // Functions
-uint32_t W25Q128JV_ReadID(uint32_t *qspi_Drv_in);
+extern uint32_t W25Q128JV_ReadID(uint32_t *qspi_Drv_in);
 // Erase
-uint32_t W25Q128JV_EraseSector(uint32_t *qspi_Drv_in,uint32_t sector_addr);
+extern uint32_t W25Q128JV_EraseSector(uint32_t *qspi_Drv_in,uint32_t sector_addr);
+extern uint32_t W25Q128JV_ChipErase(uint32_t *qspi_Drv_in);
+
 // Program & Read
-uint32_t W25Q128JV_PagesProgram(uint32_t *qspi_Drv_in,uint32_t address, uint8_t* data, uint32_t len);
-uint32_t W25Q128JV_FastReadQuad(uint32_t *qspi_Drv_in,uint32_t address, uint8_t* data, uint32_t len);
+extern uint32_t W25Q128JV_PagesProgram(uint32_t *qspi_Drv_in,uint32_t address, uint8_t* data, uint32_t len);
+extern uint32_t W25Q128JV_FastReadQuad(uint32_t *qspi_Drv_in,uint32_t address, uint8_t* data, uint32_t len);
 // Memory-mapped mode
-uint32_t W25Q128JV_EnableMemoryMappedMode(uint32_t *qspi_Drv_in);
+extern uint32_t W25Q128JV_EnableMemoryMappedMode(uint32_t *qspi_Drv_in);
+
+extern uint32_t W25Q128JV_ResetChip(uint32_t *qspi_Drv_in);
+
 
 
 #endif /* DRIVERS_QSPI_QSPI_W25Q128_H_ */

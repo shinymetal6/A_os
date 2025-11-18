@@ -29,7 +29,7 @@
 #include "qspi_w25q128.h"
 #include "string.h"
 
-extern	QSPI_HandleTypeDef hqspi;
+//extern	QSPI_HandleTypeDef hqspi;
 uint32_t W25Q128JV_ReadID(uint32_t *qspi_Drv_in)
 {
     uint8_t buffer[3];
@@ -48,13 +48,10 @@ uint32_t W25Q128JV_ReadID(uint32_t *qspi_Drv_in)
     qspi_Drv->cmd.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
     if (HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
-    {
         return 1;
-    }
 
-    if (HAL_QSPI_Receive(&hqspi, buffer, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK) {
+    if (HAL_QSPI_Receive(qspi_Drv->qspi, buffer, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != 0)
         return 1;
-    }
 
     qspi_Drv->man_id = buffer[0];
     qspi_Drv->dev_id = buffer[1];
@@ -100,6 +97,7 @@ static uint32_t W25Q128JV_WriteEnable(QSPI_DriverStruct_t *qspi_Drv)
     qspi_Drv->cmd.SIOOMode        = QSPI_SIOO_INST_EVERY_CMD;
 
     return HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+
 }
 
 static uint32_t W25Q128JV_WaitForReady(QSPI_DriverStruct_t *qspi_Drv,uint32_t timeout)
@@ -139,8 +137,41 @@ uint32_t W25Q128JV_EraseSector(uint32_t *qspi_Drv_in,uint32_t sector_addr)
     qspi_Drv->cmd.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
     qspi_Drv->cmd.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-    HAL_StatusTypeDef status = HAL_QSPI_Command(&hqspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+    HAL_StatusTypeDef status = HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
     return status == HAL_OK ? W25Q128JV_WaitForReady(qspi_Drv,5000) : status;
+}
+
+uint32_t W25Q128JV_ChipErase(uint32_t *qspi_Drv_in)
+{
+QSPI_DriverStruct_t *qspi_Drv = (QSPI_DriverStruct_t *)qspi_Drv_in;
+
+    if (W25Q128JV_WaitForReady(qspi_Drv,5000) != 0)
+    	return 1;
+    if (W25Q128JV_WriteEnable(qspi_Drv) != 0)
+    	return 1;
+
+    qspi_Drv->cmd.Instruction = W25Q128JV_CMD_CHIP_ERASE; // Chip Erase command
+    HAL_StatusTypeDef status = HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+    return status == HAL_OK ? W25Q128JV_WaitForReady(qspi_Drv,W25Q128JV_CHIPERASE_TIMEOUT) : status;
+}
+
+uint32_t W25Q128JV_ResetChip(uint32_t *qspi_Drv_in)
+{
+QSPI_DriverStruct_t *qspi_Drv = (QSPI_DriverStruct_t *)qspi_Drv_in;
+HAL_StatusTypeDef status;
+    if (W25Q128JV_WaitForReady(qspi_Drv,5000) != 0)
+    	return 1;
+    if (W25Q128JV_WriteEnable(qspi_Drv) != 0)
+    	return 1;
+
+    qspi_Drv->cmd.Instruction = W25Q128JV_CMD_ENABLE_RESET;
+    if ( HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) == HAL_OK)
+    {
+		qspi_Drv->cmd.Instruction = W25Q128JV_CMD_RESET_DEVICE; // Chip Erase command
+		status = HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+	    return status == HAL_OK ? W25Q128JV_WaitForReady(qspi_Drv,W25Q128JV_CHIPERASE_TIMEOUT) : status;
+    }
+    return 1;
 }
 
 uint32_t W25Q128JV_PagesProgram(uint32_t *qspi_Drv_in,uint32_t address, uint8_t* data, uint32_t len)
@@ -178,11 +209,11 @@ uint8_t *i_data = data;
         qspi_Drv->cmd.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
         qspi_Drv->cmd.DummyCycles 	  = W25Q_DUMMY_0;
 
-        if( HAL_QSPI_Command(&hqspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
+        if( HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
         	return 1;
         qspi_Drv->status &= ~QSPI_DMA_WRITE_COMPLETE;
         qspi_Drv->wait_dma_timeout = 100;
-        if( HAL_QSPI_Transmit_DMA(&hqspi, i_data) != HAL_OK)
+        if( HAL_QSPI_Transmit_DMA(qspi_Drv->qspi, i_data) != HAL_OK)
         	return 1;
         while((qspi_Drv->status & QSPI_DMA_WRITE_COMPLETE) == 0)
         {
@@ -221,14 +252,14 @@ uint32_t W25Q128JV_FastReadQuad(uint32_t *qspi_Drv_in,uint32_t address, uint8_t*
     qspi_Drv->cmd.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
     qspi_Drv->cmd.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-    HAL_StatusTypeDef status = HAL_QSPI_Command(&hqspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
+    HAL_StatusTypeDef status = HAL_QSPI_Command(qspi_Drv->qspi, &qspi_Drv->cmd, HAL_QPSI_TIMEOUT_DEFAULT_VALUE);
     if (status != 0)
     	return status;
 
     qspi_Drv->status &= ~QSPI_DMA_READ_COMPLETE;
     qspi_Drv->wait_dma_timeout = 100;
 
-    if ( HAL_QSPI_Receive_DMA(&hqspi, data) )
+    if ( HAL_QSPI_Receive_DMA(qspi_Drv->qspi, data) )
     	return 1;
     while((qspi_Drv->status & QSPI_DMA_READ_COMPLETE) == 0)
     {
@@ -263,7 +294,7 @@ uint32_t W25Q128JV_EnableMemoryMappedMode(uint32_t *qspi_Drv_in)
     qspi_Drv->mem_mapped_cfg.TimeOutActivation = QSPI_TIMEOUT_COUNTER_DISABLE;
     qspi_Drv->mem_mapped_cfg.TimeOutPeriod     = 0;
 
-    return HAL_QSPI_MemoryMapped(&hqspi, &qspi_Drv->cmd, &qspi_Drv->mem_mapped_cfg);
+    return HAL_QSPI_MemoryMapped(qspi_Drv->qspi, &qspi_Drv->cmd, &qspi_Drv->mem_mapped_cfg);
 }
 
 #endif // #ifdef STM32H7xx_HAL_QSPI_H
