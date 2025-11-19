@@ -24,7 +24,7 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 
-#ifdef A_OS_SPI_ENABLED
+#ifdef A_OS_QSPI_ENABLED
 
 #include "qspi_w25q128.h"
 #include "string.h"
@@ -296,4 +296,4 @@ uint32_t W25Q128JV_EnableMemoryMappedMode(uint32_t *qspi_Drv_in)
     return HAL_QSPI_MemoryMapped(qspi_Drv->qspi, &qspi_Drv->cmd, &qspi_Drv->mem_mapped_cfg);
 }
 
-#endif // #ifdef A_OS_SPI_ENABLED
+#endif // #ifdef A_OS_QSPI_ENABLED

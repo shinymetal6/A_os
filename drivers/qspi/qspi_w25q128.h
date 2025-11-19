@@ -23,7 +23,7 @@
 #ifndef DRIVERS_QSPI_QSPI_W25Q128_H_
 #define DRIVERS_QSPI_QSPI_W25Q128_H_
 
-#ifdef A_OS_SPI_ENABLED
+#ifdef A_OS_QSPI_ENABLED
 
 // W25Q128JV Commands
 #define W25Q128JV_CMD_READ_ID          0x9F
@@ -68,6 +68,6 @@ extern uint32_t W25Q128JV_EnableMemoryMappedMode(uint32_t *qspi_Drv_in);
 extern uint32_t W25Q128JV_ResetChip(uint32_t *qspi_Drv_in);
 
 
-#endif // #ifdef A_OS_SPI_ENABLED
+#endif // #ifdef A_OS_QSPI_ENABLED
 
 #endif /* DRIVERS_QSPI_QSPI_W25Q128_H_ */

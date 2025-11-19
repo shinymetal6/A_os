@@ -115,12 +115,14 @@ void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
 
 void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
 {
-	WriteStatus = 1;
+	if ( sdcard_drv_ptr->hsd == hsd )
+		WriteStatus = 1;
 }
 
 void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
 {
-	ReadStatus = 1;
+	if ( sdcard_drv_ptr->hsd == hsd )
+		ReadStatus = 1;
 }
 
 uint8_t SD_IsDetected(void)

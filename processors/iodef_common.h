@@ -62,6 +62,10 @@
 	#ifdef STM32H7xx_HAL_SD_H
 		#define A_OS_SDCARD_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_QSPI_H
+		#define A_OS_QSPI_ENABLED	1
+	#endif
+
 #endif
 
 

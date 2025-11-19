@@ -1,27 +1,27 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file   fatfs.h
-  * @brief  Header for fatfs applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-/* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __fatfs_H
-#define __fatfs_H
-#ifdef __cplusplus
- extern "C" {
-#endif
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * fatfs.h
+ *
+ *  Created on: Nov 19, 2025
+ *      Author: fil
+ */
+
+#ifndef DRIVERS_SDCARD_FATFS_H_
+#define DRIVERS_SDCARD_FATFS_H_
 
 #include "../../modules/fat/ff.h"
 #include "../../modules/fat/ff_gen_drv.h"
@@ -44,4 +44,5 @@ void MX_FATFS_Init(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /*__fatfs_H */
+
+#endif /* DRIVERS_SDCARD_FATFS_H_ */

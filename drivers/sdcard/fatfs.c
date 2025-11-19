@@ -1,21 +1,31 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file   fatfs.c
-  * @brief  Code for fatfs applications
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2025 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
+/* 
+ * This program is free software: you can redistribute it and/or modify  
+ * it under the terms of the GNU General Public License as published by  
+ * the Free Software Foundation, version 3.
+ *
+ * This program is distributed in the hope that it will be useful, but 
+ * WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Project : A_os
+*/
+/*
+ * fatfs.c
+ *
+ *  Created on: Nov 19, 2025
+ *      Author: fil
+ */
+
+#include "main.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
+
+#ifdef A_OS_SDCARD_ENABLED
+
 #include "fatfs.h"
 
 uint8_t retSD;    /* Return value for SD */
@@ -23,32 +33,14 @@ char SDPath[4];   /* SD logical drive path */
 FATFS SDFatFS;    /* File system object for SD logical drive */
 FIL SDFile;       /* File object for SD */
 
-/* USER CODE BEGIN Variables */
-
-/* USER CODE END Variables */
-
 void MX_FATFS_Init(void)
 {
-  /*## FatFS: Link the SD driver ###########################*/
-  retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
-
-  /* USER CODE BEGIN Init */
-  /* additional user code for init */
-  /* USER CODE END Init */
+	retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
 }
 
-/**
-  * @brief  Gets Time from RTC
-  * @param  None
-  * @retval Time in DWORD
-  */
 DWORD get_fattime(void)
 {
-  /* USER CODE BEGIN get_fattime */
-  return 0;
-  /* USER CODE END get_fattime */
+	return 0;
 }
 
-/* USER CODE BEGIN Application */
-
-/* USER CODE END Application */
+#endif // #ifdef A_OS_SDCARD_ENABLED
