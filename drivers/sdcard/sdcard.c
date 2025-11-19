@@ -16,95 +16,177 @@
 /*
  * sdcard.c
  *
- *  Created on: Nov 14, 2025
+ *  Created on: Nov 19, 2025
  *      Author: fil
  */
 
 #include "main.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+
 #ifdef A_OS_SDCARD_ENABLED
 
 #include "sdcard.h"
-#include "../../modules/fat/fat.h"
-#include "sd_diskio.h"
-#include "sd_driver.h"
+SDCARD_DriverStruct_t *sdcard_drv_ptr = NULL;
 
-SDCARD_DriverStruct_t	*SDCARD_Driver;
-
-uint8_t retSD;    /* Return value for SD */
-char SDPath[4];   /* SD logical drive path */
-FATFS SDFatFS;    /* File system object for SD logical drive */
-FIL SDFile;       /* File object for SD */
-
-Disk_drvTypeDef disk = {{0},{0},{0},0};
-
-uint8_t FATFS_LinkDriverEx(const Diskio_drvTypeDef *drv, char *path, uint8_t lun)
+extern SD_HandleTypeDef hsd1;
+#ifdef OLD
+uint8_t SD_Init(void)
 {
-  uint8_t ret = 1;
-  uint8_t DiskNum = 0;
+uint8_t sd_state = MSD_OK;
+	MX_FATFS_Init();
+	/* Check if the SD card is plugged in the slot */
 
-  if(disk.nbr < _VOLUMES)
-  {
-    disk.is_initialized[disk.nbr] = 0;
-    disk.drv[disk.nbr] = drv;
-    disk.lun[disk.nbr] = lun;
-    DiskNum = disk.nbr++;
-    path[0] = DiskNum + '0';
-    path[1] = ':';
-    path[2] = '/';
-    path[3] = 0;
-    ret = 0;
-  }
+	if (SD_IsDetected() != SD_PRESENT)
+		return MSD_ERROR_SD_NOT_PRESENT;
 
-  return ret;
+	/* HAL SD initialization */
+	sd_state = HAL_SD_Init(&hsd1);
+	/* Configure SD Bus width (4 bits mode selected) */
+	if (sd_state == MSD_OK)
+	{
+		/* Enable wide operation */
+		if (HAL_SD_ConfigWideBusOperation(&hsd1, SDMMC_BUS_WIDE_4B) != HAL_OK)
+			sd_state = MSD_ERROR;
+	}
+	return sd_state;
 }
-
-uint8_t FATFS_LinkDriver(const Diskio_drvTypeDef *drv, char *path)
+#endif
+uint8_t SD_ITConfig(void)
 {
-  return FATFS_LinkDriverEx(drv, path, 0);
-}
-
-uint8_t FATFS_UnLinkDriverEx(char *path, uint8_t lun)
-{
-  uint8_t DiskNum = 0;
-  uint8_t ret = 1;
-
-  if(disk.nbr >= 1)
-  {
-    DiskNum = path[0] - '0';
-    if(disk.drv[DiskNum] != 0)
-    {
-      disk.drv[DiskNum] = 0;
-      disk.lun[DiskNum] = 0;
-      disk.nbr--;
-      ret = 0;
-    }
-  }
-
-  return ret;
-}
-
-uint8_t FATFS_UnLinkDriver(char *path)
-{
-  return FATFS_UnLinkDriverEx(path, 0);
-}
-
-uint8_t FATFS_GetAttachedDriversNbr(void)
-{
-  return disk.nbr;
-}
-extern	const Diskio_drvTypeDef  SD_Driver;
-
-void MX_FATFS_Init(void)
-{
-  retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
+  return (uint8_t)0;
 }
 
 
-DWORD get_fattime(void)
+uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks, uint32_t Timeout)
 {
-  return 0;
+uint8_t sd_state = MSD_OK;
+
+	if (HAL_SD_ReadBlocks(&hsd1, (uint8_t *)pData, ReadAddr, NumOfBlocks, Timeout) != HAL_OK)
+		sd_state = MSD_ERROR;
+	return sd_state;
 }
+
+uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks, uint32_t Timeout)
+{
+uint8_t sd_state = MSD_OK;
+
+	if (HAL_SD_WriteBlocks(&hsd1, (uint8_t *)pData, WriteAddr, NumOfBlocks, Timeout) != HAL_OK)
+		sd_state = MSD_ERROR;
+	return sd_state;
+}
+
+uint8_t SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks)
+{
+uint8_t sd_state = MSD_OK;
+
+	/* Read block(s) in DMA transfer mode */
+	if (HAL_SD_ReadBlocks_DMA(&hsd1, (uint8_t *)pData, ReadAddr, NumOfBlocks) != HAL_OK)
+		sd_state = MSD_ERROR;
+	return sd_state;
+}
+
+uint8_t SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks)
+{
+uint8_t sd_state = MSD_OK;
+
+	if (HAL_SD_WriteBlocks_DMA(&hsd1, (uint8_t *)pData, WriteAddr, NumOfBlocks) != HAL_OK)
+		sd_state = MSD_ERROR;
+	return sd_state;
+}
+
+uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr)
+{
+uint8_t sd_state = MSD_OK;
+
+	if (HAL_SD_Erase(&hsd1, StartAddr, EndAddr) != HAL_OK)
+		sd_state = MSD_ERROR;
+	return sd_state;
+}
+
+uint8_t SD_GetCardState(void)
+{
+  return ((HAL_SD_GetCardState(&hsd1) == HAL_SD_CARD_TRANSFER ) ? SD_TRANSFER_OK : SD_TRANSFER_BUSY);
+}
+
+void HAL_SD_AbortCallback(SD_HandleTypeDef *hsd)
+{
+}
+
+void HAL_SD_TxCpltCallback(SD_HandleTypeDef *hsd)
+{
+	WriteStatus = 1;
+}
+
+void HAL_SD_RxCpltCallback(SD_HandleTypeDef *hsd)
+{
+	ReadStatus = 1;
+}
+
+uint8_t SD_IsDetected(void)
+{
+SDCARD_DriverStruct_t *sdcard_Drv = sdcard_drv_ptr;
+	if ( sdcard_Drv->sd_detect_port == NULL )
+		return SD_NOT_PRESENT;
+
+	if(HAL_GPIO_ReadPin(sdcard_Drv->sd_detect_port, sdcard_Drv->sd_detect_bit) != GPIO_PIN_RESET)
+		return SD_NOT_PRESENT;
+	return SD_PRESENT;
+}
+
+void SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo)
+{
+SDCARD_DriverStruct_t *sdcard_Drv = sdcard_drv_ptr;
+	if ( sdcard_Drv->sd_detect_port == NULL )
+		return;
+	HAL_SD_GetCardInfo(sdcard_Drv->hsd, CardInfo);
+}
+
+ITCM_AREA_CODE uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv)
+{
+SDCARD_DriverStruct_t *eptr, *pre_eptr;
+
+	if ( sdcard_Drv->sd_detect_port == NULL )
+		return DRIVER_REQUEST_FAILED;
+
+	if ( sdcard_Drv->hsd == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( sdcard_drv_ptr == NULL)
+	{
+		sdcard_drv_ptr = sdcard_Drv;
+		sdcard_Drv->next_drv = NULL;
+	}
+	else
+	{
+		eptr = pre_eptr = sdcard_drv_ptr;
+		while(eptr->next_drv != NULL)
+		{
+			pre_eptr = eptr;
+			eptr = (SDCARD_DriverStruct_t *)eptr->next_drv;
+		}
+		pre_eptr->next_drv = (uint32_t *)sdcard_Drv;
+		sdcard_Drv->next_drv = NULL;
+	}
+
+	MX_FATFS_Init();
+	/* Check if the SD card is plugged in the slot */
+
+	if (SD_IsDetected() != SD_PRESENT)
+		return 1;
+
+	if (HAL_SD_Init(sdcard_Drv->hsd) == 0)
+	{
+		if (HAL_SD_ConfigWideBusOperation(&hsd1, SDMMC_BUS_WIDE_4B) != HAL_OK)
+			return 1;
+	}
+
+	HAL_SD_GetCardCID(sdcard_Drv->hsd, &sdcard_Drv->pCID);
+	HAL_SD_GetCardCSD(sdcard_Drv->hsd, &sdcard_Drv->pCSD);
+	HAL_SD_GetCardInfo(sdcard_Drv->hsd, &sdcard_Drv->CardInfo);
+
+	return 0;
+}
+
 
 #endif //#ifdef A_OS_SDCARD_ENABLED
+

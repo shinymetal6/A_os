@@ -23,6 +23,9 @@
 #include "main.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+
+#ifdef A_OS_SPI_ENABLED
+
 #include "qspi_w25q128.h"
 
 QSPI_DriverStruct_t 	*qspi_drv_ptr;
@@ -140,3 +143,4 @@ QSPI_DriverStruct_t *w25qxx_Drv = qspi_drv_ptr;
 	w25qxx_Drv->status |= QSPI_DMA_ERROR;
 }
 
+#endif // #ifdef A_OS_SPI_ENABLED

@@ -24,6 +24,8 @@
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
 #ifdef SOUND_ENGINE_ENABLED
+#ifdef A_OS_SDCARD_ENABLED
+
 #include "../sound_engine.h"
 #include "sample_player.h"
 
@@ -161,5 +163,6 @@ ITCM_AREA_CODE uint8_t Sample_Player_Register(AUDIO_Source_TypeDef *sample_playe
 	sample_player->source_type = SOUND_SOURCE_IS_SAMPLE_PLAYER;
 	return 0;
 }
+#endif //#ifdef A_OS_SDCARD_ENABLED
 
 #endif // #ifdef SOUND_ENGINE_ENABLED

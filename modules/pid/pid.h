@@ -24,6 +24,7 @@
 #define MODULES_PID_PID_H_
 
 #include <stdint.h>
+#ifdef A_OS_TIMERS_ENABLED
 
 // Structure to hold PID controller parameters and state
 typedef struct {
@@ -62,5 +63,6 @@ extern	void	PID_Set(PIDController_TypeDef *pid, float kp, float ki, float kd, fl
 
 extern	float	PID_Compute(PIDController_TypeDef *pid, float input); // Calculate PID output
 extern uint32_t	PID_register(PIDController_TypeDef *pid);
+#endif //#ifdef A_OS_TIMERS_ENABLED
 
 #endif /* MODULES_PID_PID_H_ */

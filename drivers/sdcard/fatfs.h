@@ -1,8 +1,8 @@
 /* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * @file    sd_diskio.h
-  * @brief   Header for sd_diskio.c module
+  * @file   fatfs.h
+  * @brief  Header for fatfs applications
   ******************************************************************************
   * @attention
   *
@@ -16,16 +16,32 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
-/* Note: code generation based on sd_diskio_dma_template.h */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __SD_DISKIO_H
-#define __SD_DISKIO_H
+#ifndef __fatfs_H
+#define __fatfs_H
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
-#include "sdcard.h"
+#include "../../modules/fat/ff.h"
 #include "../../modules/fat/ff_gen_drv.h"
+#include "sd_diskio.h" /* defines SD_Driver as external */
 
-extern const Diskio_drvTypeDef  SD_Driver;
+/* USER CODE BEGIN Includes */
 
-#endif /* __SD_DISKIO_H */
+/* USER CODE END Includes */
+
+extern uint8_t retSD; /* Return value for SD */
+extern char SDPath[4]; /* SD logical drive path */
+extern FATFS SDFatFS; /* File system object for SD logical drive */
+extern FIL SDFile; /* File object for SD */
+
+void MX_FATFS_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+
+/* USER CODE END Prototypes */
+#ifdef __cplusplus
+}
+#endif
+#endif /*__fatfs_H */

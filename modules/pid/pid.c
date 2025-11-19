@@ -23,8 +23,11 @@
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
 
+#ifdef A_OS_TIMERS_ENABLED
+
 #include "pid.h"
 #include <math.h> // For fabs() if needed for anti-windup
+
 
 PIDController_TypeDef	*pid_drv_ptr;
 
@@ -156,3 +159,4 @@ PIDController_TypeDef *eptr, *pre_eptr;
     pid->first_run = 1; // Set flag for first run
 	return 0;
 }
+#endif //#ifdef A_OS_TIMERS_ENABLED

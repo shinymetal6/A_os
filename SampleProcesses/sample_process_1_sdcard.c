@@ -25,73 +25,39 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_SDCARD
-//#include "../modules/fat/fat.h"
+
+#include "../modules/fat/ff.h"
+#include "../drivers/sdcard/sd_diskio.h"
+extern	SD_HandleTypeDef hsd1;
+
+SDCARD_DriverStruct_t SDCARD =
+{
+	.hsd = &hsd1,
+	.sd_detect_port = SDMMC1_CD_GPIO_Port,
+	.sd_detect_bit = SDMMC1_CD_Pin,
+};
 
 FATFS fs;
 FIL file;
-FIL MyFile;
-uint32_t file_found = 0;
-uint32_t byteswritten, bytesread;                     /* File write/read counts */
-uint8_t wtext[] = "This is STM32 working with FatFs"; /* File write buffer */
-uint8_t rtext[100];                                   /* File read buffer */
-FRESULT res;                                          /* FatFs function common result code */
-extern	char SDPath[4]; 										/* SD card logical drive path */
-uint8_t workBuffer[_MAX_SS];
-HAL_SD_CardCIDTypedef pCID;
-HAL_SD_CardCSDTypedef pCSD;
-HAL_SD_CardInfoTypeDef CardInfo;
-extern	SD_HandleTypeDef hsd1;
+char path[] = "";
+FRESULT res;
+uint8_t buffer[512];
+UINT br;
 
-void card_test(void)
-{
-	res = f_mount(&fs, "", 1);
-	if ( res )
-		return;
-	/*
-    if((res = f_mkfs((TCHAR const*)SDPath, FM_ANY, 0, workBuffer, sizeof(workBuffer))) != FR_OK)
-		return;
-		*/
-	if((res = f_open(&MyFile, "STM32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) != FR_OK)
-		return;
-	/*##-5- Write data to the text file ################################*/
-	res = f_write(&MyFile, wtext, sizeof(wtext), (void *)&byteswritten);
-
-	if((byteswritten == 0) || (res != FR_OK))
-		return;
-	/*##-6- Close the open text file #################################*/
-	f_close(&MyFile);
-
-	/*##-7- Open the text file object with read access ###############*/
-	if(f_open(&MyFile, "STM32.TXT", FA_READ) != FR_OK)
-		return;
-	/*##-8- Read data from the text file ###########################*/
-	res = f_read(&MyFile, rtext, sizeof(rtext), (UINT*)&bytesread);
-
-	if((bytesread == 0) || (res != FR_OK))
-		return;
-	/*##-9- Close the open text file #############################*/
-	f_close(&MyFile);
-
-	/*##-10- Compare read data with the expected data ############*/
-	if((bytesread != byteswritten))
-		return;
-	else
-		file_found = 1;
-}
-
-SDCARD_DriverStruct_t	SDCARD_Driver_t =
-{
-	.sd_detect_bit = SD_DETECT_Pin,
-	.sd_detect_port = SD_DETECT_GPIO_Port,
-};
 void sample_process_1_init(uint32_t process_id)
 {
-	AOS_SD_Register(&SDCARD_Driver_t);
-	HAL_SD_GetCardCID(&hsd1, &pCID);
-	HAL_SD_GetCardCSD(&hsd1, &pCSD);
-	AOS_SD_GetCardInfo(&CardInfo);
-
-	card_test();
+	sdcard_register(&SDCARD);
+	FRESULT res = f_mount(&fs, "", 1);
+	if ( res == 0 )
+	{
+		// Open a file
+		res = f_open(&file, "FILE.TXT", FA_READ);
+		if (res == FR_OK)
+		{
+			f_read(&file, buffer, sizeof(buffer), &br);
+			f_close(&file);
+		}
+	}
 }
 
 void sample_process_1_sdcard(uint32_t process_id)

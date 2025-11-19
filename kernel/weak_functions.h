@@ -23,6 +23,7 @@
 #ifndef KERNEL_WEAK_FUNCTIONS_H_
 #define KERNEL_WEAK_FUNCTIONS_H_
 
+extern void MX_FATFS_Init(void);
 extern void set_hw_flag(void);
 extern void clear_hw_flag(void);
 

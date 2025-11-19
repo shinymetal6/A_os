@@ -23,8 +23,13 @@
 #ifndef MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_
 #define MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_
 
+#include "main.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
+#ifdef A_OS_SDCARD_ENABLED
 #include <stdint.h>
-#include "../../fat/FatFs/ff.h"
+#include "../../fat/ff.h"
 
 #define BLOCK_SIZE      64
 #define MAX_VOICES      4
@@ -75,6 +80,7 @@ extern	FIL file;
 extern	FRESULT mount_sd(void);
 extern	FRESULT open_wav_file(const char* fname, Wav_Hdr_TypeDef* header);
 
-
+#endif //#ifdef A_OS_SDCARD_ENABLED
+#endif //#ifdef SOUND_ENGINE_ENABLED
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_ */

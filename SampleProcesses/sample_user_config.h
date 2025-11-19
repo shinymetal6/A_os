@@ -121,7 +121,7 @@
 #define USB_DEVICE_ENABLED		1
 #endif
 #if defined (USB_OTG_FS) || defined (USB_OTG_HS)
-#define USB_DEVICE_ENABLED		1
+//#define USB_DEVICE_ENABLED		1
 #endif
 #if defined (HAL_PCD_MODULE_ENABLED) || defined (HAL_HCD_MODULE_ENABLED)
 #if defined (USB)

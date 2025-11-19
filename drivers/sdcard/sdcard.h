@@ -16,38 +16,72 @@
 /*
  * sdcard.h
  *
- *  Created on: Nov 14, 2025
+ *  Created on: Nov 19, 2025
  *      Author: fil
  */
 
 #ifndef DRIVERS_SDCARD_SDCARD_H_
 #define DRIVERS_SDCARD_SDCARD_H_
 
-#ifdef A_OS_SDCARD_ENABLED
-#include "../../modules/fat/fat.h"
+#ifdef __cplusplus
+ extern "C" {
+#endif
 
-extern uint8_t retSD; /* Return value for SD */
-extern char SDPath[4]; /* SD logical drive path */
-extern FATFS SDFatFS; /* File system object for SD logical drive */
-extern FIL SDFile; /* File object for SD */
+#define   	MSD_OK                        ((uint8_t)0x00)
+#define   	MSD_ERROR                     ((uint8_t)0x01)
+#define   	MSD_ERROR_SD_NOT_PRESENT      ((uint8_t)0x02)
+
+#define   	SD_TRANSFER_OK                ((uint8_t)0x00)
+#define   	SD_TRANSFER_BUSY              ((uint8_t)0x01)
+
+#define 	SD_PRESENT               ((uint8_t)0x01)
+#define 	SD_NOT_PRESENT           ((uint8_t)0x00)
+#define 	SD_DATATIMEOUT           ((uint32_t)100000000)
+
+#define SD_DetectIRQHandler()             HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8)
 
 typedef struct
 {
-	uint8_t 			process;
+	/* driver header */
 	uint8_t				status;
 	uint8_t				flags;
-	uint16_t			sd_detect_bit;
+	uint8_t 			process;
+	SD_HandleTypeDef 	*hsd;
 	GPIO_TypeDef	 	*sd_detect_port;
+	uint16_t			sd_detect_bit;
+	uint32_t 			wakeup_id;
+	uint32_t			*next_drv;
+	HAL_SD_CardCIDTypedef pCID;
+	HAL_SD_CardCSDTypedef pCSD;
+	HAL_SD_CardInfoTypeDef CardInfo;
 }SDCARD_DriverStruct_t;
+/* status */
+#define	SDCARD_DMA_WRITE_COMPLETE	0x80
+#define	SDCARD_DMA_READ_COMPLETE	0x40
 
-extern	void 	MX_FATFS_Init(void);
-extern	uint8_t AOS_SD_Register(SDCARD_DriverStruct_t *sdcard_drv);
+uint8_t SD_Init(void);
+uint8_t SD_ITConfig(void);
+uint8_t SD_ReadBlocks(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks, uint32_t Timeout);
+uint8_t SD_WriteBlocks(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks, uint32_t Timeout);
+uint8_t SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
+uint8_t SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
+uint8_t SD_Erase(uint32_t StartAddr, uint32_t EndAddr);
+uint8_t SD_GetCardState(void);
+void    SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo);
+uint8_t SD_IsDetected(void);
 
-extern	uint8_t AOS_SD_GetCardState(void);
-extern	uint8_t AOS_SD_ReadBlocks_DMA(uint32_t *pData, uint32_t ReadAddr, uint32_t NumOfBlocks);
-extern	uint8_t AOS_SD_WriteBlocks_DMA(uint32_t *pData, uint32_t WriteAddr, uint32_t NumOfBlocks);
-extern	void AOS_SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo);
+/* These functions can be modified in case the current settings (e.g. DMA stream)
+   need to be changed for specific application needs */
+void    BSP_SD_AbortCallback(void);
+void    BSP_SD_WriteCpltCallback(void);
+void    BSP_SD_ReadCpltCallback(void);
 
-#endif //#ifdef A_OS_SDCARD_ENABLED
+extern	uint8_t  WriteStatus, ReadStatus;
+
+extern	uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DRIVERS_SDCARD_SDCARD_H_ */

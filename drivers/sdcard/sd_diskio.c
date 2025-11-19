@@ -1,33 +1,33 @@
-/* 
- * This program is free software: you can redistribute it and/or modify  
- * it under the terms of the GNU General Public License as published by  
- * the Free Software Foundation, version 3.
- *
- * This program is distributed in the hope that it will be useful, but 
- * WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License 
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
- * Project : A_os
-*/
-/*
- * sd_diskio.c
- *
- *  Created on: Nov 14, 2025
- *      Author: fil
- */
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    sd_diskio.c
+  * @brief   SD Disk I/O driver
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
 
-#include "main.h"
-#include "../../kernel/A.h"
-#include "../../kernel/A_exported_functions.h"
+/* Note: code generation based on sd_diskio_dma_template_bspv1.c v2.1.4
+   as "Use dma template" is enabled. */
 
-#ifdef A_OS_SDCARD_ENABLED
-#include "../../modules/fat/fat.h"
+/* USER CODE BEGIN firstSection */
+/* can be used to modify / undefine following code or add new definitions */
+/* USER CODE END firstSection*/
+
+/* Includes ------------------------------------------------------------------*/
+#include "../../modules/fat/ff_gen_drv.h"
+
 #include "sd_diskio.h"
-#include "sd_driver.h"
 
 #include <string.h>
 
@@ -83,7 +83,7 @@ __ALIGN_BEGIN static uint8_t scratch[BLOCKSIZE] __ALIGN_END;
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
 
-static volatile  UINT  WriteStatus = 0, ReadStatus = 0;
+uint8_t  WriteStatus = 0, ReadStatus = 0;
 /* Private function prototypes -----------------------------------------------*/
 static DSTATUS SD_CheckStatus(BYTE lun);
 DSTATUS SD_initialize (BYTE);
@@ -122,11 +122,12 @@ static int SD_CheckStatusWithTimeout(uint32_t timeout)
   /* block until SDIO IP is ready again or a timeout occur */
   while(HAL_GetTick() - timer < timeout)
   {
-    if (AOS_SD_GetCardState() == SD_TRANSFER_OK)
+    if (SD_GetCardState() == SD_TRANSFER_OK)
     {
       return 0;
     }
   }
+
   return -1;
 }
 
@@ -134,7 +135,7 @@ static DSTATUS SD_CheckStatus(BYTE lun)
 {
   Stat = STA_NOINIT;
 
-  if(AOS_SD_GetCardState() == MSD_OK)
+  if(SD_GetCardState() == MSD_OK)
   {
     Stat &= ~STA_NOINIT;
   }
@@ -142,28 +143,9 @@ static DSTATUS SD_CheckStatus(BYTE lun)
   return Stat;
 }
 
-/**
-  * @brief  Initializes a Drive
-  * @param  lun : not used
-  * @retval DSTATUS: Operation status
-  */
-extern SDCARD_DriverStruct_t	*SDCARD_Driver;
-
 DSTATUS SD_initialize(BYTE lun)
 {
-
-#if !defined(DISABLE_SD_INIT)
-
-  if(AOS_SD_Register(SDCARD_Driver) == MSD_OK)
-  {
-    Stat = SD_CheckStatus(lun);
-  }
-
-#else
-  Stat = SD_CheckStatus(lun);
-#endif
-
-  return Stat;
+	return SD_CheckStatus(lun);
 }
 
 /**
@@ -212,7 +194,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   if (!((uint32_t)buff & 0x3))
   {
 #endif
-    if(AOS_SD_ReadBlocks_DMA((uint32_t*)buff,
+    if(SD_ReadBlocks_DMA((uint32_t*)buff,
                              (uint32_t) (sector),
                              count) == MSD_OK)
     {
@@ -234,7 +216,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 
         while((HAL_GetTick() - timeout) < SD_TIMEOUT)
         {
-          if (AOS_SD_GetCardState() == SD_TRANSFER_OK)
+          if (SD_GetCardState() == SD_TRANSFER_OK)
           {
             res = RES_OK;
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
@@ -343,7 +325,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
     SCB_CleanDCache_by_Addr((uint32_t*)alignedAddr, count*BLOCKSIZE + ((uint32_t)buff - alignedAddr));
 #endif
 
-    if(AOS_SD_WriteBlocks_DMA((uint32_t*)buff,
+    if(SD_WriteBlocks_DMA((uint32_t*)buff,
                               (uint32_t)(sector),
                               count) == MSD_OK)
     {
@@ -365,7 +347,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 
         while((HAL_GetTick() - timeout) < SD_TIMEOUT)
         {
-          if (AOS_SD_GetCardState() == SD_TRANSFER_OK)
+          if (SD_GetCardState() == SD_TRANSFER_OK)
           {
             res = RES_OK;
             break;
@@ -432,7 +414,8 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff)
 {
   DRESULT res = RES_ERROR;
-  BSP_SD_CardInfo CardInfo;
+  //BSP_SD_CardInfo CardInfo;
+  HAL_SD_CardInfoTypeDef CardInfo;
 
   if (Stat & STA_NOINIT) return RES_NOTRDY;
 
@@ -445,21 +428,21 @@ DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff)
 
   /* Get number of sectors on the disk (DWORD) */
   case GET_SECTOR_COUNT :
-    AOS_SD_GetCardInfo(&CardInfo);
+	  SD_GetCardInfo(&CardInfo);
     *(DWORD*)buff = CardInfo.LogBlockNbr;
     res = RES_OK;
     break;
 
   /* Get R/W sector size (WORD) */
   case GET_SECTOR_SIZE :
-    AOS_SD_GetCardInfo(&CardInfo);
+	  SD_GetCardInfo(&CardInfo);
     *(WORD*)buff = CardInfo.LogBlockSize;
     res = RES_OK;
     break;
 
   /* Get erase block size in unit of sector (DWORD) */
   case GET_BLOCK_SIZE :
-    AOS_SD_GetCardInfo(&CardInfo);
+	  SD_GetCardInfo(&CardInfo);
     *(DWORD*)buff = CardInfo.LogBlockSize / SD_DEFAULT_BLOCK_SIZE;
     res = RES_OK;
     break;
@@ -484,7 +467,7 @@ DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff)
   * @param hsd: SD handle
   * @retval None
   */
-void AOS_SD_WriteCpltCallback(void)
+void BSP_SD_WriteCpltCallback(void)
 {
 
   WriteStatus = 1;
@@ -495,7 +478,7 @@ void AOS_SD_WriteCpltCallback(void)
   * @param hsd: SD handle
   * @retval None
   */
-void AOS_SD_ReadCpltCallback(void)
+void BSP_SD_ReadCpltCallback(void)
 {
   ReadStatus = 1;
 }
@@ -519,5 +502,3 @@ void BSP_SD_ErrorCallback(void)
 /* USER CODE BEGIN lastSection */
 /* can be used to modify / undefine previous code or add new code */
 /* USER CODE END lastSection */
-
-#endif //#ifdef A_OS_SDCARD_ENABLED

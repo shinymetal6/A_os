@@ -23,6 +23,8 @@
 #ifndef DRIVERS_QSPI_QSPI_H_
 #define DRIVERS_QSPI_QSPI_H_
 
+#ifdef A_OS_SPI_ENABLED
+
 typedef struct
 {
 	/* driver header */
@@ -65,5 +67,7 @@ extern uint32_t	qspi_chip_erase(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_get_id(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_memory_map(QSPI_DriverStruct_t *qspi_Drv);
 extern uint32_t	qspi_reset_chip(QSPI_DriverStruct_t *qspi_Drv);
+
+#endif // #ifdef A_OS_SPI_ENABLED
 
 #endif /* DRIVERS_QSPI_QSPI_H_ */
