@@ -89,7 +89,7 @@ I2S_DriverStruct_t I2S_Driver =
 	.i2s = &hi2s2,
 };
 
-AUDIO_FAST_RAM q15_t	Audio_Synth0_buf_left[I2S_EFFECT_SIZE];
+q15_t	Audio_Synth0_buf_left[I2S_EFFECT_SIZE];
 __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth0_left =
 {
 	.block_size = I2S_EFFECT_SIZE,
@@ -116,9 +116,22 @@ VCA_Effect_TypeDef	VCA0_Left =
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
+
+AUDIO_FAST_RAM int16_t	vca1_buf_left[I2S_EFFECT_SIZE];
+uint16_t			vca1_ampl_left = 65535;
+uint16_t			vca1_offset = 0;
+VCA_Effect_TypeDef	VCA1_Left =
+{
+	.effect = Effect_VCA,
+	.effect_init = Effect_VCA_Init,
+	.out_buf = vca1_buf_left,
+	.amplitude = &vca1_ampl_left,
+	.offset = &vca1_offset,
+	.flags = SOUND_EFFECT_ENABLED,
+};
+
 AUDIO_Dest_TypeDef Out_Port =
 {
-	.in_buf = (int16_t *)vca0_buf_left,
 	.out_buf = (int16_t *)i2s_tx_buffer,
 	.out_device = SOURCE_TO_I2S_OUT,
 	.flags = SOUND_EFFECT_ENABLED,
@@ -150,7 +163,8 @@ uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
-	Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA0_Left);
+	//Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA0_Left);
+	//Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA1_Left);
 
 	NoteOn(0,69,127);
 	while(1)

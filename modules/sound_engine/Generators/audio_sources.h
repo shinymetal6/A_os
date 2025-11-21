@@ -53,10 +53,10 @@ typedef struct
 	/* effect header */
 	uint8_t				status;
 	uint8_t				flags;
-	uint32_t 			*next_source;
 	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
+	uint32_t 			*next_source;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;

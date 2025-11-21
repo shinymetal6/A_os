@@ -131,19 +131,20 @@ AUDIO_Effect_TypeDef	*AUDIO_Effect = (AUDIO_Effect_TypeDef *)effect;
 
 ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
-AUDIO_Effect_TypeDef *effect,*last_effect;
-	if ( source->source_type == SOUND_SOURCE_IS_SYNTH )
+AUDIO_Effect_TypeDef *effect;
+//	if ( source->source_type == SOUND_SOURCE_IS_SYNTH )
 	{
 		Synth_Process_Block((uint32_t *)source);
 		effect = (AUDIO_Effect_TypeDef *)source->next_effect;
 		if ( effect != NULL )
 		{
-			last_effect = (AUDIO_Effect_TypeDef *)apply_effect(source->next_effect);
-			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+			effect = (AUDIO_Effect_TypeDef *)apply_effect((uint32_t *)effect);
+			dest->OutFunc(dest->out_buf,effect->out_buf,start_sample,source->block_size,source->channel_out);
 		}
 		else
 			dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->channel_out);
 	}
+	/*
 	if ( source->source_type == SOUND_SOURCE_IS_I2S_IN )
 		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
 	if ( source->source_type == SOUND_SOURCE_IS_DRUM )
@@ -152,6 +153,7 @@ AUDIO_Effect_TypeDef *effect,*last_effect;
 		if ( drum_buffer != NULL )
 			dest->OutFunc(dest->out_buf,drum_buffer,start_sample,source->block_size,source->channel_out);
 	}
+	*/
 }
 
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
@@ -170,11 +172,12 @@ AUDIO_Dest_TypeDef *dest;
 	dest = AudioDestLeft;
 	if (( dest == NULL) || ( dest->out_buf == NULL) || ( dest->in_buf == NULL) || ( dest->OutFunc == NULL ))
 		return;
-	while(source != NULL )
+//	while(source != NULL )
+//	if ( source->source_type == SOUND_SOURCE_IS_SYNTH )
 	{
 		if ( (source->flags == SOURCE_ENABLED ) )
 			audio_gen(source,dest,start_sample,source->source_type);
-		source = (AUDIO_Source_TypeDef *)source->next_source;
+		//source = (AUDIO_Source_TypeDef *)source->next_source;
 	}
 	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
 #ifdef LCD_SS_GPIO_Port

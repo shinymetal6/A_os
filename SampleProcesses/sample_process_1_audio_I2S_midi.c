@@ -107,6 +107,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth_left =
 	.block_size = I2S_EFFECT_SIZE,
 	.out_buf = (q15_t *)Audio_Synth_buf_left,
 	.sample_rate = SAMPLE_FREQUENCY,
+	.flags = SOURCE_ENABLED,
 };
 
 AUDIO_FAST_RAM int16_t	vca0_buf_left[I2S_EFFECT_SIZE];
@@ -127,14 +128,14 @@ VCA_Effect_TypeDef	VCA0_Left =
 };
 
 AUDIO_FAST_RAM int16_t	vca1_buf_left[I2S_EFFECT_SIZE];
-uint16_t			vca1_ampl_left = 1000;
+uint16_t			vca1_ampl_left = 32767;
 uint16_t			vca1_offset = 0;
 VCA_Effect_TypeDef	VCA1_Left =
 {
 	.effect = Effect_VCA,
 	.effect_init = Effect_VCA_Init,
 	.out_buf = vca1_buf_left,
-	.amplitude = &adc1_buf[2],
+	.amplitude = &vca1_ampl_left,
 	.offset = &vca1_offset,
 	.flags = SOUND_EFFECT_ENABLED,
 };
@@ -143,7 +144,6 @@ AUDIO_Dest_TypeDef Out_Port =
 	.in_buf = (int16_t *)Audio_Synth_buf_left,
 	.out_buf = (int16_t *)i2s_tx_buffer,
 	.out_device = SOURCE_TO_I2S_OUT,
-	.mixer_config = OUT_SYNTH_FROM_LEFT,
 	.flags = SOUND_EFFECT_ENABLED,
 };
 
@@ -203,8 +203,7 @@ void sample_process_1_init(uint32_t process_id)
 
 	if ( Synth_Register(LEFT_CHANNEL ,&Audio_Synth_left) == 0 )
 		Synth_Start(&Audio_Synth_left);
-	i2s_driver_register(&I2S_Driver);
-	I2SIn_Register(&Audio_I2Sin_left);
+	I2SIO_Register(&Audio_I2Sin_left);
 	OutStage_Register(&Out_Port);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
@@ -218,7 +217,7 @@ uint32_t	wakeup,flags;
 uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	if ( I2SIn_Start(&Audio_I2Sin_left) == 0 )
+	if ( I2SIO_Start(&Audio_I2Sin_left) == 0 )
 		i2s_driver_start(&I2S_Driver);
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA0_Left);
 	Sound_Insert_Effect((uint32_t *)&Audio_Synth_left,(uint32_t *)&VCA1_Left);
