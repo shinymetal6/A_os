@@ -62,9 +62,8 @@ typedef struct
 	uint16_t			block_size;
 	float				sample_rate;
 	/* Source Internals */
-	uint8_t				channel;
-	uint8_t				channel_in;
-	uint8_t				channel_out;
+	uint8_t				source;
+	uint8_t				destination;
 	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;

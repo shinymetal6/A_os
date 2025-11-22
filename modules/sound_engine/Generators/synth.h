@@ -35,7 +35,7 @@
 #include	"audio_sources.h"
 
 extern void 	Synth_Process_Block(uint32_t *the_synt);
-extern uint8_t 	Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth);
+extern uint8_t 	Synth_Register(AUDIO_Source_TypeDef *synth);
 extern uint8_t	Synth_Start(AUDIO_Source_TypeDef *synth);
 extern uint8_t 	Synth_Stop(AUDIO_Source_TypeDef *synth);
 

@@ -60,6 +60,61 @@ AUDIO_Source_TypeDef *source;
 	if ( out_stage->in_buf == NULL )
 	{
 		source = AudioSourceLeft;
+		if ( source != NULL )
+		{
+			while(source != NULL )
+			{
+				if ( source->next_source == NULL )
+					out_stage->in_buf = source->out_buf;
+				source = (AUDIO_Source_TypeDef * )source->next_source;
+			}
+			if ( out_stage->in_buf == NULL )
+				return 1;
+			out_stage->channel = AudioSourceLeft->destination;
+			if ( out_stage->channel == AUDIO_DESTINATION_LEFT)
+				AudioDestLeft = out_stage;
+			if ( out_stage->channel == AUDIO_DESTINATION_RIGHT)
+				AudioDestRight = out_stage;
+		}
+
+		source = AudioSourceRight;
+		if ( source != NULL )
+		{
+			while(source != NULL )
+			{
+				if ( source->next_source == NULL )
+					out_stage->in_buf = source->out_buf;
+				source = (AUDIO_Source_TypeDef * )source->next_source;
+			}
+			if ( out_stage->in_buf == NULL )
+				return 1;
+			out_stage->channel = AudioSourceRight->destination;
+			if ( out_stage->channel == AUDIO_DESTINATION_LEFT)
+				AudioDestLeft = out_stage;
+			if ( out_stage->channel == AUDIO_DESTINATION_RIGHT)
+				AudioDestRight = out_stage;
+		}
+	}
+
+	if ( out_stage->out_device == SOURCE_TO_DAC_OUT)
+		out_stage->OutFunc = to_dacout;
+	else
+		out_stage->OutFunc = to_i2sout;
+	return 0;
+}
+
+ITCM_AREA_CODE uint8_t OutStage_RegisterOLD(AUDIO_Dest_TypeDef *out_stage)
+{
+AUDIO_Source_TypeDef *source;
+
+	if ( out_stage->out_buf == NULL )
+		return 1;
+	if (( out_stage->out_device != SOURCE_TO_DAC_OUT ) && ( out_stage->out_device != SOURCE_TO_I2S_OUT ))
+		return 1;
+
+	if ( out_stage->in_buf == NULL )
+	{
+		source = AudioSourceLeft;
 		if ( source == NULL )
 			return 1;
 		while(source != NULL )

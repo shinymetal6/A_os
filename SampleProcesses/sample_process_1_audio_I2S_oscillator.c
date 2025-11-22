@@ -37,9 +37,6 @@ extern	I2S_HandleTypeDef hi2s2;
 extern	ADC_HandleTypeDef hadc1;
 extern	ADC_HandleTypeDef hadc2;
 
-#define	LEFT_CHANNEL		0
-#define	RIGHT_CHANNEL		1
-
 #ifdef SOUND_ENGINE_I2S_ENABLED
 	#define	SAMPLE_FREQUENCY	I2S_SAMPLE_FREQUENCY
 #else
@@ -94,7 +91,9 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth0_left =
 {
 	.block_size = I2S_EFFECT_SIZE,
 	.out_buf = (q15_t *)Audio_Synth0_buf_left,
-	.channel = 0,
+	.source = AUDIO_SOURCE_LEFT,
+	.destination = AUDIO_DESTINATION_LEFT,
+	//.destination = AUDIO_DESTINATION_RIGHT,
 	.flags = SOURCE_ENABLED,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
@@ -144,7 +143,7 @@ void sample_process_1_init(uint32_t process_id)
 
 	i2s_driver_register(&I2S_Driver);
 
-	Synth_Register(LEFT_CHANNEL ,&Audio_Synth0_left);
+	Synth_Register(&Audio_Synth0_left);
 	OutStage_Register(&Out_Port);
 	adc_register(&ADC1_Drv);
 	adc_start(&ADC1_Drv);
@@ -163,8 +162,8 @@ uint8_t		cntr = 0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	i2s_driver_start(&I2S_Driver);
-	//Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA0_Left);
-	//Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA1_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA0_Left);
+	Sound_Insert_Effect((uint32_t *)&Audio_Synth0_left,(uint32_t *)&VCA1_Left);
 
 	NoteOn(0,69,127);
 	while(1)

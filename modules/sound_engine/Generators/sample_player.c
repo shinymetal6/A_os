@@ -136,7 +136,7 @@ ITCM_AREA_CODE uint8_t Sample_Player_Register(AUDIO_Source_TypeDef *sample_playe
 		return 1;
 	if ( sample_player->ptr_gen_struct == NULL )	// pointer to the user space drum_voices drum machine
 		return 1;
-	if ( sample_player->channel_in == AUDIO_SOURCE_LEFT)
+	if ( sample_player->source == AUDIO_SOURCE_LEFT)
 	{
 		if ( AudioSourceLeft == NULL )
 		{
