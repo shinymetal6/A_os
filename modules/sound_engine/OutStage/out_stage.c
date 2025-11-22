@@ -29,9 +29,10 @@
 
 ITCM_AREA_CODE void to_i2sout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
 {
-uint32_t i,j;
-	for (i = 4,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
-		audio_out[i + start_sample+channel] = audio_in[j];
+uint32_t i,j , start_i;
+start_i = (channel == AUDIO_DESTINATION_LEFT)  ? 4 : 0;
+	for (i = start_i,j=0; i < I2S_HALF_BUFFER_SIZE; i+=8,j++)
+		audio_out[i + start_sample] = audio_in[j];
 }
 ITCM_AREA_CODE void to_dacout(int16_t *audio_out,q15_t *audio_in,uint32_t start_sample,uint16_t num_samples,uint8_t channel)
 {

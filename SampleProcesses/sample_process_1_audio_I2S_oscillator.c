@@ -93,7 +93,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef Audio_Synth0_left =
 	.out_buf = (q15_t *)Audio_Synth0_buf_left,
 	.source = AUDIO_SOURCE_LEFT,
 	.destination = AUDIO_DESTINATION_LEFT,
-	//.destination = AUDIO_DESTINATION_RIGHT,
+	.destination = AUDIO_DESTINATION_RIGHT,
 	.flags = SOURCE_ENABLED,
 	.sample_rate = SAMPLE_FREQUENCY,
 };
