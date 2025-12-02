@@ -23,9 +23,13 @@
 #ifndef MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_
 #define MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_
 
+#include "main.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
+#ifdef A_OS_SDCARD_ENABLED
 #include <stdint.h>
-//#include "ff.h"
-#include "../../fat/FatFs/ff.h"
+#include "../../fat/ff.h"
 
 #define BLOCK_SIZE      64
 #define MAX_VOICES      4
@@ -37,7 +41,7 @@ typedef struct {
     float volume;
     uint8_t playing;
     uint8_t loop;
-} Voice;
+} Sampler_Voices_TypeDef;
 
 #pragma pack(push, 1)
 typedef struct {
@@ -53,21 +57,30 @@ typedef struct {
     uint16_t block_align;
     uint16_t bits_per_sample;
     // Extended fmt bytes may follow
-} wav_header_t;
+} Wav_Hdr_TypeDef;
 
 typedef struct {
     uint8_t  data_chunk_marker[4]; // "data"
     uint32_t data_size;             // Size of audio data
-} wav_data_header_t;
+} Wav_Data_Header_TypeDef;
 #pragma pack(pop)
 
-extern	int is_valid_wav(wav_header_t* h);
-extern	uint32_t get_sample_count(wav_header_t* h, wav_data_header_t* d);
+
+typedef struct {
+	char					fname[16];
+	Sampler_Voices_TypeDef 	sampler_voices[NUM_VOICES];
+	Wav_Hdr_TypeDef			wav_header;
+	Wav_Data_Header_TypeDef	wav_data;
+} SamplePlayer_TypeDef;
+
+extern	int is_valid_wav(Wav_Hdr_TypeDef* h);
+extern	uint32_t get_sample_count(Wav_Hdr_TypeDef* h, Wav_Data_Header_TypeDef* d);
 extern	FATFS fs;
 extern	FIL file;
 extern	FRESULT mount_sd(void);
-extern	FRESULT open_wav_file(const char* fname, wav_header_t* header);
+extern	FRESULT open_wav_file(const char* fname, Wav_Hdr_TypeDef* header);
 
-
+#endif //#ifdef A_OS_SDCARD_ENABLED
+#endif //#ifdef SOUND_ENGINE_ENABLED
 
 #endif /* MODULES_SOUND_ENGINE_GENERATORS_SAMPLE_PLAYER_H_ */

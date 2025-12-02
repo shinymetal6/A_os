@@ -23,6 +23,10 @@
 #ifndef MODULES_SOUND_ENGINE_SFX_HARMONIZER_H_
 #define MODULES_SOUND_ENGINE_SFX_HARMONIZER_H_
 
+#include "main.h"
+#include "../../../kernel/A.h"
+#include "../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
 #include "../arm_math.h"
 /*
  *  Harmony Modes
@@ -80,5 +84,6 @@ typedef struct {
 	HARMONIZER_VoiceState_TypeDef voices[MAX_VOICES];
 }HARMONIZER_Effect_TypeDef;
 
+#endif //#ifdef SOUND_ENGINE_ENABLED
 
 #endif /* MODULES_SOUND_ENGINE_SFX_HARMONIZER_H_ */

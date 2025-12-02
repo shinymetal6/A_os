@@ -44,6 +44,7 @@ typedef struct
 
 #define	USB_CDC_CLASS	0
 #define	USB_MIDI_CLASS	1
+#define	USB_AUDIO_CLASS	2
 
 extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data);
 extern	uint32_t	usb_device_driver_unregister(USB_Drv_TypeDef *usb_drv);

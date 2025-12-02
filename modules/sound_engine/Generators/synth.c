@@ -26,8 +26,8 @@
 #include "../sound_engine.h"
 #include "synth.h"
 
-// Precomputed sine wavetable (Q15 format)
-AUDIO_FAST_RAM 	static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
+// Sine wavetable (Q15 format)
+static q15_t sine_wavetable[SYNTH_WAVETABLE_1024];
 __attribute__((section(".table"))) __attribute__ ((aligned (32))) const float	rom_midi_freq[SYNTH_MIDI_NOTES] =
 {
 		8.176,
@@ -375,9 +375,16 @@ ITCM_AREA_CODE void NoteOn(uint8_t channel,uint8_t note, uint8_t velocity)
 {
 AUDIO_Source_TypeDef *synth = AudioSourceLeft;
 
+	if ( channel == AUDIO_SOURCE_LEFT )
+		synth = AudioSourceLeft;
+	else if ( channel == AUDIO_SOURCE_RIGHT )
+		synth = AudioSourceRight;
+	else
+		return;
+
 	while ( synth != NULL )
 	{
-		if (( synth->source_type == SOUND_SOURCE_IS_SYNTH ) && ( synth->channel == channel ))
+		if ( synth->source_type == SOUND_SOURCE_IS_SYNTH )
 		{
 			synth_note_on(synth, note, velocity,SYNTH_WAVEFORM_SINE,0.50F);
 			return;
@@ -389,9 +396,17 @@ AUDIO_Source_TypeDef *synth = AudioSourceLeft;
 ITCM_AREA_CODE void NoteOff(uint8_t channel,uint8_t note)
 {
 AUDIO_Source_TypeDef *synth = AudioSourceLeft;
+
+	if ( channel == AUDIO_SOURCE_LEFT )
+		synth = AudioSourceLeft;
+	else if ( channel == AUDIO_SOURCE_RIGHT )
+		synth = AudioSourceRight;
+	else
+		return;
+
 	while ( synth != NULL )
 	{
-		if (( synth->source_type == SOUND_SOURCE_IS_SYNTH ) && ( synth->channel == channel ))
+		if ( synth->source_type == SOUND_SOURCE_IS_SYNTH )
 		{
 			synth_note_off(synth, note);
 			return;
@@ -404,6 +419,14 @@ ITCM_AREA_CODE void AllNoteOFF(void)
 {
 AUDIO_Source_TypeDef *synth = AudioSourceLeft;
 
+	synth = AudioSourceLeft;
+	while ( synth != NULL )
+	{
+		if ( synth->source_type == SOUND_SOURCE_IS_SYNTH )
+			synth_all_note_off(synth);
+		synth = (AUDIO_Source_TypeDef *)synth->next_source;
+	}
+	synth = AudioSourceRight;
 	while ( synth != NULL )
 	{
 		if ( synth->source_type == SOUND_SOURCE_IS_SYNTH )
@@ -412,19 +435,14 @@ AUDIO_Source_TypeDef *synth = AudioSourceLeft;
 	}
 }
 
-ITCM_AREA_CODE uint8_t Synth_Register(uint8_t channel,AUDIO_Source_TypeDef *synth)
+ITCM_AREA_CODE uint8_t Synth_Register(AUDIO_Source_TypeDef *synth)
 {
 uint32_t	i;
 
 	if ( synth->out_buf == NULL )
 		return 1;
-	if ( channel >= SYNTH_CHANNELS )
-		return 1;
-	for(i=0;i<SYNTH_MIDI_NOTES;i++)
-		midi_freq[i] =	rom_midi_freq[i];
 
-
-	if ( synth->channel_in == AUDIO_SOURCE_LEFT)
+	if ( synth->source == AUDIO_SOURCE_LEFT)
 	{
 		if ( AudioSourceLeft == NULL )
 		{
@@ -441,6 +459,28 @@ uint32_t	i;
 		}
 		synth->source_type = SOUND_SOURCE_IS_SYNTH;
 	}
+	else if ( synth->source == AUDIO_SOURCE_RIGHT)
+	{
+		if ( AudioSourceRight == NULL )
+		{
+			AudioSourceRight = synth;
+			synth->next_source = NULL;
+		}
+		else
+		{
+			AUDIO_Source_TypeDef *source = AudioSourceRight;
+			while(source->next_source != NULL)
+				source = (AUDIO_Source_TypeDef *)source->next_source;
+			source->next_source = (uint32_t *)synth;
+			synth->next_source = NULL;
+		}
+		synth->source_type = SOUND_SOURCE_IS_SYNTH;
+	}
+	else
+		return 1;
+
+	for(i=0;i<SYNTH_MIDI_NOTES;i++)
+		midi_freq[i] =	rom_midi_freq[i];
 
 	if ( synth->wavetable_size == 0 )
 		synth->wavetable_size = SYNTH_WAVETABLE_1024;

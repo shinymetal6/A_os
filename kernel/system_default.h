@@ -25,6 +25,8 @@
 
 #include <stdint.h>
 
+#define	A_OS_VERSION			"v2025.12-rc8"
+
 #ifdef	STM32H743xx
 		#include "../processors/STM32H743xx.h"
 #endif
@@ -74,5 +76,4 @@
 #endif
 
 // versioning
-#define	A_OS_VERSION			"v2025.12-rc5"
 #endif /* KERNEL_SYSTEM_DEFAULT_H_ */

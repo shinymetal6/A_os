@@ -53,18 +53,17 @@ typedef struct
 	/* effect header */
 	uint8_t				status;
 	uint8_t				flags;
-	uint32_t 			*next_source;
 	uint32_t 			*next_effect;
 	q15_t				*in_buf;
 	q15_t				*out_buf;
+	uint32_t 			*next_source;
 	void 				(*effect)(uint32_t 	*effect_data);
 	void 				(*effect_init)(uint32_t *effect_data);
 	uint16_t			block_size;
 	float				sample_rate;
 	/* Source Internals */
-	uint8_t				channel;
-	uint8_t				channel_in;
-	uint8_t				channel_out;
+	uint8_t				source;
+	uint8_t				destination;
 	uint8_t				source_type;
 	uint8_t				active_voices;
 	uint8_t				voices_shift;

@@ -131,49 +131,61 @@ AUDIO_Effect_TypeDef	*AUDIO_Effect = (AUDIO_Effect_TypeDef *)effect;
 
 ITCM_AREA_CODE static void audio_gen(AUDIO_Source_TypeDef *source,AUDIO_Dest_TypeDef *dest,uint32_t start_sample,uint8_t device)
 {
-AUDIO_Effect_TypeDef *last_effect;
+AUDIO_Effect_TypeDef *effect,*last_effect;
 	if ( source->source_type == SOUND_SOURCE_IS_SYNTH )
 	{
 		Synth_Process_Block((uint32_t *)source);
-		last_effect = (AUDIO_Effect_TypeDef *)source;
-		if ( source->next_effect != NULL )
+		effect = (AUDIO_Effect_TypeDef *)source->next_effect;
+		if ( effect != NULL )
 		{
 			last_effect = (AUDIO_Effect_TypeDef *)apply_effect(source->next_effect);
-			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->channel_out);
+			dest->OutFunc(dest->out_buf,last_effect->out_buf,start_sample,source->block_size,source->destination);
 		}
+		else
+			dest->OutFunc(dest->out_buf,source->out_buf,start_sample,source->block_size,source->destination);
 	}
 	if ( source->source_type == SOUND_SOURCE_IS_I2S_IN )
-		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->channel_out);
+		dest->OutFunc(dest->out_buf,source->in_buf,start_sample,source->block_size,source->destination);
 	if ( source->source_type == SOUND_SOURCE_IS_DRUM )
 	{
 		q15_t *drum_buffer = Drum_Machine_audio();
 		if ( drum_buffer != NULL )
-			dest->OutFunc(dest->out_buf,drum_buffer,start_sample,source->block_size,source->channel_out);
+			dest->OutFunc(dest->out_buf,drum_buffer,start_sample,source->block_size,source->destination);
 	}
 }
 
+ITCM_AREA_CODE void inner_Audio_loop(AUDIO_Source_TypeDef *source, AUDIO_Dest_TypeDef *dest, uint32_t start_sample)
+{
+	if (( dest->out_buf != NULL) && ( dest->in_buf != NULL) && ( dest->OutFunc != NULL ))
+	{
+		while(source != NULL )
+		{
+			if ( (source->flags == SOURCE_ENABLED ) )
+				audio_gen(source,dest,start_sample,source->source_type);
+			source = (AUDIO_Source_TypeDef *)source->next_source;
+		}
+	}
+}
+
+
 ITCM_AREA_CODE void Do_Audio(uint32_t start_sample)
 {
-AUDIO_Source_TypeDef *source;
-AUDIO_Dest_TypeDef *dest;
 
 #ifdef LCD_SS_GPIO_Port
 	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_SET);
 #endif // #ifdef LCD_SS_GPIO_Port
 	audio_pipe_time_start = DWT->CYCCNT;
 
-	source = AudioSourceLeft;
-	if ( source == NULL )
-		return;
-	dest = AudioDestLeft;
-	if (( dest == NULL) || ( dest->out_buf == NULL) || ( dest->in_buf == NULL) || ( dest->OutFunc == NULL ))
-		return;
-	while(source != NULL )
-	{
-		if ( (source->flags == SOURCE_ENABLED ) )
-			audio_gen(source,dest,start_sample,source->source_type);
-		source = (AUDIO_Source_TypeDef *)source->next_source;
-	}
+
+	if (( AudioSourceLeft != NULL ) && (AudioDestLeft != NULL))
+		inner_Audio_loop(AudioSourceLeft, AudioDestLeft, start_sample);
+	if (( AudioSourceLeft != NULL ) && (AudioDestRight != NULL))
+		inner_Audio_loop(AudioSourceLeft, AudioDestRight, start_sample);
+	if (( AudioSourceRight != NULL ) && (AudioDestLeft != NULL))
+		inner_Audio_loop(AudioSourceRight, AudioDestLeft, start_sample);
+	if (( AudioSourceRight != NULL ) && (AudioDestRight != NULL))
+		inner_Audio_loop(AudioSourceRight, AudioDestRight, start_sample);
+
 	audio_pipe_time = (DWT->CYCCNT - audio_pipe_time_start) / (HSI_CLOCK / 1000000);
 #ifdef LCD_SS_GPIO_Port
 	HAL_GPIO_WritePin(LCD_SS_GPIO_Port, LCD_SS_Pin, GPIO_PIN_RESET);

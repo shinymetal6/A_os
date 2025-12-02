@@ -43,7 +43,7 @@ ITCM_AREA_CODE uint8_t I2SIO_Register(AUDIO_Source_TypeDef *i2s_in)
 {
 	if ( i2s_in->out_buf == NULL )
 		return 1;
-	if ( i2s_in->channel_in == AUDIO_SOURCE_LEFT)
+	if ( i2s_in->source == AUDIO_SOURCE_LEFT)
 	{
 		if ( AudioSourceLeft == NULL )
 		{

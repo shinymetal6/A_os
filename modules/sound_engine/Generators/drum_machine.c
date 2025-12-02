@@ -160,7 +160,7 @@ ITCM_AREA_CODE uint8_t Drum_Machine_Register(AUDIO_Source_TypeDef *drum_machine)
 	if ( drum_machine->ptr_gen_struct == NULL )	// pointer to the user space drum_voices drum machine
 		return 1;
 
-	if ( drum_machine->channel_in == AUDIO_SOURCE_LEFT)
+	if ( drum_machine->source == AUDIO_SOURCE_LEFT)
 	{
 		if ( AudioSourceLeft == NULL )
 		{
