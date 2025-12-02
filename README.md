@@ -71,6 +71,15 @@ STM32N657xx : Nucleo : NOTE: Still in wip<br>
 Please note:<br>
 The iodef_common.h file is not yet complete, so some definitions maybe not correct<br>
 
+# SD Card notes<br>
+As Cube IDE initializes the sd card well before calling Aos, an error is raised when<br>
+ an empty slot is found<br>
+To avoid to hang the system some code must be inserted before the Cube IDE initialization<br>
+This snippet is already present, and the procedure is:<br>
+1) Locate the function static void MX_SDMMC1_SD_Init(void)<br>
+2) Locate the line that tells : "if (HAL_SD_Init(&hsd1) != HAL_OK)"<br>
+3) Remove the if condition, the line must be "HAL_SD_Init(&hsd1);"<br>
+
 # Samples : <br>
 SampleProcesses/sample_process_1_adc.c<br>
 SampleProcesses/sample_process_1_audio_DAC_midi.c<br>
