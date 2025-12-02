@@ -14,24 +14,21 @@
  * Project : A_os
 */
 /*
- * fat.h
+ * sd_diskio.h
  *
- *  Created on: Nov 14, 2025
+ *  Created on: Nov 19, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_FAT_FAT_H_
-#define MODULES_FAT_FAT_H_
+#ifndef DRIVERS_SDCARD_SD_DISKIO_H_
+#define DRIVERS_SDCARD_SD_DISKIO_H_
 
-#include "App/fatfs.h"
-#include "Target/bsp_driver_sd.h"
-#include "Target/fatfs_platform.h"
-#include "Target/ffconf.h"
-#include "Target/sd_diskio.h"
-#include "FatFs/diskio.h"
-#include "FatFs/ff_gen_drv.h"
-#include "FatFs/ff.h"
-#include "FatFs/integer.h"
+#include "sdcard.h"
+#include "../../modules/fat/ff_gen_drv.h"
 
+#define SD_TIMEOUT 30 * 1000
+#define SD_DEFAULT_BLOCK_SIZE 512
 
-#endif /* MODULES_FAT_FAT_H_ */
+extern const Diskio_drvTypeDef  SD_Driver;
+
+#endif /* DRIVERS_SDCARD_SD_DISKIO_H_ */

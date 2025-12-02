@@ -30,19 +30,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "../../Core/usbd_ioreq.h"
 
-/** @addtogroup STM32_USB_DEVICE_LIBRARY
-  * @{
-  */
-
-/** @defgroup USBD_AUDIO
-  * @brief This file is the Header file for usbd_audio.c
-  * @{
-  */
-
-
-/** @defgroup USBD_AUDIO_Exported_Defines
-  * @{
-  */
 #ifndef USBD_AUDIO_FREQ
 /* AUDIO Class Config */
 #define USBD_AUDIO_FREQ                               48000U

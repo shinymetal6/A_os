@@ -36,5 +36,6 @@
 #include "spi/spi.h"
 #include "i2c/i2c.h"
 #include "fdcan/fdcan.h"
+#include "sdcard/sdcard.h"
 
 #endif /* DRIVERS_DRIVERS_H_ */

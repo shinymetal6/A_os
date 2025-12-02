@@ -19,6 +19,12 @@
  *  Created on: Nov 14, 2025
  *      Author: fil
  */
+/*
+ * # Generate and play 5 seconds of 440 Hz tone
+ * speaker-test -D hw:2 -t sine -f 440 -c 2 -r 48000 -l 5
+ *
+ *
+ */
 #include "main.h"
 #include "sample_A_os_includes.h"
 

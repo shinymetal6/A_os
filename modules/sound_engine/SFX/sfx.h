@@ -24,6 +24,8 @@
 #define MODULES_SOUND_ENGINE_SFX_SFX_H_
 
 #define GRAIN_SIZE      128
+#define MAX_VOICES      4
+
 #include	"granular_pitch_shifter.h"
 #include	"harmonizer.h"
 #include	"vocoder.h"

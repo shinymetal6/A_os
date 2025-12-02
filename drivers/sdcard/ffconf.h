@@ -19,16 +19,8 @@
 #ifndef _FFCONF
 #define _FFCONF 68300	/* Revision ID */
 
-/*-----------------------------------------------------------------------------/
-/ Additional user header to be used
-/-----------------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32h7xx_hal.h"
-#include "bsp_driver_sd.h"
-
-/*-----------------------------------------------------------------------------/
-/ Function Configurations
-/-----------------------------------------------------------------------------*/
+#include "sdcard.h"
 
 #define _FS_READONLY         0      /* 0:Read/Write or 1:Read only */
 /* This option switches read-only configuration. (0:Read/Write or 1:Read-only)

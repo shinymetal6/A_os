@@ -28,38 +28,39 @@
 #ifdef SAMPLEPROCESS_1_QSPI
 #ifdef STM32H7xx_HAL_QSPI_H
 
+/* */
+#define	W25Q128JV_PAGE_SIZE	256
+uint8_t man_id, dev_id,capacity;
+uint8_t tx_data[W25Q128JV_PAGE_SIZE*4] = "FIL & read DMA & write DMA : Hello from STM32H7 QSPI! This is a test write on 1024 bytes!!!!";
+uint8_t rx_data[W25Q128JV_PAGE_SIZE*4];
+uint32_t flash_address = 0x000000;  // Start of flash
+
 extern	QSPI_HandleTypeDef hqspi;
 
 QSPI_DriverStruct_t W25Qxx_Drv =
 {
-	.qspi_bus = &hqspi,
-	.flags = QSPI_USES_DMA,
-	.FlashSize = 128,
+	.qspi = &hqspi,
 	.wakeup_id = WAKEUP_FROM_QSPI_IRQ,
 	.qspi_id = QSPI_25XX,
 };
 
-#define D2_QSPI_RAM				__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
-
 #define		DATALEN			256
 #define		DATAOFFSET		0
-D2_QSPI_RAM	uint8_t		w25_bufw[DATALEN];
-D2_QSPI_RAM	uint8_t		w25_bufr[DATALEN];
-uint32_t	qspi_state = 0 , qspi_irqs = 0 , done = 0 , qspi_address = 0 , qspi_len = 0;
-uint32_t	qspi_error = 0;
+__attribute__ ((aligned (32)))	uint8_t		w25_bufw[DATALEN*4] = "FIL & read DMA & write DMA on Aos : Hello from STM32H7 QSPI! This is a test write on 256 bytes!!!!";
+__attribute__ ((aligned (32)))	uint8_t		w25_bufr[DATALEN*4];
+
+uint8_t qspi_state = 0,qspi_irqs=0 , qspi_errs = 0 , ret_ce_val;
+void sample_process_1_init(uint32_t process_id)
+{
+	qspi_register(&W25Qxx_Drv);
+	qspi_reset_chip(&W25Qxx_Drv);
+}
 
 void sample_process_1_qspi(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	i,j=1;
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	qspi_register(&W25Qxx_Drv);
-	qspi_address = 0+DATAOFFSET;
-	qspi_len = DATALEN-DATAOFFSET;
-	qspi_error = 0;
-	for(i=0;i<DATALEN;i++)
-		w25_bufw[i] = j;
 
 	while(1)
 	{
@@ -71,34 +72,35 @@ uint32_t	i,j=1;
 			switch(qspi_state)
 			{
 			case 0 :
-				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
+				qspi_get_id(&W25Qxx_Drv);      // Should be: man_id=0xEF, dev_id=0x40, capacity=0x18 (W25Q128JV)
 				qspi_state++;
 				break;
-			case 1 :
-				qspi_error += qspi_erase_blocks(&W25Qxx_Drv,0,1);
-				if (( W25Qxx_Drv.status & QSPI_BUSY ) != QSPI_BUSY )
-					qspi_state++;
-				break;
-			case 2 :
-				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
+			case 1:
+				//ret_ce_val = qspi_chip_erase(&W25Qxx_Drv);
 				qspi_state++;
-				break;
+			case 2:
+				qspi_erase_sectors(&W25Qxx_Drv,flash_address);
+				qspi_state++;
 			case 3 :
-				qspi_error += qspi_write(&W25Qxx_Drv,0,w25_bufw,DATALEN);
+				qspi_read(&W25Qxx_Drv,flash_address, rx_data, W25Q128JV_PAGE_SIZE*4);
 				qspi_state++;
 				break;
-			case 4 :
-				qspi_error += qspi_read(&W25Qxx_Drv,0,w25_bufr,DATALEN);
-				qspi_state = 0;
-				j++;
-				for(i=0;i<DATALEN;i++)
-					w25_bufw[i] = j;
-				for(i=0;i<DATALEN;i++)
-					w25_bufr[i] = 0;
+			case 4:
+				qspi_write(&W25Qxx_Drv,flash_address, tx_data, W25Q128JV_PAGE_SIZE*4);
+				qspi_state++;
+				break;
+			case 5:
+				qspi_read(&W25Qxx_Drv,flash_address, rx_data, W25Q128JV_PAGE_SIZE*4);
+				qspi_state++;
+				break;
+			case 6:
+				qspi_memory_map(&W25Qxx_Drv);
+				qspi_state++;
 				break;
 			default :
-				qspi_state = 0;
+				qspi_state = 10;
 				break;
+
 			}
 		}
 		if (( wakeup & WAKEUP_FROM_QSPI_IRQ) == WAKEUP_FROM_QSPI_IRQ)

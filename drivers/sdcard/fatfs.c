@@ -14,32 +14,33 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * fatfs.c
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Nov 19, 2025
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#include "main.h"
+#include "../../kernel/A.h"
+#include "../../kernel/A_exported_functions.h"
 
-typedef struct
+#ifdef A_OS_SDCARD_ENABLED
+
+#include "fatfs.h"
+
+uint8_t retSD;    /* Return value for SD */
+char SDPath[4];   /* SD logical drive path */
+FATFS SDFatFS;    /* File system object for SD logical drive */
+FIL SDFile;       /* File object for SD */
+
+void MX_FATFS_Init(void)
 {
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
+	retSD = FATFS_LinkDriver(&SD_Driver, SDPath);
+}
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-#include "sound_engine/sound_engine.h"
-#include "midi_decoder/midi_decoder.h"
-#include "pid/pid.h"
+DWORD get_fattime(void)
+{
+	return 0;
+}
 
-#endif /* MODULES_MODULES_H_ */
+#endif // #ifdef A_OS_SDCARD_ENABLED

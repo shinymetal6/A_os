@@ -32,7 +32,6 @@
 #include "../../fat/ff.h"
 
 #define BLOCK_SIZE      64
-#define MAX_VOICES      4
 
 typedef struct {
     const int16_t* sample;

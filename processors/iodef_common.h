@@ -56,6 +56,9 @@
 	#ifdef STM32H7xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
+	#ifdef STM32H7xx_HAL_SD_H
+		#define A_OS_SDCARD_ENABLED	1
+	#endif
 	#ifdef STM32H7xx_HAL_SPI_H
 		#define A_OS_SPI_ENABLED	1
 	#endif
