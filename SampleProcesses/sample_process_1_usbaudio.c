@@ -32,9 +32,23 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_USBAUDIO
 
+#ifdef SOUND_ENGINE_I2S_ENABLED
+	#define	SAMPLE_FREQUENCY	I2S_SAMPLE_FREQUENCY
+#else
+	#define	SAMPLE_FREQUENCY	48000
+#endif
+
 #define	USB_BUF_LEN	64
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
 uint8_t	usb_tx_buffer[USB_BUF_LEN];
+
+AUDIO_FAST_RAM uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
+
+__attribute__ ((aligned (32)))	AUDIO_Source_TypeDef USBAudio_In_left =
+{
+	.out_buf = (int16_t *)left_rx_buffer,
+	.sample_rate = SAMPLE_FREQUENCY,
+};
 
 USB_Drv_TypeDef	USB_Drv =
 {
@@ -44,8 +58,8 @@ USB_Drv_TypeDef	USB_Drv =
 		.usb_interface_class = USB_AUDIO_CLASS,
 		.timeout = 250,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
+		.out_device_ptr = &USBAudio_In_left,
 };
-
 
 void sample_process_1_init(uint32_t process_id)
 {

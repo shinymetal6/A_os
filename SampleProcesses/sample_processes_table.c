@@ -149,6 +149,13 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_usbaudio(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_USBAUDIO
+#ifdef	SAMPLEPROCESS_1_G431RB_PN5180
+extern	void sample_process_1_g431rb_pn5180(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_G431RB_PN5180
+
+
+
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
 extern	void sample_process_4(uint32_t process_id);	//This is process4 of the application

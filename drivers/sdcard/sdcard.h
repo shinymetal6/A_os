@@ -22,6 +22,7 @@
 
 #ifndef DRIVERS_SDCARD_SDCARD_H_
 #define DRIVERS_SDCARD_SDCARD_H_
+#ifdef A_OS_SDCARD_ENABLED
 
 #ifdef __cplusplus
  extern "C" {
@@ -83,5 +84,6 @@ extern	uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv);
 #ifdef __cplusplus
 }
 #endif
+#endif //#ifdef A_OS_SDCARD_ENABLED
 
 #endif /* DRIVERS_SDCARD_SDCARD_H_ */

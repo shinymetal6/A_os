@@ -42,6 +42,7 @@
 #define		SOUND_SOURCE_IS_I2S_IN			1
 #define		SOUND_SOURCE_IS_DRUM			2
 #define		SOUND_SOURCE_IS_SAMPLE_PLAYER	3
+#define		SOUND_SOURCE_IS_USB				4
 /* out_device */
 #define		SOURCE_TO_INTERNAL_BUF		0
 #define		SOURCE_TO_DAC_OUT			1

@@ -40,12 +40,14 @@ typedef struct
 /* flags */
 #define	SPI_TX_DMA_COMPLETE	0x80
 #define	SPI_TX_COMPLETE		0x01
+#define	SPI_RX_COMPLETE		0x02
 /*
 #include "spi_lcd/spi_lcd.h"
 #include "LoRa/LoRa.h"
-#include "nrf24l01/nrf24l01.h"
 */
 #include "lcd/lcd.h"
+#include "NFC/nfc.h"
+#include "nrf24l01/nrf24l01.h"
 
 extern	SPI_DriverStruct_t 	*spi_drv_ptr;
 

@@ -27,6 +27,7 @@
 #include "../../../../kernel/A.h"
 #include "../../../../kernel/A_exported_functions.h"
 #ifdef	USB_DEVICE_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 #include "usbd_audio_if.h"
 
 extern USBD_HandleTypeDef hUsbDeviceFS;
@@ -38,6 +39,8 @@ static int8_t AUDIO_VolumeCtl_FS(uint8_t vol);
 static int8_t AUDIO_MuteCtl_FS(uint8_t cmd);
 static int8_t AUDIO_PeriodicTC_FS(uint8_t *pbuf, uint32_t size, uint8_t cmd);
 static int8_t AUDIO_GetState_FS(void);
+static int8_t AUDIO_Init_FS(uint32_t AudioFreq, uint32_t Volume, uint32_t options);
+static int8_t AOS_AUDIO_AudioCmd_FS(uint8_t* pbuf, uint32_t size,  USBD_AUDIO_HandleTypeDef *haudio);
 
 USBD_AUDIO_ItfTypeDef USBD_AUDIO_Interface_fops_FS =
 {
@@ -48,6 +51,7 @@ USBD_AUDIO_ItfTypeDef USBD_AUDIO_Interface_fops_FS =
   AUDIO_MuteCtl_FS,
   AUDIO_PeriodicTC_FS,
   AUDIO_GetState_FS,
+  AOS_AUDIO_AudioCmd_FS,
 };
 
 static int8_t AUDIO_Init_FS(uint32_t AudioFreq, uint32_t Volume, uint32_t options)
@@ -68,22 +72,40 @@ static int8_t AUDIO_DeInit_FS(uint32_t options)
   /* USER CODE END 1 */
 }
 
+extern	USB_Drv_TypeDef			*User_USB_Audio_Drv;
+
+static int8_t AOS_AUDIO_AudioCmd_FS(uint8_t* pbuf, uint32_t size,  USBD_AUDIO_HandleTypeDef *haudio)
+{
+uint32_t	i;
+AUDIO_Source_TypeDef 	*device_ptr = User_USB_Audio_Drv->out_device_ptr;
+int16_t	*i2s_buf = device_ptr->out_buf;
+uint16_t	block_size = device_ptr->block_size;
+
+	if ( haudio->wr_ptr != 0 )
+	{
+		if ( haudio->wr_ptr > (haudio->rd_ptr+DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES ))
+		{
+			for(i=0;i<block_size;i++)
+				i2s_buf[i] = haudio->buffer[haudio->wr_ptr-DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES+i];
+			haudio->rd_ptr += block_size;
+		}
+		return (USBD_OK);
+	}
+	else
+	{
+		for(i=0;i<block_size;i++)
+			i2s_buf[i] = haudio->buffer[AUDIO_TOTAL_BUF_SIZE-DEFAULT_HALF_NUMBER_OF_AUDIO_SAMPLES+i];
+		haudio->rd_ptr = 0;
+	}
+	return (USBD_OK);
+}
+
 static int8_t AUDIO_AudioCmd_FS(uint8_t* pbuf, uint32_t size, uint8_t cmd)
 {
-  /* USER CODE BEGIN 2 */
-  switch(cmd)
-  {
-    case AUDIO_CMD_START:
-    break;
-
-    case AUDIO_CMD_PLAY:
-    break;
-  }
   UNUSED(pbuf);
   UNUSED(size);
   UNUSED(cmd);
   return (USBD_OK);
-  /* USER CODE END 2 */
 }
 
 static int8_t AUDIO_VolumeCtl_FS(uint8_t vol)
@@ -133,6 +155,7 @@ void HalfTransfer_CallBack_FS(void)
   /* USER CODE END 8 */
 }
 
+#endif // #ifdef SOUND_ENGINE_ENABLED
 #endif // #ifdef	USB_DEVICE_ENABLED
 #endif // #ifdef	STM32H743xx
 

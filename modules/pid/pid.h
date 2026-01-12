@@ -22,6 +22,7 @@
 
 #ifndef MODULES_PID_PID_H_
 #define MODULES_PID_PID_H_
+#ifdef	PID_ENABLE
 
 #include <stdint.h>
 
@@ -62,5 +63,6 @@ extern	void	PID_Set(PIDController_TypeDef *pid, float kp, float ki, float kd, fl
 
 extern	float	PID_Compute(PIDController_TypeDef *pid, float input); // Calculate PID output
 extern uint32_t	PID_register(PIDController_TypeDef *pid);
+#endif //#ifdef	PID_ENABLE
 
 #endif /* MODULES_PID_PID_H_ */

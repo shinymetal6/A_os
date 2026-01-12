@@ -39,13 +39,17 @@ SPI_DriverStruct_t	*spi_drv_ptr_L = spi_drv_ptr;
 	while(spi_drv_ptr_L->bus != hspi)
 	{
 		if ( spi_drv_ptr_L->next_drv != NULL )
-			spi_drv_ptr_L = (SPI_DriverStruct_t *)i2c_drv_ptr->next_drv;
+			spi_drv_ptr_L = (SPI_DriverStruct_t *)spi_drv_ptr->next_drv;
 	}
 	if (spi_drv_ptr_L != NULL)
 	{
 		if ( spi_drv_ptr_L->process != 0 )
 		{
 			spi_drv_ptr_L->flags |= flag;
+			if ( spi_drv_ptr_L->cs_port != NULL )
+			{
+			    HAL_GPIO_WritePin(spi_drv_ptr_L->cs_port, spi_drv_ptr_L->cs_bit, GPIO_PIN_SET);
+			}
 		}
 	}
 }
@@ -53,22 +57,11 @@ SPI_DriverStruct_t	*spi_drv_ptr_L = spi_drv_ptr;
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
 	spi_irq_common(hspi,SPI_TX_COMPLETE | SPI_DMA_DONE);
-	/*
-
-uint32_t	i;
-	for(i=0;i<MAX_SPI_DEVICES;i++)
-	{
-		if ( SPI_DriverStruct[i].bus != NULL )
-		{
-			if ( SPI_DriverStruct[i].bus  == hspi )
-			{
-#ifdef LCD_ENABLED
-				SPI_LCD_DriverStruct_t	*spi_lcd_Drv = (SPI_LCD_DriverStruct_t *)SPI_DriverStruct[i].driver_private_data;
-				spi_lcd_Drv->flags  |= SPI_DMA_DONE;
-#endif // #ifdef LCD_ENABLED
-			}
-		}
-	}
-	*/
 }
+
+void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
+{
+	spi_irq_common(hspi,SPI_RX_COMPLETE | SPI_DMA_DONE);
+}
+
 #endif // #ifdef A_OS_SPI_ENABLED

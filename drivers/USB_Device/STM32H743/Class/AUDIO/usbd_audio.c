@@ -26,6 +26,7 @@
 #include "../../../../../kernel/A.h"
 #include "../../../../../kernel/A_exported_functions.h"
 #ifdef	USB_DEVICE_ENABLED
+#ifdef SOUND_ENGINE_ENABLED
 
 #include "usbd_audio.h"
 #include "../../Core/usbd_ctlreq.h"
@@ -257,6 +258,8 @@ __ALIGN_BEGIN static uint8_t USBD_AUDIO_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIE
 #endif /* USE_USBD_COMPOSITE  */
 
 static uint8_t AUDIOOutEpAdd = AUDIO_OUT_EP;
+
+extern USB_Drv_TypeDef	*User_USB_Audio_Drv;
 
 static uint8_t USBD_AUDIO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx)
 {
@@ -607,6 +610,44 @@ static uint8_t USBD_AUDIO_IsoOutIncomplete(USBD_HandleTypeDef *pdev, uint8_t epn
   return (uint8_t)USBD_OK;
 }
 
+extern	USBD_AUDIO_ItfTypeDef 	USBD_AUDIO_Interface_fops_FS;
+extern	USB_Drv_TypeDef			*User_USB_Audio_Drv;
+
+static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
+{
+USBD_AUDIO_HandleTypeDef *haudio = (USBD_AUDIO_HandleTypeDef *)pdev->pClassData;
+uint32_t rx_len;
+	if (haudio == NULL)
+		return (uint8_t)USBD_FAIL;
+
+	if (epnum != (AUDIO_OUT_EP & 0x7F))
+		return USBD_OK;
+	/* Validate state */
+	if (haudio->alt_setting != 1)
+		return USBD_OK;
+
+	rx_len = USBD_LL_GetRxDataSize(pdev, epnum);
+	/* Process data */
+	if (USBD_AUDIO_Interface_fops_FS.AudioCmd == NULL )
+		return (uint8_t)USBD_FAIL;
+	if (haudio->offset == AUDIO_OFFSET_UNKNOWN)
+	{
+		USBD_AUDIO_Interface_fops_FS.AosAudioCmd(&haudio->buffer[haudio->wr_ptr], rx_len,haudio);
+		haudio->offset = AUDIO_OFFSET_NONE;
+	}
+	else
+		USBD_AUDIO_Interface_fops_FS.AosAudioCmd(&haudio->buffer[haudio->wr_ptr], rx_len,haudio);
+
+	haudio->wr_ptr += rx_len;
+	if (haudio->wr_ptr >= AUDIO_TOTAL_BUF_SIZE)	/* All buffers are full: roll back */
+		haudio->wr_ptr = 0U;
+
+	/* RE-ARM FOR NEXT PACKET */
+	USBD_LL_PrepareReceive(pdev, AUDIO_OUT_EP,&haudio->buffer[haudio->wr_ptr],AUDIO_OUT_PACKET);
+	return USBD_OK;
+}
+#ifdef OLD_USBD_AUDIO_DataOutOLD
+
 static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
   uint16_t PacketSize;
@@ -666,6 +707,7 @@ static uint8_t USBD_AUDIO_DataOut(USBD_HandleTypeDef *pdev, uint8_t epnum)
 
   return (uint8_t)USBD_OK;
 }
+#endif //#ifdef OLD_USBD_AUDIO_DataOutOLD
 
 static void AUDIO_REQ_GetCurrent(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req)
 {
@@ -770,5 +812,6 @@ static void *USBD_AUDIO_GetAudioHeaderDesc(uint8_t *pConfDesc)
   }
   return pAudioDesc;
 }
+#endif // #ifdef SOUND_ENGINE_ENABLED
 #endif // #ifdef	USB_DEVICE_ENABLED
 #endif // #ifdef	STM32H743xx

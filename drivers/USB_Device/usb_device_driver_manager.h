@@ -25,6 +25,10 @@
 #define		USB_DRIVER_RX_SIZE		64
 #define		USB_DRIVER_TX_SIZE		64
 
+#ifdef SOUND_ENGINE_ENABLED
+#include "../../modules/sound_engine/sound_engine.h"
+#endif // #ifdef SOUND_ENGINE_ENABLED
+
 typedef struct
 {
 	uint8_t 	process;
@@ -39,6 +43,9 @@ typedef struct
 	uint16_t	usb_interface_class;
 	void		(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 	wakeup_id;
+#ifdef SOUND_ENGINE_ENABLED
+	AUDIO_Source_TypeDef 	*out_device_ptr;
+#endif // #ifdef SOUND_ENGINE_ENABLED
 }USB_Drv_TypeDef;
 
 

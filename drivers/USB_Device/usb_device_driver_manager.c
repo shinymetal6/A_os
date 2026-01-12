@@ -55,6 +55,8 @@ extern	void	usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
 extern	void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 extern	void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
+USB_Drv_TypeDef	*User_USB_Audio_Drv;
+
 ITCM_AREA_CODE uint32_t	usb_device_driver_unregister(USB_Drv_TypeDef *usb_drv)
 {
 	return 0;
@@ -82,6 +84,10 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_drv)
 		MidiRx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
 	}
 	usb_driver = usb_drv;
+
+	if ( usb_drv->usb_interface_class == USB_AUDIO_CLASS )
+		User_USB_Audio_Drv = usb_drv;
+
 	MX_Aos_USB_Device_Init(usb_drv->usb_interface_class);
 	return 0;
 }
