@@ -23,6 +23,8 @@
 #ifndef DRIVERS_SPI_NFC_NFC_H_
 #define DRIVERS_SPI_NFC_NFC_H_
 
+#ifdef NFC_ENABLED
+
 #include "../spi.h"
 #include <string.h>
 #include "PN5180/pn5180.h"
@@ -53,18 +55,10 @@ typedef struct
 	IRQn_Type		 	IRQ_number;
 #ifdef HAL_GPIO_MODULE_ENABLED
 	GPIO_Interrupt_DriverStruct_t	*nfc_irq_driver;
+	uint32_t			(*nfc_irq_callback)(uint16_t GPIO_Pin,uint32_t *nfc_struct);
 #endif
 	uint32_t			(*nfc_activate_read)(uint32_t *nfc_struct);
 	uint32_t			(*nfc_poll)(uint32_t *nfc_struct);
-	/*
-	uint32_t			(*nfc_reset)(uint32_t *nfc_struct);
-	uint32_t			(*nfc_write_register)(uint32_t *nfc_struct,uint8_t address,uint8_t byte0,uint8_t byte1,uint8_t byte2,uint8_t byte3);
-	uint32_t			(*nfc_send_data)(uint32_t *nfc_struct,uint8_t NumberOfValidBitsInLastByte,uint8_t *tx_data_ptr);
-	uint32_t			(*nfc_read_data)(uint32_t *nfc_struct,uint8_t *rx_data_ptr);
-	uint32_t			(*nfc_load_rf_config)(uint32_t *nfc_struct);
-	uint32_t			(*nfc_rf_on)(uint32_t *nfc_struct);
-	uint32_t			(*nfc_rf_off)(uint32_t *nfc_struct);
-	*/
 	uint8_t 			*tx_data_ptr;
 	uint8_t 			*rx_data_ptr;
 	uint16_t			nfc_model;
@@ -79,5 +73,7 @@ typedef struct
 #define	PN5180_SPI_TIMEOUT	250
 #define	CARD_IS_14443		0x14443
 #define	CARD_IS_15693		0x15693
+
+#endif // #ifdef NFC_ENABLED
 
 #endif /* DRIVERS_SPI_NFC_NFC_H_ */
