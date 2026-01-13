@@ -29,7 +29,12 @@
 #ifdef	STM32H743xx
 	#define A_OS_STM32H743_PROCESSOR	1
 	#define STM32_HAS_STREAM_DMA	1
-
+	#ifdef HAL_QSPI_MODULE_ENABLED
+		#define A_OS_QUADSPI_ENABLED	1
+	#endif
+	#ifdef HAL_GPIO_MODULE_ENABLED
+		#define A_OS_GPIO_ENABLED	1
+	#endif
 	#ifdef STM32H7xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
 	#endif
