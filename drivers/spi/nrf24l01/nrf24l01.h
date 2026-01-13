@@ -77,7 +77,7 @@ typedef struct
 	GPIO_TypeDef	 	*irq_port;
 	uint16_t			irq_bit;
 	IRQn_Type		 	IRQ_number;
-	SPI_HandleTypeDef	*spi;
+	GPIO_Interrupt_DriverStruct_t	*nrf24l01_irq_driver;
 	uint32_t 			spi_timeout_ms;
 	uint32_t 			device_id;
 	uint8_t 			bps;

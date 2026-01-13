@@ -155,5 +155,6 @@
 #define EEPROM_TbDac1					0xF5
 #define EEPROM_TbDac2					0xF6
 
+#define CMD_NFC_PAYLOAD					0x26
 
 #endif /* DRIVERS_SPI_NFC_PN5180_PN5180_DEFS_H_ */

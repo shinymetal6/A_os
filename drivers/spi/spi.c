@@ -39,7 +39,9 @@ SPI_DriverStruct_t	*spi_drv_ptr_L = spi_drv_ptr;
 	while(spi_drv_ptr_L->bus != hspi)
 	{
 		if ( spi_drv_ptr_L->next_drv != NULL )
-			spi_drv_ptr_L = (SPI_DriverStruct_t *)spi_drv_ptr->next_drv;
+			spi_drv_ptr_L = (SPI_DriverStruct_t *)spi_drv_ptr_L->next_drv;
+		else
+			spi_drv_ptr_L = NULL;
 	}
 	if (spi_drv_ptr_L != NULL)
 	{

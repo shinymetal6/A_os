@@ -46,17 +46,27 @@ typedef struct
 	GPIO_TypeDef	 	*reset_port;
 	uint16_t			reset_bit;
 	uint16_t			reset_time;
-	uint32_t			(*nfc_init)(void);
-	uint32_t			(*nfc_reset)(void);
-	uint32_t			(*nfc_write_register)	(uint8_t address,uint8_t byte0,uint8_t byte1,uint8_t byte2,uint8_t byte3);
-	uint32_t			(*nfc_send_data)	(uint8_t NumberOfValidBitsInLastByte,uint8_t *tx_data_ptr);
-	uint32_t			(*nfc_read_data)	(uint8_t *rx_data_ptr);
-	uint32_t			(*nfc_load_rf_config)	(void);
-	uint32_t			(*nfc_rf_on)	(void);
-	uint32_t			(*nfc_rf_off)	(void);
+	GPIO_TypeDef	 	*busy_port;
+	uint16_t			busy_bit;
+	GPIO_TypeDef	 	*irq_port;
+	uint16_t			irq_bit;
+	IRQn_Type		 	IRQ_number;
+	GPIO_Interrupt_DriverStruct_t	*nfc_irq_driver;
+	uint32_t			(*nfc_activate_read)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_poll)(uint32_t *nfc_struct);
+	/*
+	uint32_t			(*nfc_reset)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_write_register)(uint32_t *nfc_struct,uint8_t address,uint8_t byte0,uint8_t byte1,uint8_t byte2,uint8_t byte3);
+	uint32_t			(*nfc_send_data)(uint32_t *nfc_struct,uint8_t NumberOfValidBitsInLastByte,uint8_t *tx_data_ptr);
+	uint32_t			(*nfc_read_data)(uint32_t *nfc_struct,uint8_t *rx_data_ptr);
+	uint32_t			(*nfc_load_rf_config)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_rf_on)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_rf_off)(uint32_t *nfc_struct);
+	*/
 	uint8_t 			*tx_data_ptr;
 	uint8_t 			*rx_data_ptr;
 	uint16_t			nfc_model;
+	uint32_t			iso_card;
 	uint8_t				dma_timeout;
 	uint32_t			time_start;
 	uint32_t			op_time;
@@ -65,5 +75,7 @@ typedef struct
 #define	NFC_IS_PN5180		0x5180
 #define	SPI_NFC_DMA_TIMEOUT	250
 #define	PN5180_SPI_TIMEOUT	250
+#define	CARD_IS_14443		0x14443
+#define	CARD_IS_15693		0x15693
 
 #endif /* DRIVERS_SPI_NFC_NFC_H_ */

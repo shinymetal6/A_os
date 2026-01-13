@@ -22,30 +22,22 @@
 #ifndef DRIVERS_GPIO_INT_GPIO_INT_H_
 #define DRIVERS_GPIO_INT_GPIO_INT_H_
 
-typedef struct
-{
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}GPIO_Int_DriverStruct_t;
-/* flags */
 #define GPIO_INT_WAKEUP_ON_EVENT	0x01
 
 typedef struct
 {
+	/* driver header */
 	uint8_t				status;
+	uint8_t				flags;
 	uint8_t 			process;
+	uint32_t 			wakeup_id;
+	uint32_t			*next_drv;
 	uint16_t			IRQ_bit;
 	GPIO_TypeDef	 	*IRQ_port;
 	uint16_t			IRQ_type;
 	uint16_t			sampled_bit;
-	uint32_t			wakeup_id;
-	uint8_t				debounce;
-	uint8_t				debounce_counter;
-	void				(*irq_exti_callback)  (uint16_t GPIO_Pin);
-	uint8_t				flags;
+	void				(*irq_exti_callback)  (uint16_t GPIO_Pin,uint32_t *irq_origin_struct_ptr);
+	uint32_t			*irq_origin_struct_ptr;
 }GPIO_Interrupt_DriverStruct_t;
 /* status */
 #define GPIO_INT_EVENT				0x01
@@ -53,9 +45,6 @@ typedef struct
 #define	GPIO_INT_TYPE_RISING		0x80
 #define	GPIO_INT_TYPE_FALLING		0x40
 
-
-
-extern uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *driver_private_data);
-extern uint32_t	gpio_int_allocate_from_driver(GPIO_Int_DriverStruct_t *driver_private_data);
+extern uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *gpio_irq_Drv);
 
 #endif /* DRIVERS_GPIO_INT_GPIO_INT_H_ */

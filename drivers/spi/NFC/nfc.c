@@ -28,71 +28,10 @@
 #ifdef NFC_ENABLED
 #include "nfc.h"
 
-ITCM_AREA_CODE uint32_t	spi_nfc_init(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
+ITCM_AREA_CODE uint32_t	spi_nfc_activate_read(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 {
-	if ( spi_nfc_Drv->nfc_init != NULL )
-		return spi_nfc_Drv->nfc_init();
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_reset(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
-{
-	if ( spi_nfc_Drv->nfc_reset != NULL )
-		return spi_nfc_Drv->nfc_reset();
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_write_register(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t address,uint8_t byte0,uint8_t byte1,uint8_t byte2,uint8_t byte3)
-{
-	if ( spi_nfc_Drv->nfc_write_register != NULL )
-		return spi_nfc_Drv->nfc_write_register( address, byte0, byte1, byte2, byte3);
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_send_data(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t NumberOfValidBitsInLastByte,uint8_t *tx_data_ptr)
-{
-	if ( spi_nfc_Drv->nfc_send_data != NULL )
-	{
-		if ( tx_data_ptr != NULL )
-		{
-			spi_nfc_Drv->tx_data_ptr = tx_data_ptr;
-			return spi_nfc_Drv->nfc_send_data( NumberOfValidBitsInLastByte,spi_nfc_Drv->tx_data_ptr);
-		}
-	}
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_read_data(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t *rx_data_ptr)
-{
-	if ( spi_nfc_Drv->nfc_read_data != NULL )
-	{
-		if ( spi_nfc_Drv->rx_data_ptr != NULL )
-		{
-			spi_nfc_Drv->rx_data_ptr = rx_data_ptr;
-			return spi_nfc_Drv->nfc_read_data(spi_nfc_Drv->rx_data_ptr);
-		}
-	}
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_load_rf_config(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
-{
-	if ( spi_nfc_Drv->nfc_load_rf_config != NULL )
-		return spi_nfc_Drv->nfc_load_rf_config();
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_rf_on(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
-{
-	if ( spi_nfc_Drv->nfc_rf_on != NULL )
-		return spi_nfc_Drv->nfc_rf_on();
-	return 1;
-}
-
-ITCM_AREA_CODE uint32_t	spi_nfc_rf_off(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
-{
-	if ( spi_nfc_Drv->nfc_rf_off != NULL )
-		return spi_nfc_Drv->nfc_rf_off();
+	if ( spi_nfc_Drv->nfc_activate_read != NULL )
+		return spi_nfc_Drv->nfc_activate_read((uint32_t *)spi_nfc_Drv);
 	return 1;
 }
 
@@ -105,8 +44,20 @@ SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
 		return DRIVER_REQUEST_FAILED;
 	if ( spi_nfc_Drv->reset_port == NULL )
 		return DRIVER_REQUEST_FAILED;
+	if ( spi_nfc_Drv->busy_port == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( spi_nfc_Drv->irq_port == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( spi_nfc_Drv->nfc_irq_driver == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ((spi_nfc_Drv->iso_card != CARD_IS_14443) && (spi_nfc_Drv->iso_card != CARD_IS_15693))
+		return DRIVER_REQUEST_FAILED;
 
 	if ( spi_nfc_Drv->bus == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( spi_nfc_Drv->tx_data_ptr == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( spi_nfc_Drv->rx_data_ptr == NULL )
 		return DRIVER_REQUEST_FAILED;
 
 	if ( spi_drv_ptr == NULL)
@@ -131,27 +82,19 @@ SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
 	switch(spi_nfc_Drv->nfc_model)
 	{
 	case NFC_IS_PN5180 :
-		PN5180_cs_port = spi_nfc_Drv->cs_port;
-		PN5180_cs_bit = spi_nfc_Drv->cs_bit;
-		PN5180_reset_port = spi_nfc_Drv->reset_port;
-		PN5180_reset_bit = spi_nfc_Drv->reset_bit;
-		PN5180_spi_port = spi_nfc_Drv->bus;
 		if ( spi_nfc_Drv->reset_time == 0 )
 			spi_nfc_Drv->reset_time = DEFAULT_RESET_TIME;
-		PN5180_reset_time = spi_nfc_Drv->reset_time;
-
-		spi_nfc_Drv->nfc_init 			= pn5180_init;
-		spi_nfc_Drv->nfc_reset			= pn5180_reset;
-		spi_nfc_Drv->nfc_write_register	= pn5180_write_register;
-		spi_nfc_Drv->nfc_send_data		= pn5180_send_data;
-		spi_nfc_Drv->nfc_read_data		= pn5180_read_data;
-		spi_nfc_Drv->nfc_load_rf_config	= pn5180_load_rf_config;
-		spi_nfc_Drv->nfc_rf_on			= pn5180_rf_on;
-		spi_nfc_Drv->nfc_rf_off			= pn5180_rf_off;
-
-		PN5180_flags = (uint8_t *)&spi_nfc_Drv->flags;
 		spi_nfc_Drv->dma_timeout = SPI_NFC_DMA_TIMEOUT;
-		PN5180_dma_timeout = (uint8_t *)&spi_nfc_Drv->dma_timeout;
+		spi_nfc_Drv->nfc_activate_read = pn5180_activate_read;
+		/* Extern IRQ allocation */
+		bzero(spi_nfc_Drv->nfc_irq_driver,sizeof(GPIO_Interrupt_DriverStruct_t));
+		spi_nfc_Drv->nfc_irq_driver->IRQ_port = spi_nfc_Drv->irq_port;
+		spi_nfc_Drv->nfc_irq_driver->IRQ_bit = spi_nfc_Drv->irq_bit;
+		spi_nfc_Drv->nfc_irq_driver->IRQ_type = GPIO_INT_TYPE_RISING;
+		spi_nfc_Drv->nfc_irq_driver->flags = GPIO_INT_WAKEUP_ON_EVENT;
+		spi_nfc_Drv->nfc_irq_driver->wakeup_id = WAKEUP_FROM_EXT_INT_IRQ;
+		spi_nfc_Drv->nfc_irq_driver->irq_origin_struct_ptr = (uint32_t *)spi_nfc_Drv;
+		gpio_int_register(spi_nfc_Drv->nfc_irq_driver);
 		return 0;
 		break;
 	default :
