@@ -104,6 +104,7 @@ SampleProcesses/sample_process_1_lora_scanner.c<br>
 SampleProcesses/sample_process_1_mbxToPrc2.c<br>
 SampleProcesses/sample_process_1_midi.c<br>
 SampleProcesses/sample_process_1_nrf24l01_ping.c<br>
+SampleProcesses/sample_process_1_nrf24l01_pong.c<br>
 SampleProcesses/sample_process_1_pid.c<br>
 SampleProcesses/sample_process_1_qspi.c<br>
 SampleProcesses/sample_process_1_rx_DMA_UART.c<br>
