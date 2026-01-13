@@ -65,17 +65,18 @@ static SPI_NRF24L01_DriverStruct_t	nrf24l01_Drv =
 };
 
 uint8_t	tx_result;
+int	messageNum = 0;
 
 void sample_process_1_ping_init(uint32_t process_id)
 {
 	spi_nrf24l01_register(&nrf24l01_Drv);
-	sprintf((char *)txbuf,"Message from NRF2401L");
+	sprintf((char *)txbuf,"Message %d from NRF2401L",messageNum);
 }
 
 void sample_process_1_ping_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,200,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	/* Not really needed, already initialized in the structure, just to test */
 	spi_nrf24l01_set_tx_address(&nrf24l01_Drv,nrf24l01_Drv.nrf_rx_address);
 	spi_nrf24l01_flush_tx_fifo(&nrf24l01_Drv);
@@ -89,6 +90,8 @@ uint32_t	wakeup,flags;
 		{
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
 			tx_result = spi_nrf24l01_tx(&nrf24l01_Drv,txbuf,nrf24l01_Drv.nrf_tx_address);
+			messageNum++;
+			sprintf((char *)txbuf,"Message %d from NRF2401L",messageNum);
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{

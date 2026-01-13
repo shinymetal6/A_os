@@ -67,6 +67,7 @@ void sample_process_1_pong_init(uint32_t process_id)
 void sample_process_1_pong_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+uint8_t		led_on=0;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nrf24l01_set_rx_address(&nrf24l01_Drv,nrf24l01_Drv.nrf_rx_address);
 	spi_nrf24l01_flush_rx_fifo(&nrf24l01_Drv);
@@ -79,11 +80,16 @@ uint32_t	wakeup,flags;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-
+			if ( led_on )
+			{
+				led_on = 0;
+				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+			}
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{
-			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+			led_on = 1;
 			spi_nrf24l01_rx(&nrf24l01_Drv,nrf24l01_Drv.RX_Buf);
 			bzero(rxbuf,NRF24L01_PAYLOAD_LENGTH);
 		}
