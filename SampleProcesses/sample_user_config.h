@@ -43,6 +43,9 @@
 #ifdef	SAMPLEPROCESS_1_PING_NRF24L01
 	#define	WIRELESS_NRF24L01		1
 #endif
+#ifdef	SAMPLEPROCESS_1_PONG_NRF24L01
+	#define	WIRELESS_NRF24L01		1
+#endif
 #ifdef SAMPLEPROCESS_1_MIDI
 	#define	MIDI_ENABLED	1
 #endif
@@ -123,10 +126,8 @@
 #ifdef SAMPLEPROCESS_1_DCCPWM
 #define USB_DEVICE_ENABLED		1
 #endif
-#ifndef SAMPLEPROCESS_1_GPIO
 #if defined (USB_OTG_FS) || defined (USB_OTG_HS)
-	#define USB_DEVICE_ENABLED		1
-#endif
+	//#define USB_DEVICE_ENABLED		1
 #endif
 #if defined (HAL_PCD_MODULE_ENABLED) || defined (HAL_HCD_MODULE_ENABLED)
 #if defined (USB)

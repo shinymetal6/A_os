@@ -39,7 +39,7 @@ typedef struct
 	GPIO_TypeDef	 	*IRQ_port;
 	uint16_t			IRQ_type;
 	uint16_t			sampled_bit;
-	void				(*irq_exti_callback)  (uint16_t GPIO_Pin,uint32_t *irq_origin_struct_ptr);
+	uint32_t			(*irq_exti_callback)  (uint16_t GPIO_Pin,uint32_t *irq_origin_struct_ptr);
 	uint32_t			*irq_origin_struct_ptr;
 }GPIO_Interrupt_DriverStruct_t;
 /* status */

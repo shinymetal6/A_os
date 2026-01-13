@@ -26,6 +26,8 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
+#undef	HAS_BRR
+
 #define DTCM_VECTORS_DATA
 #define DWNLD_DATA_AREA
 #define ETH_DATA_AREA

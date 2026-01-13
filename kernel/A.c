@@ -113,7 +113,12 @@ void A_init_mem(void)
 	Asys.osSysRam_start = (uint32_t *)&_osSysRam_start;
 	Asys.osSysRam_size_word  = &_osSysRam_end - &_osSysRam_start;
 	//A_clear32((uint8_t *)Asys.osSysRam_start,Asys.osSysRam_size_word*4);
-	bzero((uint8_t *)Asys.osSysRam_start,( &_osSysRam_end - &_osSysRam_start)*4);
+//	bzero((uint8_t *)Asys.osSysRam_start,( &_osSysRam_end - &_osSysRam_start)*4);
+	bzero((uint8_t *)Asys.osSysRam_start,( &_osSysRam_end - &_osSysRam_start)*2);
+	/*
+	bzero((uint8_t *)&Asys,sizeof(Asys_t));
+	bzero((uint8_t *)&process,sizeof(PCB_t)*MAX_PROCESS);
+	*/
 #ifdef	POOL_ENABLE
 	bzero((uint8_t *)POOL_START,POOL_SIZE);
 #endif

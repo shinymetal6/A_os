@@ -23,7 +23,7 @@
 #define BOARDS_IODEF_COMMON_H_
 
 #include "main.h"
-
+#define	HAS_BRR	1
 #undef   STM32_HAS_STREAM_DMA
 
 #ifdef	STM32H743xx
@@ -31,9 +31,6 @@
 	#define STM32_HAS_STREAM_DMA	1
 	#ifdef HAL_QSPI_MODULE_ENABLED
 		#define A_OS_QUADSPI_ENABLED	1
-	#endif
-	#ifdef HAL_GPIO_MODULE_ENABLED
-		#define A_OS_GPIO_ENABLED	1
 	#endif
 	#ifdef STM32H7xx_HAL_UART_H
 		#define A_OS_UART_ENABLED	1
@@ -341,4 +338,9 @@
 		#define A_OS_UART_ENABLED	1
 	#endif
 #endif // #ifdef	STM32F746xx
+
+	#ifdef HAL_GPIO_MODULE_ENABLED
+		#define A_OS_GPIO_ENABLED	1
+	#endif
+
 #endif /* BOARDS_IODEF_COMMON_H_ */

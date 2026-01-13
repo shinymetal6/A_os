@@ -24,12 +24,12 @@
 #define DRIVERS_SPI_NRF24L01_NRF24L01_H_
 
 /* nucleo L053
- * nrf24_irq	CN10-34		PC4
+ * NRF24_IRQ	CN10-34		PC4
  * spi2_sck		CN10-30		PB13
  * spi2_miso	CN10-28		PB14
  * spi2-mosi	CN10-26		PB15
- * spi2-ss		CN10-24		PB1
- * nrf_ce		CN10-22		PB2
+ * SPI2_SS		CN10-24		PB1
+ * NRF_CE		CN10-22		PB2
  * pwr_3.3V		CN7-16
  * gnd			CN7-20
  *
@@ -50,6 +50,17 @@
  *
  */
 
+/*
+ * NUCLEO-F446RE
+ * NRF24_IRQ	CN10-34		PC4
+ * spi2_sck		CN10-30		PB13
+ * spi2_miso	CN10-28		PB14
+ * spi2-mosi	CN10-26		PB15
+ * SPI2_SS		CN10-24		PB1
+ * NRF_CE		CN10-22		PB2
+ * pwr_3.3V		CN7-16
+ * gnd			CN7-20
+ */
 #define NRF24L01_PAYLOAD_LENGTH				32     // 1 - 32bytes
 #define NRF24L01_ADDRESS_LENGTH				5
 
@@ -78,7 +89,9 @@ typedef struct
 	uint16_t			irq_bit;
 	IRQn_Type		 	IRQ_number;
 	GPIO_Interrupt_DriverStruct_t	*nrf24l01_irq_driver;
+	uint32_t			(*nrf24l01_irq_callback)(uint16_t GPIO_Pin,uint32_t *nrf24l01_struct);
 	uint32_t 			spi_timeout_ms;
+	uint32_t 			spi_transfer_result;
 	uint32_t 			device_id;
 	uint8_t 			bps;
 	uint8_t 			mode;
@@ -165,14 +178,12 @@ typedef enum
 
 #define	NRF24L01_SPI_TIMEOUT					100
 
-extern uint32_t spi_nrf24l01_write_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t value);
-extern uint32_t spi_nrf24l01_write_multiple_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t *values,uint8_t reg_num);
-extern uint32_t spi_nrf24l01_read_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg);
 extern uint32_t spi_nrf24l01_flush_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_flush_tx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_read_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_payload);
 extern uint32_t spi_nrf24l01_write_tx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_payload);
 extern uint32_t spi_nrf24l01_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_payload );
+extern uint32_t spi_nrf24l01_set_tx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_address );
 extern uint32_t spi_nrf24l01_set_rx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_address );
 extern uint32_t spi_nrf24l01_get_tx_irq_goto_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_get_status(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);

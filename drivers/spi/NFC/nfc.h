@@ -51,7 +51,9 @@ typedef struct
 	GPIO_TypeDef	 	*irq_port;
 	uint16_t			irq_bit;
 	IRQn_Type		 	IRQ_number;
+#ifdef HAL_GPIO_MODULE_ENABLED
 	GPIO_Interrupt_DriverStruct_t	*nfc_irq_driver;
+#endif
 	uint32_t			(*nfc_activate_read)(uint32_t *nfc_struct);
 	uint32_t			(*nfc_poll)(uint32_t *nfc_struct);
 	/*

@@ -78,7 +78,11 @@ uint32_t	shft = get_shift_by_pin(gpio_bit);
 		if (value)
 			gpio_port->BSRR = (uint32_t)gpio_bit;
 		else
+	#ifdef HAS_BRR
 			gpio_port->BRR = (uint32_t)gpio_bit;
+	#else
+		gpio_port->BSRR = (uint32_t)gpio_bit << 16U;
+	#endif
 #endif
 		break;
 	case	MODE_ANALOG	 	:

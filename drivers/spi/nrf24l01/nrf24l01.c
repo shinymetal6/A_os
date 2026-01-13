@@ -49,48 +49,36 @@ ITCM_AREA_CODE static inline void spi_nrf24l01_ce_high(SPI_NRF24L01_DriverStruct
 }
 
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_write_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t value)
+ITCM_AREA_CODE static uint32_t spi_nrf24l01_write_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t value)
 {
 uint8_t write_val = value;
 uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, &write_val, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
-		return write_val;
-	}
-	return 1;
+	spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, &write_val, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
+	return write_val;
 }
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_write_multiple_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t *values,uint8_t reg_num)
+ITCM_AREA_CODE static uint32_t spi_nrf24l01_write_multiple_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg, uint8_t *values,uint8_t reg_num)
 {
 uint8_t command = NRF24L01_CMD_W_REGISTER | reg;
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, values, reg_num, spi_nrf24l01_Drv->spi_timeout_ms);
-		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
-		return NRF24L01_SUCCESS;
-	}
-	return NRF24L01_ERROR;
+	spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, values, reg_num, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
+	return NRF24L01_SUCCESS;
 }
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_read_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg)
+ITCM_AREA_CODE static uint32_t spi_nrf24l01_read_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t reg)
 {
 uint8_t read_val;
 uint8_t command = NRF24L01_CMD_R_REGISTER | reg;
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		HAL_SPI_Receive(spi_nrf24l01_Drv->bus, &read_val, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
-		return read_val;
-	}
-	return 1;
+	spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Receive(spi_nrf24l01_Drv->bus, &read_val, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+	spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
+	return read_val;
 }
 
 ITCM_AREA_CODE uint32_t spi_nrf24l01_flush_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
@@ -99,7 +87,7 @@ uint8_t command = NRF24L01_CMD_FLUSH_RX;
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return NRF24L01_SUCCESS;
 	}
@@ -112,7 +100,7 @@ uint8_t command = NRF24L01_CMD_FLUSH_TX;
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return NRF24L01_SUCCESS;
 	}
@@ -125,8 +113,8 @@ uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		HAL_SPI_Receive(spi_nrf24l01_Drv->bus, rx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Receive(spi_nrf24l01_Drv->bus, rx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
@@ -140,8 +128,8 @@ uint8_t command = NRF24L01_CMD_W_TX_PAYLOAD;
 	{
 		spi_nrf24l01_flush_tx_fifo(spi_nrf24l01_Drv);
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
-		HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, tx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, tx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
@@ -167,6 +155,17 @@ ITCM_AREA_CODE uint32_t spi_nrf24l01_set_rx_address(SPI_NRF24L01_DriverStruct_t 
 		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P5,rx_address,5);
 		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, spi_nrf24l01_Drv->nrf_status |= 0x40);
+		return spi_nrf24l01_Drv->nrf_status;
+	}
+	return NRF24L01_ERROR;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_set_tx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_address )
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_TX_ADDR,tx_address,5);
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
 	return NRF24L01_ERROR;
@@ -265,9 +264,9 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 
 	if ( spi_nrf24l01_Drv->cs_port == NULL )
 		return DRIVER_REQUEST_FAILED;
-	if ( spi_nrf24l01_Drv->reset_port == NULL )
-		return DRIVER_REQUEST_FAILED;
 	if ( spi_nrf24l01_Drv->ce_port == NULL )
+		return DRIVER_REQUEST_FAILED;
+	if ( spi_nrf24l01_Drv->nrf24l01_irq_callback == NULL )
 		return DRIVER_REQUEST_FAILED;
 
 	if ( spi_nrf24l01_Drv->bus == NULL )
@@ -291,6 +290,7 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 	}
 
 	spi_nrf24l01_Drv->process = get_current_process();
+	spi_nrf24l01_init(spi_nrf24l01_Drv);
 	/* Extern IRQ allocation */
 	bzero(spi_nrf24l01_Drv->nrf24l01_irq_driver,sizeof(GPIO_Interrupt_DriverStruct_t));
 	spi_nrf24l01_Drv->nrf24l01_irq_driver->IRQ_port = spi_nrf24l01_Drv->irq_port;
@@ -299,10 +299,8 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 	spi_nrf24l01_Drv->nrf24l01_irq_driver->flags = GPIO_INT_WAKEUP_ON_EVENT;
 	spi_nrf24l01_Drv->nrf24l01_irq_driver->wakeup_id = WAKEUP_FROM_EXT_INT_IRQ;
 	spi_nrf24l01_Drv->nrf24l01_irq_driver->irq_origin_struct_ptr = (uint32_t *)spi_nrf24l01_Drv;
-	gpio_int_register(spi_nrf24l01_Drv->nrf24l01_irq_driver);
-
-	return 0;
-
+	spi_nrf24l01_Drv->nrf24l01_irq_driver->irq_exti_callback = spi_nrf24l01_Drv->nrf24l01_irq_callback;
+	return gpio_int_register(spi_nrf24l01_Drv->nrf24l01_irq_driver);
 }
 
 #endif // #ifdef WIRELESS_NRF24L01
