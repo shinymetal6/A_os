@@ -23,7 +23,7 @@
 #include "main.h"
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
-#if defined(QUADSPI)
+#ifdef A_OS_QUADSPI_ENABLED
 
 QSPI_DriverStruct_t 	*qspi_drv_ptr;
 
@@ -194,4 +194,5 @@ QSPI_DriverStruct_t	*qspi_Drv;
 	}
 	__enable_irq();
 }
-#endif // #if defined(QUADSPI)
+#endif // #ifdef A_OS_QUADSPI_ENABLED
+

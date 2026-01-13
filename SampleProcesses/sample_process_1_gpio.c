@@ -26,39 +26,37 @@
 #include "sample_processes_includes.h"
 #ifdef 	SAMPLEPROCESS_1_GPIO
 
+extern	void irq_exti_callback(uint16_t GPIO_Pin,uint32_t *irq_origin_struct_ptr);
+
+GPIO_Interrupt_DriverStruct_t	gpio_irq_Drv =
+{
+		.IRQ_port = IRQ_D2_GPIO_Port,
+		.IRQ_bit = IRQ_D2_Pin,
+		.irq_exti_callback = irq_exti_callback,
+		.wakeup_id = WAKEUP_FROM_EXT_INT_IRQ,
+		.flags = GPIO_INT_WAKEUP_ON_EVENT,
+};
+
+void irq_exti_callback(uint16_t GPIO_Pin,uint32_t *irq_origin_struct_ptr)
+{
+	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+}
+
 void sample_process_1_gpio(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-#ifdef LD3_GPIO_Port
-uint8_t state = 0;
-#endif
+
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-#ifdef LD3_GPIO_Port
-	set_gpio_type(LD3_GPIO_Port, LD3_Pin,OUTPUT_OD,GPIO_PULLUP,GPIO_SPEED_FREQ_HIGH);
-#endif
-#ifdef LD2_GPIO_Port
-	set_gpio_type(LD2_GPIO_Port, LD2_Pin,OUTPUT_OD,GPIO_PULLUP,GPIO_SPEED_FREQ_HIGH);
-#endif
+	gpio_int_register(&gpio_irq_Drv);
+
 	while(1)
 	{
-		wait_event(EVENT_TIMER | EVENT_TIM_IRQ | EVENT_EXT_INT_IRQ);
+		wait_event(EVENT_TIMER | EVENT_EXT_INT_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & EVENT_TIMER) == EVENT_TIMER)
-		{
-#ifdef LD2_GPIO_Port
-#ifdef LD3_GPIO_Port
-			switch ( state)
-			{
-			case 0:	set_gpio_mode(LD3_GPIO_Port, LD3_Pin,MODE_OUTPUT,1);state ++;break;
-			case 1:	set_gpio_mode(LD2_GPIO_Port, LD2_Pin,MODE_OUTPUT,1);state ++;break;
-			case 2:	set_gpio_mode(LD2_GPIO_Port, LD2_Pin,MODE_OUTPUT,0);state ++;break;
-			case 3:	set_gpio_mode(LD3_GPIO_Port, LD3_Pin,MODE_OUTPUT,0);state = 0;break;
-			}
-#endif
-#endif
 			process_led();
-
-		}
+		if (( wakeup & EVENT_EXT_INT_IRQ) == EVENT_EXT_INT_IRQ)
+			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 	}
 }
 

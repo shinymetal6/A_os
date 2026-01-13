@@ -21,7 +21,7 @@
  */
 #ifndef DRIVERS_QSPI_QSPI_H_
 #define DRIVERS_QSPI_QSPI_H_
-#if defined(QUADSPI)
+#ifdef A_OS_QUADSPI_ENABLED
 
 typedef struct
 {
@@ -75,6 +75,6 @@ extern	uint32_t qspi_erase_blocks(QSPI_DriverStruct_t *qspi_Drv, uint32_t start_
 extern	uint32_t qspi_erase_sectors(QSPI_DriverStruct_t *qspi_Drv, uint32_t start_sector,uint32_t number_of_sectors);
 extern	uint32_t qspi_erase_chip(QSPI_DriverStruct_t *qspi_Drv);
 extern	uint32_t qspi_get_id(QSPI_DriverStruct_t *qspi_Drv,uint8_t *data);
-#endif //#if defined(QUADSPI)
+#endif //#ifdef A_OS_QUADSPI_ENABLED
 
 #endif /* DRIVERS_QSPI_QSPI_H_ */

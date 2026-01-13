@@ -26,7 +26,7 @@
 
 #include "gpio_int.h"
 
-GPIO_Interrupt_DriverStruct_t	*gpio_irq_drv_ptr;
+GPIO_Interrupt_DriverStruct_t	*gpio_irq_drv_ptr = NULL;
 
 ITCM_AREA_CODE uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *gpio_irq_Drv)
 {
@@ -36,14 +36,14 @@ GPIO_Interrupt_DriverStruct_t *eptr, *pre_eptr;
 		return DRIVER_REQUEST_FAILED;
 	if ( gpio_irq_Drv->irq_exti_callback == NULL )
 		return DRIVER_REQUEST_FAILED;
-	if ( gpio_irq_Drv == NULL)
+	if ( gpio_irq_drv_ptr == NULL)
 	{
-		gpio_irq_Drv = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_Drv;
+		gpio_irq_drv_ptr = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_Drv;
 		gpio_irq_Drv->next_drv = NULL;
 	}
 	else
 	{
-		eptr = pre_eptr = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_Drv;
+		eptr = pre_eptr = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_drv_ptr;
 		while(eptr->next_drv != NULL)
 		{
 			pre_eptr = eptr;
@@ -52,9 +52,11 @@ GPIO_Interrupt_DriverStruct_t *eptr, *pre_eptr;
 		pre_eptr->next_drv = (uint32_t *)gpio_irq_Drv;
 		gpio_irq_Drv->next_drv = NULL;
 	}
+	gpio_irq_Drv->process = get_current_process();
+	if ( gpio_irq_Drv->wakeup_id == 0 )
+		gpio_irq_Drv->wakeup_id = WAKEUP_FROM_EXT_INT_IRQ;
 	return 0;
 }
-
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -73,6 +75,8 @@ GPIO_Interrupt_DriverStruct_t	*gpio_irq_ptr_L = gpio_irq_drv_ptr;
 		if (( gpio_irq_ptr_L->IRQ_port != NULL ) && (gpio_irq_ptr_L->irq_exti_callback != NULL))
 		{
 			gpio_irq_ptr_L->irq_exti_callback(GPIO_Pin,gpio_irq_ptr_L->irq_origin_struct_ptr);
+			gpio_irq_ptr_L->sampled_bit = HAL_GPIO_ReadPin(gpio_irq_ptr_L->IRQ_port,GPIO_Pin);
+			gpio_irq_ptr_L->status = GPIO_INT_EVENT;
 			if ((gpio_irq_ptr_L->flags  & GPIO_INT_WAKEUP_ON_EVENT) == GPIO_INT_WAKEUP_ON_EVENT)
 				activate_process(gpio_irq_ptr_L->process,gpio_irq_ptr_L->wakeup_id,gpio_irq_ptr_L->wakeup_id);
 		}

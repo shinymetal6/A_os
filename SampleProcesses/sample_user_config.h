@@ -123,8 +123,10 @@
 #ifdef SAMPLEPROCESS_1_DCCPWM
 #define USB_DEVICE_ENABLED		1
 #endif
+#ifndef SAMPLEPROCESS_1_GPIO
 #if defined (USB_OTG_FS) || defined (USB_OTG_HS)
 	#define USB_DEVICE_ENABLED		1
+#endif
 #endif
 #if defined (HAL_PCD_MODULE_ENABLED) || defined (HAL_HCD_MODULE_ENABLED)
 #if defined (USB)
