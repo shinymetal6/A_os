@@ -107,14 +107,14 @@ uint8_t command = NRF24L01_CMD_FLUSH_TX;
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_read_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_payload)
+ITCM_AREA_CODE uint32_t spi_nrf24l01_read_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
 {
 uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
 		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Receive(spi_nrf24l01_Drv->bus, rx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
+		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Receive(spi_nrf24l01_Drv->bus, spi_nrf24l01_Drv->RX_Buf, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
@@ -124,98 +124,124 @@ uint8_t command = NRF24L01_CMD_R_RX_PAYLOAD;
 ITCM_AREA_CODE uint32_t spi_nrf24l01_write_tx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_payload)
 {
 uint8_t command = NRF24L01_CMD_W_TX_PAYLOAD;
+uint8_t tout = 	spi_nrf24l01_Drv->spi_timeout_ms;
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_flush_tx_fifo(spi_nrf24l01_Drv);
+		spi_nrf24l01_Drv->flags &= ~SPI_DMA_DONE;
 		spi_nrf24l01_cs_low(spi_nrf24l01_Drv);
 		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_TransmitReceive(spi_nrf24l01_Drv->bus, &command, &spi_nrf24l01_Drv->nrf_status, 1, spi_nrf24l01_Drv->spi_timeout_ms);
-		spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, tx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
+		if ((spi_nrf24l01_Drv->flags & SPI_USES_DMA) == SPI_USES_DMA)
+		{
+			spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit_DMA(spi_nrf24l01_Drv->bus, tx_payload, NRF24L01_PAYLOAD_LENGTH);
+	    	while((spi_nrf24l01_Drv->flags & SPI_DMA_DONE) != SPI_DMA_DONE)
+	    	{
+	    		task_delay(1);
+	    		tout--;
+	    		if ( tout == 0 )
+	    			break;
+	    	}
+		}
+		else
+			spi_nrf24l01_Drv->spi_transfer_result = HAL_SPI_Transmit(spi_nrf24l01_Drv->bus, tx_payload, NRF24L01_PAYLOAD_LENGTH, spi_nrf24l01_Drv->spi_timeout_ms);
 		spi_nrf24l01_cs_high(spi_nrf24l01_Drv);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_payload )
+ITCM_AREA_CODE uint32_t spi_nrf24l01_get_status(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
 {
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
-		spi_nrf24l01_read_rx_fifo(spi_nrf24l01_Drv,rx_payload);
 		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, spi_nrf24l01_Drv->nrf_status |= 0x40);
+		return spi_nrf24l01_Drv->nrf_status;
+	}
+	return NRF24L01_ERROR;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_get_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv )
+{
+uint8_t fifo_status = 0;
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
+		while( fifo_status == 0 )
+		{
+			spi_nrf24l01_read_rx_fifo(spi_nrf24l01_Drv);
+			spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, NRF24L01_RX_DR);
+			fifo_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_FIFO_STATUS);
+		}
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
 		return spi_nrf24l01_Drv->nrf_status;
 	}
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t spi_nrf24l01_set_rx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* rx_address )
-{
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P5,rx_address,5);
-		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, spi_nrf24l01_Drv->nrf_status |= 0x40);
-		return spi_nrf24l01_Drv->nrf_status;
-	}
-	return NRF24L01_ERROR;
-}
-
-ITCM_AREA_CODE uint32_t spi_nrf24l01_set_tx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_address )
-{
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_TX_ADDR,tx_address,5);
-		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-		return spi_nrf24l01_Drv->nrf_status;
-	}
-	return NRF24L01_ERROR;
-}
-
-ITCM_AREA_CODE uint32_t spi_nrf24l01_get_tx_irq_goto_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
-{
-	if ( spi_nrf24l01_Drv->process == get_current_process())
-	{
-		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, 0x70);
-		spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x00);						// power down
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x3b);						// go to rx : pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
-		spi_nrf24l01_ce_high(spi_nrf24l01_Drv);
-		return spi_nrf24l01_Drv->nrf_status;
-	}
-	return NRF24L01_ERROR;
-}
-
-ITCM_AREA_CODE uint32_t spi_nrf24l01_get_status(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
-{
-	spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-	return spi_nrf24l01_Drv->nrf_status;
-}
-
-ITCM_AREA_CODE uint32_t spi_nrf24l01_get_mode(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
-{
-	return spi_nrf24l01_Drv->mode;
-}
-
 ITCM_AREA_CODE uint32_t spi_nrf24l01_tx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_payload , uint8_t* tx_address)
 {
-
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x00);						// power down
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x4a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
-		task_delay(1);																	// need to wait at least 130uSec for radio switch
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, 0x70);						// clear irqs
-		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_TX_ADDR,tx_address,5);
-		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P0,tx_address,5);
-		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, spi_nrf24l01_Drv->nrf_status & 0x40);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, NRF24L01_RX_DR|NRF24L01_TX_DS|NRF24L01_MAX_RT);// clear irqs
 		spi_nrf24l01_write_tx_fifo(spi_nrf24l01_Drv,tx_payload);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x0a);						// go to tx : pup, crc en 1 bytes,tx, rx dr irq disabled
 		spi_nrf24l01_ce_high(spi_nrf24l01_Drv);
 		return spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
 	}
 	return NRF24L01_ERROR;
+}
+
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_check_if_tx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
+		if (( spi_nrf24l01_Drv->nrf_status & NRF24L01_TX_DS) == NRF24L01_TX_DS)
+			return 1;
+	}
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_check_if_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
+		if (( spi_nrf24l01_Drv->nrf_status & NRF24L01_RX_DR) == NRF24L01_RX_DR)
+			return 1;
+	}
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_check_if_maxrt(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
+		if (( spi_nrf24l01_Drv->nrf_status & NRF24L01_MAX_RT) == NRF24L01_MAX_RT)
+			return 1;
+	}
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_clear_maxrt(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
+		spi_nrf24l01_flush_tx_fifo(spi_nrf24l01_Drv);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, NRF24L01_MAX_RT|NRF24L01_RX_DR|NRF24L01_TX_DS);
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x0b);						// got to rx : pup, crc en 1 bytes
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG);
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
+
+		return (uint32_t )spi_nrf24l01_Drv->nrf_status;
+	}
+	return 1;
 }
 
 ITCM_AREA_CODE uint32_t	spi_nrf24l01_init(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
@@ -223,11 +249,11 @@ ITCM_AREA_CODE uint32_t	spi_nrf24l01_init(SPI_NRF24L01_DriverStruct_t *spi_nrf24
 	if ( spi_nrf24l01_Drv->process == get_current_process())
 	{
 		spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x08);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x00);
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_EN_AA, 0x3f);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_EN_RXADDR, 0x3f);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_EN_RXADDR, 0x03);
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_SETUP_AW, 0x03);
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_SETUP_RETR, 0xff);	// 4000 uS , 15 retransmit
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_SETUP_RETR, 0x03);	// 250 uS , 3 retransmit
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_RF_CH, spi_nrf24l01_Drv->MHz - 2400);
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_RF_SETUP, 0x07 | ((spi_nrf24l01_Drv->bps << 3) & 0x08 ));
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_DYNPD, 0x00);
@@ -241,15 +267,19 @@ ITCM_AREA_CODE uint32_t	spi_nrf24l01_init(SPI_NRF24L01_DriverStruct_t *spi_nrf24
 		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_PW_P5, 32);
 
 		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_TX_ADDR,   spi_nrf24l01_Drv->nrf_tx_address,5);
-		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P0,spi_nrf24l01_Drv->nrf_rx_address,5);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P0,spi_nrf24l01_Drv->nrf_tx_address,5);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P1,spi_nrf24l01_Drv->nrf_rx_address,5);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P2,spi_nrf24l01_Drv->nrf_rx_address,5);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P3,spi_nrf24l01_Drv->nrf_rx_address,5);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P4,spi_nrf24l01_Drv->nrf_rx_address,5);
 		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_RX_ADDR_P5,spi_nrf24l01_Drv->nrf_rx_address,5);
 
 		spi_nrf24l01_flush_rx_fifo(spi_nrf24l01_Drv);
 		spi_nrf24l01_flush_tx_fifo(spi_nrf24l01_Drv);
 
 		spi_nrf24l01_Drv->mode = NRF24L01_MODE_RX;
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x3b);						// pup, crc en 1 bytes,rx, txdr & maxrt irq disabled
-		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, 0x70);
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS, NRF24L01_MAX_RT|NRF24L01_RX_DR|NRF24L01_TX_DS);	// clear irqs
+		spi_nrf24l01_write_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG, 0x0b);						// got to rx : pup, crc en 1 bytes
 		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_STATUS);
 
 		spi_nrf24l01_ce_high(spi_nrf24l01_Drv);
@@ -290,6 +320,8 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 	}
 
 	spi_nrf24l01_Drv->process = get_current_process();
+	if( spi_nrf24l01_Drv->spi_timeout_ms == 0 )
+		spi_nrf24l01_Drv->spi_timeout_ms = NRF24L01_SPI_TIMEOUT;
 	spi_nrf24l01_init(spi_nrf24l01_Drv);
 	/* Extern IRQ allocation */
 	bzero(spi_nrf24l01_Drv->nrf24l01_irq_driver,sizeof(GPIO_Interrupt_DriverStruct_t));

@@ -64,14 +64,22 @@ void sample_process_1_pong_init(uint32_t process_id)
 	spi_nrf24l01_register(&nrf24l01_Drv);
 }
 
+uint8_t	tx_result;
+int	messageNum = 0;
+int	recv_messages = 0;
+int	txed_messages = 0;
+int	dest_error_messages = 0;
+uint32_t status;
+
 void sample_process_1_pong_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint8_t		led_on=0;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	spi_nrf24l01_set_rx_address(&nrf24l01_Drv,nrf24l01_Drv.nrf_rx_address);
 	spi_nrf24l01_flush_rx_fifo(&nrf24l01_Drv);
-	spi_nrf24l01_rx(&nrf24l01_Drv,nrf24l01_Drv.RX_Buf);
+	spi_nrf24l01_flush_tx_fifo(&nrf24l01_Drv);
+
+	sprintf((char *)txbuf,"PONG %d",messageNum);
 
 	while(1)
 	{
@@ -88,10 +96,26 @@ uint8_t		led_on=0;
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{
-			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
-			led_on = 1;
-			spi_nrf24l01_rx(&nrf24l01_Drv,nrf24l01_Drv.RX_Buf);
-			bzero(rxbuf,NRF24L01_PAYLOAD_LENGTH);
+			if ( spi_nrf24l01_check_if_rx(&nrf24l01_Drv))
+			{
+				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
+				led_on = 1;
+				spi_nrf24l01_get_rx(&nrf24l01_Drv);
+				recv_messages++;
+				task_delay(1);																	// need to wait at least 130uSec for radio switch
+				tx_result = spi_nrf24l01_tx(&nrf24l01_Drv,txbuf,nrf24l01_Drv.nrf_tx_address);
+				messageNum++;
+				sprintf((char *)txbuf,"PONG %d",messageNum);
+			}
+			if ( spi_nrf24l01_check_if_maxrt(&nrf24l01_Drv))
+			{
+				dest_error_messages++;
+				spi_nrf24l01_clear_maxrt(&nrf24l01_Drv);
+			}
+			if ( spi_nrf24l01_check_if_tx(&nrf24l01_Drv))
+			{
+				txed_messages++;
+			}
 		}
 	}
 }

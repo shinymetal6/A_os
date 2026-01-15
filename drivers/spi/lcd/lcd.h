@@ -83,8 +83,6 @@ typedef struct
 }SPI_LCD_DriverStruct_t;
 
 /* flags */
-#define	SPI_USES_DMA		0x80
-#define	SPI_DMA_DONE		0x40
 
 extern	GPIO_TypeDef		*ST7735_cs_port;
 extern	uint16_t			ST7735_cs_bit;

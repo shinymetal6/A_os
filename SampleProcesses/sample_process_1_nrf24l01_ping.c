@@ -44,10 +44,11 @@ GPIO_Interrupt_DriverStruct_t	nrf24l01_Int_Driver;
 static SPI_NRF24L01_DriverStruct_t	nrf24l01_Drv =
 {
 		.wakeup_id = 1,
+		//.flags = SPI_USES_DMA,
 		.MHz = 2420,
 		.bps = 0,
-		.nrf_tx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
-		.nrf_rx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
+		.nrf_tx_address 	= {0xB3,0xB4,0xB5,0xB6,0x05},
+		.nrf_rx_address 	= {0xB3,0xB4,0xB5,0xB6,0x05},
 		.bus = &hspi2,
 		.spi_timeout_ms = 100,
 		.device_id = 0x01,
@@ -65,7 +66,10 @@ static SPI_NRF24L01_DriverStruct_t	nrf24l01_Drv =
 };
 
 uint8_t	tx_result;
+uint8_t	nrf_status;
 int	messageNum = 0;
+int	recv_messages = 0;
+int	dest_error_messages = 0;
 
 void sample_process_1_ping_init(uint32_t process_id)
 {
@@ -77,8 +81,7 @@ void sample_process_1_ping_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 	create_timer(TIMER_ID_0,200,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
-	/* Not really needed, already initialized in the structure, just to test */
-	spi_nrf24l01_set_tx_address(&nrf24l01_Drv,nrf24l01_Drv.nrf_rx_address);
+	spi_nrf24l01_flush_rx_fifo(&nrf24l01_Drv);
 	spi_nrf24l01_flush_tx_fifo(&nrf24l01_Drv);
 
 	while(1)
@@ -90,12 +93,29 @@ uint32_t	wakeup,flags;
 		{
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
 			tx_result = spi_nrf24l01_tx(&nrf24l01_Drv,txbuf,nrf24l01_Drv.nrf_tx_address);
-			messageNum++;
-			sprintf((char *)txbuf,"Message %d from NRF2401L",messageNum);
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
+			if ( spi_nrf24l01_check_if_tx(&nrf24l01_Drv))
+			{
+				//spi_nrf24l01_get_tx_irq_goto_rx(&nrf24l01_Drv);
+				messageNum++;
+				sprintf((char *)txbuf,"Message %d from NRF2401L",messageNum);
+			}
+			if ( spi_nrf24l01_check_if_rx(&nrf24l01_Drv))
+			{
+				recv_messages++;
+				spi_nrf24l01_get_rx(&nrf24l01_Drv);
+			}
+			if ( spi_nrf24l01_check_if_maxrt(&nrf24l01_Drv))
+			{
+				nrf_status = spi_nrf24l01_get_status(&nrf24l01_Drv);
+				dest_error_messages++;
+				spi_nrf24l01_clear_maxrt(&nrf24l01_Drv);
+				nrf_status = spi_nrf24l01_get_status(&nrf24l01_Drv);
+//				spi_nrf24l01_get_tx_irq_goto_rx(&nrf24l01_Drv);
+			}
 		}
 	}
 }

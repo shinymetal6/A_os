@@ -38,13 +38,12 @@ typedef struct
 }SPI_DriverStruct_t;
 
 /* flags */
-#define	SPI_TX_DMA_COMPLETE	0x80
-#define	SPI_TX_COMPLETE		0x01
-#define	SPI_RX_COMPLETE		0x02
-/*
-#include "spi_lcd/spi_lcd.h"
-#include "LoRa/LoRa.h"
-*/
+#define	SPI_USES_DMA		0x80
+#define	SPI_FLAGS_WAKEUP	0x40
+#define	SPI_DMA_DONE		0x04
+#define	SPI_TX_COMPLETE		0x02
+#define	SPI_RX_COMPLETE		0x01
+
 #include "lcd/lcd.h"
 #include "NFC/nfc.h"
 #include "nrf24l01/nrf24l01.h"

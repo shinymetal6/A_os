@@ -43,15 +43,14 @@ SPI_DriverStruct_t	*spi_drv_ptr_L = spi_drv_ptr;
 		else
 			spi_drv_ptr_L = NULL;
 	}
-	if (spi_drv_ptr_L != NULL)
+	if ((spi_drv_ptr_L != NULL) && ( spi_drv_ptr_L->process != 0 ))
 	{
-		if ( spi_drv_ptr_L->process != 0 )
+		spi_drv_ptr_L->flags |= flag;
+		if ( spi_drv_ptr_L->cs_port != NULL )
 		{
-			spi_drv_ptr_L->flags |= flag;
-			if ( spi_drv_ptr_L->cs_port != NULL )
-			{
-			    HAL_GPIO_WritePin(spi_drv_ptr_L->cs_port, spi_drv_ptr_L->cs_bit, GPIO_PIN_SET);
-			}
+			if (( spi_drv_ptr_L->flags & SPI_FLAGS_WAKEUP) == SPI_FLAGS_WAKEUP)
+				activate_process(spi_drv_ptr_L->process,spi_drv_ptr_L->wakeup_id,spi_drv_ptr_L->wakeup_id);
+			HAL_GPIO_WritePin(spi_drv_ptr_L->cs_port, spi_drv_ptr_L->cs_bit, GPIO_PIN_SET);
 		}
 	}
 }
