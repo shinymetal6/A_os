@@ -26,10 +26,7 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_PING_NRF24L01
 
-//#define		RX_MODE		1
-#define		TX_MODE		1
 extern	SPI_HandleTypeDef hspi2;
-
 
 uint8_t txbuf[NRF24L01_PAYLOAD_LENGTH];
 uint8_t rxbuf[NRF24L01_PAYLOAD_LENGTH];
@@ -44,9 +41,9 @@ GPIO_Interrupt_DriverStruct_t	nrf24l01_Int_Driver;
 static SPI_NRF24L01_DriverStruct_t	nrf24l01_Drv =
 {
 		.wakeup_id = 1,
-		//.flags = SPI_USES_DMA,
+		.flags = SPI_USES_DMA,
 		.MHz = 2420,
-		.bps = 0,
+		.bps = NRF24L01_2Mbps,
 		.nrf_tx_address 	= {0xB3,0xB4,0xB5,0xB6,0x05},
 		.nrf_rx_address 	= {0xB3,0xB4,0xB5,0xB6,0x05},
 		.bus = &hspi2,
@@ -91,22 +88,24 @@ uint32_t	wakeup,flags;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+			nrf_status = spi_nrf24l01_get_status(&nrf24l01_Drv);
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
-			tx_result = spi_nrf24l01_tx(&nrf24l01_Drv,txbuf,nrf24l01_Drv.nrf_tx_address);
+			tx_result = spi_nrf24l01_tx(&nrf24l01_Drv);
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{
 			HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
 			if ( spi_nrf24l01_check_if_tx(&nrf24l01_Drv))
 			{
-				//spi_nrf24l01_get_tx_irq_goto_rx(&nrf24l01_Drv);
+				spi_nrf24l01_goto_rx(&nrf24l01_Drv);
 				messageNum++;
 				sprintf((char *)txbuf,"Message %d from NRF2401L",messageNum);
 			}
 			if ( spi_nrf24l01_check_if_rx(&nrf24l01_Drv))
 			{
-				recv_messages++;
+				nrf_status = spi_nrf24l01_get_status(&nrf24l01_Drv);
 				spi_nrf24l01_get_rx(&nrf24l01_Drv);
+				recv_messages++;
 			}
 			if ( spi_nrf24l01_check_if_maxrt(&nrf24l01_Drv))
 			{
@@ -114,7 +113,6 @@ uint32_t	wakeup,flags;
 				dest_error_messages++;
 				spi_nrf24l01_clear_maxrt(&nrf24l01_Drv);
 				nrf_status = spi_nrf24l01_get_status(&nrf24l01_Drv);
-//				spi_nrf24l01_get_tx_irq_goto_rx(&nrf24l01_Drv);
 			}
 		}
 	}

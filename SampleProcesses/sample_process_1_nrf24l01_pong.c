@@ -39,8 +39,9 @@ GPIO_Interrupt_DriverStruct_t	nrf24l01_Int_Driver;
 static SPI_NRF24L01_DriverStruct_t	nrf24l01_Drv =
 {
 		.wakeup_id = 1,
+		.flags = SPI_USES_DMA,
 		.MHz = 2420,
-		.bps = 0,
+		.bps = NRF24L01_2Mbps,
 		.nrf_tx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
 		.nrf_rx_address = {0xB3,0xB4,0xB5,0xB6,0x05},
 		.bus = &hspi2,
@@ -71,10 +72,10 @@ int	txed_messages = 0;
 int	dest_error_messages = 0;
 uint32_t status;
 
+
 void sample_process_1_pong_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		led_on=0;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nrf24l01_flush_rx_fifo(&nrf24l01_Drv);
 	spi_nrf24l01_flush_tx_fifo(&nrf24l01_Drv);
@@ -88,24 +89,19 @@ uint8_t		led_on=0;
 
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			if ( led_on )
-			{
-				led_on = 0;
-				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
-			}
 		}
 		if (( wakeup & WAKEUP_FROM_EXT_INT_IRQ) == WAKEUP_FROM_EXT_INT_IRQ)
 		{
 			if ( spi_nrf24l01_check_if_rx(&nrf24l01_Drv))
 			{
 				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_SET);
-				led_on = 1;
 				spi_nrf24l01_get_rx(&nrf24l01_Drv);
 				recv_messages++;
 				task_delay(1);																	// need to wait at least 130uSec for radio switch
-				tx_result = spi_nrf24l01_tx(&nrf24l01_Drv,txbuf,nrf24l01_Drv.nrf_tx_address);
+				tx_result = spi_nrf24l01_tx(&nrf24l01_Drv);
 				messageNum++;
 				sprintf((char *)txbuf,"PONG %d",messageNum);
+				HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin,GPIO_PIN_RESET);
 			}
 			if ( spi_nrf24l01_check_if_maxrt(&nrf24l01_Drv))
 			{
@@ -115,6 +111,7 @@ uint8_t		led_on=0;
 			if ( spi_nrf24l01_check_if_tx(&nrf24l01_Drv))
 			{
 				txed_messages++;
+				spi_nrf24l01_goto_rx(&nrf24l01_Drv);
 			}
 		}
 	}

@@ -181,9 +181,11 @@ typedef enum
 
 extern uint32_t spi_nrf24l01_flush_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_flush_tx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
-extern uint32_t spi_nrf24l01_get_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv );
 extern uint32_t spi_nrf24l01_get_status(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
-extern uint32_t spi_nrf24l01_tx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t* tx_payload , uint8_t* tx_address);
+extern uint32_t spi_nrf24l01_tx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
+extern uint32_t	spi_nrf24l01_goto_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
+extern uint32_t spi_nrf24l01_get_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv );
+
 extern uint32_t spi_nrf24l01_check_if_tx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_check_if_rx(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_check_if_maxrt(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
