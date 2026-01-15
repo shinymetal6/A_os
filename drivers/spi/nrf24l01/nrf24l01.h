@@ -179,6 +179,9 @@ typedef enum
 #define	NRF24L01_TX_DS							0x20
 #define	NRF24L01_MAX_RT							0x10
 
+extern uint32_t spi_nrf24l01_set_tx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t *tx_address );
+extern uint32_t spi_nrf24l01_set_rx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t *rx_address , uint8_t pipe);
+
 extern uint32_t spi_nrf24l01_flush_rx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_flush_tx_fifo(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);
 extern uint32_t spi_nrf24l01_get_status(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv);

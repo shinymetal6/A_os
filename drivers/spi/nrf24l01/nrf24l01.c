@@ -260,6 +260,35 @@ ITCM_AREA_CODE uint32_t spi_nrf24l01_clear_maxrt(SPI_NRF24L01_DriverStruct_t *sp
 	return 1;
 }
 
+ITCM_AREA_CODE uint32_t spi_nrf24l01_set_tx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t *tx_address )
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
+		spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,NRF24L01_REG_TX_ADDR,tx_address,5);
+		spi_nrf24l01_ce_high(spi_nrf24l01_Drv);
+		spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG);
+		return spi_nrf24l01_Drv->nrf_status;
+	}
+	return NRF24L01_ERROR;
+}
+
+ITCM_AREA_CODE uint32_t spi_nrf24l01_set_rx_address(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv,uint8_t *rx_address , uint8_t pipe)
+{
+	if ( spi_nrf24l01_Drv->process == get_current_process())
+	{
+		if (( pipe >= NRF24L01_REG_RX_ADDR_P0) && ( pipe <= NRF24L01_REG_RX_ADDR_P5))
+		{
+			spi_nrf24l01_ce_low(spi_nrf24l01_Drv);
+			spi_nrf24l01_write_multiple_register(spi_nrf24l01_Drv,pipe,rx_address,5);
+			spi_nrf24l01_ce_high(spi_nrf24l01_Drv);
+			spi_nrf24l01_Drv->nrf_status = spi_nrf24l01_read_register(spi_nrf24l01_Drv,NRF24L01_REG_CONFIG);
+			return spi_nrf24l01_Drv->nrf_status;
+		}
+	}
+	return NRF24L01_ERROR;
+}
+
 ITCM_AREA_CODE uint32_t	spi_nrf24l01_init(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
 {
 	if ( spi_nrf24l01_Drv->process == get_current_process())
