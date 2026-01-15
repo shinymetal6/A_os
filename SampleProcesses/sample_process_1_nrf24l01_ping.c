@@ -77,7 +77,7 @@ void sample_process_1_ping_init(uint32_t process_id)
 void sample_process_1_ping_nrf24l01(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-	create_timer(TIMER_ID_0,200,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nrf24l01_flush_rx_fifo(&nrf24l01_Drv);
 	spi_nrf24l01_flush_tx_fifo(&nrf24l01_Drv);
 
