@@ -46,6 +46,17 @@ ITCM_AREA_CODE uint32_t A_get_timelapse_end(void)
     return	usec_elapsed;
 }
 
+ITCM_AREA_CODE uint32_t A_wait_uSec_NoIrq(uint8_t uSec)
+{
+	__disable_irq();
+	time_start = DWT->CYCCNT;
+	usec_elapsed = 0;
+	while(usec_elapsed < uSec)
+	    usec_elapsed = (DWT->CYCCNT - time_start)/ (SYSTICK_TIM_CLK/1000000) ;
+	__enable_irq();
+	return usec_elapsed;
+}
+
 ITCM_AREA_CODE void A_clear32(uint8_t	*ptr,uint32_t size_in_bytes)
 {
 uint32_t	i;

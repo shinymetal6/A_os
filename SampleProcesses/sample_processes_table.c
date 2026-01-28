@@ -30,6 +30,10 @@ extern	void sample_process_1_ping_init(uint32_t process_id);
 extern	void sample_process_1_pong_nrf24l01(uint32_t process_id);	//This is process1
 extern	void sample_process_1_pong_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_PONG_NRF24L01
+#ifdef	SAMPLEPROCESS_1_PN5180
+extern	void sample_process_1_pn5180(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_PN5180
 #ifdef	SAMPLEPROCESS_1_DMA_UART
 extern	void sample_process_1_xmodem_rx_UART(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_DMA_UART
@@ -187,6 +191,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_pong_nrf24l01,
 				.user_init = sample_process_1_pong_init,
 #endif // #define	SAMPLEPROCESS_1_PONG_NRF24L01
+#ifdef	SAMPLEPROCESS_1_PN5180
+				.user_process = sample_process_1_pn5180,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_PN5180
 #ifdef	SAMPLEPROCESS_1_DMA_UART
 				.user_process = sample_process_1_xmodem_rx_UART,
 #endif // #define	SAMPLEPROCESS_1_DMA_UART

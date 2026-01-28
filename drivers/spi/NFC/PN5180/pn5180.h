@@ -23,6 +23,26 @@
 #ifndef DRIVERS_SPI_NFC_PN5180_PN5180_H_
 #define DRIVERS_SPI_NFC_PN5180_PN5180_H_
 
-extern	uint32_t		pn5180_activate_read(uint32_t *spi_nfc_Drv);
+#define	PN5180_PAYLOAD_LENGTH					508
+#define PN5180_SYSTEM_CONFIG_MFC_CRYPTO_ON_MASK	0x40000000
+#define	PN5180_SEND_RECEIVE_DELAY	3
 
+extern	uint32_t pn5180_ISO14443_init(uint32_t *spi_nfc_driver32);
+extern	uint32_t pn5180_readEEprom(uint32_t *spi_nfc_driver32,uint32_t addr, uint8_t *buffer, uint32_t len);
+extern	uint32_t pn5180_reset(uint32_t *spi_nfc_driver32);
+extern	uint8_t  pn5180_send_ISO14443_REQA(uint32_t *spi_nfc_driver32);
+extern	uint8_t  pn5180_send_ISO14443_AntiColl1(uint32_t *spi_nfc_driver32);
+extern	uint32_t pn5180_set_rf_on(uint32_t *spi_nfc_driver32);
+extern	uint32_t pn5180_set_rf_off(uint32_t *spi_nfc_driver32);
+
+/*
+ *
+ * SPI2_MOSI	PB15	CN10-26
+ * SPI2_MISO	PB14	CN10-28
+ * SPI2_SCK		PB13	CN10-30
+ * PN5180_SS	PB12	CN10-16
+ * PN5180_BUSY	PB11	CN10-18
+ * PN5180_IRQ	PB1		CN10-24
+ * PN5180_RESET	PB2		CN10-22
+ */
 #endif /* DRIVERS_SPI_NFC_PN5180_PN5180_H_ */

@@ -14,19 +14,16 @@
  * Project : A_os
 */
 /*
- * system_functions.h
+ * iso14443.h
  *
- *  Created on: Sep 11, 2024
+ *  Created on: Jan 28, 2026
  *      Author: fil
  */
 
+#ifndef DRIVERS_SPI_NFC_ISO14443_H_
+#define DRIVERS_SPI_NFC_ISO14443_H_
 
-#ifndef KERNEL_SYSTEM_FUNCTIONS_H_
-#define KERNEL_SYSTEM_FUNCTIONS_H_
+extern	uint8_t ISO14443_Discovery(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 
-extern	void A_clear32(uint8_t	*ptr,uint32_t size);
-extern	void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes);
-extern	uint8_t A_hex_to_byte(uint8_t byte1 , uint8_t byte2);
-extern	uint32_t A_wait_uSec_NoIrq(uint8_t uSec);
 
-#endif /* KERNEL_SYSTEM_FUNCTIONS_H_ */
+#endif /* DRIVERS_SPI_NFC_ISO14443_H_ */

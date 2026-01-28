@@ -27,7 +27,6 @@
 
 #include "../spi.h"
 #include <string.h>
-#include "PN5180/pn5180.h"
 
 typedef struct
 {
@@ -51,14 +50,21 @@ typedef struct
 	GPIO_TypeDef	 	*busy_port;
 	uint16_t			busy_bit;
 	GPIO_TypeDef	 	*irq_port;
+	uint32_t 			spi_timeout_ms;
+	uint32_t 			spi_transfer_result;
 	uint16_t			irq_bit;
 	IRQn_Type		 	IRQ_number;
 #ifdef HAL_GPIO_MODULE_ENABLED
 	GPIO_Interrupt_DriverStruct_t	*nfc_irq_driver;
 	uint32_t			(*nfc_irq_callback)(uint16_t GPIO_Pin,uint32_t *nfc_struct);
 #endif
-	uint32_t			(*nfc_activate_read)(uint32_t *nfc_struct);
-	uint32_t			(*nfc_poll)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_ISO14443_init)(uint32_t *nfc_struct);
+	uint8_t				(*nfc_ISO14443_send_REQA)(uint32_t *nfc_struct);
+	uint8_t				(*nfc_send_ISO14443_AntiColl1)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_hw_data)(uint32_t *nfc_struct,uint32_t param1, uint8_t *param2, uint32_t param3);
+	uint32_t			(*nfc_reset)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_rf_on)(uint32_t *nfc_struct);
+	uint32_t			(*nfc_rf_off)(uint32_t *nfc_struct);
 	uint8_t 			*tx_data_ptr;
 	uint8_t 			*rx_data_ptr;
 	uint16_t			nfc_model;
@@ -68,11 +74,26 @@ typedef struct
 	uint32_t			op_time;
 }SPI_NFC_DriverStruct_t;
 
-#define	NFC_IS_PN5180		0x5180
-#define	SPI_NFC_DMA_TIMEOUT	250
-#define	PN5180_SPI_TIMEOUT	250
-#define	CARD_IS_14443		0x14443
-#define	CARD_IS_15693		0x15693
+#define	NFC_IS_PN5180			0x5180
+#define	SPI_NFC_DMA_TIMEOUT		250
+#define	PN5180_SPI_TIMEOUT		250
+#define	NFC_CARD_IS_14443		0x14443
+#define	NFC_CARD_IS_15693		0x15693
+#define	NFC_DEFAULT_RESET_TIME	100
+
+extern uint32_t	spi_nfc_register(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_nfc_reset(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_nfc_rf_on(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_nfc_rf_off(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+
+extern uint32_t	spi_nfc_ISO14443_init(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint8_t	spi_nfc_ISO14443_send_REQA(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_nfc_send_ISO14443_AntiColl1(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+
+extern uint32_t	spi_nfc_get_hwdata(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint32_t addr, uint8_t *buffer, uint32_t len);
+
+#include "iso14443.h"
+#include "PN5180/pn5180.h"
 
 #endif // #ifdef NFC_ENABLED
 
