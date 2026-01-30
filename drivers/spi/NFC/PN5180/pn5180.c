@@ -199,6 +199,8 @@ uint8_t pn5180_send_ISO14443_REQA(uint32_t *spi_nfc_driver32)
 {
 SPI_NFC_DriverStruct_t *spi_nfc_Drv = (SPI_NFC_DriverStruct_t *)spi_nfc_driver32;
 uint32_t	rx_len = 0;
+	pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_AND_MASK,PN5180_REG_CRC_TX_CONFIG, 0xfeffffff);
+	pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_AND_MASK,PN5180_REG_CRC_RX_CONFIG, 0xfeffffff);
 	/* Sends WAKE-UP(Wake-UP command,Type A) command */
 	spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
 	spi_nfc_Drv->tx_data_ptr[1] = 0X07;
@@ -211,42 +213,134 @@ uint32_t	rx_len = 0;
 }
 
 uint32_t irqstatus;
-uint8_t SAK;
-uint8_t UID[4];
 
-uint8_t pn5180_send_ISO14443_AntiColl1(uint32_t *spi_nfc_driver32)
+uint8_t pn5180_send_ISO14443_AntiCollision(uint32_t *spi_nfc_driver32)
 {
 SPI_NFC_DriverStruct_t *spi_nfc_Drv = (SPI_NFC_DriverStruct_t *)spi_nfc_driver32;
 uint32_t rx_len;
 	/* Sends Anticollision1 command */
-	SAK=0;
+	spi_nfc_Drv->SAK=0;
+	spi_nfc_Drv->UID_len = 0;
+
 	pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER,PN5180_REG_IRQ_CLEAR, 0xffff0f00);
 
+	//Anticollision Level 1
 	spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
 	spi_nfc_Drv->tx_data_ptr[1] = 0x00;
 	spi_nfc_Drv->tx_data_ptr[2] = 0x93;
 	spi_nfc_Drv->tx_data_ptr[3] = 0x20;
 	pn5180_send_receive_spi(spi_nfc_Drv,4);
-	pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_TX_CONFIG,  0x01000000);
-	pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_RX_CONFIG,  0x01000000);
 
-	UID[0] = spi_nfc_Drv->rx_data_ptr[0];
-	UID[1] = spi_nfc_Drv->rx_data_ptr[1];
-	UID[2] = spi_nfc_Drv->rx_data_ptr[2];
-	UID[3] = spi_nfc_Drv->rx_data_ptr[3];
-	spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
-	spi_nfc_Drv->tx_data_ptr[1] = 0x00;
-	spi_nfc_Drv->tx_data_ptr[2] = 0x93;
-	spi_nfc_Drv->tx_data_ptr[3] = 0x70;
-	spi_nfc_Drv->tx_data_ptr[4] = UID[0];
-	spi_nfc_Drv->tx_data_ptr[5] = UID[1];
-	spi_nfc_Drv->tx_data_ptr[6] = UID[2];
-	spi_nfc_Drv->tx_data_ptr[7] = UID[3];
-	spi_nfc_Drv->tx_data_ptr[8] = UID[0] ^ UID[1] ^ UID[2] ^ UID[3];
-	rx_len = pn5180_send_receive_spi(spi_nfc_Drv,9);
-	if ( rx_len )
-		SAK = spi_nfc_Drv->rx_data_ptr[0];
-	return SAK;
+	if ( spi_nfc_Drv->rx_data_ptr[0] == NFC_14443_LEVEL2AC_FLAG)
+	{
+
+		spi_nfc_Drv->UID[0] = spi_nfc_Drv->rx_data_ptr[1];
+		spi_nfc_Drv->UID[1] = spi_nfc_Drv->rx_data_ptr[2];
+		spi_nfc_Drv->UID[2] = spi_nfc_Drv->rx_data_ptr[3];
+		spi_nfc_Drv->BCC_UID = spi_nfc_Drv->rx_data_ptr[4];
+
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_TX_CONFIG,  0x01000000);
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_RX_CONFIG,  0x01000000);
+
+		//SELECT Level 1
+		spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
+		spi_nfc_Drv->tx_data_ptr[1] = 0x00;
+		spi_nfc_Drv->tx_data_ptr[2] = 0x93;
+		spi_nfc_Drv->tx_data_ptr[3] = 0x70;
+		spi_nfc_Drv->tx_data_ptr[4] = NFC_14443_LEVEL2AC_FLAG;
+		spi_nfc_Drv->tx_data_ptr[5] = spi_nfc_Drv->UID[0];
+		spi_nfc_Drv->tx_data_ptr[6] = spi_nfc_Drv->UID[1];
+		spi_nfc_Drv->tx_data_ptr[7] = spi_nfc_Drv->UID[2];
+		spi_nfc_Drv->tx_data_ptr[8] = spi_nfc_Drv->BCC_UID;
+		pn5180_send_receive_spi(spi_nfc_Drv,9);
+		// Anticollision Level 2
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_AND_MASK,PN5180_REG_CRC_TX_CONFIG, 0xfeffffff);
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_AND_MASK,PN5180_REG_CRC_RX_CONFIG, 0xfeffffff);
+
+		spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
+		spi_nfc_Drv->tx_data_ptr[1] = 0x00;
+		spi_nfc_Drv->tx_data_ptr[2] = 0x95;
+		spi_nfc_Drv->tx_data_ptr[3] = 0x20;
+		pn5180_send_receive_spi(spi_nfc_Drv, 4);
+
+		spi_nfc_Drv->UID[3] = spi_nfc_Drv->rx_data_ptr[0];
+		spi_nfc_Drv->UID[4] = spi_nfc_Drv->rx_data_ptr[1];
+		spi_nfc_Drv->UID[5] = spi_nfc_Drv->rx_data_ptr[2];
+		spi_nfc_Drv->UID[6] = spi_nfc_Drv->rx_data_ptr[3];
+		spi_nfc_Drv->BCC_UID = spi_nfc_Drv->rx_data_ptr[4];
+
+		// SELECT Level 2
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_TX_CONFIG,  0x01000000);
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_RX_CONFIG,  0x01000000);
+
+		spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
+		spi_nfc_Drv->tx_data_ptr[1] = 0x00;
+		spi_nfc_Drv->tx_data_ptr[2] = 0x95;
+		spi_nfc_Drv->tx_data_ptr[3] = 0x70;
+		spi_nfc_Drv->tx_data_ptr[4] = spi_nfc_Drv->UID[3];
+		spi_nfc_Drv->tx_data_ptr[5] = spi_nfc_Drv->UID[4];
+		spi_nfc_Drv->tx_data_ptr[6] = spi_nfc_Drv->UID[5];
+		spi_nfc_Drv->tx_data_ptr[7] = spi_nfc_Drv->UID[6];
+		spi_nfc_Drv->tx_data_ptr[8] = spi_nfc_Drv->BCC_UID;
+		rx_len = pn5180_send_receive_spi(spi_nfc_Drv,9);
+		if ( rx_len )
+		{
+			spi_nfc_Drv->UID_len = NFC_ISO14443_UID7;
+			spi_nfc_Drv->SAK = spi_nfc_Drv->rx_data_ptr[0];
+		}
+	}
+	else
+	{
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_TX_CONFIG,  0x01000000);
+		pn5180_write_register(spi_nfc_Drv,PN5180_CMD_WRITE_REGISTER_OR_MASK,PN5180_REG_CRC_RX_CONFIG,  0x01000000);
+
+		spi_nfc_Drv->UID[0] = spi_nfc_Drv->rx_data_ptr[0];
+		spi_nfc_Drv->UID[1] = spi_nfc_Drv->rx_data_ptr[1];
+		spi_nfc_Drv->UID[2] = spi_nfc_Drv->rx_data_ptr[2];
+		spi_nfc_Drv->UID[3] = spi_nfc_Drv->rx_data_ptr[3];
+		spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
+		spi_nfc_Drv->tx_data_ptr[1] = 0x00;
+		spi_nfc_Drv->tx_data_ptr[2] = 0x93;
+		spi_nfc_Drv->tx_data_ptr[3] = 0x70;
+		spi_nfc_Drv->tx_data_ptr[4] = spi_nfc_Drv->UID[0];
+		spi_nfc_Drv->tx_data_ptr[5] = spi_nfc_Drv->UID[1];
+		spi_nfc_Drv->tx_data_ptr[6] = spi_nfc_Drv->UID[2];
+		spi_nfc_Drv->tx_data_ptr[7] = spi_nfc_Drv->UID[3];
+		spi_nfc_Drv->tx_data_ptr[8] = spi_nfc_Drv->UID[0] ^ spi_nfc_Drv->UID[1] ^ spi_nfc_Drv->UID[2] ^ spi_nfc_Drv->UID[3];
+		rx_len = pn5180_send_receive_spi(spi_nfc_Drv,9);
+		if ( rx_len )
+		{
+			spi_nfc_Drv->UID_len = NFC_ISO14443_UID4;
+			spi_nfc_Drv->SAK = spi_nfc_Drv->rx_data_ptr[0];
+		}
+	}
+	return spi_nfc_Drv->SAK;
+}
+
+uint8_t pn5180_ISO14443_Authenticate(uint32_t *spi_nfc_driver32,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo)
+{
+SPI_NFC_DriverStruct_t *spi_nfc_Drv = (SPI_NFC_DriverStruct_t *)spi_nfc_driver32;
+uint32_t i;
+
+	for(i=0;i<6;i++)
+		spi_nfc_Drv->KEY[i] = Key[i];
+
+	spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_MIFARE_AUTHENTICATE;
+	spi_nfc_Drv->tx_data_ptr[1] = spi_nfc_Drv->KEY[0];
+	spi_nfc_Drv->tx_data_ptr[2] = spi_nfc_Drv->KEY[1];
+	spi_nfc_Drv->tx_data_ptr[3] = spi_nfc_Drv->KEY[2];
+	spi_nfc_Drv->tx_data_ptr[4] = spi_nfc_Drv->KEY[3];
+	spi_nfc_Drv->tx_data_ptr[5] = spi_nfc_Drv->KEY[4];
+	spi_nfc_Drv->tx_data_ptr[6] = spi_nfc_Drv->KEY[5];
+	spi_nfc_Drv->tx_data_ptr[7] = KeyType;
+	spi_nfc_Drv->tx_data_ptr[8] = BlockNo;
+	spi_nfc_Drv->tx_data_ptr[9]  = spi_nfc_Drv->UID[0];
+	spi_nfc_Drv->tx_data_ptr[10] = spi_nfc_Drv->UID[1];
+	spi_nfc_Drv->tx_data_ptr[11] = spi_nfc_Drv->UID[2];
+	spi_nfc_Drv->tx_data_ptr[12] = spi_nfc_Drv->UID[3];
+	pn5180_send_spi(spi_nfc_Drv, 13);
+	pn5180_receive_spi(spi_nfc_Drv, 1);
+	return spi_nfc_Drv->rx_data_ptr[0];
 }
 
 #endif // #ifdef NFC_ENABLED

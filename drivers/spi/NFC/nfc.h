@@ -60,7 +60,8 @@ typedef struct
 #endif
 	uint32_t			(*nfc_ISO14443_init)(uint32_t *nfc_struct);
 	uint8_t				(*nfc_ISO14443_send_REQA)(uint32_t *nfc_struct);
-	uint8_t				(*nfc_send_ISO14443_AntiColl1)(uint32_t *nfc_struct);
+	uint8_t				(*nfc_send_ISO14443_AntiCollision)(uint32_t *nfc_struct);
+	uint8_t				(*nfc_ISO14443_Authenticate)(uint32_t *nfc_struct,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
 	uint32_t			(*nfc_hw_data)(uint32_t *nfc_struct,uint32_t param1, uint8_t *param2, uint32_t param3);
 	uint32_t			(*nfc_reset)(uint32_t *nfc_struct);
 	uint32_t			(*nfc_rf_on)(uint32_t *nfc_struct);
@@ -69,6 +70,12 @@ typedef struct
 	uint8_t 			*rx_data_ptr;
 	uint16_t			nfc_model;
 	uint32_t			iso_card;
+	uint8_t 			ATQA;
+	uint8_t 			SAK;
+	uint8_t 			UID[8];
+	uint8_t 			UID_len;
+	uint8_t 			BCC_UID;
+	uint8_t 			KEY[6];
 	uint8_t				dma_timeout;
 	uint32_t			time_start;
 	uint32_t			op_time;
@@ -78,6 +85,8 @@ typedef struct
 #define	SPI_NFC_DMA_TIMEOUT		250
 #define	PN5180_SPI_TIMEOUT		250
 #define	NFC_CARD_IS_14443		0x14443
+#define	NFC_14443_LEVEL2AC_FLAG	0x88
+
 #define	NFC_CARD_IS_15693		0x15693
 #define	NFC_DEFAULT_RESET_TIME	100
 
@@ -88,7 +97,8 @@ extern uint32_t	spi_nfc_rf_off(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 
 extern uint32_t	spi_nfc_ISO14443_init(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern uint8_t	spi_nfc_ISO14443_send_REQA(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
-extern uint32_t	spi_nfc_send_ISO14443_AntiColl1(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_nfc_send_ISO14443_AntiCollision(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern uint32_t	spi_ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
 
 extern uint32_t	spi_nfc_get_hwdata(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint32_t addr, uint8_t *buffer, uint32_t len);
 

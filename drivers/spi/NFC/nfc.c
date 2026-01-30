@@ -42,10 +42,10 @@ ITCM_AREA_CODE uint8_t	spi_nfc_ISO14443_send_REQA(SPI_NFC_DriverStruct_t *spi_nf
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t	spi_nfc_send_ISO14443_AntiColl1(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
+ITCM_AREA_CODE uint32_t	spi_nfc_send_ISO14443_AntiCollision(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 {
-	if ( spi_nfc_Drv->nfc_send_ISO14443_AntiColl1 != NULL )
-		return spi_nfc_Drv->nfc_send_ISO14443_AntiColl1((uint32_t *)spi_nfc_Drv);
+	if ( spi_nfc_Drv->nfc_send_ISO14443_AntiCollision != NULL )
+		return spi_nfc_Drv->nfc_send_ISO14443_AntiCollision((uint32_t *)spi_nfc_Drv);
 	return 1;
 }
 
@@ -74,6 +74,14 @@ ITCM_AREA_CODE uint32_t	spi_nfc_reset(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 {
 	if ( spi_nfc_Drv->nfc_reset != NULL )
 		return spi_nfc_Drv->nfc_reset((uint32_t *)spi_nfc_Drv);
+	return 1;
+}
+
+
+ITCM_AREA_CODE uint32_t	spi_ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo)
+{
+	if ( spi_nfc_Drv->nfc_ISO14443_Authenticate != NULL )
+		return spi_nfc_Drv->nfc_ISO14443_Authenticate((uint32_t *)spi_nfc_Drv,Key,KeyType,BlockNo);
 	return 1;
 }
 
@@ -125,7 +133,8 @@ SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
 	case NFC_IS_PN5180 :
 		spi_nfc_Drv->nfc_ISO14443_init = pn5180_ISO14443_init;
 		spi_nfc_Drv->nfc_ISO14443_send_REQA = pn5180_send_ISO14443_REQA;
-		spi_nfc_Drv->nfc_send_ISO14443_AntiColl1 = pn5180_send_ISO14443_AntiColl1;
+		spi_nfc_Drv->nfc_send_ISO14443_AntiCollision = pn5180_send_ISO14443_AntiCollision;
+		spi_nfc_Drv->nfc_ISO14443_Authenticate = pn5180_ISO14443_Authenticate;
 		spi_nfc_Drv->nfc_rf_on = pn5180_set_rf_on;
 		spi_nfc_Drv->nfc_rf_off = pn5180_set_rf_off;
 		spi_nfc_Drv->nfc_hw_data = pn5180_readEEprom;

@@ -23,7 +23,14 @@
 #ifndef DRIVERS_SPI_NFC_ISO14443_H_
 #define DRIVERS_SPI_NFC_ISO14443_H_
 
+#define NFC_CMD_AUTHA_ISO14443		0x60U    /**< MIFARE Classic Authenticate A command byte */
+#define NFC_CMD_AUTHB_ISO14443		0x61U    /**< MIFARE Classic Authenticate A command byte */
+#define NFC_CMD_READ_ISO14443		0x30U    /**< MIFARE Classic Read command byte */
+#define NFC_ISO14443_UID4			0x04
+#define NFC_ISO14443_UID7			0x07
+
 extern	uint8_t ISO14443_Discovery(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern	uint8_t ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
 
 
 #endif /* DRIVERS_SPI_NFC_ISO14443_H_ */

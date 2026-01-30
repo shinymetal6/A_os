@@ -31,7 +31,9 @@ extern	uint32_t pn5180_ISO14443_init(uint32_t *spi_nfc_driver32);
 extern	uint32_t pn5180_readEEprom(uint32_t *spi_nfc_driver32,uint32_t addr, uint8_t *buffer, uint32_t len);
 extern	uint32_t pn5180_reset(uint32_t *spi_nfc_driver32);
 extern	uint8_t  pn5180_send_ISO14443_REQA(uint32_t *spi_nfc_driver32);
-extern	uint8_t  pn5180_send_ISO14443_AntiColl1(uint32_t *spi_nfc_driver32);
+extern	uint8_t  pn5180_send_ISO14443_AntiCollision(uint32_t *spi_nfc_driver32);
+extern	uint8_t  pn5180_ISO14443_Authenticate(uint32_t *spi_nfc_driver32,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
+
 extern	uint32_t pn5180_set_rf_on(uint32_t *spi_nfc_driver32);
 extern	uint32_t pn5180_set_rf_off(uint32_t *spi_nfc_driver32);
 

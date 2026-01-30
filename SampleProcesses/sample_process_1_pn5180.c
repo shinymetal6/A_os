@@ -62,7 +62,10 @@ SPI_NFC_DriverStruct_t	SPI_NFC_Driver =
 void sample_process_1_init(uint32_t process_id)
 {
 }
+
 uint8_t	check_val;
+uint8_t Key[6] = {0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF};
+
 void sample_process_1_pn5180(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
@@ -82,7 +85,10 @@ uint32_t	poll_enable = 1 , counter = 0;
 			{
 			    if ( ISO14443_Discovery(&SPI_NFC_Driver) )
 			    {
-					HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			    	if ( ISO14443_Authenticate(&SPI_NFC_Driver,Key,NFC_CMD_AUTHA_ISO14443,0) == 0)
+			    	{
+						HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+			    	}
 					counter = 5;
 					poll_enable = 0 ;
 			    }
