@@ -31,6 +31,8 @@
 
 extern	uint8_t ISO14443_Discovery(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern	uint8_t ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
+extern	uint8_t ISO14443_BlockRead(SPI_NFC_DriverStruct_t *spi_nfc_Drv,  uint8_t BlockNo,uint8_t *Block);
+extern	uint8_t ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block);
 
 
 #endif /* DRIVERS_SPI_NFC_ISO14443_H_ */

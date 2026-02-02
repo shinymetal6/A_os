@@ -33,6 +33,8 @@ extern	uint32_t pn5180_reset(uint32_t *spi_nfc_driver32);
 extern	uint8_t  pn5180_send_ISO14443_REQA(uint32_t *spi_nfc_driver32);
 extern	uint8_t  pn5180_send_ISO14443_AntiCollision(uint32_t *spi_nfc_driver32);
 extern	uint8_t  pn5180_ISO14443_Authenticate(uint32_t *spi_nfc_driver32,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
+extern	uint8_t  pn5180_ISO14443_BlockRead( uint32_t *spi_nfc_driver32, uint8_t BlockNo,uint8_t *Block);
+extern	uint8_t  pn5180_ISO14443_BlockWrite(uint32_t *spi_nfc_driver32, uint8_t BlockNo,uint8_t *Block);
 
 extern	uint32_t pn5180_set_rf_on(uint32_t *spi_nfc_driver32);
 extern	uint32_t pn5180_set_rf_off(uint32_t *spi_nfc_driver32);

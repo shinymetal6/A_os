@@ -29,7 +29,7 @@
 #include "nfc.h"
 #include "iso14443.h"
 
-/* Return values :
+/* ATQA values :
 		Mifare S50        : 0X0004
 		Mifare S70        : 0X0002
 		Mifare UltraLight : 0x0044
@@ -56,10 +56,24 @@ uint8_t ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t *Key,
 uint8_t res = 0;
 	if ( spi_nfc_Drv->UID_len == NFC_ISO14443_UID4 )
 		res =  spi_ISO14443_Authenticate(spi_nfc_Drv,Key,KeyType,BlockNo);
+	//spi_nfc_rf_off(spi_nfc_Drv);
+	return res;
+}
+
+uint8_t ISO14443_BlockRead(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block)
+{
+uint32_t res = 0;
+	res = spi_ISO14443_BlockRead(spi_nfc_Drv,BlockNo,Block);
 	spi_nfc_rf_off(spi_nfc_Drv);
 	return res;
 }
 
+
+uint8_t ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block)
+{
+uint32_t res = 0;
+	return res;
+}
 #endif // #ifdef NFC_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
 

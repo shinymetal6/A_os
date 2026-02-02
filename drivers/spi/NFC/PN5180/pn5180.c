@@ -343,5 +343,33 @@ uint32_t i;
 	return spi_nfc_Drv->rx_data_ptr[0];
 }
 
+uint8_t pn5180_ISO14443_BlockRead(uint32_t *spi_nfc_driver32, uint8_t BlockNo,uint8_t *Block)
+{
+SPI_NFC_DriverStruct_t *spi_nfc_Drv = (SPI_NFC_DriverStruct_t *)spi_nfc_driver32;
+uint32_t rx_len = 0,i;
+
+	spi_nfc_Drv->tx_data_ptr[0] = PN5180_CMD_SEND_DATA;
+	spi_nfc_Drv->tx_data_ptr[1] = 0x00;
+	spi_nfc_Drv->tx_data_ptr[2] = NFC_CMD_READ_ISO14443;
+	spi_nfc_Drv->tx_data_ptr[3] = BlockNo;
+	pn5180_send_spi(spi_nfc_Drv, 4);
+	task_delay(20);
+	rx_len = pn5180_read_register(spi_nfc_Drv,PN5180_REG_RX_STATUS) & 0x1ff;
+	if ( rx_len)
+	{
+		pn5180_receive_spi(spi_nfc_Drv, rx_len);
+		for(i=0;i<rx_len;i++)
+			Block[i] = spi_nfc_Drv->rx_data_ptr[i];
+	}
+
+	pn5180_read_register(spi_nfc_Drv, PN5180_REG_IRQ_STATUS);
+	return rx_len;
+}
+
+uint8_t pn5180_ISO14443_BlockWrite(uint32_t *spi_nfc_driver32, uint8_t BlockNo,uint8_t *Block)
+{
+SPI_NFC_DriverStruct_t *spi_nfc_Drv = (SPI_NFC_DriverStruct_t *)spi_nfc_driver32;
+	return 0;
+}
 #endif // #ifdef NFC_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED

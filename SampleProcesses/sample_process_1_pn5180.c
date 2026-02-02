@@ -65,13 +65,14 @@ void sample_process_1_init(uint32_t process_id)
 
 uint8_t	check_val;
 uint8_t Key[6] = {0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF};
+uint8_t RdBuf[32];
 
 void sample_process_1_pn5180(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint32_t	poll_enable = 1 , counter = 0;
 
-	create_timer(TIMER_ID_0,20,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nfc_register(&SPI_NFC_Driver);
     HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_RESET);
 	check_val = rxbuf[0x1a];
@@ -87,6 +88,8 @@ uint32_t	poll_enable = 1 , counter = 0;
 			    {
 			    	if ( ISO14443_Authenticate(&SPI_NFC_Driver,Key,NFC_CMD_AUTHA_ISO14443,0) == 0)
 			    	{
+			    		bzero(RdBuf,sizeof(RdBuf));
+			    		ISO14443_BlockRead(&SPI_NFC_Driver,4,RdBuf);
 						HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
 			    	}
 					counter = 5;

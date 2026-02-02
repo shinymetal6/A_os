@@ -62,6 +62,8 @@ typedef struct
 	uint8_t				(*nfc_ISO14443_send_REQA)(uint32_t *nfc_struct);
 	uint8_t				(*nfc_send_ISO14443_AntiCollision)(uint32_t *nfc_struct);
 	uint8_t				(*nfc_ISO14443_Authenticate)(uint32_t *nfc_struct,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
+	uint8_t				(*nfc_ISO14443_BlockRead)(uint32_t *nfc_struct, uint8_t BlockNo,uint8_t *Block);
+	uint8_t				(*nfc_ISO14443_BlockWrite)(uint32_t *nfc_struct, uint8_t BlockNo,uint8_t *Block);
 	uint32_t			(*nfc_hw_data)(uint32_t *nfc_struct,uint32_t param1, uint8_t *param2, uint32_t param3);
 	uint32_t			(*nfc_reset)(uint32_t *nfc_struct);
 	uint32_t			(*nfc_rf_on)(uint32_t *nfc_struct);
@@ -99,6 +101,8 @@ extern uint32_t	spi_nfc_ISO14443_init(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern uint8_t	spi_nfc_ISO14443_send_REQA(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern uint32_t	spi_nfc_send_ISO14443_AntiCollision(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern uint32_t	spi_ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
+extern uint32_t	spi_ISO14443_BlockRead(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block);
+extern uint32_t	spi_ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block);
 
 extern uint32_t	spi_nfc_get_hwdata(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint32_t addr, uint8_t *buffer, uint32_t len);
 
