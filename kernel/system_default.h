@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-#define	A_OS_VERSION			"v2026.01-rc1"
+#define	A_OS_VERSION			"v2026.02-rc0"
 
 #ifdef	STM32H743xx
 		#include "../processors/STM32H743xx.h"

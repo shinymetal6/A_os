@@ -22,6 +22,7 @@
 #include "main.h"
 #include "../../../kernel/A.h"
 #include "../../../kernel/A_exported_functions.h"
+#ifdef SOUND_ENGINE_ENABLED
 #ifdef USB_DEVICE_ENABLED
 #include "../sound_engine.h"
 #include "usb_audio.h"
@@ -52,3 +53,5 @@ ITCM_AREA_CODE uint8_t USBAudio_Register(AUDIO_Source_TypeDef *usbaudio_in)
 }
 
 #endif // #ifdef USB_DEVICE_ENABLED
+#endif // #ifdef SOUND_ENGINE_ENABLED
+
