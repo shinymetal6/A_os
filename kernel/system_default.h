@@ -68,6 +68,7 @@
 	#include "user_config.h"
 	#define		USER_PROCESSES	1
 	#undef		SAMPLE_PROCESSES_ENABLED
+
 #else
 	#include "../SampleProcesses/sample_user_config.h"
 	#define		SAMPLE_PROCESSES_ENABLED		1

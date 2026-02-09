@@ -39,14 +39,5 @@ extern	uint8_t  pn5180_ISO14443_BlockWrite(uint32_t *spi_nfc_driver32, uint8_t B
 extern	uint32_t pn5180_set_rf_on(uint32_t *spi_nfc_driver32);
 extern	uint32_t pn5180_set_rf_off(uint32_t *spi_nfc_driver32);
 
-/*
- *
- * SPI2_MOSI	PB15	CN10-26
- * SPI2_MISO	PB14	CN10-28
- * SPI2_SCK		PB13	CN10-30
- * PN5180_SS	PB12	CN10-16
- * PN5180_BUSY	PB11	CN10-18
- * PN5180_IRQ	PB1		CN10-24
- * PN5180_RESET	PB2		CN10-22
- */
+
 #endif /* DRIVERS_SPI_NFC_PN5180_PN5180_H_ */

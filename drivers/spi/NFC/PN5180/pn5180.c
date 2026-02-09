@@ -44,7 +44,6 @@ static inline uint32_t wait_busylow(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 		A_wait_uSec_NoIrq(1);
 		if ( --tout == 0 )
 		{
-		    HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_SET);
 			return 1;
 		}
 	}
@@ -53,7 +52,6 @@ static inline uint32_t wait_busylow(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 uint32_t werr = 0;
 uint32_t wait_high_error(void)
 {
-    HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_SET);
 	werr++;
 	return 1;
 }

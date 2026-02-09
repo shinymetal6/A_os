@@ -20,6 +20,18 @@
  *      Author: fil
  */
 
+/*
+ * Pin allocation for NUCLEO-G491RE
+ * SPI2_MOSI	PB15	CN10-26
+ * SPI2_MISO	PB14	CN10-28
+ * SPI2_SCK		PB13	CN10-30
+ * PN5180_SS	PB12	CN10-16
+ * PN5180_BUSY	PB11	CN10-18
+ * PN5180_IRQ	PB1		CN10-24
+ * PN5180_RESET	PB2		CN10-22
+ * NEOLED		PC6		CN10-4
+ */
+
 #include "main.h"
 #include "sample_A_os_includes.h"
 
@@ -29,6 +41,8 @@
 
 #ifdef SAMPLEPROCESS_1_PN5180
 extern	SPI_HandleTypeDef hspi2;
+extern	TIM_HandleTypeDef htim3;
+
 uint8_t txbuf[PN5180_PAYLOAD_LENGTH];
 uint8_t rxbuf[PN5180_PAYLOAD_LENGTH];
 uint32_t	nfc_irq=0;
@@ -61,6 +75,30 @@ SPI_NFC_DriverStruct_t	SPI_NFC_Driver =
 		.nfc_irq_driver = &pn5180_Int_Driver,
 		.nfc_irq_callback = nfc_irq_callback,
 };
+
+WS2812_FrameBuffer_TypeDef	WS2812_FrameBuffer =
+{
+		.rgb[0] = {0x55,0xaa,0x7e},
+		.rgb[1] = {0x55,0xaa,0x7e},
+		.rgb[2] = {0x55,0xaa,0x7e},
+		.rgb[3] = {0x55,0xaa,0x7e},
+		.rgb[4] = {0x55,0xaa,0x7e},
+		.rgb[5] = {0x55,0xaa,0x7e},
+		.rgb[6] = {0x55,0xaa,0x7e},
+		.rgb[7] = {0x55,0xaa,0x7e},
+		.rgb[8] = {0x55,0xaa,0x7e},
+		.rgb[9] = {0x55,0xaa,0x7e},
+};
+
+WS2812_Drv_TypeDef	WS2812_Drv =
+{
+		.ws2812_timer = &htim3,
+		.ws2812_channel = TIM_CHANNEL_1,
+		.ws2812_numleds = 8,
+		.WS2812_FrameBuffer = &WS2812_FrameBuffer,
+		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
+};
+
 void sample_process_1_init(uint32_t process_id)
 {
 }
@@ -68,15 +106,16 @@ void sample_process_1_init(uint32_t process_id)
 uint8_t	check_val;
 uint8_t Key[6] = {0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF};
 uint8_t RdBuf[32];
-
+uint32_t init_result;
 void sample_process_1_pn5180(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+#ifdef CARD_ENABLE
 uint32_t	poll_enable = 1 , counter = 0;
-
+#endif
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nfc_register(&SPI_NFC_Driver);
-    HAL_GPIO_WritePin(ERROR_GPIO_Port, ERROR_Pin, GPIO_PIN_RESET);
+	init_result = ws2812_register(&WS2812_Drv);
 	check_val = rxbuf[0x1a];
 	while(1)
 	{
@@ -84,6 +123,7 @@ uint32_t	poll_enable = 1 , counter = 0;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+#ifdef CARD_ENABLE
 			if ( poll_enable )
 			{
 			    if ( ISO14443_Discovery(&SPI_NFC_Driver) )
@@ -105,7 +145,11 @@ uint32_t	poll_enable = 1 , counter = 0;
 				else
 					poll_enable = 1;
 			}
+#else
+			process_led();
+#endif
 		}
+
 	}
 }
 #endif // #ifdef SAMPLEPROCESS_1_PN5180

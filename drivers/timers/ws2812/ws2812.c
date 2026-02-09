@@ -16,7 +16,7 @@
 /*
  * ws2812.c
  *
- *  Created on: Feb 24, 2025
+ *  Created on: Feb 9, 2026
  *      Author: fil
  */
 
@@ -28,59 +28,46 @@
 
 #include "ws2812.h"
 
-__attribute__	((aligned (16)))	uint16_t	ws2812_FrameBuffer[BUFLEN][LEDBPP]; /* 0GRB */
+extern	uint32_t ws2812_lut[256][8];
 
-ITCM_AREA_CODE static void ws2812_compile_sync(void)
+ITCM_AREA_CODE void ws2812_SetPixel(WS2812_Drv_TypeDef *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b)
 {
-int16_t	i,k,location;
-
-	for(location=0;location<SYNCLEN;location++)
+int16_t	i;
+	for(i=0;i<8;i++)
 	{
-		for(i=0,k=7;i<8;i++,k--)
-		{
-			ws2812_FrameBuffer[location][k] = 1;
-			ws2812_FrameBuffer[location][k+8] = 1;
-			ws2812_FrameBuffer[location][k+16] = 1;
-		}
+		ws2812_drv->ws2812_work_buf[RED_SHIFT   + (location*24) + i] = ws2812_lut[r][i];
+		ws2812_drv->ws2812_work_buf[GREEN_SHIFT + (location*24) + i] = ws2812_lut[g][i];
+		ws2812_drv->ws2812_work_buf[BLUE_SHIFT  + (location*24) + i] = ws2812_lut[b][i];
 	}
 }
 
-ITCM_AREA_CODE void ws2812_CompilePixel(uint32_t location, uint8_t r,uint8_t g,uint8_t b)
+ITCM_AREA_CODE void ws2812_ClearPixels(WS2812_Drv_TypeDef *ws2812_drv)
 {
-int16_t	i,k;
-	for(i=0,k=7;i<8;i++,k--)
-	{
-		if ( (g & (1 << i)) != 0 )
-			ws2812_FrameBuffer[SYNCLEN+location][k] = PATTERN_1;
-		else
-			ws2812_FrameBuffer[SYNCLEN+location][k] = PATTERN_0;
-		if ( (r & (1 << i)) != 0 )
-			ws2812_FrameBuffer[SYNCLEN+location][k+8] = PATTERN_1;
-		else
-			ws2812_FrameBuffer[SYNCLEN+location][k+8] = PATTERN_0;
-		if ( (b & (1 << i)) != 0 )
-			ws2812_FrameBuffer[SYNCLEN+location][k+16] = PATTERN_1;
-		else
-			ws2812_FrameBuffer[SYNCLEN+location][k+16] = PATTERN_0;
-	}
-	ws2812_compile_sync();
+int16_t	location;
+	for(location=0;location<ws2812_drv->ws2812_numleds;location++)
+		ws2812_SetPixel(ws2812_drv,location, 0,0,0);
 }
 
 ITCM_AREA_CODE uint32_t ws2812_init(WS2812_Drv_TypeDef *ws2812_drv)
 {
-int16_t	location;
-	for(location=SYNCLEN;location<SYNCLEN+NUMLEDS;location++)
-		ws2812_CompilePixel(location, 0,0,0);
-	HAL_TIM_PWM_Start_DMA(ws2812_drv->timer, ws2812_drv->ws2812_channel,(uint32_t *)ws2812_FrameBuffer,BUFLEN);
-	return 0;
+	bzero(ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
+	ws2812_ClearPixels(ws2812_drv);
+	return HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_timer_channel,ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 }
 
 ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_Drv_TypeDef *ws2812_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 
-	if ( ws2812_drv->timer == NULL)
+	if ( ws2812_drv->ws2812_timer == NULL)
 		return DRIVER_REQUEST_FAILED;
+	if ( ws2812_drv->ws2812_work_buf == NULL)
+		return DRIVER_REQUEST_FAILED;
+	if (( ws2812_drv->ws2812_work_buf_buflen == 0 ) || ( ws2812_drv->ws2812_work_buf_buflen > WS2812_MAX_BUFLEN ) )
+		return DRIVER_REQUEST_FAILED;
+	if ( ws2812_drv->ws2812_numleds > WS2812_MAX_NUMLEDS)
+		return DRIVER_REQUEST_FAILED;
+
 	if ( timer_drv_ptr == NULL)
 	{
 		timer_drv_ptr = (TIMER_DriverStruct_t *)ws2812_drv;
@@ -98,6 +85,9 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		ws2812_drv->next_timer = NULL;
 	}
 	ws2812_drv->process = get_current_process();
-	return 0;
+	ws2812_drv->ws2812_timer->Instance->PSC = (HSI_CLOCK/(10000000U));
+	ws2812_drv->ws2812_timer->Instance->ARR = 12;
+	return ws2812_init(ws2812_drv);
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED
+

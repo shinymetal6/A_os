@@ -161,7 +161,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_g431rb_pn5180(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_G431RB_PN5180
-
+#ifdef	SAMPLEPROCESS_1_WS2812
+extern	void sample_process_1_ws2812(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_WS2812
 
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
@@ -313,6 +316,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_usbaudio,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_USBAUDIO
+#ifdef	SAMPLEPROCESS_1_WS2812
+				.user_process = sample_process_1_ws2812,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_WS2812
 				.stack_size = 1024,
 		},
 		{
