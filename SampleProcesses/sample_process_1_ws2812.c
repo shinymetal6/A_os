@@ -32,7 +32,6 @@ extern	TIM_HandleTypeDef htim3;
 #define	WS2812_WORK_BUF_LEN		((NUM_LEDS*WS2812_LEDBPP)+WS2812_SYNCLEN)
 uint32_t ws2812_work_buf[WS2812_WORK_BUF_LEN];
 
-
 WS2812_Drv_TypeDef	WS2812_Drv =
 {
 		.ws2812_timer = &htim3,

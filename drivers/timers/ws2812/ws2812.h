@@ -56,6 +56,6 @@ typedef struct
 extern uint32_t	ws2812_register(WS2812_Drv_TypeDef *private_data);
 extern void 	ws2812_ClearPixels(WS2812_Drv_TypeDef *ws2812_drv);
 extern void 	ws2812_SetPixel(WS2812_Drv_TypeDef *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b);
-
+extern void 	ws2812_UserFB_to_WorkBuf(WS2812_Drv_TypeDef *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len);
 
 #endif /* DRIVERS_TIMERS_WS2812_WS2812_H_ */

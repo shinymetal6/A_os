@@ -41,6 +41,15 @@ int16_t	i;
 	}
 }
 
+ITCM_AREA_CODE void ws2812_UserFB_to_WorkBuf(WS2812_Drv_TypeDef *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
+{
+int32_t	i;
+	if ( user_fb_len > ws2812_drv->ws2812_numleds)
+		return;
+	for(i=0;i<user_fb_len;i++)
+		ws2812_SetPixel(ws2812_drv,i, user_fb[i],user_fb[i+1],user_fb[i+2]);
+}
+
 ITCM_AREA_CODE void ws2812_ClearPixels(WS2812_Drv_TypeDef *ws2812_drv)
 {
 int16_t	location;
