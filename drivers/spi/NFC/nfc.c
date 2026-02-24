@@ -171,6 +171,7 @@ SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
 		spi_nfc_Drv->nfc_irq_driver->irq_exti_callback = spi_nfc_Drv->nfc_irq_callback;
 
 		gpio_int_register(spi_nfc_Drv->nfc_irq_driver);
+		spi_nfc_ISO14443_init(spi_nfc_Drv);
 		return 0;
 		break;
 	default :

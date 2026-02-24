@@ -76,82 +76,144 @@ SPI_NFC_DriverStruct_t	SPI_NFC_Driver =
 		.nfc_irq_callback = nfc_irq_callback,
 };
 
-WS2812_FrameBuffer_TypeDef	WS2812_FrameBuffer =
-{
-		.rgb[0] = {0x55,0xaa,0x7e},
-		.rgb[1] = {0x55,0xaa,0x7e},
-		.rgb[2] = {0x55,0xaa,0x7e},
-		.rgb[3] = {0x55,0xaa,0x7e},
-		.rgb[4] = {0x55,0xaa,0x7e},
-		.rgb[5] = {0x55,0xaa,0x7e},
-		.rgb[6] = {0x55,0xaa,0x7e},
-		.rgb[7] = {0x55,0xaa,0x7e},
-		.rgb[8] = {0x55,0xaa,0x7e},
-		.rgb[9] = {0x55,0xaa,0x7e},
-};
+#ifdef	STM32G491xx
+extern	UART_HandleTypeDef	hlpuart1;
+#define	UART				hlpuart1
+#define	UART_WAKEUP			WAKEUP_FROM_UART1_IRQ
+#define	UART_EVENT			EVENT_UART1_IRQ
+#endif
 
-WS2812_Drv_TypeDef	WS2812_Drv =
+#define	UART_RX_BUF_SIZE	512
+#define	UART_TX_BUF_SIZE	512
+uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
+uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
+
+UART_Drv_TypeDef Uart_Drv =
 {
-		.ws2812_timer = &htim3,
-		.ws2812_channel = TIM_CHANNEL_1,
-		.ws2812_numleds = 8,
-		.WS2812_FrameBuffer = &WS2812_FrameBuffer,
-		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
+	.data = uart_rx_buffer,
+	.rx_max_len = XMODEM_LINE_LEN,
+	.uart = &hlpuart1,
+	.wakeup_id = UART_WAKEUP,
+	.timeout = 100,
+	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
 void sample_process_1_init(uint32_t process_id)
 {
+
 }
 
 uint8_t	check_val;
 uint8_t Key[6] = {0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF};
 uint8_t RdBuf[32];
+uint8_t WrBuf[32];
 uint32_t init_result;
+uint8_t	ss_string[32];
+#define	ISO_CYCLE_TIME	10
+#define	BLOCK_NUMBER	6
+
+uint8_t	card_sm=0;
+
 void sample_process_1_pn5180(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-#ifdef CARD_ENABLE
-uint32_t	poll_enable = 1 , counter = 0;
-#endif
-	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+uint8_t		card_time_off;
+	create_timer(TIMER_ID_0,200,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	spi_nfc_register(&SPI_NFC_Driver);
-	init_result = ws2812_register(&WS2812_Drv);
+	uart_register(&Uart_Drv);
+	uart_start_receive(&Uart_Drv);
+	uart_send(&Uart_Drv, (uint8_t *)"Initialized\r\n",strlen("Initialized\r\n"));
+	ISO14443_CardOn(&SPI_NFC_Driver);
+
 	check_val = rxbuf[0x1a];
 	while(1)
 	{
-		wait_event(EVENT_TIMER);
+		wait_event(EVENT_TIMER | UART_EVENT);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-#ifdef CARD_ENABLE
-			if ( poll_enable )
-			{
-			    if ( ISO14443_Discovery(&SPI_NFC_Driver) )
-			    {
-			    	if ( ISO14443_Authenticate(&SPI_NFC_Driver,Key,NFC_CMD_AUTHA_ISO14443,0) == 0)
-			    	{
-			    		bzero(RdBuf,sizeof(RdBuf));
-			    		ISO14443_BlockRead(&SPI_NFC_Driver,4,RdBuf);
-						HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-			    	}
-					counter = 5;
-					poll_enable = 0 ;
-			    }
-			}
-			else
-			{
-				if ( counter )
-					counter--;
-				else
-					poll_enable = 1;
-			}
-#else
-			process_led();
-#endif
-		}
 
+			switch(card_sm)
+			{
+			case 0:
+				ISO14443_CardOn(&SPI_NFC_Driver);
+				card_sm++;
+				break;
+			case 1:
+				card_sm++;
+				break;
+			case 2:
+			    if ( ISO14443_Discovery(&SPI_NFC_Driver) == 0 )
+			    {
+			    	sprintf((char *)ss_string,"Discovered : sak = 0x%02x\r\n",SPI_NFC_Driver.SAK);
+			    	card_sm++;
+			    }
+			    else
+			    {
+			    	card_sm = 7;
+			    }
+				break;
+			case 3:
+		    	if ( ISO14443_Authenticate(&SPI_NFC_Driver,Key,NFC_CMD_AUTHA_ISO14443,0) != 0xff)
+		    	{
+			    	uart_send(&Uart_Drv, (uint8_t *)"Authenticated\r\n",strlen("Authenticated\r\n"));
+			    	card_sm++;
+		    	}
+			    else
+			    {
+			    	card_sm = 7;
+			    }
+				break;
+			case 4:
+	    		bzero(RdBuf,sizeof(RdBuf));
+	    		if ( ISO14443_BlockRead(&SPI_NFC_Driver,BLOCK_NUMBER,RdBuf) == 16 )
+	    		{
+					HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+					if ( RdBuf[0] != 'C')
+						card_sm++;
+	    		}
+	    		else
+			    	card_sm = 7;
+		    	break;
+			case 5:
+	    		WrBuf[0] = 'C';
+	    		WrBuf[1] = 'i';
+	    		WrBuf[2] = 'a';
+	    		WrBuf[3] = 'o';
+	    		if ( ISO14443_BlockWrite(&SPI_NFC_Driver,BLOCK_NUMBER,WrBuf) )
+	    			card_sm = 4;
+	    		else
+	    			card_sm++;
+				break;
+			case 6:
+				card_sm++;
+				break;
+			case 7:
+				ISO14443_CardOff(&SPI_NFC_Driver);
+				card_sm++;
+				card_time_off = 10;
+				break;
+			case 8:
+				card_time_off--;
+				if ( card_time_off == 0 )
+				{
+					card_time_off = 10;
+					card_sm = 0;
+				}
+				break;
+			default :
+				card_sm = 0;
+				break;
+			}
+		}
+		if (( wakeup & UART_WAKEUP) == UART_WAKEUP)
+		{
+
+		}
 	}
 }
+
 #endif // #ifdef SAMPLEPROCESS_1_PN5180
 #endif // #ifdef SAMPLE_PROCESSES_ENABLED
 

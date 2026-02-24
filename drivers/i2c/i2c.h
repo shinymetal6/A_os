@@ -49,6 +49,7 @@ extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 #include "sensors/temperature/stts22h.h"
 #include "sensors/temperature/mlx90614.h"
 #include "sensors/pressure/lps22df.h"
+#include "sensors/others/mlx90640.h"
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

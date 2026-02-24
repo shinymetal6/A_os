@@ -25,14 +25,18 @@
 
 #define NFC_CMD_AUTHA_ISO14443		0x60U    /**< MIFARE Classic Authenticate A command byte */
 #define NFC_CMD_AUTHB_ISO14443		0x61U    /**< MIFARE Classic Authenticate A command byte */
+#define NFC_CMD_AUTH_NTAG213		0x1BU    /**< NTAG213 Authenticate command byte */
 #define NFC_CMD_READ_ISO14443		0x30U    /**< MIFARE Classic Read command byte */
+#define NFC_CMD_WRITE_NTAG213		0xA2U    /**< NTAG213 Write command byte */
 #define NFC_ISO14443_UID4			0x04
 #define NFC_ISO14443_UID7			0x07
+#define NFC_ISO14443_WRITE_SUCCESS	0x0a
 
 extern	uint8_t ISO14443_Discovery(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 extern	uint8_t ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t *Key,uint8_t KeyType, uint8_t BlockNo);
 extern	uint8_t ISO14443_BlockRead(SPI_NFC_DriverStruct_t *spi_nfc_Drv,  uint8_t BlockNo,uint8_t *Block);
 extern	uint8_t ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block);
-
+extern	uint8_t ISO14443_CardOn(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
+extern	uint8_t ISO14443_CardOff(SPI_NFC_DriverStruct_t *spi_nfc_Drv);
 
 #endif /* DRIVERS_SPI_NFC_ISO14443_H_ */

@@ -49,6 +49,11 @@ uint8_t 	sample_led_cntr = 0;
 #define	LED_GPIO_Port	LED1_GPIO_Port
 #define	LED_Pin			LED1_Pin
 #endif
+#ifdef	STM32H563xx
+#define	LED_GPIO_Port	LED0_GPIO_Port
+#define	LED_Pin			LED0_Pin
+#endif
+
 void process_led(void)
 {
 #ifdef LED_GPIO_Port

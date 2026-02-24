@@ -107,6 +107,7 @@ extern uint32_t	spi_ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uin
 extern uint32_t	spi_nfc_get_hwdata(SPI_NFC_DriverStruct_t *spi_nfc_Drv,uint32_t addr, uint8_t *buffer, uint32_t len);
 
 #include "iso14443.h"
+#include "crypto1.h"
 #include "PN5180/pn5180.h"
 
 #endif // #ifdef NFC_ENABLED

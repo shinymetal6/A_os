@@ -25,7 +25,7 @@
 #include "../../kernel/A_exported_functions.h"
 
 #include "gpio.h"
-
+#ifndef STM32H563xx
 ITCM_AREA_CODE static uint32_t get_shift_by_pin(uint16_t	gpio_bit)
 {
 uint32_t	shft;
@@ -92,3 +92,4 @@ uint32_t	shft = get_shift_by_pin(gpio_bit);
 	default	 	: break;
 	}
 }
+#endif //#ifndef STM32H563xx

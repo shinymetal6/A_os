@@ -39,24 +39,16 @@
 
 uint8_t ISO14443_Discovery(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 {
-	spi_nfc_ISO14443_init(spi_nfc_Drv);
-	spi_nfc_rf_on(spi_nfc_Drv);
 	spi_nfc_Drv->ATQA = spi_nfc_ISO14443_send_REQA(spi_nfc_Drv);
 	if ( spi_nfc_Drv->ATQA == 0 )
-	{
-		spi_nfc_rf_off(spi_nfc_Drv);
-		return 0;
-	}
-	spi_nfc_send_ISO14443_AntiCollision(spi_nfc_Drv);
-	return spi_nfc_Drv->UID_len;
+		return 1;
+	return spi_nfc_send_ISO14443_AntiCollision(spi_nfc_Drv);
 }
 
 uint8_t ISO14443_Authenticate(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t *Key,uint8_t KeyType, uint8_t BlockNo)
 {
 uint8_t res = 0;
-	if ( spi_nfc_Drv->UID_len == NFC_ISO14443_UID4 )
-		res =  spi_ISO14443_Authenticate(spi_nfc_Drv,Key,KeyType,BlockNo);
-	//spi_nfc_rf_off(spi_nfc_Drv);
+	res =  spi_ISO14443_Authenticate(spi_nfc_Drv,Key,KeyType,BlockNo);
 	return res;
 }
 
@@ -64,15 +56,26 @@ uint8_t ISO14443_BlockRead(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,
 {
 uint32_t res = 0;
 	res = spi_ISO14443_BlockRead(spi_nfc_Drv,BlockNo,Block);
-	spi_nfc_rf_off(spi_nfc_Drv);
 	return res;
 }
-
 
 uint8_t ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_Drv, uint8_t BlockNo,uint8_t *Block)
 {
 uint32_t res = 0;
+	res = pn5180_ISO14443_BlockWrite((uint32_t *)spi_nfc_Drv,BlockNo,Block);
 	return res;
+}
+
+uint8_t ISO14443_CardOn(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
+{
+	spi_nfc_rf_on(spi_nfc_Drv);
+	return 0;
+}
+
+uint8_t ISO14443_CardOff(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
+{
+	spi_nfc_rf_off(spi_nfc_Drv);
+	return 0;
 }
 #endif // #ifdef NFC_ENABLED
 #endif // #ifdef A_OS_SPI_ENABLED
