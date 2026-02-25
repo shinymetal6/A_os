@@ -1230,7 +1230,9 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 
 	if ( mlx90640_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
-	// all the following must have MLX90640_PIXEL_NUM size
+	if ( HAL_I2C_IsDeviceReady(mlx90640_Drv->bus,mlx90640_Drv->device_address,5,MLX90640_TIMEOUT) )
+		return DRIVER_REQUEST_FAILED;
+
 	if ( mlx90640_Drv->mlx90640_eeprom == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( mlx90640_Drv->frame_data == NULL)
@@ -1246,8 +1248,6 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( mlx90640_Drv->kv == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( mlx90640_Drv->alphaTemp == NULL)
-		return DRIVER_REQUEST_FAILED;
-	if ( HAL_I2C_IsDeviceReady(mlx90640_Drv->bus,mlx90640_Drv->device_address,5,MLX90640_TIMEOUT) )
 		return DRIVER_REQUEST_FAILED;
 
 	if ( i2c_drv_ptr == NULL)
