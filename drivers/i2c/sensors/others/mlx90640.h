@@ -101,7 +101,7 @@ typedef struct
 	uint32_t 			wakeup_id;
 	I2C_DriverStruct_t	*next_drv;
 	/* driver proprietary data */
-	uint16_t			mlx90640_found;
+	uint8_t				mlx90640_found;
 	uint16_t			*mlx90640_eeprom;	//[832]
     uint16_t 			*frame_data; 	//[768] MLX90640_PIXEL_NUM
     uint16_t 			*aux_data; 	//[64] MLX90640_AUX_NUM

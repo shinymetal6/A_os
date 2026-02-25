@@ -1247,6 +1247,8 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 		return DRIVER_REQUEST_FAILED;
 	if ( mlx90640_Drv->alphaTemp == NULL)
 		return DRIVER_REQUEST_FAILED;
+	if ( HAL_I2C_IsDeviceReady(mlx90640_Drv->bus,mlx90640_Drv->device_address,5,MLX90640_TIMEOUT) )
+		return DRIVER_REQUEST_FAILED;
 
 	if ( i2c_drv_ptr == NULL)
 	{
@@ -1271,6 +1273,7 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	mlx90640_Drv->mlx90640_control_reg  = mlx90640_read_register(mlx90640_Drv,MLX90640_CTRL_REG);
 	mlx90640_Drv->mlx90640_i2c_conf_reg = mlx90640_read_register(mlx90640_Drv,MLX90640_I2C_CONF_REG);
 	mlx9064_ExtractParameters(mlx90640_Drv);
+	mlx90640_Drv->mlx90640_found = 1;
 	return 0;
 }
 

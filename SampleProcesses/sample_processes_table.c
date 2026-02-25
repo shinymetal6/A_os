@@ -169,6 +169,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_mlx90614(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_MLX90614
+#ifdef	SAMPLEPROCESS_1_MLX90640
+extern	void sample_process_1_mlx90640(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_MLX90640
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -327,6 +331,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_mlx90614,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_MLX90614
+#ifdef	SAMPLEPROCESS_1_MLX90640
+				.user_process = sample_process_1_mlx90640,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_MLX90640
 				.stack_size = 1024,
 		},
 		{
