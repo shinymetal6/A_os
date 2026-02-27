@@ -45,11 +45,14 @@ extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 #endif // #ifdef SOUND_ENABLED
 #include "memories/i2c_24xx.h"
 #include "sensors/accgyro/lis2dw12.h"
+#include "sensors/accgyro/ism330dlctr.h"
 #include "sensors/humidity/sht40.h"
 #include "sensors/temperature/stts22h.h"
 #include "sensors/temperature/mlx90614.h"
 #include "sensors/pressure/lps22df.h"
-#include "sensors/others/mlx90640.h"
+#include "sensors/camera/imx335.h"
+#include "sensors/camera/mlx90640.h"
+#include "sensors/tof/vl53l5cx.h"
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

@@ -34,7 +34,7 @@
 /* Clock */
 #define TICK_HZ 				1000U
 #define HSI_CLOCK         		600000000U
-#define SYSTICK_TIM_CLK   		HSI_CLOCK
+#define SYSTICK_TIM_CLK   		75000000
 
 #define	PendSV_PRIORITY			15
 #define	SysTick_PRIORITY		12

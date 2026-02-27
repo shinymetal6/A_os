@@ -337,6 +337,9 @@
 	#ifdef HAL_UART_MODULE_ENABLED
 		#define A_OS_UART_ENABLED	1
 	#endif
+	#ifdef HAL_I2C_MODULE_ENABLED
+		#define A_OS_I2C_ENABLED	1
+	#endif
 #endif // #ifdef	STM32F746xx
 
 	#ifdef HAL_GPIO_MODULE_ENABLED
