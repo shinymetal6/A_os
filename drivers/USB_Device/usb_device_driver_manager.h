@@ -52,6 +52,7 @@ typedef struct
 #define	USB_CDC_CLASS	0
 #define	USB_MIDI_CLASS	1
 #define	USB_AUDIO_CLASS	2
+#define	USB_UVC_CLASS	3
 
 extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data);
 extern	uint32_t	usb_device_driver_unregister(USB_Drv_TypeDef *usb_drv);
@@ -60,5 +61,6 @@ extern	uint32_t 	usb_device_driver_set_rx_buffer(USB_Drv_TypeDef *usb_drv,uint8_
 extern 	uint16_t 	usb_get_rx_len(USB_Drv_TypeDef *usb_drv);
 extern	uint32_t 	usb_send(USB_Drv_TypeDef *usb_drv,uint8_t* ptr, uint16_t len);
 extern	uint8_t 	MX_Aos_USB_Device_Init(uint8_t usb_classdev);
+extern	void VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */

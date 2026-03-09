@@ -35,6 +35,7 @@ ITCM_AREA_CODE uint32_t mlx90640_read_eeprom(I2C_Mlx90640_Drv_TypeDef *mlx90640_
 ITCM_AREA_CODE uint32_t mlx90640_read_frame_data(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
 {
     return HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, MLX90640_PIXEL_DATA_START_ADDRESS,2,(uint8_t *)mlx90640_Drv->frame_data,MLX90640_PIXEL_NUM,100);
+
 }
 
 ITCM_AREA_CODE uint32_t mlx90640_read_aux_data(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
@@ -42,12 +43,12 @@ ITCM_AREA_CODE uint32_t mlx90640_read_aux_data(I2C_Mlx90640_Drv_TypeDef *mlx9064
     return HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, MLX90640_AUX_DATA_START_ADDRESS,2,(uint8_t *)mlx90640_Drv->frame_data,MLX90640_AUX_NUM,100);
 }
 
-ITCM_AREA_CODE uint32_t mlx90640_read_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t mlx90640_register)
+ITCM_AREA_CODE uint16_t mlx90640_read_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t mlx90640_register)
 {
 uint16_t mlx90640_reg;
     if ( HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, mlx90640_register,2,(uint8_t *)&mlx90640_reg,2,MLX90640_TIMEOUT) )
     	return 0x100;
-    return mlx90640_reg;
+    return ((mlx90640_reg & 0xff00) >> 8 ) | ((mlx90640_reg  & 0xff ) << 8 );
 }
 
 ITCM_AREA_CODE uint32_t mlx90640_write_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t mlx90640_register,uint16_t value)
@@ -895,7 +896,7 @@ uint8_t column;
     }
 }
 
-ITCM_AREA_CODE void mlx9064_Calculate_To(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv, float emissivity, float tr)
+ITCM_AREA_CODE void mlx90640_Calculate_To(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv, float emissivity, float tr)
 {
 float vdd;
 float ta;
@@ -1101,7 +1102,6 @@ uint8_t cnt = 0;
 
     if ( mlx90640_read_frame_data(mlx90640_Drv) )
         return 1;
-
     if ( mlx90640_read_aux_data(mlx90640_Drv) )
         return 1;
 
@@ -1218,7 +1218,7 @@ float kv;
 ITCM_AREA_CODE uint32_t mlx90640_run(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,float emissivity,float eTa)
 {
 	mlx90640_GetFrameData(mlx90640_Drv);
-	mlx9064_Calculate_To(mlx90640_Drv,emissivity, eTa);
+	mlx90640_Calculate_To(mlx90640_Drv,emissivity, eTa);
 	return 0;
 }
 
@@ -1230,7 +1230,7 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 
 	if ( mlx90640_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
-	if ( HAL_I2C_IsDeviceReady(mlx90640_Drv->bus,mlx90640_Drv->device_address,5,MLX90640_TIMEOUT) )
+	if ( HAL_I2C_IsDeviceReady(mlx90640_Drv->bus,mlx90640_Drv->device_address,5,MLX90640_TIMEOUT*10) )
 		return DRIVER_REQUEST_FAILED;
 
 	if ( mlx90640_Drv->mlx90640_eeprom == NULL)
