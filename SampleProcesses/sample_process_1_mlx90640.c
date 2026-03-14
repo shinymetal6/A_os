@@ -38,7 +38,7 @@ int8_t 				kv[MLX90640_PIXEL_NUM];
 float 				alphaTemp[MLX90640_PIXEL_NUM];
 
 uint8_t 			jpeg_image[MLX90640_PIXEL_NUM];
-uint16_t 			jpeg_size;
+uint16_t 			jpeg_image_size;
 
 
 extern				I2C_HandleTypeDef hi2c1;
@@ -137,7 +137,6 @@ void sample_process_1_init(uint32_t process_id)
 #else
 	return;
 #endif
-	VIDEO_Itf_SetPtr(jpeg_image);
 	usb_device_driver_register(&USB_Drv);
 
 }
@@ -167,26 +166,10 @@ uint32_t	count=0;
 				if  (I2C_Mlx90640_Drv.mlx90640_found )
 				{
 					mlx90640_run(&I2C_Mlx90640_Drv,1.0,1.0);
-					HAL_JPEG_Encode_IT(&hjpeg, (uint8_t *)resulting_image, MLX90640_PIXEL_NUM, (uint8_t *)jpeg_image, MLX90640_PIXEL_NUM);
 				}
 			}
 		}
 	}
-}
-
-void HAL_JPEG_EncodeCpltCallback(JPEG_HandleTypeDef *hjpeg)
-{
-	jpeg_size = hjpeg->OutDataLength;
-#ifdef QWEN
-    // 1. Get the actual size of the encoded JPEG
-    uint32_t encodedSize = hjpeg->OutDataLength;
-
-    // 2. Process the data (Save to SD, Send via UART/Ethernet, etc.)
-    SaveJPEG_ToSD(jpegBuffer, encodedSize);
-
-    // 3. Trigger next frame (if using double buffering)
-    Start_Next_Frame_Capture();
-#endif // #ifdef QWEN
 }
 
 #endif // #ifdef SAMPLEPROCESS_1_MLX90640

@@ -31,6 +31,7 @@
 #include "usbd_video.h"
 #include "../../Core/usbd_ctlreq.h"
 #include "../../Core/usbd_core.h"
+#include "../../Core/usbd_def.h"
 #include "../../App/usbd_video_if.h"
 /* VIDEO Device library callbacks */
 static uint8_t USBD_VIDEO_Init(USBD_HandleTypeDef *pdev, uint8_t cfgidx);
@@ -49,13 +50,6 @@ static uint8_t USBD_VIDEO_IsoINIncomplete(USBD_HandleTypeDef *pdev, uint8_t epnu
 static void VIDEO_REQ_GetCurrent(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 static void VIDEO_REQ_SetCurrent(USBD_HandleTypeDef *pdev, USBD_SetupReqTypedef *req);
 
-/**
-  * @}
-  */
-
-/** @defgroup USBD_VIDEO_Private_Variables
-  * @{
-  */
 
 USBD_ClassTypeDef  USBD_VIDEO =
 {
@@ -569,8 +563,8 @@ __ALIGN_BEGIN static uint8_t USBD_VIDEO_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIE
 static USBD_VideoControlTypeDef video_Commit_Control =
 {
   .bmHint = 0x0000U,
-  .bFormatIndex = 0x01U,
-  .bFrameIndex = 0x01U,
+  .bFormatIndex = UVC_FORMAT_INDEX_MJPEG,
+  .bFrameIndex = UVC_FRAME_INDEX_QVGA,
   .dwFrameInterval = 0x00000000U,
   .wKeyFrameRate = 0x0000U,
   .wPFrameRate = 0x0000U,
@@ -590,8 +584,8 @@ static USBD_VideoControlTypeDef video_Commit_Control =
 static USBD_VideoControlTypeDef video_Probe_Control =
 {
   .bmHint = 0x0000U,
-  .bFormatIndex = 0x01U,
-  .bFrameIndex = 0x01U,
+  .bFormatIndex = UVC_FORMAT_INDEX_MJPEG,
+  .bFrameIndex = UVC_FRAME_INDEX_QVGA,
   .dwFrameInterval = 0x00000000U,
   .wKeyFrameRate = 0x0000U,
   .wPFrameRate = 0x0000U,
@@ -861,99 +855,83 @@ static uint8_t USBD_VIDEO_EP0_RxReady(USBD_HandleTypeDef *pdev)
   * @param  epnum: endpoint index
   * @retval status
   */
-static uint8_t  USBD_VIDEO_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
+static uint8_t USBD_VIDEO_DataIn(USBD_HandleTypeDef *pdev, uint8_t epnum)
 {
-  USBD_VIDEO_HandleTypeDef *hVIDEO = (USBD_VIDEO_HandleTypeDef *) pdev->pClassData;
-  static uint8_t  packet[UVC_PACKET_SIZE + (UVC_HEADER_PACKET_CNT * 2U)] = {0x00U};
-  static uint8_t *Pcktdata = packet;
-  static uint16_t PcktIdx = 0U;
-  static uint16_t PcktSze = UVC_PACKET_SIZE;
-  static uint8_t  payload_header[2] = {0x02U, 0x00U};
-  uint8_t i = 0U;
-  uint32_t RemainData, DataOffset = 0U;
-
-  /* Check if the Streaming has already been started */
-  if (hVIDEO->uvc_state == UVC_PLAY_STATUS_STREAMING)
-  {
-    /* Get the current packet buffer, index and size from the application layer */
-    ((USBD_VIDEO_ItfTypeDef *)pdev->pUserData[pdev->classId])->Data(&Pcktdata, &PcktSze, &PcktIdx);
-
-    /* Check if end of current image has been reached */
-    if (PcktSze > 2U)
-    {
-      /* Check if this is the first packet in current image */
-      if (PcktIdx == 0U)
-      {
-        /* Set the packet start index */
-        payload_header[1] ^= 0x01U;
-      }
-
-      RemainData = PcktSze;
-
-      /* fill the Transmit buffer */
-      while (RemainData > 0U)
-      {
-        packet[((DataOffset + 0U) * i)] = payload_header[0];
-        packet[((DataOffset + 0U) * i) + 1U] = payload_header[1];
-        if (RemainData > pdev->ep_in[UVC_IN_EP & 0xFU].maxpacket)
-        {
-          DataOffset = pdev->ep_in[UVC_IN_EP & 0xFU].maxpacket;
-          (void)USBD_memcpy((packet + ((DataOffset + 0U) * i) + 2U),
-                            Pcktdata + ((DataOffset - 2U) * i), (DataOffset - 2U));
-
-          RemainData -= DataOffset;
-          i++;
-        }
-        else
-        {
-          (void)USBD_memcpy((packet + ((DataOffset + 0U) * i) + 2U),
-                            Pcktdata + ((DataOffset - 2U) * i), (RemainData - 2U));
-
-          RemainData = 0U;
-        }
-      }
-    }
-    else
-    {
-      /* Add the packet header */
-      packet[0] = payload_header[0];
-      packet[1] = payload_header[1];
-    }
-
-    /* Transmit the packet on Endpoint */
-    (void)USBD_LL_Transmit(pdev, (uint8_t)(epnum | 0x80U),
-                           (uint8_t *)&packet, (uint32_t)PcktSze);
-  }
-
-  /* Exit with no error code */
-  return (uint8_t) USBD_OK;
+    // Isochronous endpoints don't trigger this callback reliably.
+    // Streaming is handled entirely in SOF.
+    UNUSED(pdev);
+    UNUSED(epnum);
+    return USBD_OK;
 }
 
 /**
-  * @brief  USBD_VIDEO_SOF
-  *         handle SOF event
-  * @param  pdev: device instance
-  * @retval status
-  */
-static uint8_t  USBD_VIDEO_SOF(USBD_HandleTypeDef *pdev)
+* @brief  USBD_VIDEO_SOF
+*         handle SOF event - NOW handles continuous streaming
+* @param  pdev: device instance
+* @retval status
+*/
+static uint8_t USBD_VIDEO_SOF(USBD_HandleTypeDef *pdev)
 {
-  USBD_VIDEO_HandleTypeDef *hVIDEO = (USBD_VIDEO_HandleTypeDef *) pdev->pClassData;
-  uint8_t payload[2] = {0x02U, 0x00U};
+    USBD_VIDEO_HandleTypeDef *hVIDEO = (USBD_VIDEO_HandleTypeDef *) pdev->pClassData;
 
-  /* Check if the Streaming has already been started by SetInterface AltSetting 1 */
-  if (hVIDEO->uvc_state == UVC_PLAY_STATUS_READY)
-  {
-    /* Transmit the first packet indicating that Streaming is starting */
-    (void)USBD_LL_Transmit(pdev, UVC_IN_EP, (uint8_t *)payload, 2U);
+    if (hVIDEO == NULL) {
+        return (uint8_t)USBD_OK;
+    }
 
-    /* Enable Streaming state */
-    hVIDEO->uvc_state = UVC_PLAY_STATUS_STREAMING;
-  }
+    /* State: READY -> Send initial header -> STREAMING */
+    if (hVIDEO->uvc_state == UVC_PLAY_STATUS_READY) {
+        uint8_t payload[2] = {0x02U, 0x00U};
+        (void)USBD_LL_Transmit(pdev, UVC_IN_EP, payload, 2U);
+        hVIDEO->uvc_state = UVC_PLAY_STATUS_STREAMING;
+        return (uint8_t)USBD_OK;
+    }
 
-  /* Exit with no error code */
-  return (uint8_t)USBD_OK;
+    if (hVIDEO->uvc_state != UVC_PLAY_STATUS_STREAMING) {
+        return (uint8_t)USBD_OK;
+    }
+
+    __ALIGN_BEGIN static uint8_t packet[UVC_ISO_FS_MPS] __ALIGN_END;
+    static uint8_t *pbuf = NULL;
+    static uint16_t psize = 0;
+    static uint16_t pcktidx = 0;
+    static uint8_t payload_header[2] = {0x02U, 0x00U};
+    static uint8_t frame_active = 0U;
+
+    /* Call interface Data callback */
+    ((USBD_VIDEO_ItfTypeDef *)pdev->pUserData[pdev->classId])->Data(&pbuf, &psize, &pcktidx);
+
+    if (psize > 2 && pbuf != NULL) {
+        /* Toggle Frame ID (FID) on first packet of new frame */
+        if (pcktidx == 1 && !frame_active) {
+            payload_header[1] ^= 0x01U;
+            frame_active = 1U;
+        }
+
+        /* Build packet: [UVC Header 2 bytes][Payload] */
+        packet[0] = payload_header[0];
+        packet[1] = payload_header[1];
+
+        uint16_t payload_len = psize - 2;
+        if (payload_len > (UVC_ISO_FS_MPS - 2)) {
+            payload_len = UVC_ISO_FS_MPS - 2;
+        }
+        USBD_memcpy(&packet[2], pbuf, payload_len);
+
+        /* Set EOF/EOI flags on last packet */
+        if (payload_len < (UVC_ISO_FS_MPS - 2)) {
+            packet[0] |= 0x02U;  /* End of Frame */
+            packet[0] |= 0x04U;  /* End of Image */
+            frame_active = 0U;
+        }
+
+        /* FIX: Transmit actual size (header + payload) */
+        uint16_t tx_size = payload_len + 2;
+        if (tx_size > UVC_ISO_FS_MPS) tx_size = UVC_ISO_FS_MPS;
+        (void)USBD_LL_Transmit(pdev, UVC_IN_EP, packet, tx_size);
+    }
+
+    return (uint8_t)USBD_OK;
 }
-
 /**
   * @brief  USBD_VIDEO_IsoINIncomplete
   *         handle data ISO IN Incomplete event
@@ -1147,12 +1125,6 @@ static uint8_t  *USBD_VIDEO_GetDeviceQualifierDesc(uint16_t *length)
   return USBD_VIDEO_DeviceQualifierDesc;
 }
 
-/**
-  * @brief  USBD_VIDEO_RegisterInterface
-  * @param  pdev: instance
-  * @param  fops: VIDEO interface callback
-  * @retval status
-  */
 uint8_t USBD_VIDEO_RegisterInterface(USBD_HandleTypeDef   *pdev, USBD_VIDEO_ItfTypeDef *fops)
 {
   /* Check if the FOPS pointer is valid */
@@ -1168,19 +1140,6 @@ uint8_t USBD_VIDEO_RegisterInterface(USBD_HandleTypeDef   *pdev, USBD_VIDEO_ItfT
   return (uint8_t)USBD_OK;
 }
 
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
-
-
-/**
-  * @}
-  */
 #endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx

@@ -129,7 +129,9 @@
 #ifdef SAMPLEPROCESS_1_MLX90640
 #define USB_DEVICE_ENABLED		1
 #endif
-
+#ifdef SAMPLEPROCESS_1_UVCDEVICE
+#define USB_DEVICE_ENABLED		1
+#endif
 #if defined (USB_OTG_FS) || defined (USB_OTG_HS)
 	//#define USB_DEVICE_ENABLED		1
 #endif

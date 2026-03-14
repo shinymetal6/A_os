@@ -44,8 +44,6 @@ void TransferComplete_CallBack_FS(void);
   */
 void HalfTransfer_CallBack_FS(void);
 
-extern	void VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr);
-
 #ifdef __cplusplus
 }
 #endif

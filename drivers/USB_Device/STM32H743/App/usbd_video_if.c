@@ -38,6 +38,8 @@ volatile uint32_t camera_format;
 volatile uint32_t camera_res;
 volatile uint32_t camera_res_width;
 volatile uint32_t camera_res_height;
+uint8_t *jpeg_data;
+volatile uint32_t jpeg_size;
 
 /* Private function prototypes ---------------------------------------------- */
 static int8_t VIDEO_Itf_Init(void);
@@ -93,64 +95,41 @@ static int8_t VIDEO_Itf_Control(USBD_VideoControlTypeDef *pctrl)
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
 uint8_t packet[UVC_ISO_DATA_PACKET_SIZE]={0x00};
-uint8_t *jpeg_data;
-
+void VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr, uint32_t jpeg_len)
+{
+    __disable_irq();
+    jpeg_data = jpegdata_ptr;
+    jpeg_size = jpeg_len;              /* Store actual JPEG size */
+    __enable_irq();
+}
 
 static int8_t VIDEO_Itf_Data(uint8_t** pbuf, uint16_t* psize, uint16_t* pcktidx)
 {
-USBD_VIDEO_HandleTypeDef *hVIDEO =  (USBD_VIDEO_HandleTypeDef *)hUsbDeviceFS.pClassDataCmsit[hUsbDeviceFS.classId];
+    if (jpeg_data == NULL || jpeg_size == 0) {
+        *pbuf = NULL;
+        *psize = 0;
+        return USBD_OK;
+    }
 
-	if (hVIDEO->uvc_state != UVC_PLAY_STATUS_STREAMING)
-	{
-		return USBD_OK;
-	}
+    const uint16_t PAYLOAD_SIZE = UVC_ISO_FS_MPS - 2;  /* 510 bytes for FS */
+    const uint16_t packet_count = (jpeg_size + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
 
-static uint8_t payload_header[2] = {0x02, 0x00};
-static uint8_t packet_index = 0;
+    if (*pcktidx < packet_count) {
+        uint8_t *src = jpeg_data + (*pcktidx) * PAYLOAD_SIZE;
+        uint16_t remaining = jpeg_size - (*pcktidx) * PAYLOAD_SIZE;
+        uint16_t data_len = (remaining > PAYLOAD_SIZE) ? PAYLOAD_SIZE : remaining;
 
-const uint16_t data_payload_size = UVC_ISO_DATA_PACKET_SIZE - 2;
-const uint16_t packet_count = JPEG_SIZE / data_payload_size;
-const uint8_t packet_remainder = JPEG_SIZE % data_payload_size;
+        *pbuf = src;
+        *psize = data_len + 2;  /* +2 for UVC header */
+    } else {
+        *pbuf = NULL;
+        *psize = 0;
+    }
 
-uint16_t packet_size = 2;  // Default to header only
-uint8_t *src = NULL;
-
-	if (packet_index == 0)
-	{
-		// Toggle Frame ID (bit 0) on new frame
-		payload_header[1] ^= 0x01;
-	}
-
-	if (packet_index <= packet_count)
-	{
-		src = jpeg_data + packet_index * data_payload_size;
-
-		uint16_t data_len = (packet_index < packet_count) ?	data_payload_size :	packet_remainder;
-
-		memcpy(packet + 2, src, data_len);
-		packet_size = data_len + 2;
-	}
-
-	// Write payload header
-	packet[0] = payload_header[0];
-	packet[1] = payload_header[1];
-
-	// Transmit packet
-	USBD_LL_Transmit(&hUsbDeviceFS, 0x81, packet, packet_size);
-
-	// Update for next packet
-	packet_index++;
-	if (packet_index > packet_count)
-	{
-		packet_index = 0; // End of current frame
-	}
-  return (0);
+    (*pcktidx)++;
+    return USBD_OK;
 }
 
-void VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr)
-{
-	jpeg_data = jpegdata_ptr;
-}
 #endif // #ifdef	USB_DEVICE_ENABLED
 
 #endif // #ifdef	STM32H743xx

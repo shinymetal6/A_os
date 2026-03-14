@@ -32,6 +32,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "../Target/usbd_conf.h"
+#include "../Core/usbd_def.h"
 
 #ifndef NULL
 #define NULL                                            0U
