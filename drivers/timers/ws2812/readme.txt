@@ -48,6 +48,10 @@ c - Use cases:
 	  
 As an example for Cube initialization the two images TimerSettings1.png and TimerSettings2.png are an example for standard timing initialization. 
 The driver will initialize the PSC and ARR registers of the selected timer, so there is no need to do calculation for Cube.
+
+Timing :
+The resolution must be 100 nSec
+The counter period must be 12
 	
 
   

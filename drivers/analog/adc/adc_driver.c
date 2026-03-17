@@ -116,7 +116,7 @@ ADC_DriverStruct_t *adc_drv = (ADC_DriverStruct_t *)first_adc;
 		{
 			adc_drv->status |= ADC_STATUS_HALF;
 			adc_drv->status &= ~ADC_STATUS_FULL;
-			if ( adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
+			if (( adc_drv->flags & (ADC_FLAGS_HALF_WAKEUP | ADC_FLAGS_ALL_WAKEUP)) && (adc_drv->wakeup_id != 0))
 				activate_process(adc_drv->process,adc_drv->wakeup_id,adc_drv->wakeup_id);
 		}
 	}
@@ -133,7 +133,7 @@ ADC_DriverStruct_t *adc_drv = (ADC_DriverStruct_t *)first_adc;
 		{
 			adc_drv->status |= ADC_STATUS_FULL;
 			adc_drv->status &= ~ADC_STATUS_HALF;
-			if ( adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP))
+			if (( adc_drv->flags & (ADC_FLAGS_FULL_WAKEUP | ADC_FLAGS_ALL_WAKEUP)) && (adc_drv->wakeup_id != 0))
 				activate_process(adc_drv->process,adc_drv->wakeup_id,adc_drv->wakeup_id);
 		}
 	}

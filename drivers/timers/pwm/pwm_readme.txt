@@ -33,13 +33,13 @@ Pwm_Control_TypeDef	Pwm_Control =
 	
 b - register the driver and start it:
 
-	pwm_register(&Pwm_Control,0,0);
+	pwm_register(&Pwm_Control);
 	pwm_init(&Pwm_Control);
 	pwm_start(&Pwm_Control);
 
 c - when needed stop it:
 
-	pwm_stop(pwm_driver_handle);	
+	pwm_stop(&Pwm_Control);	
 			
 Notes:
 
