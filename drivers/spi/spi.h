@@ -46,6 +46,7 @@ typedef struct
 
 #include "lcd/lcd.h"
 #include "NFC/nfc.h"
+#include "dds/ad9837.h"
 #include "nrf24l01/nrf24l01.h"
 
 extern	SPI_DriverStruct_t 	*spi_drv_ptr;

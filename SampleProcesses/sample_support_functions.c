@@ -23,9 +23,9 @@
 #include "main.h"
 #include "../kernel/A.h"
 #include "../kernel/A_exported_functions.h"
-#include "sample_A_os_includes.h"
 
 #ifdef SAMPLE_PROCESSES_ENABLED
+#include "sample_A_os_includes.h"
 
 uint8_t 	sample_led_cntr = 0;
 #ifdef	STM32U575xx
@@ -42,8 +42,8 @@ uint8_t 	sample_led_cntr = 0;
 
 #endif
 #ifdef	STM32G474xx
-#define	LED_GPIO_Port	GREEN_LED__GPIO_Port
-#define	LED_Pin			GREEN_LED__Pin
+#define	LED_GPIO_Port	GREEN_LED_GPIO_Port
+#define	LED_Pin			GREEN_LED_Pin
 #endif
 #ifdef	STM32N657xx
 #define	LED_GPIO_Port	LED1_GPIO_Port
