@@ -386,13 +386,13 @@ typedef struct
 
 typedef struct
 {
- int8_t (* Init)(void);
- int8_t (* DeInit)(void);
- int8_t (* Start)(void);
- int8_t (* Stop)(void);
- int8_t (* Control)(USBD_VideoControlTypeDef *);
- int8_t (* Data)(uint8_t **, uint16_t *, uint16_t *);
- uint8_t  *pStrDesc;
+	uint8_t (* Init)(void);
+	uint8_t (* DeInit)(void);
+	uint8_t (* Start)(void);
+	uint8_t (* Stop)(void);
+	uint8_t (* Control)(USBD_VideoControlTypeDef *);
+	uint8_t (* Data)(uint8_t **, uint16_t *, uint16_t *);
+	uint8_t  *pStrDesc;
 } USBD_VIDEO_ItfTypeDef;
 
 extern USBD_ClassTypeDef    USBD_VIDEO;

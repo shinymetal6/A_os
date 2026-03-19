@@ -26,60 +26,24 @@
 #ifdef SAMPLEPROCESS_1_UVCDEVICE
 
 extern	JPEG_HandleTypeDef hjpeg;
+extern	void GenerateColorBars(uint16_t *rgb565_buf,uint16_t *yuv_buf, uint16_t width, uint16_t height);
 
-#define TEST_PATTERN_WIDTH  320
-#define TEST_PATTERN_HEIGHT 240
-#define TEST_PATTERN_SIZE   (TEST_PATTERN_WIDTH * TEST_PATTERN_HEIGHT * 2)  /* RGB565 */
+/* --- Image Configuration (320x200) --- */
+#define IMG_WIDTH       320
+#define IMG_HEIGHT      240
 
-__ALIGN_BEGIN static uint8_t jpeg_buffer[TEST_PATTERN_WIDTH * TEST_PATTERN_HEIGHT * 2] __ALIGN_END;  /* Compressed output */
-__ALIGN_BEGIN static uint8_t rgb_buffer[TEST_PATTERN_WIDTH * TEST_PATTERN_HEIGHT * 3] __ALIGN_END;   /* RGB input */
+/* Buffer Sizes (YCbCr 4:2:2 = 2 bytes per pixel) */
+#define INPUT_SIZE      (IMG_WIDTH * IMG_HEIGHT * 2)
+#define OUTPUT_SIZE     (IMG_WIDTH * IMG_HEIGHT * 2)
 
-static void Generate_ColorBars_RGB(uint8_t *p)
-{
-    uint32_t x, y;
-    uint32_t bar_width = TEST_PATTERN_WIDTH / 8;
+/* External Handles */
+extern JPEG_HandleTypeDef hjpeg;
+extern DMA2D_HandleTypeDef hdma2d;
 
-    /* RGB888 color bars */
-    static const uint8_t colors[8][3] = {
-        {255, 255, 255},  /* White */
-        {255, 255, 0},    /* Yellow */
-        {0, 255, 255},    /* Cyan */
-        {0, 255, 0},      /* Green */
-        {255, 0, 255},    /* Magenta */
-        {255, 0, 0},      /* Red */
-        {0, 0, 255},      /* Blue */
-        {0, 0, 0}         /* Black */
-    };
+uint8_t __attribute__((aligned(32))) rgb565_buf[INPUT_SIZE] __attribute__((section(".sram1")));
+uint8_t __attribute__((aligned(32))) yuv_buf[OUTPUT_SIZE] __attribute__((section(".sram1")));
+uint8_t __attribute__((aligned(32))) rgb_buffer[INPUT_SIZE] __attribute__((section(".sram1")));
 
-    for (y = 0; y < TEST_PATTERN_HEIGHT; y++) {
-        for (x = 0; x < TEST_PATTERN_WIDTH; x++) {
-            uint32_t bar = x / bar_width;
-            *p++ = colors[bar][0];  /* R */
-            *p++ = colors[bar][1];  /* G */
-            *p++ = colors[bar][2];  /* B */
-        }
-    }
-}
-
-static void Generate_MJPEG_Frame(uint8_t *p)
-{
-#ifdef NOTNOW
-    Generate_ColorBars_RGB(p);
-    HAL_JPEG_Encode(&hjpeg, input_buffer, TEST_PATTERN_SIZE, output_buffer, timeout);
-    /* Use TinyJPEG or similar library */
-    /* jpeg_size = tjpg_encode(rgb_buffer, 320, 240, jpeg_buffer, 80); */
-    /* jpeg_data = jpeg_buffer; */
-
-    /* For now, use a placeholder */
-    jpeg_data = jpeg_buffer;
-    jpeg_size = 1;  /* Replace with actual encoded size */
-#endif
-}
-
-
-__ALIGN_BEGIN uint8_t test_pattern_buffer[TEST_PATTERN_SIZE] __ALIGN_END;
-uint32_t test_frame_count = 0;
-uint8_t use_test_pattern = 1;  /* Set to 1 for test pattern, 0 for camera */
 
 #define	USB_BUF_LEN	1024
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
@@ -94,16 +58,18 @@ USB_Drv_TypeDef	USB_Drv =
 		.timeout = 250,
 		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
 };
+
 void sample_process_1_init(uint32_t process_id)
 {
-	Generate_MJPEG_Frame(rgb_buffer);
-	VIDEO_Itf_SetPtr(rgb_buffer, TEST_PATTERN_SIZE);
+	GenerateColorBars((uint16_t *)rgb565_buf,(uint16_t *)yuv_buf, IMG_WIDTH, IMG_HEIGHT);
+	VIDEO_Itf_SetPtr(yuv_buf, INPUT_SIZE);
 	usb_device_driver_register(&USB_Drv);
 }
 
 void sample_process_1_uvcdevice(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+uint8_t	stream_started = 0;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
@@ -111,6 +77,12 @@ uint32_t	wakeup,flags;
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
+			if ( stream_started == 0 )
+			{
+				stream_started = 1;
+				VIDEO_Itf_StartStreaming();
+			}
+
 			process_led();
 		}
 	}
