@@ -870,7 +870,8 @@ static uint8_t USBD_VIDEO_SOF(USBD_HandleTypeDef *pdev)
         /* ★★★ FIX: Build packet fresh - NO modification of static data ★★★ */
 
         packet[0] = header_byte;
-        packet[1] = frame_id;
+        //packet[1] = frame_id;
+        packet[1] = pcktidx;
         USBD_memcpy(&packet[2], &pbuf[2], payload_len);
 
         /* Transmit */

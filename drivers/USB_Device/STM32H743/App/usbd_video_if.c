@@ -21,10 +21,10 @@
  */
 /*
  * usbd_video_if.c
- * FIXED: Test Pattern Generator for UVC on STM32H7
+ * UVC Interface for External Video Source on STM32H7
  * Resolution: 320x240 @ 30fps, YUY2 format
  *
- * ★★★ CRITICAL FIX: UVC_Header buffer size ★★★
+ * ★★★ FIXED: UVC Header byte layout corrected ★★★
  */
 
 #include "main.h"
@@ -58,13 +58,8 @@ static uint32_t FrameCount = 0U;
 static uint16_t PacketIndex = 0U;
 static uint8_t  FrameID = 0U;
 
-/* ★★★ FIX: UVC_Header must be large enough for header + max payload ★★★ */
-/* 2 bytes header + 1022 bytes max payload (HS) or 510 bytes (FS) */
-static uint8_t UVC_Header[1024] __attribute__((aligned(4)));  /* ★★★ FIX: Was [2], now [1024] ★★★ */
-
-/* Moving box animation */
-static int16_t BoxX = 0, BoxY = 0, BoxDX = 2, BoxDY = 2;
-static const uint16_t BoxSize = 40;
+/* UVC Header buffer: 2 bytes header + max payload */
+static uint8_t UVC_Header[1024] __attribute__((aligned(4)));
 
 /* ============================================================================
  * PRIVATE FUNCTION PROTOTYPES
@@ -75,11 +70,6 @@ static uint8_t VIDEO_Itf_Start(void);
 static uint8_t VIDEO_Itf_Stop(void);
 static uint8_t VIDEO_Itf_Control(USBD_VideoControlTypeDef *pctrl);
 static uint8_t VIDEO_Itf_Data(uint8_t** pbuf, uint16_t* psize, uint16_t* pcktidx);
-
-static void GenerateTestPattern(uint8_t *buffer, uint16_t width, uint16_t height);
-static void UpdateBoxPosition(void);
-static uint16_t RGB565(uint8_t r, uint8_t g, uint8_t b);
-static void ConvertRGB565ToYUY2(uint16_t *rgb, uint8_t *yuy2, uint16_t width, uint16_t height);
 
 /* ============================================================================
  * INTERFACE STRUCTURE
@@ -103,28 +93,15 @@ USBD_VIDEO_ItfTypeDef USBD_VIDEO_Interface_fops_FS =
  */
 static uint8_t VIDEO_Itf_Init(void)
 {
-    /* Allocate frame buffer */
-    FrameBuffer = (uint8_t *)malloc(FRAME_SIZE_YUY2);
-    if (FrameBuffer == NULL) {
-        return USBD_FAIL;
-    }
-
-    /* Initialize to gray (Y=128, U=128, V=128) */
-    memset(FrameBuffer, 0x80, FRAME_SIZE_YUY2);
-
     /* Reset state */
     StreamingActive = 0U;
     FrameCount = 0U;
     PacketIndex = 0U;
     FrameID = 0U;
-    BoxX = 0;
-    BoxY = 0;
+    FrameBuffer = NULL;  /* Will be set by VIDEO_Itf_SetPtr() */
 
     /* Clear UVC header buffer */
     memset(UVC_Header, 0x00, sizeof(UVC_Header));
-
-    /* Generate initial frame */
-    GenerateTestPattern(FrameBuffer, FRAME_WIDTH, FRAME_HEIGHT);
 
     return USBD_OK;
 }
@@ -135,10 +112,7 @@ static uint8_t VIDEO_Itf_Init(void)
 static uint8_t VIDEO_Itf_DeInit(void)
 {
     StreamingActive = 0U;
-    if (FrameBuffer != NULL) {
-        free(FrameBuffer);
-        FrameBuffer = NULL;
-    }
+    FrameBuffer = NULL;  /* Don't free - owned by external source */
     return USBD_OK;
 }
 
@@ -154,11 +128,6 @@ static uint8_t VIDEO_Itf_Start(void)
 
     /* Clear UVC header buffer */
     memset(UVC_Header, 0x00, sizeof(UVC_Header));
-    UVC_Header[0] = 0x02U;
-    UVC_Header[1] = 0x00U;
-
-    /* Generate first frame */
-    GenerateTestPattern(FrameBuffer, FRAME_WIDTH, FRAME_HEIGHT);
 
     return USBD_OK;
 }
@@ -182,8 +151,8 @@ static uint8_t VIDEO_Itf_Control(USBD_VideoControlTypeDef *pctrl)
         return USBD_FAIL;
     }
 
-    /* Host committed a format - we should adapt (optional for test pattern) */
-    /* For now, we always use 320x240 YUY2 */
+    /* Host committed a format - external source should adapt */
+    /* For now, we use 320x240 YUY2 */
 
     return USBD_OK;
 }
@@ -191,6 +160,10 @@ static uint8_t VIDEO_Itf_Control(USBD_VideoControlTypeDef *pctrl)
 /**
  * @brief  Get next video packet - THIS IS THE CALLBACK
  *         ★★★ CRITICAL: Returns complete buffer with header + payload ★★★
+ *
+ * UVC Header Format (2 bytes):
+ *   Byte 0: Bit 0 = FrameID, Bit 1 = EOF, Bit 2 = EOI, Bits 3-7 = Reserved
+ *   Byte 1: Payload Header (0x00 for YUY2 uncompressed)
  */
 static uint8_t VIDEO_Itf_Data(uint8_t** pbuf, uint16_t* psize, uint16_t* pcktidx)
 {
@@ -201,158 +174,85 @@ static uint8_t VIDEO_Itf_Data(uint8_t** pbuf, uint16_t* psize, uint16_t* pcktidx
         return USBD_OK;
     }
 
-    /* Generate new frame at start of each frame transmission */
+    /* ★★★ Toggle Frame ID at start of each new frame ★★★ */
     if (PacketIndex == 0) {
         FrameCount++;
-
-        /* Update animation every 2 frames */
-        if (FrameCount % 2 == 0) {
-            UpdateBoxPosition();
-            GenerateTestPattern(FrameBuffer, FRAME_WIDTH, FRAME_HEIGHT);
-        }
-
-        /* ★★★ FIX: Toggle Frame ID for each new frame ★★★ */
-        //FrameID ^= 0x01U;
-        FrameID ++;
-        FrameID &= 1;
-
+        FrameID ^= 0x01U;  /* Toggle: 0→1→0→1... */
     }
-
 
     /* Calculate packet offset and size */
     uint32_t offset = (uint32_t)PacketIndex * PAYLOAD_SIZE;
     uint16_t remaining = FRAME_SIZE_YUY2 - offset;
     uint16_t payload_len = (remaining > PAYLOAD_SIZE) ? PAYLOAD_SIZE : remaining;
 
-    /* ★★★ FIX: Build UVC header in buffer ★★★ */
-    UVC_Header[0] = 0x02U;  /* Normal packet: Bit 1 set */
-    UVC_Header[1] = FrameID; /* Frame ID from state (0 or 1) */
+    /* ★★★ BUILD UVC HEADER CORRECTLY ★★★ */
+    /* Byte 0: FrameID in bit 0, EOF/EOI will be OR'd for last packet */
+    UVC_Header[0] = FrameID;
+    /* Byte 1: Payload header (0x00 for YUY2 uncompressed format) */
+    UVC_Header[1] = 0x00U;
 
-    /* Set EOF/EOI on last packet */
+    /* Set EOF/EOI on last packet ONLY */
     if (remaining <= PAYLOAD_SIZE) {
-        UVC_Header[0] |= 0x02U;  /* EOF */
-        UVC_Header[0] |= 0x04U;  /* EOI */
+        UVC_Header[0] |= 0x02U;   /* EOF - Bit 1 */
+        UVC_Header[0] |= 0x04U;   /* EOI - Bit 2 */
     }
 
-    /* ★★★ FIX: Copy frame data to transmit buffer (after UVC header) ★★★ */
-    /* This is safe now because UVC_Header is 1024 bytes, not 2 bytes! */
+    /* Copy frame data to transmit buffer (after UVC header) */
     memcpy(&UVC_Header[2], FrameBuffer + offset, payload_len);
 
     /* Return buffer and size */
     *pbuf = UVC_Header;
-    *psize = payload_len + 2U;  /* 2 bytes UVC header + payload */
+    *psize = payload_len + 2U;
     *pcktidx = PacketIndex + 1U;
 
-    /* Increment packet index, wrap at end of frame */
+    /* ★★★ Increment packet index, wrap at end of frame ★★★ */
     PacketIndex++;
     if (offset + payload_len >= FRAME_SIZE_YUY2) {
-        PacketIndex = 0U;
+        PacketIndex = 0U;  /* Reset for next frame */
     }
 
     return USBD_OK;
 }
 
 /* ============================================================================
- * TEST PATTERN GENERATION
+ * EXTERNAL API FUNCTIONS
  * ============================================================================ */
 
 /**
- * @brief  Generate test pattern with moving box
+ * @brief  Set the frame buffer pointer (called by external video source)
+ * @param  data_ptr: Pointer to frame buffer (YUY2 format, 320x240)
+ * @param  data_len: Length of frame data (should be 153,600 bytes)
  */
-static void GenerateTestPattern(uint8_t *buffer, uint16_t width, uint16_t height)
+void VIDEO_Itf_SetPtr(uint8_t *data_ptr, uint32_t data_len)
 {
-    uint16_t *rgb_buf = (uint16_t *)malloc(width * height * 2U);
-    if (rgb_buf == NULL) return;
-
-    /* Background: blue gradient */
-    for (uint16_t y = 0; y < height; y++) {
-        for (uint16_t x = 0; x < width; x++) {
-            rgb_buf[y * width + x] = RGB565(0, 0, 128);
-        }
-    }
-
-    /* Draw moving red box */
-    for (uint16_t y = BoxY; y < BoxY + BoxSize && y < height; y++) {
-        for (uint16_t x = BoxX; x < BoxX + BoxSize && x < width; x++) {
-            rgb_buf[y * width + x] = RGB565(255, 0, 0);
-        }
-    }
-
-    /* Convert to YUY2 */
-    ConvertRGB565ToYUY2(rgb_buf, buffer, width, height);
-    free(rgb_buf);
-}
-
-/**
- * @brief  Update moving box position
- */
-static void UpdateBoxPosition(void)
-{
-    BoxX += BoxDX;
-    BoxY += BoxDY;
-
-    if (BoxX <= 0 || BoxX >= (FRAME_WIDTH - BoxSize)) {
-        BoxDX = -BoxDX;
-    }
-    if (BoxY <= 0 || BoxY >= (FRAME_HEIGHT - BoxSize)) {
-        BoxDY = -BoxDY;
+    if (data_ptr != NULL && data_len >= FRAME_SIZE_YUY2) {
+        FrameBuffer = data_ptr;
     }
 }
 
 /**
- * @brief  Create RGB565 color
+ * @brief  Start streaming (called by external video source)
  */
-static uint16_t RGB565(uint8_t r, uint8_t g, uint8_t b)
-{
-    return ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
-}
-
-/**
- * @brief  Convert RGB565 to YUY2
- */
-static void ConvertRGB565ToYUY2(uint16_t *rgb, uint8_t *yuy2, uint16_t width, uint16_t height)
-{
-    for (uint16_t y = 0; y < height; y++) {
-        for (uint16_t x = 0; x < width; x += 2) {
-            uint16_t p0 = rgb[y * width + x];
-            uint16_t p1 = (x + 1 < width) ? rgb[y * width + x + 1] : p0;
-
-            uint8_t r0 = (p0 >> 11) & 0x1F; r0 = (r0 << 3) | (r0 >> 2);
-            uint8_t g0 = (p0 >> 5) & 0x3F;  g0 = (g0 << 2) | (g0 >> 4);
-            uint8_t b0 = p0 & 0x1F;         b0 = (b0 << 3) | (b0 >> 2);
-
-            uint8_t r1 = (p1 >> 11) & 0x1F; r1 = (r1 << 3) | (r1 >> 2);
-            uint8_t g1 = (p1 >> 5) & 0x3F;  g1 = (g1 << 2) | (g1 >> 4);
-            uint8_t b1 = p1 & 0x1F;         b1 = (b1 << 3) | (b1 >> 2);
-
-            int16_t y0 = (299 * r0 + 587 * g0 + 114 * b0) / 1000;
-            int16_t y1 = (299 * r1 + 587 * g1 + 114 * b1) / 1000;
-            int16_t u = (-169 * r0 - 331 * g0 + 500 * b0) / 1000 + 128;
-            int16_t v = (500 * r0 - 419 * g0 - 81 * b0) / 1000 + 128;
-
-            if (y0 < 0) y0 = 0; if (y0 > 255) y0 = 255;
-            if (y1 < 0) y1 = 0; if (y1 > 255) y1 = 255;
-            if (u < 0) u = 0;   if (u > 255) u = 255;
-            if (v < 0) v = 0;   if (v > 255) v = 255;
-
-            yuy2[(y * width + x) * 2 + 0] = (uint8_t)y0;
-            yuy2[(y * width + x) * 2 + 1] = (uint8_t)u;
-            yuy2[(y * width + x) * 2 + 2] = (uint8_t)y1;
-            yuy2[(y * width + x) * 2 + 3] = (uint8_t)v;
-        }
-    }
-}
-
-void VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr, uint32_t jpeg_len)
-{
-    /* Not used for test pattern generator */
-    (void)jpegdata_ptr;
-    (void)jpeg_len;
-}
-
 void VIDEO_Itf_StartStreaming(void)
 {
     VIDEO_Itf_Start();
+}
+
+/**
+ * @brief  Stop streaming (called by external video source)
+ */
+void VIDEO_Itf_StopStreaming(void)
+{
+    VIDEO_Itf_Stop();
+}
+
+/**
+ * @brief  Check if streaming is active
+ * @retval 1 if streaming, 0 if stopped
+ */
+uint8_t VIDEO_Itf_IsStreaming(void)
+{
+    return StreamingActive;
 }
 
 #endif /* USB_DEVICE_ENABLED */

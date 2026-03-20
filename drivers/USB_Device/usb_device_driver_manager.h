@@ -62,5 +62,6 @@ extern 	uint16_t 	usb_get_rx_len(USB_Drv_TypeDef *usb_drv);
 extern	uint32_t 	usb_send(USB_Drv_TypeDef *usb_drv,uint8_t* ptr, uint16_t len);
 extern	uint8_t 	MX_Aos_USB_Device_Init(uint8_t usb_classdev);
 extern	void 		VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr, uint32_t jpeg_len);
+extern	void 		VIDEO_Itf_StartStreaming(void);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */

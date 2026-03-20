@@ -62,7 +62,6 @@ USB_Drv_TypeDef	USB_Drv =
 void sample_process_1_init(uint32_t process_id)
 {
 	GenerateColorBars((uint16_t *)rgb565_buf,(uint16_t *)yuv_buf, IMG_WIDTH, IMG_HEIGHT);
-	VIDEO_Itf_SetPtr(yuv_buf, INPUT_SIZE);
 	usb_device_driver_register(&USB_Drv);
 }
 
@@ -81,6 +80,7 @@ uint8_t	stream_started = 0;
 			{
 				stream_started = 1;
 				VIDEO_Itf_StartStreaming();
+				VIDEO_Itf_SetPtr(yuv_buf, INPUT_SIZE);
 			}
 
 			process_led();
