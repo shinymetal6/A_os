@@ -44,6 +44,7 @@ typedef struct
 #define	SPI_TX_COMPLETE		0x02
 #define	SPI_RX_COMPLETE		0x01
 
+#include "dds/ad9837.h"
 #include "lcd/lcd.h"
 #include "NFC/nfc.h"
 #include "nrf24l01/nrf24l01.h"
