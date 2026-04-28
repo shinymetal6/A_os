@@ -83,6 +83,7 @@ uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
 		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
 			return 1;
 		break;
+		/*
 	case USB_AUDIO_CLASS:
 		if (USBD_Init(&hUsbDeviceFS, &FS_AUDIO_Desc, DEVICE_FS) != USBD_OK)
 			return 1;
@@ -93,6 +94,7 @@ uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
 		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
 			return 1;
 		break;
+		*/
 	}
 	Asys.system_flags |= SYS_FLAGS_USB_INITIALIZED;
 	return 0;

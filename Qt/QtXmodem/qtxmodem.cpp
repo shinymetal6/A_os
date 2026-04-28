@@ -19,7 +19,10 @@ QtXmodem::QtXmodem(QWidget *parent)
     , ui(new Ui::QtXmodem)
 {
     ui->setupUi(this);
+
+    ui->SelectFile_pushButton->setEnabled(false);
     ui->Download_pushButton->setEnabled(false);
+    ui->SetTargetRX_pushButton->setEnabled(false);
 }
 
 QtXmodem::~QtXmodem()
@@ -86,6 +89,7 @@ void QtXmodem::on_Port_comboBox_currentTextChanged(const QString &arg1)
             //qDebug()<< "Serial port opened";
             ui->statusbar->showMessage(arg1+" : Serial port opened");
             serial.setReadBufferSize (1024);
+            ui->SelectFile_pushButton->setEnabled(true);
         }
     }
     else
@@ -125,7 +129,7 @@ void QtXmodem::on_SelectFile_pushButton_clicked()
         blob = file.readAll();
         file.close();
         ui->SelectedFile_label->setPixmap(greenled);
-        ui->Download_pushButton->setEnabled(true);
+        ui->SetTargetRX_pushButton->setEnabled(true);
     }
 }
 
@@ -217,8 +221,7 @@ void QtXmodem::on_Download_pushButton_clicked()
     serial_tx(ba1);
     rx_data = serial_rx();
     qDebug()<<"Finished, received "<<rx_data;
-
-
+    ui->Download_pushButton->setEnabled(false);
 }
 
 
@@ -227,6 +230,7 @@ void QtXmodem::on_SetTargetRX_pushButton_clicked()
     char    command[128];
 
     sprintf(command,"<h %d %s %s >",file_size,filename.toLatin1(),"0");
+    ui->Download_pushButton->setEnabled(true);
     QByteArray ba1(QByteArray::fromRawData(command, strlen(command)));
     serial_tx(ba1);
 
