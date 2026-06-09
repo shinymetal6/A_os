@@ -29,6 +29,7 @@
 #define TIM_TYPE_ENCODER		1
 #define TIM_TYPE_DHT11			2
 #define TIM_TYPE_PERIODIC		3
+#define TIM_TYPE_PWM			4
 
 typedef struct
 {
@@ -43,6 +44,7 @@ typedef struct
 
 #include "dcc/dcc.h"
 #include "pwm/pwm.h"
+#include "stepper/stepper.h"
 #include "servo/servo.h"
 #include "ws2812/ws2812.h"
 #include "encoder/encoder.h"

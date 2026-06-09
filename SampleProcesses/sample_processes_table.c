@@ -185,6 +185,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_tof_vl53l5cx(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_TOF_VL53L5CX
+#ifdef	SAMPLEPROCESS_1_STEPPER
+extern	void sample_process_1_stepper(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_STEPPER
 
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
@@ -360,7 +364,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_tof_vl53l5cx,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_TOF_VL53L5CX
-
+#ifdef	SAMPLEPROCESS_1_STEPPER
+				.user_process = sample_process_1_stepper,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_STEPPER
 				.stack_size = 1024,
 		},
 		{
