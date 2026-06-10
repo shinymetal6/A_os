@@ -14,7 +14,7 @@ typedef struct
 	uint16_t			usb_interface_class;
 	void				(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 			wakeup_id;
-}USB_Drv_TypeDef;
+}USB_DriverStruct_t;
 
 2) Example:
 a - define the data buffer, control structure and the related handle:
@@ -24,7 +24,7 @@ a - define the data buffer, control structure and the related handle:
 	uint8_t	usb_rx_buffer[USB_RX_BUF_SIZE];
 	uint8_t	usb_tx_buffer[USB_TX_BUF_SIZE];
 	
-	USB_Drv_TypeDef	USB_Drv =
+	USB_DriverStruct_t	USB_Drv =
 	{
 			.data = usb_rx_buffer,
 			.data_index = 0,
@@ -43,6 +43,8 @@ c - transmit
 	usb_send(usb_driver_handle,usb_tx_buffer,32);
 			
 Notes:
+
+When st middleware is not used enable the "USB on the go FS global interrupt" in NVIC section. 
 
 There are no flags associated to this driver.
 	
