@@ -35,12 +35,12 @@
 #include "../Class/CDC/usbd_cdc.h"
 #include "../Class/MIDI/usbd_midi.h"
 
-PCD_HandleTypeDef hpcd_USB_OTG_FS;
+__weak PCD_HandleTypeDef hpcd_USB_OTG_FS;
 void Error_Handler(void);
 
 USBD_StatusTypeDef USBD_Get_USB_Status(HAL_StatusTypeDef hal_status);
 
-void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
+__weak void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
@@ -84,7 +84,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
   }
 }
 
-void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
+__weak void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 {
   if(pcdHandle->Instance==USB_OTG_FS)
   {

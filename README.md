@@ -29,6 +29,7 @@ If USB has a normal use there is no need to add the callback in the declaration.
 Where the user needs a very quick response from the USB layer ( e.g. MIDI ) the callback can point directly<br>
 to the user function that manages MIDI messages.<br>
 This means the user code callback function runs actually under interrupt routine, so should be quick enough to leave space to other processes.<br>
+Please note : when st middleware is not used enable the "USB on the go FS global interrupt" in NVIC section 
 # New Sample processes logic<br>
 If there is no "user_config.h" file the system defaults to sample processes.<br>
 This leaves A_os untouched when switching from Sample Processes to user processes.<br>
