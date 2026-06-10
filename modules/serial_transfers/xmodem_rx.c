@@ -138,7 +138,7 @@ uint8_t		xmodem_rx_uart_reply,rxlen;
 #endif // #ifdef A_OS_UART_ENABLED
 
 #ifdef USB_DEVICE_ENABLED
-ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(USB_Drv_TypeDef *usb_drv,uint8_t mode,uint8_t *usb_rx_buffer)
+ITCM_AREA_CODE	uint8_t xmodem_usb_data_process(USB_DriverStruct_t *usb_drv,uint8_t mode,uint8_t *usb_rx_buffer)
 {
 uint8_t		xmodem_usb_uart_reply;
 	if ( mode )
@@ -176,7 +176,7 @@ ITCM_AREA_CODE	uint8_t xmodem_data_process(uint32_t *driver,uint8_t mode,uint8_t
 {
 #ifdef USB_DEVICE_ENABLED
 	if ( type == XMODEM_IF_USB)
-		return xmodem_usb_data_process((USB_Drv_TypeDef *)driver,mode,rx_buffer);
+		return xmodem_usb_data_process((USB_DriverStruct_t *)driver,mode,rx_buffer);
 #endif
 #ifdef A_OS_UART_ENABLED
 	if ( type == XMODEM_IF_UART)

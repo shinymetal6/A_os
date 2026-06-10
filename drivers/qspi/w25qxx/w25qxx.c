@@ -30,14 +30,14 @@
 #include "w25qxx_defs.h"
 
 
-ITCM_AREA_CODE static uint8_t w25qxx_seterror(W25Qxx_Drv_TypeDef	*w25qxx_Drv,uint8_t error)
+ITCM_AREA_CODE static uint8_t w25qxx_seterror(W25Qxx_DriverStruct_t	*w25qxx_Drv,uint8_t error)
 {
 	w25qxx_Drv->status &= ~QSPI_BUSY;
 	w25qxx_Drv->status |= QSPI_ERROR;
 	return error;
 }
 
-ITCM_AREA_CODE static uint8_t w25qxx_WaitForDriverFlag(W25Qxx_Drv_TypeDef *w25qxx_Drv , uint8_t flag , uint16_t timeout)
+ITCM_AREA_CODE static uint8_t w25qxx_WaitForDriverFlag(W25Qxx_DriverStruct_t *w25qxx_Drv , uint8_t flag , uint16_t timeout)
 {
 	if ( timeout == 0 )
 		return 1;
@@ -51,7 +51,7 @@ ITCM_AREA_CODE static uint8_t w25qxx_WaitForDriverFlag(W25Qxx_Drv_TypeDef *w25qx
 	return 0;
 }
 
-ITCM_AREA_CODE static uint8_t send_qspi_com(W25Qxx_Drv_TypeDef	*w25qxx_Drv )
+ITCM_AREA_CODE static uint8_t send_qspi_com(W25Qxx_DriverStruct_t	*w25qxx_Drv )
 {
 	if (HAL_QSPI_Command(w25qxx_Drv->qspi_bus, &w25qxx_Drv->com, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
 	{
@@ -62,7 +62,7 @@ ITCM_AREA_CODE static uint8_t send_qspi_com(W25Qxx_Drv_TypeDef	*w25qxx_Drv )
 }
 
 
-ITCM_AREA_CODE static uint8_t set_qspi_com(W25Qxx_Drv_TypeDef *w25qxx_Drv, uint8_t Instruction,uint32_t InstructionMode, uint32_t Address, uint32_t AddressMode, uint32_t NbData,uint32_t DataMode,uint32_t DummyCycles )
+ITCM_AREA_CODE static uint8_t set_qspi_com(W25Qxx_DriverStruct_t *w25qxx_Drv, uint8_t Instruction,uint32_t InstructionMode, uint32_t Address, uint32_t AddressMode, uint32_t NbData,uint32_t DataMode,uint32_t DummyCycles )
 {
 	w25qxx_Drv->com.InstructionMode = InstructionMode;
 	w25qxx_Drv->com.Instruction = Instruction;
@@ -76,7 +76,7 @@ ITCM_AREA_CODE static uint8_t set_qspi_com(W25Qxx_Drv_TypeDef *w25qxx_Drv, uint8
 
 ITCM_AREA_CODE uint32_t w25qxx_ReadStatusReg(uint32_t *w25qxx_Drv_e,uint8_t reg,uint16_t timeout)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 uint32_t			Instruction;
 
 	switch(reg)
@@ -96,7 +96,7 @@ uint32_t			Instruction;
 
 ITCM_AREA_CODE uint32_t w25qxx_WriteStatusReg(uint32_t *w25qxx_Drv_e,uint8_t reg,uint16_t timeout)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 uint32_t			Instruction;
 
 	switch(reg)
@@ -116,7 +116,7 @@ uint32_t			Instruction;
 
 ITCM_AREA_CODE uint32_t w25qxx_ReadAllStatusRegs(uint32_t *w25qxx_Drv_e,uint16_t timeout)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 	if ( set_qspi_com(w25qxx_Drv, W25Q_READ_SR1, QSPI_INSTRUCTION_1_LINE, 0, QSPI_ADDRESS_NONE, 1, QSPI_DATA_1_LINE,W25Q_DUMMY_0) )
 		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);
 	if (HAL_QSPI_Receive(w25qxx_Drv->qspi_bus, &w25qxx_Drv->qspi_status_reg1, HAL_QSPI_TIMEOUT_DEFAULT_VALUE) != HAL_OK)
@@ -135,7 +135,7 @@ W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint8_t w25qxx_WaitIfFlashBusy(W25Qxx_Drv_TypeDef *w25qxx_Drv,uint16_t timeout)
+ITCM_AREA_CODE static uint8_t w25qxx_WaitIfFlashBusy(W25Qxx_DriverStruct_t *w25qxx_Drv,uint16_t timeout)
 {
 	w25qxx_Drv->qspi_status_reg = W25Q_BUSY;
 	while(( w25qxx_Drv->qspi_status_reg & W25Q_BUSY) == W25Q_BUSY )
@@ -149,7 +149,7 @@ ITCM_AREA_CODE static uint8_t w25qxx_WaitIfFlashBusy(W25Qxx_Drv_TypeDef *w25qxx_
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_read_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv, uint8_t *data)
+ITCM_AREA_CODE static uint32_t w25qxx_read_cycle(W25Qxx_DriverStruct_t	*w25qxx_Drv, uint8_t *data)
 {
 	if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
 	{
@@ -171,7 +171,7 @@ ITCM_AREA_CODE static uint32_t w25qxx_read_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv,
 
 ITCM_AREA_CODE uint32_t w25qxx_read(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 uint32_t			Instruction;
 uint32_t 			p_data_len;
 
@@ -238,7 +238,7 @@ uint32_t 			p_data_len;
 
 }
 
-uint8_t w25qxx_WriteEnable(W25Qxx_Drv_TypeDef *w25qxx_Drv,uint8_t enable)
+uint8_t w25qxx_WriteEnable(W25Qxx_DriverStruct_t *w25qxx_Drv,uint8_t enable)
 {
 uint32_t	Instruction;
 
@@ -257,7 +257,7 @@ uint32_t	Instruction;
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t w25qxx_write_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv, uint8_t *data)
+ITCM_AREA_CODE static uint32_t w25qxx_write_cycle(W25Qxx_DriverStruct_t	*w25qxx_Drv, uint8_t *data)
 {
 	if (( w25qxx_Drv->flags & QSPI_USES_DMA ) == QSPI_USES_DMA )
 	{
@@ -280,7 +280,7 @@ ITCM_AREA_CODE static uint32_t w25qxx_write_cycle(W25Qxx_Drv_TypeDef	*w25qxx_Drv
 
 ITCM_AREA_CODE uint32_t w25qxx_write(uint32_t *w25qxx_Drv_e, uint32_t address,uint8_t *data,uint32_t data_len)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 uint32_t			Instruction;
 uint32_t 			p_data_len;
 
@@ -363,7 +363,7 @@ uint32_t 			p_data_len;
 
 ITCM_AREA_CODE uint32_t w25qxx_erasesectors(uint32_t *w25qxx_Drv_e, uint32_t start_sector, uint32_t number_of_sectors)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 uint32_t Address, Instruction , i;
 
 	if ( start_sector+number_of_sectors >= W25Q_BLOCK_COUNT)
@@ -403,7 +403,7 @@ uint32_t			Address,Instruction,i;
 
 	if ( start_block+number_of_blocks >= W25Q_BLOCK_COUNT)
 		return W25Q_PARAM_ERR;
-	W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+	W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
 		return 1;
 	if ( w25qxx_WaitIfFlashBusy(w25qxx_Drv,W25Q_ERASEBLOCKS_TIMEOUT) )
@@ -433,7 +433,7 @@ uint32_t			Address,Instruction,i;
 
 ITCM_AREA_CODE uint32_t w25qxx_erasechip(uint32_t *w25qxx_Drv_e)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 	w25qxx_Drv->status = 0;
 
 	if (( w25qxx_Drv->status & QSPI_BUSY ) == QSPI_BUSY )
@@ -455,7 +455,7 @@ W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
 
 ITCM_AREA_CODE uint32_t w25qxx_GetID(uint32_t *w25qxx_Drv_e, uint8_t *data)
 {
-W25Qxx_Drv_TypeDef *w25qxx_Drv = (W25Qxx_Drv_TypeDef *)w25qxx_Drv_e;
+W25Qxx_DriverStruct_t *w25qxx_Drv = (W25Qxx_DriverStruct_t *)w25qxx_Drv_e;
 
 	if ( set_qspi_com(w25qxx_Drv, W25Q_DEVID, QSPI_INSTRUCTION_1_LINE, 0,  QSPI_ADDRESS_1_LINE, 1, QSPI_DATA_1_LINE,W25Q_DUMMY_0) )
 		return w25qxx_seterror(w25qxx_Drv,W25Q_SPI_ERR);

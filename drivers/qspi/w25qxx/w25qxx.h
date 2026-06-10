@@ -57,7 +57,7 @@ typedef struct
 	uint32_t			(*get_flags) (uint32_t *w25qxx_Drv_e);
 	uint32_t			(*set_flags) (uint32_t *w25qxx_Drv_e, uint32_t flags);
 	*/
-}W25Qxx_Drv_TypeDef;
+}W25Qxx_DriverStruct_t;
 
 /* status */
 #define	QSPI_BUSY					0x80

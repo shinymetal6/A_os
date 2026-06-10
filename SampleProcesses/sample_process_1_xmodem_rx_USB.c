@@ -38,7 +38,7 @@ uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
 uint8_t	usb_rx_buffer[XMODEM_LINE_LEN];
 uint8_t	usb_tx_buffer[XMODEM_LINE_LEN];
 
-USB_Drv_TypeDef	USB_Drv =
+USB_DriverStruct_t	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,

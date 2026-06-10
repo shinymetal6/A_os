@@ -50,7 +50,7 @@ __attribute__ ((aligned (32)))	AUDIO_Source_TypeDef USBAudio_In_left =
 	.sample_rate = SAMPLE_FREQUENCY,
 };
 
-USB_Drv_TypeDef	USB_Drv =
+USB_DriverStruct_t	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,

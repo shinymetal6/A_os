@@ -27,12 +27,12 @@
 
 #include <string.h>
 #include "usb_device_driver_manager.h"
-USB_Drv_TypeDef *usb_driver;
+USB_DriverStruct_t *usb_driver;
 
 /* callback from timer's timeout */
 ITCM_AREA_CODE void USB_Driver_RxTimeoutCheckCallback(uint32_t *param)
 {
-USB_Drv_TypeDef	*usb_drv = (USB_Drv_TypeDef	*)param;
+USB_DriverStruct_t	*usb_drv = (USB_DriverStruct_t	*)param;
 	if ( usb_drv->data_index )
 	{
 		if ( usb_drv->timeout )
@@ -55,14 +55,14 @@ extern	void	usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len);
 extern	void	(*CDCRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 extern	void	(*MidiRx_CallbackPtr)(uint8_t* buf, uint16_t len);
 
-USB_Drv_TypeDef	*User_USB_Audio_Drv;
+USB_DriverStruct_t	*User_USB_Audio_Drv;
 
-ITCM_AREA_CODE uint32_t	usb_device_driver_unregister(USB_Drv_TypeDef *usb_drv)
+ITCM_AREA_CODE uint32_t	usb_device_driver_unregister(USB_DriverStruct_t *usb_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_drv)
+ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_DriverStruct_t *usb_drv)
 {
 	usb_drv->process = get_current_process();
 	usb_drv->status = DRIVER_STATUS_IN_USE;
@@ -92,13 +92,13 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t usb_device_driver_set_rx_buffer(USB_Drv_TypeDef *usb_drv,uint8_t *rx_buf)
+ITCM_AREA_CODE uint32_t usb_device_driver_set_rx_buffer(USB_DriverStruct_t *usb_drv,uint8_t *rx_buf)
 {
 	usb_drv->data = rx_buf;
 	return 0;
 }
 
-ITCM_AREA_CODE uint16_t usb_get_rx_len(USB_Drv_TypeDef *usb_drv)
+ITCM_AREA_CODE uint16_t usb_get_rx_len(USB_DriverStruct_t *usb_drv)
 {
 	return usb_drv->rx_num_chars;
 }
@@ -110,7 +110,7 @@ extern	uint8_t CDC_Transmit_HS(uint8_t* Buf, uint16_t Len);
 extern	uint8_t CDC_Transmit_FS(uint8_t* Buf, uint16_t Len);
 #endif
 
-ITCM_AREA_CODE uint32_t usb_send(USB_Drv_TypeDef *usb_drv,uint8_t* ptr, uint16_t len)
+ITCM_AREA_CODE uint32_t usb_send(USB_DriverStruct_t *usb_drv,uint8_t* ptr, uint16_t len)
 {
 #ifdef	STM32U575xx
 	return (uint32_t )CDC_Transmit_HS(ptr, len);
@@ -123,7 +123,7 @@ ITCM_AREA_CODE uint32_t usb_send(USB_Drv_TypeDef *usb_drv,uint8_t* ptr, uint16_t
 ITCM_AREA_CODE void usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
 {
 uint32_t	i;
-USB_Drv_TypeDef	*usb_drv = usb_driver;
+USB_DriverStruct_t	*usb_drv = usb_driver;
 	if ( usb_drv->data == NULL )
 		return;
 	usb_drv->timeout = usb_drv->timeout_reload_value;

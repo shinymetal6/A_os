@@ -28,7 +28,7 @@
 #define	USB_BUF_LEN	64
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
 uint8_t	usb_tx_buffer[USB_BUF_LEN];
-USB_Drv_TypeDef	USB_Drv =
+USB_DriverStruct_t	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,

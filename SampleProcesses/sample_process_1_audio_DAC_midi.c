@@ -42,7 +42,7 @@ extern	TIM_HandleTypeDef htim6;
 uint8_t	usb_rx_buffer[USB_BUF_LEN];
 uint8_t	usb_tx_buffer[USB_BUF_LEN];
 
-__attribute__ ((aligned (32)))	USB_Drv_TypeDef	USB_Drv =
+__attribute__ ((aligned (32)))	USB_DriverStruct_t	USB_Drv =
 {
 		.data = usb_rx_buffer,
 		.data_index = 0,

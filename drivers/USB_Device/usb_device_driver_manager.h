@@ -46,7 +46,7 @@ typedef struct
 #ifdef SOUND_ENGINE_ENABLED
 	AUDIO_Source_TypeDef 	*out_device_ptr;
 #endif // #ifdef SOUND_ENGINE_ENABLED
-}USB_Drv_TypeDef;
+}USB_DriverStruct_t;
 
 
 #define	USB_CDC_CLASS	0
@@ -54,12 +54,12 @@ typedef struct
 #define	USB_AUDIO_CLASS	2
 #define	USB_UVC_CLASS	3
 
-extern	uint32_t	usb_device_driver_register(USB_Drv_TypeDef *usb_driver_private_data);
-extern	uint32_t	usb_device_driver_unregister(USB_Drv_TypeDef *usb_drv);
+extern	uint32_t	usb_device_driver_register(USB_DriverStruct_t *usb_driver_private_data);
+extern	uint32_t	usb_device_driver_unregister(USB_DriverStruct_t *usb_drv);
 
-extern	uint32_t 	usb_device_driver_set_rx_buffer(USB_Drv_TypeDef *usb_drv,uint8_t *rx_buf);
-extern 	uint16_t 	usb_get_rx_len(USB_Drv_TypeDef *usb_drv);
-extern	uint32_t 	usb_send(USB_Drv_TypeDef *usb_drv,uint8_t* ptr, uint16_t len);
+extern	uint32_t 	usb_device_driver_set_rx_buffer(USB_DriverStruct_t *usb_drv,uint8_t *rx_buf);
+extern 	uint16_t 	usb_get_rx_len(USB_DriverStruct_t *usb_drv);
+extern	uint32_t 	usb_send(USB_DriverStruct_t *usb_drv,uint8_t* ptr, uint16_t len);
 extern	uint8_t 	MX_Aos_USB_Device_Init(uint8_t usb_classdev);
 extern	void 		VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr, uint32_t jpeg_len);
 extern	void 		VIDEO_Itf_StartStreaming(void);
