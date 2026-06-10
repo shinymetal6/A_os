@@ -99,8 +99,6 @@ SampleProcesses/sample_process_1_i2cmem.c<br>
 SampleProcesses/sample_process_1_i2csensors.c<br>
 SampleProcesses/sample_process_1_intflash.c<br>
 SampleProcesses/sample_process_1_lcd7735.c<br>
-SampleProcesses/sample_process_1_lora.c<br>
-SampleProcesses/sample_process_1_lora_scanner.c<br>
 SampleProcesses/sample_process_1_mbxToPrc2.c<br>
 SampleProcesses/sample_process_1_midi.c<br>
 SampleProcesses/sample_process_1_nrf24l01_ping.c<br>
