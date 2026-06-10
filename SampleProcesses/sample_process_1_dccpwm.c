@@ -51,7 +51,7 @@ extern	TIM_HandleTypeDef 		CH2_DCC_TIMER;
 extern	TIM_HandleTypeDef 		BACKLIGHT_TIMER;
 #endif //#ifdef BACKLIGHT_PWM_ENABLE
 
-DCC_Drv_TypeDef	DCC_Control_ch1 =
+DCC_DriverStruct_t	DCC_Control_ch1 =
 {
 	.dcc_timer = &CH1_DCC_TIMER,
 	.timer_dcc_channel = CH1_DCC_TIMER_PWM,
@@ -64,7 +64,7 @@ DCC_Drv_TypeDef	DCC_Control_ch1 =
 uint32_t		dcc_ch1_driver_handle;
 
 #ifdef DCC_CH2_ENABLE
-DCC_Control_Drv_TypeDef	DCC_Control_ch2 =
+DCC_DriverStruct_t	DCC_Control_ch2 =
 {
 	.dcc_timer = &CH2_DCC_TIMER,
 	.timer_dcc_channel = CH2_DCC_TIMER_PWM,
@@ -76,7 +76,7 @@ uint32_t		dcc_ch2_driver_handle;
 #endif // #ifdef DCC_CH2_ENABLE
 
 #ifdef BACKLIGHT_PWM_ENABLE
-Pwm_Control_TypeDef	Pwm_Backlight_Control =
+Pwm_Control_DriverStruct_t	Pwm_Backlight_Control =
 {
 		.pwm_timer = &BACKLIGHT_TIMER,
 		.pwm_channel = BACKLIGHT_TIMER_CHANNEL,

@@ -44,7 +44,7 @@ uint16_t 			jpeg_image_size;
 extern				I2C_HandleTypeDef hi2c1;
 extern				JPEG_HandleTypeDef hjpeg;
 
-I2C_Mlx90640_Drv_TypeDef	I2C_Mlx90640_Drv =
+I2C_Mlx90640_DriverStruct_t	I2C_Mlx90640_Drv =
 {
 		.wakeup_id = 1,
 		.bus = &hi2c1,

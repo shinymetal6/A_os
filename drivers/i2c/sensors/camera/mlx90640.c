@@ -27,23 +27,23 @@
 #include "../../i2c.h"
 #include "mlx90640.h"
 
-ITCM_AREA_CODE uint32_t mlx90640_read_eeprom(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx90640_read_eeprom(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     return HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, MLX90640_EEPROM_START_ADDRESS,2,(uint8_t *)mlx90640_Drv->mlx90640_eeprom,MLX90640_EEPROM_DUMP_NUM,100);
 }
 
-ITCM_AREA_CODE uint32_t mlx90640_read_frame_data(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx90640_read_frame_data(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     return HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, MLX90640_PIXEL_DATA_START_ADDRESS,2,(uint8_t *)mlx90640_Drv->frame_data,MLX90640_PIXEL_NUM,100);
 
 }
 
-ITCM_AREA_CODE uint32_t mlx90640_read_aux_data(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx90640_read_aux_data(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     return HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, MLX90640_AUX_DATA_START_ADDRESS,2,(uint8_t *)mlx90640_Drv->frame_data,MLX90640_AUX_NUM,100);
 }
 
-ITCM_AREA_CODE uint16_t mlx90640_read_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t mlx90640_register)
+ITCM_AREA_CODE uint16_t mlx90640_read_register(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t mlx90640_register)
 {
 uint16_t mlx90640_reg;
     if ( HAL_I2C_Mem_Read(mlx90640_Drv->bus, mlx90640_Drv->device_address, mlx90640_register,2,(uint8_t *)&mlx90640_reg,2,MLX90640_TIMEOUT) )
@@ -51,12 +51,12 @@ uint16_t mlx90640_reg;
     return ((mlx90640_reg & 0xff00) >> 8 ) | ((mlx90640_reg  & 0xff ) << 8 );
 }
 
-ITCM_AREA_CODE uint32_t mlx90640_write_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t mlx90640_register,uint16_t value)
+ITCM_AREA_CODE uint32_t mlx90640_write_register(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t mlx90640_register,uint16_t value)
 {
 	return HAL_I2C_Mem_Write(mlx90640_Drv->bus, mlx90640_Drv->device_address, mlx90640_register,2,(uint8_t *)&value, 2,MLX90640_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t mlx9064_GetCurResolution(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx9064_GetCurResolution(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     if ( mlx90640_read_register(mlx90640_Drv, MLX90640_CTRL_REG))
         return 1;
@@ -64,7 +64,7 @@ ITCM_AREA_CODE uint32_t mlx9064_GetCurResolution(I2C_Mlx90640_Drv_TypeDef *mlx90
     return 0;
 }
 
-ITCM_AREA_CODE static float mlx906400_GetVdd(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static float mlx906400_GetVdd(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 float vdd;
 float resolutionCorrection;
@@ -76,7 +76,7 @@ uint16_t resolutionRAM;
     return vdd;
 }
 
-ITCM_AREA_CODE static float mlx906400_GetTa(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static float mlx906400_GetTa(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 int16_t ptat;
 float ptatArt;
@@ -95,7 +95,7 @@ float ta;
     return ta;
 }
 
-ITCM_AREA_CODE uint32_t mlx9064_GetRefreshRate(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx9064_GetRefreshRate(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     if ( mlx90640_read_register(mlx90640_Drv, MLX90640_CTRL_REG))
         return 1;
@@ -103,7 +103,7 @@ ITCM_AREA_CODE uint32_t mlx9064_GetRefreshRate(I2C_Mlx90640_Drv_TypeDef *mlx9064
     return 0;
 }
 
-ITCM_AREA_CODE uint32_t mlx9064_SetRefreshRate(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t refresh_rate)
+ITCM_AREA_CODE uint32_t mlx9064_SetRefreshRate(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t refresh_rate)
 {
 uint16_t cntrl_reg,value;
 	cntrl_reg = mlx90640_read_register(mlx90640_Drv, MLX90640_CTRL_REG);
@@ -116,7 +116,7 @@ uint16_t cntrl_reg,value;
     return 0;
 }
 
-ITCM_AREA_CODE uint32_t mlx9064_SetInterleavedMode(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t refresh_rate)
+ITCM_AREA_CODE uint32_t mlx9064_SetInterleavedMode(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t refresh_rate)
 {
 uint16_t cntrl_reg,value;
 	cntrl_reg = mlx90640_read_register(mlx90640_Drv, MLX90640_CTRL_REG);
@@ -126,7 +126,7 @@ uint16_t cntrl_reg,value;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t mlx9064_SetChessdMode(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t refresh_rate)
+ITCM_AREA_CODE uint32_t mlx9064_SetChessdMode(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t refresh_rate)
 {
 uint16_t cntrl_reg,value;
 	cntrl_reg = mlx90640_read_register(mlx90640_Drv, MLX90640_CTRL_REG);
@@ -136,7 +136,7 @@ uint16_t cntrl_reg,value;
 	return 0;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_VDD_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_VDD_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 int8_t kVdd;
 int16_t vdd25;
@@ -150,7 +150,7 @@ int16_t vdd25;
     mlx90640_Drv->vdd25 = vdd25;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_PTAT_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_PTAT_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 float	KvPTAT;
 float	KtPTAT;
@@ -181,7 +181,7 @@ float	alphaPTAT;
     mlx90640_Drv->alphaPTAT = alphaPTAT;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_Gain_TGC_Resolution_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Gain_TGC_Resolution_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 	mlx90640_Drv->gainEE = (int16_t)mlx90640_Drv->mlx90640_eeprom[48];
 	mlx90640_Drv->tgc = (int8_t)MLX90640_LS_BYTE(mlx90640_Drv->mlx90640_eeprom[60]) / 32.0f;
@@ -189,7 +189,7 @@ ITCM_AREA_CODE static void mlx9064_Extract_Gain_TGC_Resolution_Parameters(I2C_Ml
     mlx90640_Drv->resolutionEE = resolutionEE;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_KS_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_KS_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 int32_t KsToScale;
 int8_t step;
@@ -216,7 +216,7 @@ int8_t step;
     mlx90640_Drv->ksTo[4] = -0.0002;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_CPP_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_CPP_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     float alphaSP[2];
     int16_t offsetSP[2];
@@ -271,7 +271,7 @@ ITCM_AREA_CODE static void mlx9064_Extract_CPP_Parameters(I2C_Mlx90640_Drv_TypeD
     mlx90640_Drv->cpOffset[1] = offsetSP[1];
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_Alpha_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Alpha_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 int accRow[24];
 int accColumn[32];
@@ -367,7 +367,7 @@ float temp;
     mlx90640_Drv->alphaScale = alphaScale;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_Offset_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Offset_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     int occRow[24];
     int occColumn[32];
@@ -434,7 +434,7 @@ ITCM_AREA_CODE static void mlx9064_Extract_Offset_Parameters(I2C_Mlx90640_Drv_Ty
 
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_Kta_Pixel_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Kta_Pixel_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     int p = 0;
     int8_t KtaRC[4];
@@ -503,7 +503,7 @@ ITCM_AREA_CODE static void mlx9064_Extract_Kta_Pixel_Parameters(I2C_Mlx90640_Drv
     mlx90640_Drv->ktaScale = ktaScale1;
 }
 
-ITCM_AREA_CODE static void mlx9064_Extract_Kv_Pixel_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Kv_Pixel_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     int p = 0;
     int8_t KvT[4];
@@ -593,7 +593,7 @@ ITCM_AREA_CODE static void mlx9064_Extract_Kv_Pixel_Parameters(I2C_Mlx90640_Drv_
 }
 
 
-ITCM_AREA_CODE static void mlx9064_Extract_Cilc_Pixel_Parameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static void mlx9064_Extract_Cilc_Pixel_Parameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     float ilChessC[3];
     uint8_t calibrationModeEE;
@@ -649,7 +649,7 @@ uint16_t cp2 = pix2 - (lp2 << 5);
     return 0;
 }
 
-ITCM_AREA_CODE int32_t mlx9064_Extract_Deviating_Pixels(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE int32_t mlx9064_Extract_Deviating_Pixels(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 uint16_t pixCnt = 0;
 uint16_t brokenPixCnt = 0;
@@ -735,7 +735,7 @@ int i;
     return warn;
 }
 
-ITCM_AREA_CODE static uint32_t mlx9064_ExtractParameters(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static uint32_t mlx9064_ExtractParameters(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 	if ( mlx90640_read_eeprom(mlx90640_Drv) )
 		return 1;
@@ -752,7 +752,7 @@ ITCM_AREA_CODE static uint32_t mlx9064_ExtractParameters(I2C_Mlx90640_Drv_TypeDe
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t IsPixelBad(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t pixel)
+ITCM_AREA_CODE static uint32_t IsPixelBad(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t pixel)
 {
     for(uint32_t i=0; i<5; i++)
     {
@@ -795,7 +795,7 @@ static float GetMedian(float *values, int n)
  }
 
 
-ITCM_AREA_CODE void mlx9064_BadPixelsCorrection(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,uint16_t *pixels, float *to, int mode)
+ITCM_AREA_CODE void mlx9064_BadPixelsCorrection(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,uint16_t *pixels, float *to, int mode)
 {
 float ap[4];
 uint8_t pix;
@@ -896,7 +896,7 @@ uint8_t column;
     }
 }
 
-ITCM_AREA_CODE void mlx90640_Calculate_To(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv, float emissivity, float tr)
+ITCM_AREA_CODE void mlx90640_Calculate_To(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv, float emissivity, float tr)
 {
 float vdd;
 float ta;
@@ -1027,7 +1027,7 @@ float kv;
     }
 }
 
-ITCM_AREA_CODE static int ValidateAuxData(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static int ValidateAuxData(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 
     if(mlx90640_Drv->aux_data[0] == 0x7FFF)
@@ -1067,7 +1067,7 @@ ITCM_AREA_CODE static int ValidateAuxData(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv
 
 }
 
-ITCM_AREA_CODE static int ValidateFrameData(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE static int ValidateFrameData(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
     uint8_t line = 0;
 
@@ -1081,7 +1081,7 @@ ITCM_AREA_CODE static int ValidateFrameData(I2C_Mlx90640_Drv_TypeDef *mlx90640_D
     return MLX90640_NO_ERROR;
 }
 
-ITCM_AREA_CODE int mlx90640_GetFrameData(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE int mlx90640_GetFrameData(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 uint16_t dataReady = 0;
 uint16_t statusRegister;
@@ -1127,7 +1127,7 @@ uint8_t cnt = 0;
 }
 
 
-ITCM_AREA_CODE void  mlx90640_GetImage(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE void  mlx90640_GetImage(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 float vdd;
 float ta;
@@ -1215,7 +1215,7 @@ float kv;
     }
 }
 
-ITCM_AREA_CODE uint32_t mlx90640_run(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,float emissivity,float eTa)
+ITCM_AREA_CODE uint32_t mlx90640_run(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,float emissivity,float eTa)
 {
 	mlx90640_GetFrameData(mlx90640_Drv);
 	mlx90640_Calculate_To(mlx90640_Drv,emissivity, eTa);
@@ -1223,7 +1223,7 @@ ITCM_AREA_CODE uint32_t mlx90640_run(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,floa
 }
 
 
-ITCM_AREA_CODE uint32_t mlx90640_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv)
+ITCM_AREA_CODE uint32_t mlx90640_register(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	/* sanity check */

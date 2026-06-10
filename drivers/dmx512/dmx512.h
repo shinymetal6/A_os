@@ -45,12 +45,12 @@ typedef struct
 	GPIO_TypeDef	 	*rx_port;
 	uint16_t			rx_bit;
 	uint32_t			break_length;
-	UART_Drv_TypeDef	*uart_drv;
-}DMX512_Drv_TypeDef;
+	UART_DriverStruct_t	*uart_drv;
+}DMX512_DriverStruct_t;
 
-extern	uint32_t	dmx512_register(DMX512_Drv_TypeDef *driver_private_data);
+extern	uint32_t	dmx512_register(DMX512_DriverStruct_t *driver_private_data);
 extern	uint32_t 	dmx512_init(UART_HandleTypeDef	*huart,uint32_t wakeup_id,GPIO_TypeDef *tx_port,uint16_t tx_bit);
-extern	void 		dmx512_send(DMX512_Drv_TypeDef *dmx512_drv, uint8_t *buffer, uint16_t buffer_len);
+extern	void 		dmx512_send(DMX512_DriverStruct_t *dmx512_drv, uint8_t *buffer, uint16_t buffer_len);
 
 #endif // #ifdef A_OS_UART_ENABLED
 

@@ -53,7 +53,7 @@ typedef struct
 	uint32_t 			wakeup_id;
 	uint32_t			to_errors;
 	uint32_t			rx_errors;
-}UART_Drv_TypeDef;
+}UART_DriverStruct_t;
 /* status */
 #define	UART_DRIVER_STATUS_IN_USE		0x80
 #define	UART_DRIVER_STATUS_INITIALIZED	0x40
@@ -81,23 +81,23 @@ typedef struct
 	uint8_t 	process;
 	uint8_t		status;
 	uint8_t		flags;
-	UART_Drv_TypeDef	*driver_private_data;
+	UART_DriverStruct_t	*driver_private_data;
 }UARTS_DriverStruct_t;
 
-extern  uint32_t 	uart_init(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t 	uart_get_status(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t	uart_send(UART_Drv_TypeDef *uart_drv, uint8_t *buffer,uint16_t len);
-extern  uint32_t	uart_start_receive(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t	uart_disable_receive(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t	uart_enable_receive(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t	uart_get_rxlen(UART_Drv_TypeDef *uart_drv);
-extern  uint32_t	uart_set_rxlen(UART_Drv_TypeDef *uart_drv,uint16_t rx_max_len);
-extern  uint32_t	uart_set_sentinel(UART_Drv_TypeDef *uart_drv, uint8_t sentinel_start, uint8_t sentinel_end);
-extern	uint32_t	uart_reinit_on_error(UART_Drv_TypeDef *uart_drv);
-extern	uint32_t	uart_restart_DMA_on_RX(UART_Drv_TypeDef *uart_drv);
-extern	uint32_t	uart_get_rxerrors_number(UART_Drv_TypeDef *uart_drv);
-extern	uint32_t	uart_get_timeouts_number(UART_Drv_TypeDef *uart_drv);
-extern 	uint32_t	uart_register(UART_Drv_TypeDef *uart_driver_private_data);
+extern  uint32_t 	uart_init(UART_DriverStruct_t *uart_drv);
+extern  uint32_t 	uart_get_status(UART_DriverStruct_t *uart_drv);
+extern  uint32_t	uart_send(UART_DriverStruct_t *uart_drv, uint8_t *buffer,uint16_t len);
+extern  uint32_t	uart_start_receive(UART_DriverStruct_t *uart_drv);
+extern  uint32_t	uart_disable_receive(UART_DriverStruct_t *uart_drv);
+extern  uint32_t	uart_enable_receive(UART_DriverStruct_t *uart_drv);
+extern  uint32_t	uart_get_rxlen(UART_DriverStruct_t *uart_drv);
+extern  uint32_t	uart_set_rxlen(UART_DriverStruct_t *uart_drv,uint16_t rx_max_len);
+extern  uint32_t	uart_set_sentinel(UART_DriverStruct_t *uart_drv, uint8_t sentinel_start, uint8_t sentinel_end);
+extern	uint32_t	uart_reinit_on_error(UART_DriverStruct_t *uart_drv);
+extern	uint32_t	uart_restart_DMA_on_RX(UART_DriverStruct_t *uart_drv);
+extern	uint32_t	uart_get_rxerrors_number(UART_DriverStruct_t *uart_drv);
+extern	uint32_t	uart_get_timeouts_number(UART_DriverStruct_t *uart_drv);
+extern 	uint32_t	uart_register(UART_DriverStruct_t *uart_driver_private_data);
 extern 	void 		UART_Driver_RxTimeoutCheckCallback(uint32_t *param);
 #endif // #ifdef STM32L4xx_HAL_UART_H
 

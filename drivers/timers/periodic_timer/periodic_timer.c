@@ -29,7 +29,7 @@
 #include "periodic_timer.h"
 #include <string.h>
 
-ITCM_AREA_CODE uint32_t periodic_timer_start(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv)
+ITCM_AREA_CODE uint32_t periodic_timer_start(PERIODIC_Timer_DriverStruct_t *periodic_timer_drv)
 {
 	if ( HAL_TIM_Base_Start_IT(periodic_timer_drv->timer) == 0 )
 	{
@@ -39,7 +39,7 @@ ITCM_AREA_CODE uint32_t periodic_timer_start(PERIODIC_Timer_Drv_TypeDef *periodi
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t	periodic_timer_register(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv)
+ITCM_AREA_CODE uint32_t	periodic_timer_register(PERIODIC_Timer_DriverStruct_t *periodic_timer_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 

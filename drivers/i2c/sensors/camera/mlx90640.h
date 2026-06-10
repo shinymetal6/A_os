@@ -141,14 +141,14 @@ typedef struct
     uint16_t 			brokenPixels[5];
     uint16_t 			outlierPixels[5];
     float 				*alphaTemp;	//[768] MLX90640_PIXEL_NUM
-}I2C_Mlx90640_Drv_TypeDef;
+}I2C_Mlx90640_DriverStruct_t;
 
-extern void mlx90640_Calculate_To(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv, float emissivity, float tr);
-extern int mlx90640_GetFrameData(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv);
-extern void  mlx90640_GetImage(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv);
-extern uint32_t mlx90640_run(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv,float emissivity,float eTa);
+extern void mlx90640_Calculate_To(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv, float emissivity, float tr);
+extern int mlx90640_GetFrameData(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv);
+extern void  mlx90640_GetImage(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv);
+extern uint32_t mlx90640_run(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,float emissivity,float eTa);
 
-extern uint32_t mlx90640_register(I2C_Mlx90640_Drv_TypeDef *mlx90640_Drv);
+extern uint32_t mlx90640_register(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv);
 
 
 

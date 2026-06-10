@@ -29,21 +29,21 @@
 #include "uart.h"
 #include <string.h>
 
-UART_Drv_TypeDef	*uart_drv_ptr;
+UART_DriverStruct_t	*uart_drv_ptr;
 
-ITCM_AREA_CODE  uint32_t uart_init(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t uart_init(UART_DriverStruct_t *uart_drv)
 {
 	uart_drv->timeout_reload_value = uart_drv->timeout;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t uart_get_status(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t uart_get_status(UART_DriverStruct_t *uart_drv)
 {
 	return 0;
 }
 
 uint32_t ret_val = 0;
-ITCM_AREA_CODE  uint32_t	uart_send(UART_Drv_TypeDef *uart_drv, uint8_t *buffer,uint16_t len)
+ITCM_AREA_CODE  uint32_t	uart_send(UART_DriverStruct_t *uart_drv, uint8_t *buffer,uint16_t len)
 {
 	if ( (uart_drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
 		ret_val = HAL_UART_Transmit_DMA(uart_drv->uart , buffer, len);
@@ -52,7 +52,7 @@ ITCM_AREA_CODE  uint32_t	uart_send(UART_Drv_TypeDef *uart_drv, uint8_t *buffer,u
 	return ret_val;
 }
 
-ITCM_AREA_CODE  uint32_t	uart_start_receive(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t	uart_start_receive(UART_DriverStruct_t *uart_drv)
 {
 	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
 		return HAL_UART_Receive_DMA(uart_drv->uart, uart_drv->data, uart_drv->rx_max_len);
@@ -60,18 +60,18 @@ ITCM_AREA_CODE  uint32_t	uart_start_receive(UART_Drv_TypeDef *uart_drv)
 		return HAL_UART_Receive_IT(uart_drv->uart, &uart_drv->rx_char, 1);
 }
 
-ITCM_AREA_CODE  uint32_t	uart_get_rxlen(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t	uart_get_rxlen(UART_DriverStruct_t *uart_drv)
 {
 	return (uint32_t )uart_drv->rx_num_chars;
 }
 
-ITCM_AREA_CODE  uint32_t	uart_set_rxlen(UART_Drv_TypeDef *uart_drv,uint16_t rx_max_len)
+ITCM_AREA_CODE  uint32_t	uart_set_rxlen(UART_DriverStruct_t *uart_drv,uint16_t rx_max_len)
 {
 	uart_drv->rx_max_len = rx_max_len;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t	uart_set_sentinel(UART_Drv_TypeDef *uart_drv, uint8_t sentinel_start, uint8_t sentinel_end)
+ITCM_AREA_CODE  uint32_t	uart_set_sentinel(UART_DriverStruct_t *uart_drv, uint8_t sentinel_start, uint8_t sentinel_end)
 {
 	if ( sentinel_start)
 		uart_drv->sentinel_start = sentinel_start;
@@ -80,7 +80,7 @@ ITCM_AREA_CODE  uint32_t	uart_set_sentinel(UART_Drv_TypeDef *uart_drv, uint8_t s
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t	uart_disable_receive(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t	uart_disable_receive(UART_DriverStruct_t *uart_drv)
 {
 UART_HandleTypeDef *huart = uart_drv->uart;
 	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
@@ -98,7 +98,7 @@ UART_HandleTypeDef *huart = uart_drv->uart;
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t	uart_enable_receive(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE  uint32_t	uart_enable_receive(UART_DriverStruct_t *uart_drv)
 {
 UART_HandleTypeDef *huart = uart_drv->uart;
 	__HAL_UART_CLEAR_PEFLAG(huart);   // Parity error
@@ -116,7 +116,7 @@ UART_HandleTypeDef *huart = uart_drv->uart;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t uart_reinit_on_error(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE uint32_t uart_reinit_on_error(UART_DriverStruct_t *uart_drv)
 {
 UART_HandleTypeDef *huart = uart_drv->uart;
 	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
@@ -140,28 +140,28 @@ UART_HandleTypeDef *huart = uart_drv->uart;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t uart_restart_DMA_on_RX(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE uint32_t uart_restart_DMA_on_RX(UART_DriverStruct_t *uart_drv)
 {
 	return uart_reinit_on_error(uart_drv);
 }
 
 
-ITCM_AREA_CODE uint32_t uart_get_rxerrors_number(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE uint32_t uart_get_rxerrors_number(UART_DriverStruct_t *uart_drv)
 {
 	return uart_drv->rx_errors;
 }
 
-ITCM_AREA_CODE uint32_t uart_get_timeouts_number(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE uint32_t uart_get_timeouts_number(UART_DriverStruct_t *uart_drv)
 {
 	return uart_drv->to_errors;
 }
 
 extern void UART_Driver_RxTimeoutCheckCallback(uint32_t *param);
 
-ITCM_AREA_CODE uint32_t	uart_register(UART_Drv_TypeDef *uart_drv)
+ITCM_AREA_CODE uint32_t	uart_register(UART_DriverStruct_t *uart_drv)
 {
 
-UART_Drv_TypeDef *eptr, *pre_eptr;
+UART_DriverStruct_t *eptr, *pre_eptr;
 
 	if ( uart_drv->uart == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -176,7 +176,7 @@ UART_Drv_TypeDef *eptr, *pre_eptr;
 		while(eptr->next_uart != NULL)
 		{
 			pre_eptr = eptr;
-			eptr = (UART_Drv_TypeDef *)eptr->next_uart;
+			eptr = (UART_DriverStruct_t *)eptr->next_uart;
 		}
 		pre_eptr->next_uart = (uint32_t *)uart_drv;
 		uart_drv->next_uart = NULL;
@@ -257,9 +257,9 @@ UART_Drv_TypeDef *eptr, *pre_eptr;
 /***********************************/
 /****	Interrupt functions 	****/
 /***********************************/
-ITCM_AREA_CODE UART_Drv_TypeDef *find_uart(UART_HandleTypeDef *huart)
+ITCM_AREA_CODE UART_DriverStruct_t *find_uart(UART_HandleTypeDef *huart)
 {
-UART_Drv_TypeDef *eptr, *pre_eptr;
+UART_DriverStruct_t *eptr, *pre_eptr;
 
 	eptr = pre_eptr = uart_drv_ptr;
 	while(eptr != NULL)
@@ -269,14 +269,14 @@ UART_Drv_TypeDef *eptr, *pre_eptr;
 		pre_eptr = eptr;
 		if ( eptr->next_uart == NULL )
 			return NULL;
-		eptr = (UART_Drv_TypeDef *)eptr->next_uart;
+		eptr = (UART_DriverStruct_t *)eptr->next_uart;
 	}
 	return NULL;
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-UART_Drv_TypeDef	*uart_drv;
+UART_DriverStruct_t	*uart_drv;
 	__disable_irq();
 	if ( (uart_drv = find_uart(huart)) != NULL)
 	{
@@ -294,7 +294,7 @@ UART_Drv_TypeDef	*uart_drv;
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
-UART_Drv_TypeDef	*uart_drv;
+UART_DriverStruct_t	*uart_drv;
 
 	__disable_irq();
 	if ( (uart_drv = find_uart(huart)) != NULL)
@@ -310,7 +310,7 @@ UART_Drv_TypeDef	*uart_drv;
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-UART_Drv_TypeDef	*uart_drv;
+UART_DriverStruct_t	*uart_drv;
 	__disable_irq();
 	if ( (uart_drv = find_uart(huart)) != NULL)
 	{
@@ -450,7 +450,7 @@ UART_Drv_TypeDef	*uart_drv;
 
 ITCM_AREA_CODE void UART_Driver_RxTimeoutCheckCallback(uint32_t *param)
 {
-UART_Drv_TypeDef	*uart_drv = (UART_Drv_TypeDef *)param;
+UART_DriverStruct_t	*uart_drv = (UART_DriverStruct_t *)param;
 	if ( uart_drv->process != 0 )
 	{
 #ifdef	STM32H563xx

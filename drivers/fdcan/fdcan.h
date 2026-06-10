@@ -44,7 +44,7 @@ typedef struct
 	uint8_t 			tx_len;
 	uint8_t 			*RxData;
 	uint8_t 			rx_len;
-}FDCAN_Drv_TypeDef;
+}FDCAN_DriverStruct_t;
 
 /* status */
 #define	FDCAN_DRIVER_STATUS_IN_USE		0x80
@@ -64,9 +64,9 @@ typedef struct
 #define	FDCAN_WAKEUP_ON_ERRORS	0x02
 
 
-extern	uint32_t	can_register(FDCAN_Drv_TypeDef *private_data);
-extern 	uint32_t 	can_update_header(FDCAN_Drv_TypeDef *private_data, FDCAN_TxHeaderTypeDef *TxHeader);
-extern 	uint32_t 	can_send(FDCAN_Drv_TypeDef *private_data);
+extern	uint32_t	can_register(FDCAN_DriverStruct_t *private_data);
+extern 	uint32_t 	can_update_header(FDCAN_DriverStruct_t *private_data, FDCAN_TxHeaderTypeDef *TxHeader);
+extern 	uint32_t 	can_send(FDCAN_DriverStruct_t *private_data);
 
 #endif // #ifdef A_OS_CAN_ENABLED
 #endif /* DRIVERS_FDCAN_FDCAN_H_ */

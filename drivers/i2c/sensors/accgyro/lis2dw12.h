@@ -223,9 +223,9 @@ typedef struct
 	uint32_t			who_am_i;
 	uint8_t				*data;
 	uint8_t				*additional_data;
-}I2C_Lis2DW12_Drv_TypeDef;
+}I2C_Lis2DW12_DriverStruct_t;
 
-extern uint32_t lis2dw12_register(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv);
+extern uint32_t lis2dw12_register(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv);
 
 
 #endif /* DRIVERS_I2C_SENSORS_ACCGYRO_LIS2DW12_H_ */

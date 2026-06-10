@@ -30,7 +30,7 @@ VL53L5CX_ResultsData_TypeDef	VL53L5CX_ResultsData =
 {
 
 };
-I2C_vl53l5cx_Drv_TypeDef I2C_vl53l5cx_Drv =
+I2C_vl53l5cx_DriverStruct_t I2C_vl53l5cx_Drv =
 {
 		.bus = &hi2c2,
 		.lpn_port = TOF_LPN_GPIO_Port,

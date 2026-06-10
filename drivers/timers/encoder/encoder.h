@@ -40,7 +40,7 @@ typedef struct
 	uint32_t 			encoder_last_value;
 	uint32_t 			encoder_value;
 	void				(*irq_encoder_callback)  (uint32_t encoder_value);
-}Encoder_Drv_TypeDef;
+}Encoder_DriverStruct_t;
 /* status */
 #define	ENCODER_INITIALIZED			0x01
 #define	ENCODER_WAKEUP				0x02
@@ -49,6 +49,6 @@ typedef struct
 #define	ENCODER_RUNNING				0x40
 #define	ENCODER_READY				0x80
 
-extern uint32_t	encoder_register(Encoder_Drv_TypeDef *private_data);
+extern uint32_t	encoder_register(Encoder_DriverStruct_t *private_data);
 
 #endif /* DRIVERS_TIMERS_ENCODER_ENCODER_H_ */

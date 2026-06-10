@@ -34,7 +34,7 @@ typedef struct {
 	uint32_t 			*next_pid;
 	TIM_HandleTypeDef 	*timer;
 	uint32_t 			timer_channel;
-	PERIODIC_Timer_Drv_TypeDef	*periodic_timer;
+	PERIODIC_Timer_DriverStruct_t	*periodic_timer;
 	void				(*User_Callback)(void);
 	float 				dt;            // Time step in seconds (e.g., 10ms = 0.01s) - Match PID timer frequency
 	float 				Kp;            // Proportional gain

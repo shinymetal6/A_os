@@ -27,7 +27,7 @@
 #include "../../i2c.h"
 #include "lps22df.h"
 
-ITCM_AREA_CODE	static uint8_t	read_lps22df_reg(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv,uint8_t address)
+ITCM_AREA_CODE	static uint8_t	read_lps22df_reg(I2C_Lps22DF_DriverStruct_t *lps22df_Drv,uint8_t address)
 {
 uint8_t	data;
 	if ( HAL_I2C_Mem_Read(lps22df_Drv->bus, lps22df_Drv->device_address, address, lps22df_Drv->device_address_size, &data, 1,LPS22DF_I2C_TIMEOUT) == 0)
@@ -35,12 +35,12 @@ uint8_t	data;
 	return 0;
 }
 
-ITCM_AREA_CODE	static uint8_t	write_lps22df_reg(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv,uint8_t address,uint8_t data)
+ITCM_AREA_CODE	static uint8_t	write_lps22df_reg(I2C_Lps22DF_DriverStruct_t *lps22df_Drv,uint8_t address,uint8_t data)
 {
 	return HAL_I2C_Mem_Write(lps22df_Drv->bus, lps22df_Drv->device_address, address, lps22df_Drv->device_address_size, &data, 1,LPS22DF_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t lps22df_start(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_start(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	lps22df_Drv->status = LPS22DF_STARTED;
 	if ( write_lps22df_reg(lps22df_Drv,LPS22DF_CTRL_REG2,LPS22DF_ONE_SHOT_REG2) )
@@ -48,19 +48,19 @@ ITCM_AREA_CODE uint32_t lps22df_start(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_stop(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_stop(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_get_data(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_get_data(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	if ( HAL_I2C_Master_Receive(lps22df_Drv->bus,lps22df_Drv->device_address, lps22df_Drv->data,LPS22DF_P_LEN, LPS22DF_I2C_TIMEOUT) )
 		return 1;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_init(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_init(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	if ( lps22df_Drv->power_port != NULL )
 	{
@@ -81,7 +81,7 @@ ITCM_AREA_CODE uint32_t lps22df_init(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_power_on(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_power_on(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	if ( lps22df_Drv->power_port != NULL )
 	{
@@ -93,7 +93,7 @@ ITCM_AREA_CODE uint32_t lps22df_power_on(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_power_off(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_power_off(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 	if ( lps22df_Drv->power_port != NULL )
 	{
@@ -105,7 +105,7 @@ ITCM_AREA_CODE uint32_t lps22df_power_off(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lps22df_register(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv)
+ITCM_AREA_CODE uint32_t lps22df_register(I2C_Lps22DF_DriverStruct_t *lps22df_Drv)
 {
 
 I2C_DriverStruct_t *eptr, *pre_eptr;

@@ -22,7 +22,7 @@ typedef struct
 	uint16_t			rx_bit;
 	uint32_t			break_length;
 	uint32_t 			wakeup_id;
-}DMX512_Drv_TypeDef;
+}DMX512_DriverStruct_t;
 
 2) Example:
 a - define the data buffer, control structure and the related handle:
@@ -30,7 +30,7 @@ a - define the data buffer, control structure and the related handle:
 	#define	DMX512_BUF_SIZE		512
 	uint8_t	dmx512_tx_buffer[DMX512_BUF_SIZE];
 	
-	DMX512_Drv_TypeDef dmx512_Drv =
+	DMX512_DriverStruct_t dmx512_Drv =
 	{
 		.uart = &huart2,
 		.tx_port = GPIOA,

@@ -268,7 +268,7 @@ static const struct regval test_pattern_disable_regs[] = {
   {0x336c, 0x01},
 };
 
-static int32_t imx335_WriteTable(I2C_imx335_Drv_TypeDef *imx335_Drv, const struct regval *regs, uint32_t size)
+static int32_t imx335_WriteTable(I2C_imx335_DriverStruct_t *imx335_Drv, const struct regval *regs, uint32_t size)
 {
 uint32_t index;
 
@@ -281,12 +281,12 @@ uint32_t index;
 	return 0;
 }
 
-static int32_t imx335_WriteRegister(I2C_imx335_Drv_TypeDef *imx335_Drv, uint16_t reg, uint8_t *value, uint16_t length)
+static int32_t imx335_WriteRegister(I2C_imx335_DriverStruct_t *imx335_Drv, uint16_t reg, uint8_t *value, uint16_t length)
 {
 	return HAL_I2C_Mem_Write(imx335_Drv->bus, imx335_Drv->device_address, reg,2,value, length,IMX335_TIMEOUT);
 }
 
-static uint8_t imx335_ReadRegister(I2C_imx335_Drv_TypeDef *imx335_Drv, uint16_t reg, uint16_t length)
+static uint8_t imx335_ReadRegister(I2C_imx335_DriverStruct_t *imx335_Drv, uint16_t reg, uint16_t length)
 {
 uint8_t	imx335_reg;
 	if ( HAL_I2C_Mem_Read(imx335_Drv->bus, imx335_Drv->device_address, reg,2,&imx335_reg, length,IMX335_TIMEOUT) )
@@ -294,13 +294,13 @@ uint8_t	imx335_reg;
 	return imx335_reg;
 }
 
-uint8_t imx335_ReadID(I2C_imx335_Drv_TypeDef *imx335_Drv)
+uint8_t imx335_ReadID(I2C_imx335_DriverStruct_t *imx335_Drv)
 {
 	imx335_Drv->sensor_id = imx335_ReadRegister(imx335_Drv,IMX335_REG_ID,1);
 	return 0;
 }
 
-uint8_t imx335_SetGain(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t gain)
+uint8_t imx335_SetGain(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t gain)
 {
 uint8_t hold = 1;
 	if ((gain > IMX335_GAIN_MAX) || (gain < IMX335_GAIN_MIN))
@@ -322,7 +322,7 @@ uint8_t hold = 1;
 	return 1;
 }
 
-uint8_t imx335_SetExposure(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t exposure)
+uint8_t imx335_SetExposure(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t exposure)
 {
 uint8_t hold = 1;
 uint32_t vmax, shutter;
@@ -348,7 +348,7 @@ uint32_t vmax, shutter;
 	return 1;
 }
 
-uint8_t imx335_SetFrequency(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t frequency)
+uint8_t imx335_SetFrequency(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t frequency)
 {
 	  switch (frequency)
 	  {
@@ -372,7 +372,7 @@ uint8_t imx335_SetFrequency(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t frequen
 	  return 1;
 }
 
-uint8_t imx335_SetFrameRate(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t framerate)
+uint8_t imx335_SetFrameRate(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t framerate)
 {
 	  switch (framerate)
 	  {
@@ -396,7 +396,7 @@ uint8_t imx335_SetFrameRate(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t framera
 
 }
 
-uint8_t imx335_MirrorFlipConfig(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t Config)
+uint8_t imx335_MirrorFlipConfig(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t Config)
 {
 	  switch (Config)
 	  {
@@ -416,7 +416,7 @@ uint8_t imx335_MirrorFlipConfig(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t Con
 	  }
 }
 
-uint8_t imx335_SetTestPattern(I2C_imx335_Drv_TypeDef *imx335_Drv, uint32_t mode)
+uint8_t imx335_SetTestPattern(I2C_imx335_DriverStruct_t *imx335_Drv, uint32_t mode)
 {
 uint8_t val;
 
@@ -442,7 +442,7 @@ uint8_t	IMX335_1_I2C_ADDRESS_present;
 uint8_t	IMX335_2_I2C_ADDRESS_present;
 uint8_t	IMX335_3_I2C_ADDRESS_present;
 
-ITCM_AREA_CODE uint32_t imx335_register(I2C_imx335_Drv_TypeDef *imx335_Drv)
+ITCM_AREA_CODE uint32_t imx335_register(I2C_imx335_DriverStruct_t *imx335_Drv)
 {
 I2C_DriverStruct_t 	*eptr, *pre_eptr;
 uint32_t			ret_val;

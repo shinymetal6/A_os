@@ -44,7 +44,7 @@ __attribute__ ((aligned (32))) ADC_DriverStruct_t	ADC1_Drv =
 };
 
 extern	void pid_process(void);
-PERIODIC_Timer_Drv_TypeDef Periodic_Timer =
+PERIODIC_Timer_DriverStruct_t Periodic_Timer =
 {
 	.timer = &htim7,
 	.timer_channel = 0,

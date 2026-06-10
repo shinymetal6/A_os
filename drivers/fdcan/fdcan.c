@@ -27,17 +27,17 @@
 
 #include "fdcan.h"
 #include <string.h>
-FDCAN_Drv_TypeDef	*fdcan_drv_ptr = NULL;
+FDCAN_DriverStruct_t	*fdcan_drv_ptr = NULL;
 
 
 
-ITCM_AREA_CODE uint32_t can_send(FDCAN_Drv_TypeDef *fdcan_drv)
+ITCM_AREA_CODE uint32_t can_send(FDCAN_DriverStruct_t *fdcan_drv)
 {
 	return HAL_FDCAN_AddMessageToTxFifoQ(fdcan_drv->hfdcan, fdcan_drv->TxHeader, (const uint8_t *)&fdcan_drv->TxData);
 
 }
 
-ITCM_AREA_CODE uint32_t can_update_filter(FDCAN_Drv_TypeDef *fdcan_drv, FDCAN_FilterTypeDef *FDCAN_Filter)
+ITCM_AREA_CODE uint32_t can_update_filter(FDCAN_DriverStruct_t *fdcan_drv, FDCAN_FilterTypeDef *FDCAN_Filter)
 {
 uint32_t	ret_val;
 	if ( (ret_val = HAL_FDCAN_Stop(fdcan_drv->hfdcan)) != HAL_OK)
@@ -51,15 +51,15 @@ uint32_t	ret_val;
 	return HAL_FDCAN_ActivateNotification(&hfdcan1, FDCAN_IT_RX_FIFO0_NEW_MESSAGE, 0);
 }
 
-ITCM_AREA_CODE uint32_t can_update_header(FDCAN_Drv_TypeDef *fdcan_drv, FDCAN_TxHeaderTypeDef *TxHeader)
+ITCM_AREA_CODE uint32_t can_update_header(FDCAN_DriverStruct_t *fdcan_drv, FDCAN_TxHeaderTypeDef *TxHeader)
 {
 	memcpy(&fdcan_drv->TxHeader,TxHeader,sizeof(FDCAN_TxHeaderTypeDef));
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	can_register(FDCAN_Drv_TypeDef *fdcan_drv)
+ITCM_AREA_CODE uint32_t	can_register(FDCAN_DriverStruct_t *fdcan_drv)
 {
-FDCAN_Drv_TypeDef *eptr, *pre_eptr;
+FDCAN_DriverStruct_t *eptr, *pre_eptr;
 	if ( fdcan_drv->flags != 0 )
 	{
 		if ( fdcan_drv->wakeup_id == 0)
@@ -83,7 +83,7 @@ FDCAN_Drv_TypeDef *eptr, *pre_eptr;
 		while(eptr->next_fdcan != NULL)
 		{
 			pre_eptr = eptr;
-			eptr = (FDCAN_Drv_TypeDef *)eptr->next_fdcan;
+			eptr = (FDCAN_DriverStruct_t *)eptr->next_fdcan;
 		}
 		pre_eptr->next_fdcan = (uint32_t *)fdcan_drv;
 		fdcan_drv->next_fdcan = NULL;
@@ -102,9 +102,9 @@ FDCAN_Drv_TypeDef *eptr, *pre_eptr;
 
 /* Interrupts */
 
-ITCM_AREA_CODE FDCAN_Drv_TypeDef *get_fdcan_ptr_from_workers(FDCAN_HandleTypeDef *hfdcan)
+ITCM_AREA_CODE FDCAN_DriverStruct_t *get_fdcan_ptr_from_workers(FDCAN_HandleTypeDef *hfdcan)
 {
-FDCAN_Drv_TypeDef *eptr, *pre_eptr;
+FDCAN_DriverStruct_t *eptr, *pre_eptr;
 
 	eptr = pre_eptr = fdcan_drv_ptr;
 	while(eptr != NULL)
@@ -114,14 +114,14 @@ FDCAN_Drv_TypeDef *eptr, *pre_eptr;
 		pre_eptr = eptr;
 		if ( eptr->next_fdcan == NULL )
 			return NULL;
-		eptr = (FDCAN_Drv_TypeDef *)eptr->next_fdcan;
+		eptr = (FDCAN_DriverStruct_t *)eptr->next_fdcan;
 	}
 	return NULL;
 }
 
 void HAL_FDCAN_TxEventFifoCallback(FDCAN_HandleTypeDef *hfdcan, uint32_t TxEventFifoITs)
 {
-FDCAN_Drv_TypeDef	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
+FDCAN_DriverStruct_t	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
 
 	if (( can_drv->flags & FDCAN_WAKEUP_ON_TX) == FDCAN_WAKEUP_ON_TX)
 		activate_process(can_drv->process,can_drv->wakeup_id,FDCAN_WAKEUP_ON_TX);
@@ -129,7 +129,7 @@ FDCAN_Drv_TypeDef	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
 
 void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
 {
-FDCAN_Drv_TypeDef	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
+FDCAN_DriverStruct_t	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
 
 	HAL_FDCAN_GetRxMessage(can_drv->hfdcan, FDCAN_RX_FIFO0, can_drv->RxHeader, can_drv->RxData);
 	if (( can_drv->flags & FDCAN_WAKEUP_ON_RX0) == FDCAN_WAKEUP_ON_RX0 )
@@ -138,7 +138,7 @@ FDCAN_Drv_TypeDef	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
 
 void HAL_FDCAN_RxFifo1Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo1ITs)
 {
-FDCAN_Drv_TypeDef	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
+FDCAN_DriverStruct_t	*can_drv = get_fdcan_ptr_from_workers(hfdcan);
 
 	if (( can_drv->flags & FDCAN_WAKEUP_ON_RX1) == FDCAN_WAKEUP_ON_RX1)
 		activate_process(can_drv->process,can_drv->wakeup_id,FDCAN_WAKEUP_ON_RX1);

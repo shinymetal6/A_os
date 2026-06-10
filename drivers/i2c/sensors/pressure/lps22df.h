@@ -115,9 +115,9 @@ typedef struct
 	uint32_t			who_am_i;
 	uint8_t				*data;
 	uint8_t				*additional_data;
-}I2C_Lps22DF_Drv_TypeDef;
+}I2C_Lps22DF_DriverStruct_t;
 
-extern uint32_t lps22df_register(I2C_Lps22DF_Drv_TypeDef *lps22df_Drv);
+extern uint32_t lps22df_register(I2C_Lps22DF_DriverStruct_t *lps22df_Drv);
 
 
 #endif /* DRIVERS_I2C_SENSORS_PRESSURE_LPS22DF_H_ */

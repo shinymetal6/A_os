@@ -35,7 +35,7 @@ extern	TIM_HandleTypeDef 	STEPPER_TIMER;
 /* Stepper */
 void stepper_callback(uint32_t value);
 
-Stepper_Control_TypeDef	Stepper_Control =
+Stepper_Control_DriverStruct_t	Stepper_Control =
 {
 		.timer = &htim16,
 		.dir_port = STEP_DIR_GPIO_Port,

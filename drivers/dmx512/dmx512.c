@@ -29,7 +29,7 @@
 #include "dmx512.h"
 #include <string.h>
 
-ITCM_AREA_CODE  uint32_t dmx512_set_break_length(DMX512_Drv_TypeDef *dmx512_drv, uint32_t break_length)
+ITCM_AREA_CODE  uint32_t dmx512_set_break_length(DMX512_DriverStruct_t *dmx512_drv, uint32_t break_length)
 {
 	if ( dmx512_drv != NULL )
 	{
@@ -39,7 +39,7 @@ ITCM_AREA_CODE  uint32_t dmx512_set_break_length(DMX512_Drv_TypeDef *dmx512_drv,
 	return 1;
 }
 
-ITCM_AREA_CODE void dmx512_send(DMX512_Drv_TypeDef *dmx512_drv, uint8_t *buffer, uint16_t buffer_len)
+ITCM_AREA_CODE void dmx512_send(DMX512_DriverStruct_t *dmx512_drv, uint8_t *buffer, uint16_t buffer_len)
 {
 	__disable_irq();
 	set_gpio_mode(dmx512_drv->tx_port,dmx512_drv->tx_bit,MODE_OUTPUT,0);
@@ -50,7 +50,7 @@ ITCM_AREA_CODE void dmx512_send(DMX512_Drv_TypeDef *dmx512_drv, uint8_t *buffer,
 }
 
 
-ITCM_AREA_CODE uint32_t	dmx512_register(DMX512_Drv_TypeDef *dmx512_drv)
+ITCM_AREA_CODE uint32_t	dmx512_register(DMX512_DriverStruct_t *dmx512_drv)
 {
 	if ( dmx512_drv->uart_drv == NULL )
 		return DRIVER_REQUEST_FAILED;

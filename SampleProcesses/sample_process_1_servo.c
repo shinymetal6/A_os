@@ -31,7 +31,7 @@
 #define	SERVO_PULSES		8
 extern	TIM_HandleTypeDef 	SERVO_TIMER;
 
-SERVO_Control_Drv_TypeDef	servo_ch1 =
+SERVO_Control_DriverStruct_t	servo_ch1 =
 {
 	.servo_timer = &SERVO_TIMER,
 	.servo_channel = SERVO_CHANNEL,

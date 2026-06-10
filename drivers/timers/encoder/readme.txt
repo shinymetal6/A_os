@@ -13,11 +13,11 @@ typedef struct
 	uint32_t 			encoder_last_value;
 	uint32_t 			encoder_value;
 	void				(*irq_encoder_callback)  (uint32_t encoder_value);
-}Encoder_Drv_TypeDef;
+}Encoder_DriverStruct_t;
 
 2) Example:
 a - define the control structure and the related handle:
-	Encoder_Drv_TypeDef	Encoder_Drv =
+	Encoder_DriverStruct_t	Encoder_Drv =
 	{
 			.encoder_timer = &htim1,
 	#ifdef USE_CALLBACK

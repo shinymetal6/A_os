@@ -32,7 +32,7 @@
 #ifdef SAMPLEPROCESS_1_MLX90614
 extern	I2C_HandleTypeDef hi2c2;
 
-I2C_Mlx90614_Drv_TypeDef	mlx90614_Drv =
+I2C_Mlx90614_DriverStruct_t	mlx90614_Drv =
 {
 		.wakeup_id = 1,
 		.bus = &hi2c2,

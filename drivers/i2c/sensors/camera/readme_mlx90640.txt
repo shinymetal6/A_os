@@ -52,7 +52,7 @@ typedef struct
     uint16_t 			brokenPixels[5];
     uint16_t 			outlierPixels[5];
     float 				*alphaTemp;	//[768] MLX90640_PIXEL_NUM
-}I2C_Mlx90640_Drv_TypeDef;
+}I2C_Mlx90640_DriverStruct_t;
 
 
 2) Example:
@@ -69,7 +69,7 @@ int8_t 				kv[MLX90640_PIXEL_NUM];
 float 				alphaTemp[MLX90640_PIXEL_NUM];
 
 b - define the control structure and the related handle:
-I2C_Mlx90640_Drv_TypeDef	I2C_Mlx90640_Drv =
+I2C_Mlx90640_DriverStruct_t	I2C_Mlx90640_Drv =
 {
 		.wakeup_id = 1,
 		.bus = &hi2c2,

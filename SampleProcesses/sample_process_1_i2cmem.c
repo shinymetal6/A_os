@@ -37,7 +37,7 @@ uint8_t	i2cBufr[I2CMEM_BUFFERSIZE];
 
 ExtFlash_DriverStruct_t	i2c_24xx_driver;
 
-I2C_24xx_Drv_TypeDef	i2c_24xx_Drv =
+I2C_24xx_DriverStruct_t	i2c_24xx_Drv =
 {
 		.bus = &hi2c1,
 		.i2c_scl_port = GPIOB,

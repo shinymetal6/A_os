@@ -57,7 +57,7 @@ typedef struct
 	uint16_t 			dht_timer_channel;
 	GPIO_TypeDef	 	*one_wire_port;
 	uint16_t			one_wire_bit;
-}Dhtxx_am230x_Drv_TypeDef;
+}Dhtxx_am230x_DriverStruct_t;
 /* status */
 #define	DHTXX_AM230X_RUNNING	0x40
 #define	DHTXX_AM230X_ACQDONE	0x80
@@ -73,10 +73,10 @@ enum DHTXX_AM230X_STATE_MACHINE {
 #define	DHTXX_AM230X_START_TICKS	18
 #define	DHTXX_AM230X_CYCLE_TICKS	6
 
-extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
-extern	uint32_t	dhtxx_am230x_init(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
-extern	uint32_t	dhtxx_am230x_start(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
-extern	uint32_t	dhtxx_am230x_get_status(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_register(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_init(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_start(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv);
+extern	uint32_t	dhtxx_am230x_get_status(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv);
 
 #endif // #ifdef A_OS_TIMERS_ENABLED
 

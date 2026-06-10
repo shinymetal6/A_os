@@ -30,7 +30,7 @@
 
 extern	uint32_t ws2812_lut[256][8];
 
-ITCM_AREA_CODE void ws2812_SetPixel(WS2812_Drv_TypeDef *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b)
+ITCM_AREA_CODE void ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b)
 {
 int16_t	i;
 	for(i=0;i<8;i++)
@@ -41,7 +41,7 @@ int16_t	i;
 	}
 }
 
-ITCM_AREA_CODE void ws2812_UserFB_to_WorkBuf(WS2812_Drv_TypeDef *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
+ITCM_AREA_CODE void ws2812_UserFB_to_WorkBuf(WS2812_DriverStruct_t *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
 {
 int32_t	i;
 	if ( user_fb_len > ws2812_drv->ws2812_numleds)
@@ -50,21 +50,21 @@ int32_t	i;
 		ws2812_SetPixel(ws2812_drv,i, user_fb[i],user_fb[i+1],user_fb[i+2]);
 }
 
-ITCM_AREA_CODE void ws2812_ClearPixels(WS2812_Drv_TypeDef *ws2812_drv)
+ITCM_AREA_CODE void ws2812_ClearPixels(WS2812_DriverStruct_t *ws2812_drv)
 {
 int16_t	location;
 	for(location=0;location<ws2812_drv->ws2812_numleds;location++)
 		ws2812_SetPixel(ws2812_drv,location, 0,0,0);
 }
 
-ITCM_AREA_CODE uint32_t ws2812_init(WS2812_Drv_TypeDef *ws2812_drv)
+ITCM_AREA_CODE uint32_t ws2812_init(WS2812_DriverStruct_t *ws2812_drv)
 {
 	bzero(ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 	ws2812_ClearPixels(ws2812_drv);
 	return HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_timer_channel,ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 }
 
-ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_Drv_TypeDef *ws2812_drv)
+ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_DriverStruct_t *ws2812_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 

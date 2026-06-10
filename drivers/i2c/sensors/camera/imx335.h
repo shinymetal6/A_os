@@ -84,7 +84,7 @@ typedef struct
 	uint32_t 			gain_max;
 	uint32_t 			exposure_min;
 	uint32_t 			exposure_max;
-}I2C_imx335_Drv_TypeDef;
+}I2C_imx335_DriverStruct_t;
 
 #define IMX335_REG_MODE_SELECT    0x3000
 #define IMX335_MODE_STREAMING       0x00
@@ -155,6 +155,6 @@ typedef struct
 #define  IMX335_2_I2C_ADDRESS		0x52 // 00110100 -> 000110100
 #define  IMX335_3_I2C_ADDRESS		0x1a
 
-extern uint32_t imx335_register(I2C_imx335_Drv_TypeDef *imx335_Drv);
+extern uint32_t imx335_register(I2C_imx335_DriverStruct_t *imx335_Drv);
 
 #endif /* DRIVERS_I2C_SENSORS_CAMERA_IMX335_H_ */

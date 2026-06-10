@@ -26,7 +26,7 @@
 #ifdef SAMPLEPROCESS_1_IMX335
 extern	I2C_HandleTypeDef hi2c2;
 
-I2C_imx335_Drv_TypeDef	I2C_imx335_Drv =
+I2C_imx335_DriverStruct_t	I2C_imx335_Drv =
 {
 	.sensor_id = 0x01,
 	.bus = &hi2c2,
@@ -39,7 +39,7 @@ I2C_imx335_Drv_TypeDef	I2C_imx335_Drv =
 	.Resolution = IMX335_R2592_1944,
 };
 
-I2C_ism330dlctr_Drv_TypeDef	I2C_ism330dlctr_Drv =
+I2C_ism330dlctr_DriverStruct_t	I2C_ism330dlctr_Drv =
 {
 		.sensor_id = 0x02,
 		.bus = &hi2c2,
@@ -51,7 +51,7 @@ VL53L5CX_ResultsData_TypeDef	VL53L5CX_ResultsData =
 {
 
 };
-I2C_vl53l5cx_Drv_TypeDef I2C_vl53l5cx_Drv =
+I2C_vl53l5cx_DriverStruct_t I2C_vl53l5cx_Drv =
 {
 		.bus = &hi2c2,
 		.lpn_port = TOF_LPN_GPIO_Port,

@@ -19,12 +19,12 @@ typedef struct
 	uint16_t 			dht_timer_channel;
 	GPIO_TypeDef	 	*one_wire_port;
 	uint16_t			one_wire_bit;
-}Dhtxx_am230x_Drv_TypeDef;
+}Dhtxx_am230x_DriverStruct_t;
 
 2) Example:
 a - define the control structure, the related handle and the data buffer:
 
-	Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv =
+	Dhtxx_am230x_DriverStruct_t	Dhtxx_am230x_Drv =
 	{
 			.device_index = 0x00,
 			.dht_timer = &htim2,

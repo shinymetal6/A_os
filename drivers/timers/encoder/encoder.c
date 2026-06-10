@@ -27,7 +27,7 @@
 #include "encoder.h"
 #include <string.h>
 
-ITCM_AREA_CODE uint32_t	encoder_register(Encoder_Drv_TypeDef *encoder_drv)
+ITCM_AREA_CODE uint32_t	encoder_register(Encoder_DriverStruct_t *encoder_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 

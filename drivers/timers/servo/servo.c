@@ -29,29 +29,29 @@
 #include "servo.h"
 #include <string.h>
 
-ITCM_AREA_CODE uint32_t servo_start(SERVO_Control_Drv_TypeDef *servo_drv)
+ITCM_AREA_CODE uint32_t servo_start(SERVO_Control_DriverStruct_t *servo_drv)
 {
 	HAL_TIM_PWM_Start(servo_drv->timer,servo_drv->servo_channel);
 	__HAL_TIM_DISABLE(servo_drv->timer);
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_stop(SERVO_Control_Drv_TypeDef *servo_drv)
+ITCM_AREA_CODE uint32_t servo_stop(SERVO_Control_DriverStruct_t *servo_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_get_status(SERVO_Control_Drv_TypeDef *servo_drv)
+ITCM_AREA_CODE uint32_t servo_get_status(SERVO_Control_DriverStruct_t *servo_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_set_prescaler(SERVO_Control_Drv_TypeDef *servo_drv,uint32_t prescaler)
+ITCM_AREA_CODE uint32_t servo_set_prescaler(SERVO_Control_DriverStruct_t *servo_drv,uint32_t prescaler)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t servo_set_position(SERVO_Control_Drv_TypeDef *servo_drv,uint8_t servo_position,uint8_t servo_pulses)
+ITCM_AREA_CODE uint32_t servo_set_position(SERVO_Control_DriverStruct_t *servo_drv,uint8_t servo_position,uint8_t servo_pulses)
 {
 uint16_t				span_time;
 uint16_t				servo_pulse_len;
@@ -71,7 +71,7 @@ uint16_t				servo_pulse_len;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	servo_register(SERVO_Control_Drv_TypeDef *servo_drv)
+ITCM_AREA_CODE uint32_t	servo_register(SERVO_Control_DriverStruct_t *servo_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 

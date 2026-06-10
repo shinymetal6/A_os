@@ -73,9 +73,9 @@ typedef struct
 	uint32_t			who_am_i;
 	uint8_t				*data;
 	uint8_t				*additional_data;
-}I2C_Sht40_Drv_TypeDef;
+}I2C_Sht40_DriverStruct_t;
 
-extern uint32_t sht40_register(I2C_Sht40_Drv_TypeDef *sht40_Drv);
+extern uint32_t sht40_register(I2C_Sht40_DriverStruct_t *sht40_Drv);
 
 
 #endif /* DRIVERS_I2C_SENSORS_HUMIDITY_SHT40_H_ */

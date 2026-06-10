@@ -29,7 +29,7 @@
 #include "dcc.h"
 #include <string.h>
 
-DCC_Drv_TypeDef *dcc_drv_ptr;
+DCC_DriverStruct_t *dcc_drv_ptr;
 
 DCC_Drv_Pkt_TypeDef	DCC_StandardIdle_Pkt =
 {
@@ -138,7 +138,7 @@ DCC_Drv_Pkt_TypeDef	DCC_CutOutExtendedPkt =
 extern void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma);
 extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 
- static uint8_t dcc_TIM_PWM_Start_DMA(DCC_Drv_TypeDef *dcc_drv)
+ static uint8_t dcc_TIM_PWM_Start_DMA(DCC_DriverStruct_t *dcc_drv)
 {
 	if ( HAL_TIM_PWM_Start(dcc_drv->dcc_timer, dcc_drv->timer_dcc_channel) )
 		return 1;
@@ -160,14 +160,14 @@ extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 	return 0;
 }
 
- uint32_t dcc_start(DCC_Drv_TypeDef *dcc_drv)
+ uint32_t dcc_start(DCC_DriverStruct_t *dcc_drv)
 {
 	dcc_TIM_PWM_Start_DMA(dcc_drv);
 	dcc_drv->status |= DCC_ON;
 	return 0;
 }
 
- uint32_t dcc_stop(DCC_Drv_TypeDef *dcc_drv)
+ uint32_t dcc_stop(DCC_DriverStruct_t *dcc_drv)
 {
 	HAL_TIM_PWM_Stop_DMA(dcc_drv->dcc_timer, dcc_drv->timer_dcc_channel);
 	if ((dcc_drv->flags & DCC_TIMER_DUAL_PHASE ) == DCC_TIMER_DUAL_PHASE)
@@ -177,12 +177,12 @@ extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 	return 0;
 }
 
- uint32_t dcc_get_status(DCC_Drv_TypeDef *dcc_drv)
+ uint32_t dcc_get_status(DCC_DriverStruct_t *dcc_drv)
 {
 	return dcc_drv->status;
 }
 
- uint32_t static dcc_init(DCC_Drv_TypeDef *dcc_drv)
+ uint32_t static dcc_init(DCC_DriverStruct_t *dcc_drv)
 {
 	memcpy((uint8_t *)&dcc_drv->DCC_Pkt[0],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&dcc_drv->DCC_Pkt[1],(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
@@ -212,9 +212,9 @@ extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 	return 0;
 }
 
- uint32_t	dcc_register(DCC_Drv_TypeDef *dcc_drv)
+ uint32_t	dcc_register(DCC_DriverStruct_t *dcc_drv)
 {
-DCC_Drv_TypeDef *eptr, *pre_eptr;
+DCC_DriverStruct_t *eptr, *pre_eptr;
 	if ( dcc_drv->wakeup_id == 0)
 		return DRIVER_REQUEST_FAILED;
 	if ( dcc_drv->dcc_timer == NULL)
@@ -233,7 +233,7 @@ DCC_Drv_TypeDef *eptr, *pre_eptr;
 		while(eptr->next_dcc != NULL)
 		{
 			pre_eptr = eptr;
-			eptr = (DCC_Drv_TypeDef *)eptr->next_dcc;
+			eptr = (DCC_DriverStruct_t *)eptr->next_dcc;
 		}
 		pre_eptr->next_dcc = (uint32_t *)dcc_drv;
 		dcc_drv->next_dcc = NULL;
@@ -250,9 +250,9 @@ DCC_Drv_TypeDef *eptr, *pre_eptr;
 /* Interrupts */
 
 
- DCC_Drv_TypeDef *driver_get_drv_from_dcc_dma_channel(DMA_HandleTypeDef *hdma)
+ DCC_DriverStruct_t *driver_get_drv_from_dcc_dma_channel(DMA_HandleTypeDef *hdma)
 {
-DCC_Drv_TypeDef *eptr, *pre_eptr;
+DCC_DriverStruct_t *eptr, *pre_eptr;
 
 	eptr = pre_eptr = dcc_drv_ptr;
 	while(eptr != NULL)
@@ -262,14 +262,14 @@ DCC_Drv_TypeDef *eptr, *pre_eptr;
 		pre_eptr = eptr;
 		if ( eptr->next_dcc == NULL )
 			return NULL;
-		eptr = (DCC_Drv_TypeDef *)eptr->next_dcc;
+		eptr = (DCC_DriverStruct_t *)eptr->next_dcc;
 	}
 	return NULL;
 }
 
  void dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma)
 {
-DCC_Drv_TypeDef *dcc_drv;
+DCC_DriverStruct_t *dcc_drv;
 
 	if ( (dcc_drv = driver_get_drv_from_dcc_dma_channel(hdma)) == NULL )
 		return;
@@ -311,7 +311,7 @@ DCC_Drv_TypeDef *dcc_drv;
 
  void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma)
 {
-DCC_Drv_TypeDef *dcc_drv;
+DCC_DriverStruct_t *dcc_drv;
 
 	if ( (dcc_drv = driver_get_drv_from_dcc_dma_channel(hdma)) == NULL )
 		return;
@@ -365,7 +365,7 @@ uint8_t i,mask=0x80;
 	}
 }
 
- void compile_reset_packet(DCC_Drv_TypeDef *dcc_drv)
+ void compile_reset_packet(DCC_DriverStruct_t *dcc_drv)
 {
 	memcpy((uint8_t *)&dcc_drv->DCC_WorkPkt,(uint8_t *)&DCC_StandardIdle_Pkt,sizeof(DCC_StandardIdle_Pkt));
 	memcpy((uint8_t *)&dcc_drv->DCC_Cutout_Pkt,(uint8_t *)&DCC_CutOutStandardPkt,sizeof(DCC_CutOutStandardPkt));
@@ -377,7 +377,7 @@ uint8_t i,mask=0x80;
 }
 
 
- uint8_t one_byte_commands(DCC_Drv_TypeDef *dcc_drv,char cmd)
+ uint8_t one_byte_commands(DCC_DriverStruct_t *dcc_drv,char cmd)
 {
 uint8_t	ret_val = 0;
 	switch ( cmd)
@@ -396,7 +396,7 @@ uint8_t	ret_val = 0;
 	return ret_val;
 }
 
- uint8_t four_bytes_commands(DCC_Drv_TypeDef *dcc_drv,char cmd,uint16_t track,uint16_t address,uint16_t data)
+ uint8_t four_bytes_commands(DCC_DriverStruct_t *dcc_drv,char cmd,uint16_t track,uint16_t address,uint16_t data)
 {
 uint8_t ecc;
 
@@ -414,7 +414,7 @@ uint8_t ecc;
 	return 1;
 }
 
- uint8_t five_bytes_commands(DCC_Drv_TypeDef *dcc_drv,char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah)
+ uint8_t five_bytes_commands(DCC_DriverStruct_t *dcc_drv,char cmd,uint16_t track,uint16_t address,uint16_t datal,uint16_t datah)
 {
 uint8_t ecc;
 	if ( cmd == 'T' )
@@ -432,7 +432,7 @@ uint8_t ecc;
 	return 1;
 }
 
- uint32_t dcc_commands(DCC_Drv_TypeDef *dcc_drv,uint8_t *commands,uint16_t commands_number)
+ uint32_t dcc_commands(DCC_DriverStruct_t *dcc_drv,uint8_t *commands,uint16_t commands_number)
 {
 	switch(commands_number)
 	{

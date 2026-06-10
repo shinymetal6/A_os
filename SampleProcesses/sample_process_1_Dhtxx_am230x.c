@@ -31,7 +31,7 @@
 extern	TIM_HandleTypeDef 		htim2;
 
 extern	UART_HandleTypeDef hlpuart1;
-Dhtxx_am230x_Drv_TypeDef	Dhtxx_am230x_Drv =
+Dhtxx_am230x_DriverStruct_t	Dhtxx_am230x_Drv =
 {
 		.sensor_id = DHT11_SENSOR_ID,
 		.dht_timer = &htim2,
@@ -50,7 +50,7 @@ uint8_t dht_sm = 0;
 uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
 uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
 
-UART_Drv_TypeDef Uart_Drv =
+UART_DriverStruct_t Uart_Drv =
 {
 	.data = uart_rx_buffer,
 	.rx_max_len = UART_RX_BUF_SIZE,

@@ -215,22 +215,22 @@ uint8_t i2c_data[2];
 	return HAL_I2C_Mem_Write(bus, device_address, i2c_data[0], 1, &i2c_data[1], 1, NAU88C22_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_start(Nau88C22_Drv_TypeDef *codec_drv)
+ITCM_AREA_CODE uint32_t nau88c22_start(Nau88C22_DriverStruct_t *codec_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_stop(Nau88C22_Drv_TypeDef *codec_drv)
+ITCM_AREA_CODE uint32_t nau88c22_stop(Nau88C22_DriverStruct_t *codec_drv)
 {
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_get_status(Nau88C22_Drv_TypeDef *codec_drv)
+ITCM_AREA_CODE uint32_t nau88c22_get_status(Nau88C22_DriverStruct_t *codec_drv)
 {
 	return codec_drv->status;
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_set_volume(Nau88C22_Drv_TypeDef *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume)
+ITCM_AREA_CODE uint32_t nau88c22_set_volume(Nau88C22_DriverStruct_t *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume)
 {
 uint8_t reg;
 	switch(volume_channel)
@@ -254,7 +254,7 @@ uint8_t reg;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv)
+ITCM_AREA_CODE uint32_t nau88c22_init(Nau88C22_DriverStruct_t *codec_drv)
 {
 uint8_t	i = 0;
 	if ( Nau88c22_CheckPresent(codec_drv->bus , codec_drv->device_address) == 0)
@@ -275,7 +275,7 @@ uint8_t	i = 0;
 	return 0;
 }
 
-uint32_t nau88c22_internal_ops(Nau88C22_Drv_TypeDef	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain)
+uint32_t nau88c22_internal_ops(Nau88C22_DriverStruct_t	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain)
 {
 I2C_HandleTypeDef		*bus = codec_drv->bus;
 uint16_t 				device_address = codec_drv->device_address;
@@ -351,7 +351,7 @@ uint8_t 	gain				= (uint8_t  )param3;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv)
+ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_DriverStruct_t *codec_drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 

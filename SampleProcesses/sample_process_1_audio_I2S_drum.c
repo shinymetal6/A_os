@@ -57,7 +57,7 @@ AUDIO_FAST_RAM uint16_t right_tx_buffer[I2S_BUFFER_SIZE];
 AUDIO_FAST_RAM uint16_t left_rx_buffer[I2S_BUFFER_SIZE];
 AUDIO_FAST_RAM uint16_t right_rx_buffer[I2S_BUFFER_SIZE];
 
-__attribute__ ((aligned (32)))	Nau88C22_Drv_TypeDef	Nau88C22_Drv =
+__attribute__ ((aligned (32)))	Nau88C22_DriverStruct_t	Nau88C22_Drv =
 {
 	.bus = &hi2c1,
 	.device_address = NAU88C22_I2C_ADDR,

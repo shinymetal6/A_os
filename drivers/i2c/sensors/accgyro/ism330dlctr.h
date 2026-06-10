@@ -62,11 +62,11 @@ typedef struct
 	uint32_t			sensor_id;
     float 				gyro_x,gyro_y,gyro_z;
     float 				acc_x,acc_y,acc_z;
-}I2C_ism330dlctr_Drv_TypeDef;
+}I2C_ism330dlctr_DriverStruct_t;
 
 
-extern uint32_t ism330dlctr_register(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv);
-extern uint8_t ism330dlctr_ReadAcc(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, IMU_Data_t *data);
-extern uint8_t ism330dlctr_ReadGyro(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, IMU_Data_t *data);
+extern uint32_t ism330dlctr_register(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv);
+extern uint8_t ism330dlctr_ReadAcc(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, IMU_Data_t *data);
+extern uint8_t ism330dlctr_ReadGyro(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, IMU_Data_t *data);
 
 #endif /* DRIVERS_I2C_SENSORS_ACCGYRO_ISM330DLCTR_H_ */

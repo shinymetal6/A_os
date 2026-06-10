@@ -30,7 +30,7 @@
 #include "dhtxx_am230x.h"
 #include <string.h>
 
-ITCM_AREA_CODE uint32_t dhtxx_am230x_decode(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv)
+ITCM_AREA_CODE uint32_t dhtxx_am230x_decode(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Drv)
 {
 uint16_t i,j,tmplen;
 uint8_t idx , n;
@@ -62,7 +62,7 @@ uint8_t idx , n;
 	return 0;
 }
 
-Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Running;
+Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Running;
 uint32_t	ret_icval;
 
 ITCM_AREA_CODE static void dhtxx_am230x_worker(uint32_t *param)
@@ -71,7 +71,7 @@ uint32_t 	i;
 
 	for(i=0;i<MAX_DHT11_DEVICES;i++)
 	{
-		Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv = dhtxx_am230x_Running;
+		Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Drv = dhtxx_am230x_Running;
 		if ( dhtxx_am230x_Drv != NULL)
 		{
 			if ( dhtxx_am230x_Drv->ticks )
@@ -113,7 +113,7 @@ uint32_t 	i;
 	}
 }
 
-ITCM_AREA_CODE uint32_t dhtxx_am230x_init(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv)
+ITCM_AREA_CODE uint32_t dhtxx_am230x_init(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Drv)
 {
 	dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_IDLE;
 	dhtxx_am230x_Drv->ticks = 0;
@@ -123,7 +123,7 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_init(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t dhtxx_am230x_start(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv)
+ITCM_AREA_CODE uint32_t dhtxx_am230x_start(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Drv)
 {
 	if (( dhtxx_am230x_Drv->status & DHTXX_AM230X_RUNNING) == DHTXX_AM230X_RUNNING )
 		return 1;
@@ -133,14 +133,14 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_start(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t dhtxx_am230x_get_status(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_Drv)
+ITCM_AREA_CODE uint32_t dhtxx_am230x_get_status(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_Drv)
 {
 	if (( dhtxx_am230x_Drv->status & DHTXX_AM230X_ACQDONE) == DHTXX_AM230X_ACQDONE)
 		return 0;
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t	dhtxx_am230x_register(Dhtxx_am230x_Drv_TypeDef *dhtxx_am230x_drv)
+ITCM_AREA_CODE uint32_t	dhtxx_am230x_register(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv)
 {
 
 TIMER_DriverStruct_t *eptr, *pre_eptr;

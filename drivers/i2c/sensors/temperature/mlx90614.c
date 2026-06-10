@@ -65,7 +65,7 @@ uint16_t crc = 0x0;
 	return crc & 0xff;
 }
 
-ITCM_AREA_CODE uint32_t mlx90614_read_ram(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv, uint8_t reg, uint16_t *value)
+ITCM_AREA_CODE uint32_t mlx90614_read_ram(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv, uint8_t reg, uint16_t *value)
 {
 	*value = 0x0000;
     if (HAL_I2C_Mem_Read(mlx90614_Drv->bus, mlx90614_Drv->device_address, reg,1,mlx90614_Drv->rx_data,3,100))
@@ -87,7 +87,7 @@ ITCM_AREA_CODE uint32_t mlx90614_read_ram(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv
 }
 
 // Read EEPROM register (16-bit value + PEC)
-ITCM_AREA_CODE uint32_t mlx90614_read_eeprom(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv, uint8_t address, uint16_t *value)
+ITCM_AREA_CODE uint32_t mlx90614_read_eeprom(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv, uint8_t address, uint16_t *value)
 {
     // EEPROM access requires special command format: reg | 0x20
     uint16_t cmd = address | MLX90614_EEPROM_ACCESS;
@@ -110,7 +110,7 @@ ITCM_AREA_CODE uint32_t mlx90614_read_eeprom(I2C_Mlx90614_Drv_TypeDef *mlx90614_
     return 0;
 }
 
-ITCM_AREA_CODE uint32_t mlx90614_read_temp_reg(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv, uint8_t reg, float *temp)
+ITCM_AREA_CODE uint32_t mlx90614_read_temp_reg(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv, uint8_t reg, float *temp)
 {
     uint16_t raw;
     *temp = 0;
@@ -127,25 +127,25 @@ ITCM_AREA_CODE uint32_t mlx90614_read_temp_reg(I2C_Mlx90614_Drv_TypeDef *mlx9061
 }
 
 // Read ambient temperature only
-ITCM_AREA_CODE uint32_t mlx90614_read_ambient(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv)
+ITCM_AREA_CODE uint32_t mlx90614_read_ambient(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv)
 {
     return mlx90614_read_temp_reg(mlx90614_Drv, MLX90614_RAM_TA, &mlx90614_Drv->t_ambient);
 }
 
 // Read object temperature only
-ITCM_AREA_CODE uint32_t mlx90614_read_object(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv)
+ITCM_AREA_CODE uint32_t mlx90614_read_object(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv)
 {
     return mlx90614_read_temp_reg(mlx90614_Drv, MLX90614_RAM_TOBJ1, &mlx90614_Drv->t_object);
 }
 
-ITCM_AREA_CODE uint32_t mlx90614_get_id(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv)
+ITCM_AREA_CODE uint32_t mlx90614_get_id(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv)
 {
 	mlx90614_read_eeprom(mlx90614_Drv, MLX90614_EEPROM_ID1, &mlx90614_Drv->device_id);
 	mlx90614_read_eeprom(mlx90614_Drv, MLX90614_EEPROM_ID3, &mlx90614_Drv->device_version);
     return 0;
 }
 
-ITCM_AREA_CODE uint32_t mlx90614_register(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv)
+ITCM_AREA_CODE uint32_t mlx90614_register(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( mlx90614_Drv->bus == NULL)

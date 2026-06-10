@@ -83,11 +83,11 @@ typedef struct
 	uint8_t 			crc_buff[5];
 	uint8_t				crc;
 	float	 			t_ambient,t_object;
-}I2C_Mlx90614_Drv_TypeDef;
+}I2C_Mlx90614_DriverStruct_t;
 
 
-extern uint32_t mlx90614_register(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv);
-extern uint32_t mlx90614_read_ambient(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv);
-extern uint32_t mlx90614_read_object(I2C_Mlx90614_Drv_TypeDef *mlx90614_Drv);
+extern uint32_t mlx90614_register(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv);
+extern uint32_t mlx90614_read_ambient(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv);
+extern uint32_t mlx90614_read_object(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv);
 
 #endif /* DRIVERS_I2C_SENSORS_TEMPERATURE_MLX90614_H_ */

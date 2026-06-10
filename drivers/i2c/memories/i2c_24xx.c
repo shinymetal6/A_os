@@ -34,14 +34,14 @@ extern	uint8_t						last_i2c_used_handle;
 
 uint32_t	irq_count=0;
 
-ITCM_AREA_CODE static uint32_t i2c_24xx_seterror(I2C_24xx_Drv_TypeDef	*i2c_24xx_Drv)
+ITCM_AREA_CODE static uint32_t i2c_24xx_seterror(I2C_24xx_DriverStruct_t	*i2c_24xx_Drv)
 {
 	i2c_24xx_Drv->status &= ~I2C_STATUS_BUSY;
 	i2c_24xx_Drv->status |= I2C_STATUS_ERROR;
 	return i2c_24xx_Drv->status;
 }
 
-ITCM_AREA_CODE static uint32_t i2c_24xx_wait_on_flag_timeout(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv , uint8_t mask)
+ITCM_AREA_CODE static uint32_t i2c_24xx_wait_on_flag_timeout(I2C_24xx_DriverStruct_t *i2c_24xx_Drv , uint8_t mask)
 {
 	i2c_24xx_Drv->timeout = I2C_24XX_TIMEOUT;
 	while ( (i2c_24xx_Drv->status & mask ) != mask )
@@ -54,7 +54,7 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_wait_on_flag_timeout(I2C_24xx_Drv_TypeDe
 	return 0;
 }
 
-ITCM_AREA_CODE static uint32_t i2c_24xx_wait_device_ready_timeout(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv)
+ITCM_AREA_CODE static uint32_t i2c_24xx_wait_device_ready_timeout(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 {
 	i2c_24xx_Drv->timeout = I2C_24XX_TIMEOUT;
 	i2c_24xx_Drv->status |= I2C_STATUS_DEVICE_BUSY;
@@ -77,7 +77,7 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_wait_device_ready_timeout(I2C_24xx_Drv_T
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t i2c_24xx_read(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len)
+ITCM_AREA_CODE uint32_t i2c_24xx_read(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len)
 {
 uint32_t ret_val;
 uint32_t p_data_len;
@@ -151,7 +151,7 @@ uint32_t p_data_len;
 }
 
 
-ITCM_AREA_CODE uint32_t i2c_24xx_write(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len)
+ITCM_AREA_CODE uint32_t i2c_24xx_write(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len)
 {
 uint32_t ret_val;
 	{
@@ -201,7 +201,7 @@ uint32_t ret_val;
 	}
 }
 
-ITCM_AREA_CODE uint32_t i2c_24xx_init(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv)
+ITCM_AREA_CODE uint32_t i2c_24xx_init(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 {
 	if ( i2c_24xx_Drv->power_port != NULL )
 	{
@@ -213,7 +213,7 @@ ITCM_AREA_CODE uint32_t i2c_24xx_init(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t i2c_24xx_reset(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv)
+ITCM_AREA_CODE uint32_t i2c_24xx_reset(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 {
 uint8_t	i;
 	if ( i2c_24xx_Drv->i2c_scl_port != NULL )
@@ -231,7 +231,7 @@ uint8_t	i;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *i2c_24xx_Drv)
+ITCM_AREA_CODE uint32_t	i2c_24xx_register(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( i2c_24xx_Drv->bus == NULL)

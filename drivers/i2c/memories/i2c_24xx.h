@@ -51,7 +51,7 @@ typedef struct
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
 	uint32_t 			timeout;
-}I2C_24xx_Drv_TypeDef;
+}I2C_24xx_DriverStruct_t;
 
 /* status */
 #define	I2C_STATUS_DEVICE_ERROR				0x80
@@ -69,7 +69,7 @@ typedef struct
 #define	I2C_FLAGS_WAKEUP_ON_READ			0x02
 #define	I2C_FLAGS_WAKEUP_ON_WRITE			0x01
 
-extern uint32_t	i2c_24xx_register(I2C_24xx_Drv_TypeDef *driver_private_data);
+extern uint32_t	i2c_24xx_register(I2C_24xx_DriverStruct_t *driver_private_data);
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

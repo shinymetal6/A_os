@@ -23,7 +23,7 @@ typedef struct
 	uint16_t			rx_bit;
 	uint32_t			param0;
 	uint32_t 			wakeup_id;
-}UART_Drv_TypeDef;
+}UART_DriverStruct_t;
 
 2) Example:
 a - define the data buffer, control structure and the related handle:
@@ -33,7 +33,7 @@ a - define the data buffer, control structure and the related handle:
 	uint8_t	uart3_rx_buffer[UART_RX_BUF_SIZE];
 	uint8_t	uart3_tx_buffer[UART_TX_BUF_SIZE];
 	
-	UART_Drv_TypeDef Uart3_Drv =
+	UART_DriverStruct_t Uart3_Drv =
 	{
 		.data = uart3_rx_buffer,
 		.rx_max_len = XMODEM_LINE_LEN,

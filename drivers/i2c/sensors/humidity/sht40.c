@@ -27,7 +27,7 @@
 #include "../../i2c.h"
 #include "sht40.h"
 
-ITCM_AREA_CODE uint32_t sht40_i2cread(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_i2cread(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 uint8_t	ret = HAL_BUSY;
 
@@ -47,7 +47,7 @@ uint8_t	ret = HAL_BUSY;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_i2cwrite(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_i2cwrite(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 uint8_t	ret = HAL_BUSY;
 uint8_t		cmd = 0xfd;
@@ -68,7 +68,7 @@ uint8_t		cmd = 0xfd;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_start(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_start(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 	sht40_Drv->status = SHT40_STARTED;
 	if ( sht40_i2cwrite(sht40_Drv) )
@@ -81,14 +81,14 @@ ITCM_AREA_CODE uint32_t sht40_stop(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_get_data(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_get_data(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 	if ( sht40_i2cread(sht40_Drv) )
 		return 1;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_init(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_init(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 	if ( sht40_Drv->power_port != NULL )
 	{
@@ -102,7 +102,7 @@ ITCM_AREA_CODE uint32_t sht40_init(I2C_Sht40_Drv_TypeDef *sht40_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_power_on(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_power_on(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 	if ( sht40_Drv->power_port != NULL )
 	{
@@ -114,7 +114,7 @@ ITCM_AREA_CODE uint32_t sht40_power_on(I2C_Sht40_Drv_TypeDef *sht40_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_power_off(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_power_off(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 	if ( sht40_Drv->power_port != NULL )
 	{
@@ -126,7 +126,7 @@ ITCM_AREA_CODE uint32_t sht40_power_off(I2C_Sht40_Drv_TypeDef *sht40_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t sht40_register(I2C_Sht40_Drv_TypeDef *sht40_Drv)
+ITCM_AREA_CODE uint32_t sht40_register(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( sht40_Drv->bus == NULL)

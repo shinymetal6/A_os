@@ -64,7 +64,7 @@ extern	uint32_t 	xmodem_rx_get_rxed_amount(void);
 extern	uint8_t 	xmodem_rx_send_ack(void);
 extern	uint8_t 	xmodem_rx_line_parser(uint8_t *buf);
 #ifdef A_OS_UART_ENABLED
-extern	uint8_t 	xmodem_uart_data_process(UART_Drv_TypeDef *uart_drv,uint8_t mode,uint8_t *uart_rx_buffer);
+extern	uint8_t 	xmodem_uart_data_process(UART_DriverStruct_t *uart_drv,uint8_t mode,uint8_t *uart_rx_buffer);
 #endif
 #ifdef	USB_DEVICE_ENABLED
 extern	uint8_t 	xmodem_usb_data_process(USB_Drv_TypeDef *usb_drv,uint8_t mode,uint8_t *usb_rx_buffer);

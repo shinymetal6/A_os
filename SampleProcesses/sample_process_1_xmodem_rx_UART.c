@@ -88,7 +88,7 @@ extern	UART_HandleTypeDef	hlpuart1;
 uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
 uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
 
-UART_Drv_TypeDef Uart_Drv =
+UART_DriverStruct_t Uart_Drv =
 {
 	.data = uart_rx_buffer,
 	.rx_max_len = XMODEM_LINE_LEN,

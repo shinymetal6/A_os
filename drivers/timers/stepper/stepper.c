@@ -30,7 +30,7 @@
 #include <string.h>
 extern	TIM_HandleTypeDef htim16;
 
-ITCM_AREA_CODE uint32_t stepper_start(Stepper_Control_TypeDef *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_steps)
+ITCM_AREA_CODE uint32_t stepper_start(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_steps)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	timer->Instance->RCR = stepper_drv->work_number_of_steps = stepper_drv->number_of_steps = number_of_steps - 1;
@@ -43,7 +43,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t stepper_stop(Stepper_Control_TypeDef *stepper_drv,uint32_t stepper_channel)
+ITCM_AREA_CODE uint32_t stepper_stop(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	if ( HAL_TIM_PWM_Stop(timer,stepper_channel) == 0 )
@@ -55,7 +55,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t stepper_set_direction(Stepper_Control_TypeDef *stepper_drv,uint8_t direction)
+ITCM_AREA_CODE uint32_t stepper_set_direction(Stepper_Control_DriverStruct_t *stepper_drv,uint8_t direction)
 {
 	if ( stepper_drv->dir_port != NULL)
 	{
@@ -68,7 +68,7 @@ ITCM_AREA_CODE uint32_t stepper_set_direction(Stepper_Control_TypeDef *stepper_d
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t stepper_init(Stepper_Control_TypeDef *stepper_drv)
+ITCM_AREA_CODE uint32_t stepper_init(Stepper_Control_DriverStruct_t *stepper_drv)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	if ( stepper_drv->prescaler )
@@ -79,7 +79,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t	stepper_register(Stepper_Control_TypeDef *stepper_drv)
+ITCM_AREA_CODE uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
 

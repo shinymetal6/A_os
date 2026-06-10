@@ -53,7 +53,7 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 		return;
 	if ( tim_ic->timer_type == TIM_TYPE_PERIODIC )
 	{
-		PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv = (PERIODIC_Timer_Drv_TypeDef *)tim_ic;
+		PERIODIC_Timer_DriverStruct_t *periodic_timer_drv = (PERIODIC_Timer_DriverStruct_t *)tim_ic;
 		if ( periodic_timer_drv->User_Callback != NULL)
 			periodic_timer_drv->User_Callback();
 	}
@@ -61,7 +61,7 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 	{
 		if ( tim_ic->timer == htim)
 		{
-			Stepper_Control_TypeDef	*stepper_drv = (Stepper_Control_TypeDef *)tim_ic;
+			Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
 			if ( stepper_drv->stepper_callback != NULL )
 				stepper_drv->stepper_callback(stepper_drv->number_of_steps);
 			else
@@ -89,7 +89,7 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 	{
 		if ( tim_ic->timer == htim)
 		{
-			Encoder_Drv_TypeDef	*encoder_driver_data = (Encoder_Drv_TypeDef *)tim_ic;
+			Encoder_DriverStruct_t	*encoder_driver_data = (Encoder_DriverStruct_t *)tim_ic;
 			encoder_driver_data->encoder_value = (htim->Instance->CNT>>2);
 			if ( encoder_driver_data->encoder_value != encoder_driver_data->encoder_last_value )
 			{

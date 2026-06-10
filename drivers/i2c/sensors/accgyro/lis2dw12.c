@@ -27,17 +27,17 @@
 #include "../../i2c.h"
 #include "lis2dw12.h"
 
-ITCM_AREA_CODE static uint8_t	write_lis_reg(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv,uint8_t address,uint8_t data)
+ITCM_AREA_CODE static uint8_t	write_lis_reg(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv,uint8_t address,uint8_t data)
 {
 	return HAL_I2C_Mem_Write(lis2dw12_Drv->bus, lis2dw12_Drv->device_address, address, 1, &data, 1,LIS2DW12_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE static uint8_t	read_lis_reg(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv,uint8_t address,uint8_t *data)
+ITCM_AREA_CODE static uint8_t	read_lis_reg(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv,uint8_t address,uint8_t *data)
 {
 	return HAL_I2C_Mem_Read(lis2dw12_Drv->bus, lis2dw12_Drv->device_address, address, 1, data, 1,LIS2DW12_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_start(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_start(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 
 	lis2dw12_Drv->status = LIS2DW12_STARTED;
@@ -65,7 +65,7 @@ ITCM_AREA_CODE uint32_t lis2dw12_start(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_stop(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_stop(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 uint8_t temp;
 	lis2dw12_Drv->status = LIS2DW12_STOPPED;
@@ -75,17 +75,17 @@ uint8_t temp;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_get_Pdata(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_get_Pdata(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 	return HAL_I2C_Mem_Read(lis2dw12_Drv->bus, lis2dw12_Drv->device_address, LIS2DW12_OUT_X_L, 1, lis2dw12_Drv->data, MAG_LEN,LIS2DW12_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_get_Tdata(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_get_Tdata(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 	return HAL_I2C_Mem_Read(lis2dw12_Drv->bus, lis2dw12_Drv->device_address, LIS2DW12_OUT_T, 1, lis2dw12_Drv->additional_data, 1,LIS2DW12_I2C_TIMEOUT);
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_power_on(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_power_on(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 	if ( lis2dw12_Drv->power_port != NULL )
 	{
@@ -97,7 +97,7 @@ ITCM_AREA_CODE uint32_t lis2dw12_power_on(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_power_off(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_power_off(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 	if ( lis2dw12_Drv->power_port != NULL )
 	{
@@ -109,12 +109,12 @@ ITCM_AREA_CODE uint32_t lis2dw12_power_off(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Dr
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_init(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_init(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 	return lis2dw12_power_on(lis2dw12_Drv);
 }
 
-ITCM_AREA_CODE uint32_t lis2dw12_register(I2C_Lis2DW12_Drv_TypeDef *lis2dw12_Drv)
+ITCM_AREA_CODE uint32_t lis2dw12_register(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( lis2dw12_Drv->bus == NULL)

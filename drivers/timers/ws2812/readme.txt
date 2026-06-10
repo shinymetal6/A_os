@@ -17,7 +17,7 @@ typedef struct
 	uint32_t 			*ws2812_work_buf;
 	uint32_t 			ws2812_work_buf_buflen;
 	uint32_t			wakeup_id;
-}WS2812_Drv_TypeDef;
+}WS2812_DriverStruct_t;
 
 2) Example:
 a - define the control structure and the related handle:
@@ -25,7 +25,7 @@ a - define the control structure and the related handle:
 #define	WS2812_WORK_BUF_LEN		((NUM_LEDS*WS2812_LEDBPP)+WS2812_SYNCLEN)
 uint32_t ws2812_work_buf[WS2812_WORK_BUF_LEN];
 
-WS2812_Drv_TypeDef	WS2812_Drv =
+WS2812_DriverStruct_t	WS2812_Drv =
 {
 		.ws2812_timer = &htim3,
 		.ws2812_timer_channel = TIM_CHANNEL_1,
@@ -41,9 +41,9 @@ b - register the driver and start it:
 
 c - Use cases:
 
-	To set a pixel color call ws2812_SetPixel(WS2812_Drv_TypeDef *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b) 
+	To set a pixel color call ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b) 
 	  with the appropriate parameters : location is the pixel number, r-g-b are the colors.
-	To copy a user frame buffer to the work buffer call ws2812_UserFB_to_WorkBuf(WS2812_Drv_TypeDef *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
+	To copy a user frame buffer to the work buffer call ws2812_UserFB_to_WorkBuf(WS2812_DriverStruct_t *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
 	  with the appropriate parameters.
 	  
 As an example for Cube initialization the two images TimerSettings1.png and TimerSettings2.png are an example for standard timing initialization. 

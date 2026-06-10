@@ -23,6 +23,8 @@
 #ifndef DRIVERS_I2C_CODECS_NAU88C22_H_
 #define DRIVERS_I2C_CODECS_NAU88C22_H_
 
+#ifdef SOUND_ENGINE_ENABLED
+
 #define NAU88C22_I2C_TIMEOUT			100
 #define NAU88C22_NUM_REGS				79
 #define NAU88C22_I2C_ADDR				(0x1a << 1)
@@ -56,7 +58,7 @@ typedef struct
 	uint8_t				band5_frequency;
 	uint8_t				band5_gain;
 	uint16_t			shadowregs[NAU88C22_NUM_REGS];
-}Nau88C22_Drv_TypeDef;
+}Nau88C22_DriverStruct_t;
 
 typedef struct
 {
@@ -134,10 +136,11 @@ typedef enum {
 	NAU88C22_VOLUME_OUT_RIGHT
 } Nau88c22_Volume;
 
-extern uint32_t	nau88c22_codec_register(Nau88C22_Drv_TypeDef *codec_drv);
-extern uint32_t nau88c22_init(Nau88C22_Drv_TypeDef *codec_drv);
-extern uint32_t nau88c22_internal_ops(Nau88C22_Drv_TypeDef	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain);
-extern uint32_t nau88c22_set_volume(Nau88C22_Drv_TypeDef *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume);
+extern uint32_t	nau88c22_codec_register(Nau88C22_DriverStruct_t *codec_drv);
+extern uint32_t nau88c22_init(Nau88C22_DriverStruct_t *codec_drv);
+extern uint32_t nau88c22_internal_ops(Nau88C22_DriverStruct_t	*codec_drv,uint8_t command,uint32_t adc_dac_narrow_wide,uint32_t band,uint32_t center_frequency,uint32_t gain);
+extern uint32_t nau88c22_set_volume(Nau88C22_DriverStruct_t *codec_drv, Nau88c22_Volume volume_channel , uint16_t volume);
 
+#endif //#ifdef SOUND_ENGINE_ENABLED
 
 #endif /* DRIVERS_I2C_CODECS_NAU88C22_H_ */

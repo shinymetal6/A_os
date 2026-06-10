@@ -29,7 +29,7 @@ extern	ADC_HandleTypeDef hadc1;
 extern	TIM_HandleTypeDef htim6;
 
 uint16_t	adc_data = 0;
-ADC_Drv_TypeDef	ADC_Drv =
+ADC_DriverStruct_t	ADC_Drv =
 {
 		.adc = &hadc1,
 		.adc_buffer = &adc_data,

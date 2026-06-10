@@ -45,7 +45,7 @@ extern	void irq_encoder_callback(uint32_t value);
 extern	void irq_encoderbtn_callback(uint16_t value);
 #endif // #ifdef USE_CALLBACK
 
-Encoder_Drv_TypeDef	Encoder_Drv =
+Encoder_DriverStruct_t	Encoder_Drv =
 {
 		//.encoder_timer = &htim1,
 #ifdef USE_CALLBACK
@@ -76,7 +76,7 @@ uint32_t button_driver_handle;
 uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
 uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
 
-UART_Drv_TypeDef Uart_Drv =
+UART_DriverStruct_t Uart_Drv =
 {
 	.data = uart_rx_buffer,
 	.rx_max_len = UART_RX_BUF_SIZE,

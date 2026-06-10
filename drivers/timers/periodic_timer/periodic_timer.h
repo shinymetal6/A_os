@@ -35,12 +35,12 @@ typedef struct
 	/* timer internals */
 	uint32_t			timer_channel;
 	void				(*User_Callback)(void);
-}PERIODIC_Timer_Drv_TypeDef;
+}PERIODIC_Timer_DriverStruct_t;
 /* status */
 #define	PERIODIC_TIMER_INITIALIZED		0x01
 #define	PERIODIC_TIMER_RUNNING			0x80
 
-extern uint32_t	periodic_timer_register(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv);
-extern uint32_t periodic_timer_start(PERIODIC_Timer_Drv_TypeDef *periodic_timer_drv);
+extern uint32_t	periodic_timer_register(PERIODIC_Timer_DriverStruct_t *periodic_timer_drv);
+extern uint32_t periodic_timer_start(PERIODIC_Timer_DriverStruct_t *periodic_timer_drv);
 
 #endif /* DRIVERS_TIMERS_PERIODIC_TIMER_PERIODIC_TIMER_H_ */

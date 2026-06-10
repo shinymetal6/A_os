@@ -345,11 +345,11 @@ typedef struct
 	uint32_t	        	data_read_size;
 	uint8_t		        	streamcount;
 	VL53L5CX_ResultsData_TypeDef	*VL53L5CX_ResultsData;
-}I2C_vl53l5cx_Drv_TypeDef;
+}I2C_vl53l5cx_DriverStruct_t;
 
-extern 	uint32_t vl53l5cx_register(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv);
-extern	uint8_t vl53l5cx_start_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv);
-extern	uint8_t vl53l5cx_stop_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv);
-extern	uint8_t vl53l5cx_get_ranging_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv );
+extern 	uint32_t vl53l5cx_register(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv);
+extern	uint8_t vl53l5cx_start_ranging(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv);
+extern	uint8_t vl53l5cx_stop_ranging(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv);
+extern	uint8_t vl53l5cx_get_ranging_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv );
 
 #endif /* DRIVERS_I2C_SENSORS_TOF_VL53L5CX_H_ */

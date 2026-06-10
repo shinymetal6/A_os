@@ -28,22 +28,22 @@
 #include "vl53l5cx.h"
 #include "vl53l5cx_buffers.h"
 
-ITCM_AREA_CODE uint32_t vl53l5cx_WrByte(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t value)
+ITCM_AREA_CODE uint32_t vl53l5cx_WrByte(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t value)
 {
 	return HAL_I2C_Mem_Write(vl53l5cx_Drv->bus, vl53l5cx_Drv->device_address,RegisterAddress, I2C_MEMADD_SIZE_16BIT, &value, 1, 100);
 }
 
-ITCM_AREA_CODE uint32_t vl53l5cx_WrMulti(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_value, uint32_t size)
+ITCM_AREA_CODE uint32_t vl53l5cx_WrMulti(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_value, uint32_t size)
 {
 	return HAL_I2C_Mem_Write(vl53l5cx_Drv->bus, vl53l5cx_Drv->device_address,RegisterAddress, I2C_MEMADD_SIZE_16BIT, p_value, size, 50000);
 }
 
-ITCM_AREA_CODE uint32_t vl53l5cx_RdByte(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_value)
+ITCM_AREA_CODE uint32_t vl53l5cx_RdByte(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_value)
 {
 	return HAL_I2C_Mem_Read(vl53l5cx_Drv->bus, vl53l5cx_Drv->device_address,RegisterAddress, I2C_MEMADD_SIZE_16BIT, p_value, 1, 100);
 }
 
-ITCM_AREA_CODE uint32_t vl53l5cx_RdMulti(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_values, uint32_t size)
+ITCM_AREA_CODE uint32_t vl53l5cx_RdMulti(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint16_t RegisterAddress, uint8_t *p_values, uint32_t size)
 {
 	return HAL_I2C_Mem_Read(vl53l5cx_Drv->bus, vl53l5cx_Drv->device_address,RegisterAddress, I2C_MEMADD_SIZE_16BIT, p_values, size, 50000);
 }
@@ -65,7 +65,7 @@ uint32_t i, tmp;
   }
 }
 
-ITCM_AREA_CODE static uint8_t vl53l5cx_poll_for_mcu_boot(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv)
+ITCM_AREA_CODE static uint8_t vl53l5cx_poll_for_mcu_boot(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv)
 {
 uint8_t go2_status0, go2_status1, status = 0;
 uint16_t timeout = 0;
@@ -90,7 +90,7 @@ uint16_t timeout = 0;
 return status;
 }
 
-ITCM_AREA_CODE static uint8_t _vl53l5cx_poll_for_answer(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,	uint8_t	size,uint8_t pos,uint16_t address,uint8_t mask,uint8_t expected_value)
+ITCM_AREA_CODE static uint8_t _vl53l5cx_poll_for_answer(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,	uint8_t	size,uint8_t pos,uint16_t address,uint8_t mask,uint8_t expected_value)
 {
 	uint8_t timeout = 0;
 
@@ -109,7 +109,7 @@ ITCM_AREA_CODE static uint8_t _vl53l5cx_poll_for_answer(I2C_vl53l5cx_Drv_TypeDef
 	return 0;
 }
 
-ITCM_AREA_CODE static uint8_t _vl53l5cx_send_xtalk_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,	uint8_t	resolution)
+ITCM_AREA_CODE static uint8_t _vl53l5cx_send_xtalk_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,	uint8_t	resolution)
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 	uint8_t res4x4[] = {0x0F, 0x04, 0x04, 0x17, 0x08, 0x10, 0x10, 0x07};
@@ -160,7 +160,7 @@ ITCM_AREA_CODE static uint8_t _vl53l5cx_send_xtalk_data(I2C_vl53l5cx_Drv_TypeDef
 	return status;
 }
 
-ITCM_AREA_CODE static uint8_t _vl53l5cx_send_offset_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint8_t	resolution)
+ITCM_AREA_CODE static uint8_t _vl53l5cx_send_offset_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint8_t	resolution)
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 	uint32_t signal_grid[64];
@@ -221,7 +221,7 @@ ITCM_AREA_CODE static uint8_t _vl53l5cx_send_offset_data(I2C_vl53l5cx_Drv_TypeDe
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_dci_write_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint8_t *data,uint32_t index,uint16_t	data_size)
+ITCM_AREA_CODE uint8_t vl53l5cx_dci_write_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint8_t *data,uint32_t index,uint16_t	data_size)
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 	int16_t i;
@@ -269,7 +269,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_dci_write_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5c
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_dci_read_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint8_t *data,uint32_t index,uint16_t	data_size)
+ITCM_AREA_CODE uint8_t vl53l5cx_dci_read_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint8_t *data,uint32_t index,uint16_t	data_size)
 {
 	int16_t i;
 	uint8_t status = VL53L5CX_STATUS_OK;
@@ -307,7 +307,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_dci_read_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_get_resolution(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint8_t *p_resolution)
+ITCM_AREA_CODE uint8_t vl53l5cx_get_resolution(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint8_t *p_resolution)
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 
@@ -316,7 +316,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_get_resolution(I2C_vl53l5cx_Drv_TypeDef *vl53l5c
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_dci_replace_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,
+ITCM_AREA_CODE uint8_t vl53l5cx_dci_replace_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,
 		uint8_t				*data,
 		uint32_t			index,
 		uint16_t			data_size,
@@ -333,7 +333,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_dci_replace_data(I2C_vl53l5cx_Drv_TypeDef *vl53l
 	return status;
 }
 
-ITCM_AREA_CODE static uint8_t vl53l5cx_init(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv)
+ITCM_AREA_CODE static uint8_t vl53l5cx_init(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv)
 {
 uint8_t tmp, status = 0;
 uint8_t pipe_ctrl[] = {VL53L5CX_NB_TARGET_PER_ZONE, 0x00, 0x01, 0x00};
@@ -494,7 +494,7 @@ uint32_t single_range = 0x01;
 }
 
 
-ITCM_AREA_CODE uint8_t vl53l5cx_start_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv)
+ITCM_AREA_CODE uint8_t vl53l5cx_start_ranging(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv)
 {
 	uint8_t resolution, status = VL53L5CX_STATUS_OK;
 	uint16_t tmp;
@@ -630,7 +630,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_start_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_stop_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv)
+ITCM_AREA_CODE uint8_t vl53l5cx_stop_ranging(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv)
 {
 	uint8_t tmp = 0, status = VL53L5CX_STATUS_OK;
 	uint16_t timeout = 0;
@@ -683,7 +683,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_stop_ranging(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_check_data_ready(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv,uint8_t *p_isReady)
+ITCM_AREA_CODE uint8_t vl53l5cx_check_data_ready(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv,uint8_t *p_isReady)
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 
@@ -712,7 +712,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_check_data_ready(I2C_vl53l5cx_Drv_TypeDef *vl53l
 	return status;
 }
 
-ITCM_AREA_CODE uint8_t vl53l5cx_get_ranging_data(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv )
+ITCM_AREA_CODE uint8_t vl53l5cx_get_ranging_data(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv )
 {
 	uint8_t status = VL53L5CX_STATUS_OK;
 	union Block_header *bh_ptr;
@@ -881,7 +881,7 @@ ITCM_AREA_CODE uint8_t vl53l5cx_get_ranging_data(I2C_vl53l5cx_Drv_TypeDef *vl53l
 	return status;
 }
 
-ITCM_AREA_CODE uint32_t vl53l5cx_register(I2C_vl53l5cx_Drv_TypeDef *vl53l5cx_Drv)
+ITCM_AREA_CODE uint32_t vl53l5cx_register(I2C_vl53l5cx_DriverStruct_t *vl53l5cx_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( vl53l5cx_Drv->bus == NULL)

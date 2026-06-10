@@ -65,7 +65,7 @@ FDCAN_TxHeaderTypeDef FDCAN_TxHeader =
 };
 
 FDCAN_RxHeaderTypeDef	FDCAN_RxHeader;
-FDCAN_Drv_TypeDef	FDCAN_Drv =
+FDCAN_DriverStruct_t	FDCAN_Drv =
 {
 		.hfdcan = &hfdcan1,
 		.TxData = can_txbuf,

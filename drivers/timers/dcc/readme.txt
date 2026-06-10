@@ -24,12 +24,12 @@ typedef struct
 	DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
-}DCC_Drv_TypeDef;
+}DCC_DriverStruct_t;
 
 2) Example:
 a - define the control structure and the related handle:
 
-DCC_Drv_TypeDef	DCC_Control =
+DCC_DriverStruct_t	DCC_Control =
 {
 	.dcc_timer = &htim1,
 	.timer_dcc_channel = TIM_CHANNEL_3,

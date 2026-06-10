@@ -15,7 +15,7 @@ typedef struct
 	TIM_HandleTypeDef 		*servo_timer;
 	uint32_t 				servo_channel;
 
-}SERVO_Control_Drv_TypeDef;
+}SERVO_Control_DriverStruct_t;
 
 2) Useful defines
 
@@ -27,7 +27,7 @@ extern	TIM_HandleTypeDef 	SERVO_TIMER;
 3) Example:
 a - define the control structure, the related handle and the data buffer:
 
-SERVO_Control_Drv_TypeDef	servo_ch1 =
+SERVO_Control_DriverStruct_t	servo_ch1 =
 {
 	.servo_timer = &SERVO_TIMER,
 	.servo_channel = SERVO_CHANNEL,

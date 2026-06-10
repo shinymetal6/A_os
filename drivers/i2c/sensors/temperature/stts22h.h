@@ -69,9 +69,9 @@ typedef struct
 	uint32_t			who_am_i;
 	uint8_t				*data;
 	uint8_t				*additional_data;
-}I2C_Stts22H_Drv_TypeDef;
+}I2C_Stts22H_DriverStruct_t;
 
-extern uint32_t stts22h_register(I2C_Stts22H_Drv_TypeDef *stts22h_Drv);
+extern uint32_t stts22h_register(I2C_Stts22H_DriverStruct_t *stts22h_Drv);
 
 
 #endif /* DRIVERS_I2C_SENSORS_TEMPERATURE_STTS22H_H_ */

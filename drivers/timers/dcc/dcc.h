@@ -70,7 +70,7 @@ typedef struct
 	DCC_Drv_Pkt_TypeDef		DCC_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_Cutout_Pkt[2];
 	DCC_Drv_Pkt_TypeDef		DCC_WorkPkt;
-}DCC_Drv_TypeDef;
+}DCC_DriverStruct_t;
 
 /* status */
 #define	DCC_INITIALIZED			0x01
@@ -93,11 +93,11 @@ typedef struct
 #define	DCC_DATAH	3
 #define	DCC_DATAL	4
 
-extern	uint32_t	dcc_register(DCC_Drv_TypeDef *dcc_drv);
-extern	uint32_t	dcc_start(DCC_Drv_TypeDef *dcc_drv);
-extern	uint32_t	dcc_stop(DCC_Drv_TypeDef *dcc_drv);
-extern	uint32_t	dcc_get_status(DCC_Drv_TypeDef *dcc_drv);
-extern	uint32_t	dcc_commands(DCC_Drv_TypeDef *dcc_drv,uint8_t *values,uint16_t values_number);
+extern	uint32_t	dcc_register(DCC_DriverStruct_t *dcc_drv);
+extern	uint32_t	dcc_start(DCC_DriverStruct_t *dcc_drv);
+extern	uint32_t	dcc_stop(DCC_DriverStruct_t *dcc_drv);
+extern	uint32_t	dcc_get_status(DCC_DriverStruct_t *dcc_drv);
+extern	uint32_t	dcc_commands(DCC_DriverStruct_t *dcc_drv,uint8_t *values,uint16_t values_number);
 extern 	void 		dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 extern 	void 		dcc_TIM_DMADelayPulseCplt(DMA_HandleTypeDef *hdma);
 

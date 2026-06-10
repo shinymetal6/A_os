@@ -27,7 +27,7 @@
 #include "../../i2c.h"
 #include "stts22h.h"
 
-ITCM_AREA_CODE	uint8_t	stts22h_read_reg(I2C_Stts22H_Drv_TypeDef *stts22h_Drv,uint8_t address,uint8_t size)
+ITCM_AREA_CODE	uint8_t	stts22h_read_reg(I2C_Stts22H_DriverStruct_t *stts22h_Drv,uint8_t address,uint8_t size)
 {
 uint8_t	ret = HAL_BUSY;
 
@@ -47,7 +47,7 @@ uint8_t	ret = HAL_BUSY;
 	return 0;
 }
 
-ITCM_AREA_CODE	uint8_t	stts22h_write_reg(I2C_Stts22H_Drv_TypeDef *stts22h_Drv,uint8_t address,uint8_t data)
+ITCM_AREA_CODE	uint8_t	stts22h_write_reg(I2C_Stts22H_DriverStruct_t *stts22h_Drv,uint8_t address,uint8_t data)
 {
 uint8_t	ret = HAL_BUSY;
 
@@ -67,7 +67,7 @@ uint8_t	ret = HAL_BUSY;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t stts22h_start(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE uint32_t stts22h_start(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 	stts22h_Drv->status = STTS22H_STARTED;
 	if ( stts22h_write_reg(stts22h_Drv,STTS22H_CTRL,STTS22H_ONE_SHOT_REG_CTRL) )
@@ -80,14 +80,14 @@ ITCM_AREA_CODE  uint32_t stts22h_stop(uint8_t handle)
 	return 0;
 }
 
-ITCM_AREA_CODE  uint32_t stts22h_init(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE  uint32_t stts22h_init(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 	stts22h_read_reg(stts22h_Drv,STTS22H_WHOAMI,1);
 	stts22h_Drv->who_am_i = stts22h_Drv->data[0];
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t stts22h_power_on(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE uint32_t stts22h_power_on(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 	if ( stts22h_Drv->power_port != NULL )
 	{
@@ -99,7 +99,7 @@ ITCM_AREA_CODE uint32_t stts22h_power_on(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t stts22h_power_off(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE uint32_t stts22h_power_off(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 	if ( stts22h_Drv->power_port != NULL )
 	{
@@ -111,14 +111,14 @@ ITCM_AREA_CODE uint32_t stts22h_power_off(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t stts22h_get_data(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE uint32_t stts22h_get_data(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 	if ( stts22h_read_reg(stts22h_Drv,STTS22H_TEMP_L_OUT,STTS22H_T_LEN) )
 		return 1;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t stts22h_register(I2C_Stts22H_Drv_TypeDef *stts22h_Drv)
+ITCM_AREA_CODE uint32_t stts22h_register(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( stts22h_Drv->bus == NULL)

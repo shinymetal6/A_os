@@ -20,11 +20,11 @@ typedef struct
 	uint8_t 			crc_buff[5];
 	uint8_t				crc;
 	float	 			t_ambient,t_object;
-}I2C_Mlx90614_Drv_TypeDef;
+}I2C_Mlx90614_DriverStruct_t;
 
 2) Example:
 a - define the control structure and the related handle:
-I2C_Mlx90614_Drv_TypeDef	mlx90614_Drv =
+I2C_Mlx90614_DriverStruct_t	mlx90614_Drv =
 {
 		.wakeup_id = 1,
 		.bus = &hi2c2,

@@ -41,17 +41,17 @@ typedef struct
 	uint8_t				number_of_steps;
 	uint8_t				work_number_of_steps;
 	void				(*stepper_callback)  (uint32_t stepper_value);
-}Stepper_Control_TypeDef;
+}Stepper_Control_DriverStruct_t;
 #define	STEPPER_CHANNEL_ENABLED		0x01
 #define	STEPPER_CHANNEL_STARTED		0x40
 #define	STEPPER_CHANNEL_INITIALIZED	0x80
 
 
-extern	uint32_t	stepper_register(Stepper_Control_TypeDef *stepper_drv);
-extern	uint32_t 	stepper_init(Stepper_Control_TypeDef *stepper_drv);
-extern	uint32_t	stepper_start(Stepper_Control_TypeDef *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_steps);
-extern	uint32_t	stepper_stop(Stepper_Control_TypeDef *stepper_drv,uint32_t stepper_channel);
-extern	uint32_t	stepper_set_direction(Stepper_Control_TypeDef *stepper_drv,uint8_t direction);
+extern	uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv);
+extern	uint32_t 	stepper_init(Stepper_Control_DriverStruct_t *stepper_drv);
+extern	uint32_t	stepper_start(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_steps);
+extern	uint32_t	stepper_stop(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel);
+extern	uint32_t	stepper_set_direction(Stepper_Control_DriverStruct_t *stepper_drv,uint8_t direction);
 
 
 #endif /* DRIVERS_TIMERS_STEPPER_STEPPER_H_ */

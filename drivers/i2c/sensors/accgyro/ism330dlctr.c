@@ -26,18 +26,18 @@
 #include "../../i2c.h"
 #include "ism330dlctr.h"
 
-ITCM_AREA_CODE static uint8_t ism330dlctr_WriteReg(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, uint8_t reg, uint8_t data)
+ITCM_AREA_CODE static uint8_t ism330dlctr_WriteReg(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, uint8_t reg, uint8_t data)
 {
     uint8_t buf[2] = {reg, data};
     return HAL_I2C_Master_Transmit(ism330dlctr_Drv->bus, ISM330DLCTR_I2C_ADDR, buf, 2, 100);
 }
 
-ITCM_AREA_CODE static uint8_t ism330dlctr_ReadReg(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, uint8_t reg, uint8_t *data, uint16_t len)
+ITCM_AREA_CODE static uint8_t ism330dlctr_ReadReg(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, uint8_t reg, uint8_t *data, uint16_t len)
 {
     return HAL_I2C_Mem_Read(ism330dlctr_Drv->bus, ISM330DLCTR_I2C_ADDR, reg, I2C_MEMADD_SIZE_8BIT, data, len, 100);
 }
 
-ITCM_AREA_CODE uint8_t ism330dlctr_ReadAcc(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, IMU_Data_t *data) {
+ITCM_AREA_CODE uint8_t ism330dlctr_ReadAcc(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, IMU_Data_t *data) {
     uint8_t raw[6];
     if (ism330dlctr_ReadReg(ism330dlctr_Drv, ISM330DLCTR_OUTX_L_XL, raw, 6) != HAL_OK) return 0;
 
@@ -54,7 +54,7 @@ ITCM_AREA_CODE uint8_t ism330dlctr_ReadAcc(I2C_ism330dlctr_Drv_TypeDef *ism330dl
     return 1;
 }
 
-ITCM_AREA_CODE uint8_t ism330dlctr_ReadGyro(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv, IMU_Data_t *data) {
+ITCM_AREA_CODE uint8_t ism330dlctr_ReadGyro(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv, IMU_Data_t *data) {
     uint8_t raw[6];
     if (ism330dlctr_ReadReg(ism330dlctr_Drv, ISM330DLCTR_OUTX_L_G, raw, 6) != HAL_OK) return 0;
 
@@ -71,7 +71,7 @@ ITCM_AREA_CODE uint8_t ism330dlctr_ReadGyro(I2C_ism330dlctr_Drv_TypeDef *ism330d
     return 1;
 }
 
-ITCM_AREA_CODE uint32_t ism330dlctr_register(I2C_ism330dlctr_Drv_TypeDef *ism330dlctr_Drv)
+ITCM_AREA_CODE uint32_t ism330dlctr_register(I2C_ism330dlctr_DriverStruct_t *ism330dlctr_Drv)
 {
 I2C_DriverStruct_t *eptr, *pre_eptr;
 	if ( ism330dlctr_Drv->bus == NULL)

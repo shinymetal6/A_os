@@ -38,13 +38,13 @@ typedef struct
 	uint16_t			min_time;
 	uint16_t			max_time;
 	uint32_t 			servo_channel;
-}SERVO_Control_Drv_TypeDef;
+}SERVO_Control_DriverStruct_t;
 
-extern uint32_t servo_start(SERVO_Control_Drv_TypeDef *servo_drv);
-extern uint32_t servo_stop(SERVO_Control_Drv_TypeDef *servo_drv);
-extern uint32_t servo_get_status(SERVO_Control_Drv_TypeDef *servo_drv);
-extern uint32_t servo_set_prescaler(SERVO_Control_Drv_TypeDef *servo_drv,uint32_t prescaler);
-extern uint32_t servo_set_position(SERVO_Control_Drv_TypeDef *servo_drv,uint8_t servo_position,uint8_t servo_pulses);
-extern uint32_t	servo_register(SERVO_Control_Drv_TypeDef *private_data);
+extern uint32_t servo_start(SERVO_Control_DriverStruct_t *servo_drv);
+extern uint32_t servo_stop(SERVO_Control_DriverStruct_t *servo_drv);
+extern uint32_t servo_get_status(SERVO_Control_DriverStruct_t *servo_drv);
+extern uint32_t servo_set_prescaler(SERVO_Control_DriverStruct_t *servo_drv,uint32_t prescaler);
+extern uint32_t servo_set_position(SERVO_Control_DriverStruct_t *servo_drv,uint8_t servo_position,uint8_t servo_pulses);
+extern uint32_t	servo_register(SERVO_Control_DriverStruct_t *private_data);
 
 #endif /* DRIVERS_TIMERS_SERVO_SERVO_H_ */
