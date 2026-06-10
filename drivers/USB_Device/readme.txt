@@ -14,7 +14,7 @@ typedef struct
 	uint16_t			usb_interface_class;
 	void				(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 			wakeup_id;
-}USB_DriverStruct_t;
+}USB_Drv_TypeDef;
 
 2) Example:
 a - define the data buffer, control structure and the related handle:
@@ -24,7 +24,7 @@ a - define the data buffer, control structure and the related handle:
 	uint8_t	usb_rx_buffer[USB_RX_BUF_SIZE];
 	uint8_t	usb_tx_buffer[USB_TX_BUF_SIZE];
 	
-	USB_DriverStruct_t	USB_Drv =
+	USB_Drv_TypeDef	USB_Drv =
 	{
 			.data = usb_rx_buffer,
 			.data_index = 0,

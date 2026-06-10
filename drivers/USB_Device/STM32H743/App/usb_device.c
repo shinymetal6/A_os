@@ -40,10 +40,6 @@
 #include "../Class/MIDI/usbd_midi.h"
 #include "usbd_midi_if.h"
 
-#include "usbd_VIDEO_desc.h"
-#include "../Class/VIDEO/usbd_video.h"
-#include "usbd_video_if.h"
-
 /* USB Device Core handle declaration. */
 USBD_HandleTypeDef hUsbDeviceFS;
 
@@ -53,8 +49,7 @@ extern	USBD_CDC_ItfTypeDef USBD_CDC_Interface_fops_FS;
 extern	USBD_DescriptorsTypeDef FS_MIDI_Desc;
 extern	USBD_MIDI_ItfTypeDef USBD_MIDI_Interface_fops_FS;
 
-extern	USBD_DescriptorsTypeDef FS_VIDEO_Desc;
-extern	USBD_VIDEO_ItfTypeDef   USBD_VIDEO_Interface_fops_FS;
+extern	USBD_DescriptorsTypeDef FS_AUDIO_Desc;
 
 uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
 {
@@ -79,16 +74,6 @@ uint8_t MX_Aos_USB_Device_Init(uint8_t usb_classdev)
 		if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_MIDI) != USBD_OK)
 			return 1;
 		if (USBD_MIDI_RegisterInterface(&hUsbDeviceFS, &USBD_MIDI_Interface_fops_FS) != USBD_OK)
-			return 1;
-		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
-			return 1;
-		break;
-	case USB_UVC_CLASS:
-		if (USBD_Init(&hUsbDeviceFS, &FS_VIDEO_Desc, DEVICE_FS) != USBD_OK)
-			return 1;
-		if (USBD_RegisterClass(&hUsbDeviceFS, &USBD_VIDEO) != USBD_OK)
-			return 1;
-		if (USBD_VIDEO_RegisterInterface(&hUsbDeviceFS, &USBD_VIDEO_Interface_fops_FS) != USBD_OK)
 			return 1;
 		if (USBD_Start(&hUsbDeviceFS) != USBD_OK)
 			return 1;

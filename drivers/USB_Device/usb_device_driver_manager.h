@@ -25,10 +25,6 @@
 #define		USB_DRIVER_RX_SIZE		64
 #define		USB_DRIVER_TX_SIZE		64
 
-#ifdef SOUND_ENGINE_ENABLED
-#include "../../modules/sound_engine/sound_engine.h"
-#endif // #ifdef SOUND_ENGINE_ENABLED
-
 typedef struct
 {
 	uint8_t 	process;
@@ -43,16 +39,12 @@ typedef struct
 	uint16_t	usb_interface_class;
 	void		(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 	wakeup_id;
-#ifdef SOUND_ENGINE_ENABLED
-	AUDIO_Source_TypeDef 	*out_device_ptr;
-#endif // #ifdef SOUND_ENGINE_ENABLED
 }USB_DriverStruct_t;
 
 
 #define	USB_CDC_CLASS	0
 #define	USB_MIDI_CLASS	1
 #define	USB_AUDIO_CLASS	2
-#define	USB_UVC_CLASS	3
 
 extern	uint32_t	usb_device_driver_register(USB_DriverStruct_t *usb_driver_private_data);
 extern	uint32_t	usb_device_driver_unregister(USB_DriverStruct_t *usb_drv);
@@ -61,7 +53,5 @@ extern	uint32_t 	usb_device_driver_set_rx_buffer(USB_DriverStruct_t *usb_drv,uin
 extern 	uint16_t 	usb_get_rx_len(USB_DriverStruct_t *usb_drv);
 extern	uint32_t 	usb_send(USB_DriverStruct_t *usb_drv,uint8_t* ptr, uint16_t len);
 extern	uint8_t 	MX_Aos_USB_Device_Init(uint8_t usb_classdev);
-extern	void 		VIDEO_Itf_SetPtr(uint8_t *jpegdata_ptr, uint32_t jpeg_len);
-extern	void 		VIDEO_Itf_StartStreaming(void);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */

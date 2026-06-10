@@ -54,31 +54,6 @@
 #define DEVICE_FS 		0
 #define DEVICE_HS 		1
 
-/* VIDEO Class Config */
-#define UVC_1_1
-
-/* bEndpointAddress in Endpoint Descriptor */
-#define UVC_IN_EP                                   0x81U
-
-#define UVC_FPS_FS_MJPEG_VGA                        15U
-#define UVC_FPS_FS_MJPEG_QVGA                       30U
-#define UVC_FPS_FS_YUY2_VGA                         1U
-#define UVC_FPS_FS_YUY2_QVGA                        6U
-
-#define UVC_FPS_HS_MJPEG_VGA                        15U
-#define UVC_FPS_HS_MJPEG_QVGA                       30U
-#define UVC_FPS_HS_YUY2_VGA                         12U
-#define UVC_FPS_HS_YUY2_QVGA                        30U
-
-#define UVC_ISO_FS_MPS                              1023U
-#define UVC_ISO_HS_MPS                              1024U
-#define UVC_PACKET_SIZE                             1024U
-#define UVC_MAX_FRAME_SIZE_VGA                      (640U * 480U * 16U / 8U)
-#define UVC_MAX_FRAME_SIZE_QVGA                     (320U * 240U * 16U / 8U)
-/* VIDEO Class Config END*/
-
-
-
 #define USBD_malloc         (void *)USBD_static_malloc
 
 /** Alias for memory release. */
