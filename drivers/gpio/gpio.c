@@ -26,13 +26,14 @@
 
 #include "gpio.h"
 #ifndef STM32H563xx
+
 ITCM_AREA_CODE static uint32_t get_shift_by_pin(uint16_t	gpio_bit)
 {
 uint32_t	shft;
 	for(shft=0;shft<16;shft++)
 		if ( gpio_bit == 1<<shft )
 			break;
-	return shft * 2;
+	return shft;
 }
 
 ITCM_AREA_CODE void set_gpio_type(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint16_t	otype,uint16_t	pupd,uint16_t	speed )
@@ -53,9 +54,9 @@ uint32_t	shft = get_shift_by_pin(gpio_bit);
 	gpio_port->OSPEEDR |= ((uint32_t)speed << shft);
 }
 
-ITCM_AREA_CODE void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_t value)
+ITCM_AREA_CODE void set_gpio_mode(GPIO_TypeDef	*gpio_port,uint16_t	gpio_bit,uint8_t mode)
 {
-uint32_t	shft = get_shift_by_pin(gpio_bit);
+uint32_t	shft = get_shift_by_pin(gpio_bit) * 2;
 	switch( mode )
 	{
 	case	MODE_INPUT 		:
@@ -69,21 +70,6 @@ uint32_t	shft = get_shift_by_pin(gpio_bit);
 	case	MODE_OUTPUT	 	:
 		gpio_port->MODER &= ~(0x3U << shft);
 		gpio_port->MODER |= MODE_OUTPUT<<shft;
-#ifdef STM32H743xx
-		if (value)
-			gpio_port->BSRR = gpio_bit;
-		else
-			gpio_port->BSRR = (uint32_t)gpio_bit << 16U;
-#else
-		if (value)
-			gpio_port->BSRR = (uint32_t)gpio_bit;
-		else
-	#ifdef HAS_BRR
-			gpio_port->BRR = (uint32_t)gpio_bit;
-	#else
-		gpio_port->BSRR = (uint32_t)gpio_bit << 16U;
-	#endif
-#endif
 		break;
 	case	MODE_ANALOG	 	:
 		gpio_port->MODER &= ~(0x3U << shft);

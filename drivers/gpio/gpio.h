@@ -24,7 +24,7 @@
 #define DRIVERS_GPIO_GPIO_H_
 #include "gpio_int.h"
 
-extern void set_gpio_mode(GPIO_TypeDef *gpio_port,uint16_t	gpio_bit,uint8_t mode,uint8_t value);
+extern void set_gpio_mode(GPIO_TypeDef *gpio_port,uint16_t	gpio_bit,uint8_t mode);
 extern void set_gpio_type(GPIO_TypeDef *gpio_port,uint16_t	gpio_bit,uint16_t otype,uint16_t pupd,uint16_t speed );
 
 #endif /* DRIVERS_GPIO_GPIO_H_ */

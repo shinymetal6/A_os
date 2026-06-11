@@ -30,6 +30,7 @@
 #define TIM_TYPE_DHT11			2
 #define TIM_TYPE_PERIODIC		3
 #define TIM_TYPE_PWM			4
+#define TIM_TYPE_STEPPER		5
 
 typedef struct
 {

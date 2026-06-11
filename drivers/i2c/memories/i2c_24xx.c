@@ -218,7 +218,9 @@ ITCM_AREA_CODE uint32_t i2c_24xx_reset(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 uint8_t	i;
 	if ( i2c_24xx_Drv->i2c_scl_port != NULL )
 	{
-		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_OUTPUT,0);
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_OUTPUT);
+		HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_RESET);
+
 		for(i=0;i<9;i++)
 		{
 			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_SET);
@@ -226,7 +228,7 @@ uint8_t	i;
 			  HAL_GPIO_WritePin(i2c_24xx_Drv->i2c_scl_port, i2c_24xx_Drv->i2c_scl_bit, GPIO_PIN_RESET);
 			  DWT_Delay_us(10);
 		}
-		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_AF,0);
+		set_gpio_mode(i2c_24xx_Drv->i2c_scl_port,i2c_24xx_Drv->i2c_scl_bit,MODE_AF);
 	}
 	return 0;
 }

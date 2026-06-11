@@ -42,9 +42,11 @@ ITCM_AREA_CODE  uint32_t dmx512_set_break_length(DMX512_DriverStruct_t *dmx512_d
 ITCM_AREA_CODE void dmx512_send(DMX512_DriverStruct_t *dmx512_drv, uint8_t *buffer, uint16_t buffer_len)
 {
 	__disable_irq();
-	set_gpio_mode(dmx512_drv->tx_port,dmx512_drv->tx_bit,MODE_OUTPUT,0);
+	set_gpio_mode(dmx512_drv->tx_port,dmx512_drv->tx_bit,MODE_OUTPUT);
+	HAL_GPIO_WritePin(dmx512_drv->tx_port,dmx512_drv->tx_bit, GPIO_PIN_RESET);
+
 	DWT_Delay_us(dmx512_drv->break_length);
-	set_gpio_mode(dmx512_drv->tx_port,dmx512_drv->tx_bit,MODE_AF,0);
+	set_gpio_mode(dmx512_drv->tx_port,dmx512_drv->tx_bit,MODE_AF);
 	uart_send(dmx512_drv->uart_drv,buffer,buffer_len);
 	__enable_irq();
 }

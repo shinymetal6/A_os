@@ -57,18 +57,12 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 		if ( periodic_timer_drv->User_Callback != NULL)
 			periodic_timer_drv->User_Callback();
 	}
-	if ( tim_ic->timer_type == TIM_TYPE_PWM )
+	if ( tim_ic->timer_type == TIM_TYPE_STEPPER )
 	{
 		if ( tim_ic->timer == htim)
 		{
-			Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
-			if ( stepper_drv->stepper_callback != NULL )
-				stepper_drv->stepper_callback(stepper_drv->number_of_steps);
-			else
-			{
-				HAL_TIM_PWM_Stop(stepper_drv->timer, TIM_CHANNEL_1);
-		        __HAL_TIM_DISABLE_IT(stepper_drv->timer, TIM_IT_UPDATE);
-			}
+			//Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
+			stepper_internal_callback((Stepper_Control_DriverStruct_t *)tim_ic);
 		}
 	}
 }

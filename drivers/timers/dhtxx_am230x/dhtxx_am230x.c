@@ -83,13 +83,15 @@ uint32_t 	i;
 				{
 					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_START_BIT_SET;
 					dhtxx_am230x_Drv->ticks = DHTXX_AM230X_START_TICKS;
-					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_OUTPUT,0);
+					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_OUTPUT);
+					HAL_GPIO_WritePin(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit, GPIO_PIN_RESET);
+
 				}
 				break;
 			case	DHTXX_AM230X_START_BIT_SET:
 				if ( dhtxx_am230x_Drv->ticks == 0 )
 				{
-					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_AF,0);
+					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_AF);
 					ret_icval = HAL_TIM_IC_Start_DMA(dhtxx_am230x_Drv->timer,dhtxx_am230x_Drv->dht_timer_channel, (uint32_t *)dhtxx_am230x_Drv->dhtxx_am230x_samples, DHTXX_AM230X_SAMPLESLEN);
 					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_WAIT_FOR_TIM_END;
 					dhtxx_am230x_Drv->ticks = DHTXX_AM230X_CYCLE_TICKS;
@@ -99,7 +101,7 @@ uint32_t 	i;
 				if ( dhtxx_am230x_Drv->ticks == 0 )
 				{
 					HAL_TIM_IC_Stop_DMA(dhtxx_am230x_Drv->timer,dhtxx_am230x_Drv->dht_timer_channel);
-					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_INPUT,0);
+					set_gpio_mode(dhtxx_am230x_Drv->one_wire_port,dhtxx_am230x_Drv->one_wire_bit,MODE_INPUT);
 					dhtxx_am230x_Drv->state_machine = DHTXX_AM230X_END;
 				}
 				break;

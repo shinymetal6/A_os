@@ -31,6 +31,8 @@
 #define	STEPPER_PULSES		8
 extern	TIM_HandleTypeDef 	STEPPER_TIMER;
 #define	STEPPER_DEFAULT_PW	500
+#define	STEPPER_FORWARD		1
+#define	STEPPER_REVERSE		0
 
 /* Stepper */
 void stepper_callback(uint32_t value);
@@ -38,9 +40,12 @@ void stepper_callback(uint32_t value);
 Stepper_Control_DriverStruct_t	Stepper_Control =
 {
 		.timer = &htim16,
+		.tim_port = STEP_TIM_16_CH1_GPIO_Port,
+		.tim_bit = STEP_TIM_16_CH1_Pin,
 		.dir_port = STEP_DIR_GPIO_Port,
 		.dir_bit = STEP_DIR_Pin,
 		.pulse_width = STEPPER_DEFAULT_PW,
+		.steps_per_rotation = 4,
 		.stepper_callback = stepper_callback,
 };
 
@@ -58,15 +63,15 @@ void sample_process_1_init(uint32_t process_id)
 void sample_process_1_stepper(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-
-	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,1000,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
 		wait_event(EVENT_TIMER);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			stepper_start(&Stepper_Control,TIM_CHANNEL_1,10);
+			stepper_start(&Stepper_Control,TIM_CHANNEL_1,2,STEPPER_FORWARD); // do 2 rotation @Stepper_Control.steps_per_rotation 400 pulses
+
 		}
 	}
 }
