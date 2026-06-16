@@ -26,117 +26,90 @@
 #ifdef A_OS_SPI_ENABLED
 #include "ad9837.h"
 
-#define FSYNC_LOW()   HAL_GPIO_WritePin(AD9837_FSYNC_PORT, AD9837_FSYNC_PIN, GPIO_PIN_RESET)
-
-
-ITCM_AREA_CODE uint32_t spi_ad9837_WriteReg(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint16_t data)
+// Internal helper to toggle FSYNC and write 16 bits (MSB first)
+static void AD9837_Write16(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint16_t data)
 {
-	uint32_t ret_val;
-	HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_RESET);
-    // SPI must be configured for 16-bit data size in CubeMX
-	ret_val = HAL_SPI_Transmit(spi_ad9837_Drv->bus, (uint8_t*)&data, 1, 100);
-	HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_SET);
-	return ret_val;
+    uint8_t tx_buf[2];
+    tx_buf[0] = (data >> 8) & 0xFF; // MSB
+    tx_buf[1] = data & 0xFF;        // LSB
+
+    // FSYNC must be pulled LOW before transmission
+    HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_RESET);
+
+    // Send 16 bits via SPI
+    HAL_SPI_Transmit(spi_ad9837_Drv->bus, tx_buf, 2, spi_ad9837_Drv->spi_timeout_ms);
+
+    // FSYNC must be pulled HIGH after transmission
+    HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_SET);
 }
 
-ITCM_AREA_CODE static void	spi_ad9837_init(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv)
+void AD9837_SetFrequency(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint32_t freq_hz)
 {
-	HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_SET);
-    // Reset the device
-	spi_ad9837_WriteReg(spi_ad9837_Drv,AD9837_CMD_RESET);
-    // Clear reset, enable DAC, default to Sine
-    // B28=1 (28-bit freq), HLB=0 (Freq0), Mode=Sine
-	spi_ad9837_WriteReg(spi_ad9837_Drv,AD9837_CMD_B28 | spi_ad9837_Drv->waveform);
+    // Formula: FREQ_REG = (F_OUT * 2^28) / F_MCLK
+    // 2^28 = 268435456
+    uint64_t freq_reg = ((uint64_t)spi_ad9837_Drv->frequency * 268435456ULL) / spi_ad9837_Drv->mclk_freq;
+
+    // Split into two 14-bit writes (LSB first, then MSB)
+    // 0x4000 is the command prefix for Frequency Register 0 (01xxxxxx xxxxxxxx)
+    uint16_t lsb = 0x4000 | (freq_reg & 0x3FFF);
+    uint16_t msb = 0x4000 | ((freq_reg >> 14) & 0x3FFF);
+
+    AD9837_Write16(spi_ad9837_Drv, lsb);
+    AD9837_Write16(spi_ad9837_Drv, msb);
 }
 
-ITCM_AREA_CODE void spi_ad9837_SetFrequency(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint32_t freq_hz)
+void AD9837_SetWaveform(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, AD9837_Waveform_t waveform)
 {
-uint64_t tuning_word;
-uint16_t freq_msb;
-uint16_t freq_lsb;
-
-	spi_ad9837_Drv->frequency = freq_hz;
-    // Calculate Tuning Word: FTW = (Fout * 2^28) / MCLK
-    // Use 64-bit integer to prevent overflow
-    tuning_word = ((uint64_t)freq_hz * (1ULL << 28)) / AD9837_MCLK_FREQ;
-
-    // Split into two 14-bit words
-    // MSB contains bits 27-14
-    // LSB contains bits 13-0
-    freq_msb = (tuning_word >> 14) & 0x3FFF;
-    freq_lsb = tuning_word & 0x3FFF;
-
-    // Add Command Bits to MSB and LSB
-    // B28=1, HLB=0 (Select Freq0), D15/D14 = 01 for Freq Reg
-    freq_msb |= 0x4000; // 01xxxxxx... (Freq0 MSB)
-    freq_lsb |= 0x4000; // 01xxxxxx... (Freq0 LSB)
-
-    // Note: The AD9837 requires the Control Register to have B28=1
-    // before sending the two frequency words. This was done in Init.
-    // If you changed it, you must send Control Reg (0x2000) first.
-
-    // Write MSB then LSB
-    spi_ad9837_WriteReg(spi_ad9837_Drv,freq_msb);
-    spi_ad9837_WriteReg(spi_ad9837_Drv,freq_lsb);
+    AD9837_Write16(spi_ad9837_Drv, (uint16_t)waveform);
 }
 
-/**
- * @brief Set Output Phase Offset
- * @param phase_deg: Phase in degrees (0 to 360)
- */
-ITCM_AREA_CODE void spi_ad9837_SetPhase(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint16_t phase_deg)
+void AD9837_Reset(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv)
 {
-    uint16_t phase_reg;
-
-	spi_ad9837_Drv->phase_deg = phase_deg;
-	// 12-bit phase resolution (4096 steps)
-    // Phase = (Degrees / 360) * 4096
-    phase_reg = ((uint32_t)phase_deg * 4096) / 360;
-    phase_reg &= 0x0FFF; // Mask to 12 bits
-
-    // Command: 0x4000 (Phase Reg 0)
-    phase_reg |= 0x4000;
-
-    spi_ad9837_WriteReg(spi_ad9837_Drv,phase_reg);
+    AD9837_Write16(spi_ad9837_Drv, AD9837_CMD_RESET);
 }
 
-/**
- * @brief Select Waveform Mode
- * @param mode: AD9837_MODE_SINE, _TRIANGLE, or _SQUARE
- */
-ITCM_AREA_CODE void spi_ad9837_SetWaveform(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint8_t waveform)
+void AD9837_Sleep(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint8_t enable)
 {
-    // Read current control state (simplified: we just overwrite known bits)
-    // We keep B28=1 (0x2000) and HLB=0 (0x0000)
-	if ((waveform != AD9837_MODE_SINE) && (waveform != AD9837_MODE_TRIANGLE) && (waveform != AD9837_MODE_SQUARE))
-		return;
-	spi_ad9837_Drv->waveform = waveform;
-	uint16_t ctrl_reg = AD9837_CMD_B28 | waveform;
-    spi_ad9837_WriteReg(spi_ad9837_Drv,ctrl_reg);
+    uint16_t cmd = AD9837_CMD_B28; // Keep B28=1 for normal operation
+    if (enable)
+        cmd |= (AD9837_CMD_SLEEP1 | AD9837_CMD_SLEEP12);
+    AD9837_Write16(spi_ad9837_Drv, cmd);
 }
 
-/**
- * @brief Put device to sleep to save power
- * @param enable: 1 to sleep, 0 to wake
- */
-ITCM_AREA_CODE void spi_ad9837_Sleep(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint8_t enable)
+void AD9837_Init(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv)
 {
-    uint16_t ctrl_reg = AD9837_CMD_B28 | AD9837_MODE_SINE;
-    if(enable) {
-        ctrl_reg |= AD9837_SLEEP12; // Sleep DAC and Core
-    }
-    spi_ad9837_WriteReg(spi_ad9837_Drv,ctrl_reg);
+
+    // Ensure FSYNC starts HIGH
+    HAL_GPIO_WritePin(spi_ad9837_Drv->cs_port, spi_ad9837_Drv->cs_bit, GPIO_PIN_SET);
+
+    // Reset the device to a known state
+    AD9837_Reset(spi_ad9837_Drv);
+
+    // Small delay to allow internal reset to complete
+    HAL_Delay(1);
+
+    // Clear reset and set default to Sine wave, awake
+    AD9837_SetWaveform(spi_ad9837_Drv, AD9837_WAVE_SINE);
+    AD9837_SetFrequency(spi_ad9837_Drv, AD9837_WAVE_SINE);
 }
 
-ITCM_AREA_CODE uint32_t	spi_ad9837_register(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv)
+ITCM_AREA_CODE uint32_t	AD9837_register(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv)
 {
 SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
+/*
+ * CPOL = HIGH
+ * CPHA = 1 edge
+ * 16 bit MSB first
+ */
 
 	if ( spi_ad9837_Drv->cs_port == NULL )
 		return DRIVER_REQUEST_FAILED;
 
 	if ( spi_ad9837_Drv->bus == NULL )
 		return DRIVER_REQUEST_FAILED;
+
+	if ( spi_ad9837_Drv->mclk_freq == 0 )
+		spi_ad9837_Drv->mclk_freq = 4000000;
 
 	if ( spi_drv_ptr == NULL)
 	{
@@ -159,9 +132,9 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 	if( spi_ad9837_Drv->spi_timeout_ms == 0 )
 		spi_ad9837_Drv->spi_timeout_ms = AD9837_SPI_TIMEOUT;
 	if( spi_ad9837_Drv->waveform == 0 )
-		spi_ad9837_Drv->waveform = AD9837_MODE_SINE;
+		spi_ad9837_Drv->waveform = AD9837_WAVE_SINE;
 
-	spi_ad9837_init(spi_ad9837_Drv);
+	AD9837_Init(spi_ad9837_Drv);
 	return 0;
 }
 

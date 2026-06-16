@@ -23,6 +23,30 @@
 #ifndef DRIVERS_SPI_DDS_AD9837_H_
 #define DRIVERS_SPI_DDS_AD9837_H_
 
+
+
+#define	AD9837_SPI_TIMEOUT					100
+
+// AD9837 Control Register Bit Definitions
+#define AD9837_CMD_B28      (1 << 13) // 0x2000: Write 28-bit frequency in two 14-bit writes
+#define AD9837_CMD_HLB      (1 << 12) // 0x1000: Write 14-bit LSB (ignored if B28=1)
+#define AD9837_CMD_FSELECT  (1 << 11) // 0x0800: Select Frequency Register 1
+#define AD9837_CMD_PSELECT  (1 << 10) // 0x0400: Select Phase Register 1
+#define AD9837_CMD_RESET    (1 << 9)  // 0x0200: Reset internal registers
+#define AD9837_CMD_SLEEP1   (1 << 8)  // 0x0100: Power down internal clock
+#define AD9837_CMD_SLEEP12  (1 << 7)  // 0x0080: Power down internal DAC
+#define AD9837_CMD_OPBITEN  (1 << 6)  // 0x0040: Enable square wave output
+#define AD9837_CMD_DIV2     (1 << 4)  // 0x0010: Divide MSB by 2 (for square wave)
+#define AD9837_CMD_MODE     (1 << 3)  // 0x0008: 0 = Sine, 1 = Triangle/Square
+
+// Waveform Selection Enum
+typedef enum {
+    AD9837_WAVE_SINE = (AD9837_CMD_B28),
+    AD9837_WAVE_TRIANGLE = (AD9837_CMD_B28 | AD9837_CMD_MODE),
+    AD9837_WAVE_SQUARE = (AD9837_CMD_B28 | AD9837_CMD_OPBITEN | AD9837_CMD_DIV2 | AD9837_CMD_MODE)
+} AD9837_Waveform_t;
+
+
 typedef struct
 {
 	/* driver header */
@@ -36,29 +60,18 @@ typedef struct
 	uint32_t			*next_drv;
 	/* driver proprietary data */
 	uint32_t 			spi_timeout_ms;
-	uint8_t 			waveform;
+	AD9837_Waveform_t	waveform;
 	uint16_t 			phase_deg;
+	uint32_t 			mclk_freq;
 	uint32_t 			frequency;
 }SPI_AD9837_DriverStruct_t;
-#define	AD9837_SPI_TIMEOUT					100
 
-// Master Clock Frequency (Hz) - CHANGE THIS TO MATCH YOUR OSCILLATOR
-#define AD9837_MCLK_FREQ        4000000UL
-
-/* --- Register Definitions --- */
-#define AD9837_CMD_RESET        0x0100
-#define AD9837_CMD_HLB          0x0000 // Write to FREQ0/PHASE0
-#define AD9837_CMD_B28          0x2000 // 28-bit Frequency Write
-#define AD9837_MODE_SINE        0x0000
-#define AD9837_MODE_TRIANGLE    0x0002
-#define AD9837_MODE_SQUARE      0x0008
-#define AD9837_SLEEP1           0x0040
-#define AD9837_SLEEP12          0x0080
-
-extern uint32_t	spi_ad9837_register(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv);
-extern void spi_ad9837_Sleep(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint8_t enable);
-extern void spi_ad9837_SetWaveform(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint8_t mode);
-extern void spi_ad9837_SetPhase(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint16_t phase_deg);
-extern void spi_ad9837_SetFrequency(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv,uint32_t freq_hz);
+// Function Prototypes
+extern	uint32_t	AD9837_register(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv);
+extern	void 		AD9837_Init(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv);
+extern	void 		AD9837_SetFrequency(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint32_t freq_hz);
+extern	void 		AD9837_SetWaveform(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, AD9837_Waveform_t waveform);
+extern	void 		AD9837_Reset(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv);
+extern	void 		AD9837_Sleep(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint8_t enable);
 
 #endif /* DRIVERS_SPI_DDS_AD9837_H_ */

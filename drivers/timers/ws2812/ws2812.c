@@ -28,7 +28,8 @@
 
 #include "ws2812.h"
 
-extern	uint32_t ws2812_lut[256][8];
+extern	uint32_t ws2812_lut_rom[256][8];
+__attribute__((section(".d2ram"))) __attribute__ ((aligned (32))) uint32_t ws2812_lut[256][8];
 
 ITCM_AREA_CODE void ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b)
 {
@@ -96,6 +97,8 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	ws2812_drv->process = get_current_process();
 	ws2812_drv->ws2812_timer->Instance->PSC = (HSI_CLOCK/(10000000U));
 	ws2812_drv->ws2812_timer->Instance->ARR = 12;
+	//A_copy32_32(&ws2812_lut_rom[0][0],&ws2812_lut[0][0],256*8);
+
 	return ws2812_init(ws2812_drv);
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED

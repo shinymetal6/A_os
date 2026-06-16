@@ -25,7 +25,8 @@
 #define KERNEL_SYSTEM_FUNCTIONS_H_
 
 extern	void A_clear32(uint8_t	*ptr,uint32_t size);
-extern	void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes);
+extern	void A_copy32_8(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes);
+extern	void A_copy32_32(uint32_t *src,uint32_t *dest, uint32_t size);
 extern	uint8_t A_hex_to_byte(uint8_t byte1 , uint8_t byte2);
 extern	uint32_t A_wait_uSec_NoIrq(uint8_t uSec);
 

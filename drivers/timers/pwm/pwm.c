@@ -59,37 +59,31 @@ TIM_HandleTypeDef	*timer = pwm_drv->timer;
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_1) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH1;
 	}
 	if ( pwm_drv->status & PWM_CHANNEL_CH2)
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_2) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH2;
 	}
 	if ( pwm_drv->status & PWM_CHANNEL_CH3)
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_3) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH3;
 	}
 	if ( pwm_drv->status & PWM_CHANNEL_CH4)
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_4) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH4;
 	}
 	if ( pwm_drv->status & PWM_CHANNEL_CH5)
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_5) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH5;
 	}
 	if ( pwm_drv->status & PWM_CHANNEL_CH6)
 	{
 		if ( HAL_TIM_PWM_Start(timer,TIM_CHANNEL_6) )
 			return 1;
-		pwm_drv->status |= PWM_CHANNEL_CH6;
 	}
 	return 0;
 }

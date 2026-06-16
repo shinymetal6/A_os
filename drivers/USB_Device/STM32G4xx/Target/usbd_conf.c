@@ -45,7 +45,7 @@
 
 /* USER CODE END PV */
 
-PCD_HandleTypeDef hpcd_USB_FS;
+__weak PCD_HandleTypeDef hpcd_USB_FS;
 void Error_Handler(void);
 
 /* USER CODE BEGIN 0 */
@@ -75,7 +75,7 @@ extern void SystemClock_Config(void);
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
 static void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 #else
-void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
+__weak void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
@@ -109,7 +109,7 @@ void HAL_PCD_MspInit(PCD_HandleTypeDef* pcdHandle)
 #if (USE_HAL_PCD_REGISTER_CALLBACKS == 1U)
 static void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 #else
-void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
+__weak void HAL_PCD_MspDeInit(PCD_HandleTypeDef* pcdHandle)
 #endif /* USE_HAL_PCD_REGISTER_CALLBACKS */
 {
   if(pcdHandle->Instance==USB)

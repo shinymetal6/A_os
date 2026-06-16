@@ -67,7 +67,7 @@ uint32_t *ptr2 = (uint32_t *)ptr;
 	__enable_irq();
 }
 
-ITCM_AREA_CODE void A_copy32(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes)
+ITCM_AREA_CODE void A_copy32_8(uint8_t *src,uint8_t *dest, uint32_t size_in_bytes)
 {
 uint32_t	i;
 uint32_t *src32 = (uint32_t *)src, *dest32 = (uint32_t *)dest;
@@ -75,6 +75,16 @@ uint32_t *src32 = (uint32_t *)src, *dest32 = (uint32_t *)dest;
 	__disable_irq();
 	for(i=0;i<size_in_bytes/sizeof(uint32_t);i++)
 		*dest32++ = *src32++;
+	__enable_irq();
+}
+
+
+ITCM_AREA_CODE void A_copy32_32(uint32_t *src,uint32_t *dest, uint32_t size)
+{
+	__disable_irq();
+	size--;
+	while(size)
+		*dest++ = *src++;
 	__enable_irq();
 }
 

@@ -212,6 +212,4 @@ extern	Asys_t		Asys;
 #define	__PERF_RESET()
 #endif
 
-
-
 #endif /* KERNEL_A_H_ */

@@ -27,7 +27,7 @@
 #ifdef A_OS_TIMERS_ENABLED
 #define WS2812_0 4
 #define WS2812_1 8
-const uint32_t ws2812_lut[256][8] =
+const uint32_t ws2812_lut_rom[256][8] =
 {
 	{
 		WS2812_0,WS2812_0,WS2812_0,WS2812_0,WS2812_0,WS2812_0,WS2812_0,WS2812_0,

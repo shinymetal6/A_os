@@ -70,6 +70,9 @@ typedef struct
 #define	I2C_FLAGS_WAKEUP_ON_WRITE			0x01
 
 extern uint32_t	i2c_24xx_register(I2C_24xx_DriverStruct_t *driver_private_data);
+extern uint32_t i2c_24xx_read(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len);
+extern uint32_t i2c_24xx_write(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len);
+
 
 #endif // #ifdef A_OS_I2C_ENABLED
 

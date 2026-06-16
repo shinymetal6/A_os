@@ -53,6 +53,7 @@ extern	I2C_DriverStruct_t	*i2c_drv_ptr;
 #include "sensors/camera/imx335.h"
 #include "sensors/camera/mlx90640.h"
 #include "sensors/tof/vl53l5cx.h"
+#include "e2pot/mcp4651.h"
 
 #endif // #ifdef A_OS_I2C_ENABLED
 
