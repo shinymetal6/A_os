@@ -28,7 +28,7 @@
 #define	I2C_24XX_STOPPED	0
 #define	I2C_24XX_ADDRESS	0xa0
 #define	I2C_24XX_PAGESIZE	256
-#define	I2C_24XX_TIMEOUT	200
+#define	I2C_24XX_TIMEOUT	100
 
 typedef struct
 {

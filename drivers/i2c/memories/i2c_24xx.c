@@ -46,7 +46,7 @@ ITCM_AREA_CODE static uint32_t i2c_24xx_wait_on_flag_timeout(I2C_24xx_DriverStru
 	i2c_24xx_Drv->timeout = I2C_24XX_TIMEOUT;
 	while ( (i2c_24xx_Drv->status & mask ) != mask )
 	{
-		task_delay(10);
+		task_delay(1);
 		i2c_24xx_Drv->timeout--;
 		if ( i2c_24xx_Drv->timeout == 0 )
 			return i2c_24xx_seterror(i2c_24xx_Drv);
@@ -167,10 +167,8 @@ uint32_t ret_val;
 
 			if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
 				return i2c_24xx_seterror(i2c_24xx_Drv);
-
 			if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
 				return i2c_24xx_seterror(i2c_24xx_Drv);
-
 			data_len -= I2C_24XX_PAGESIZE;
 			address += I2C_24XX_PAGESIZE;
 			data += I2C_24XX_PAGESIZE;
