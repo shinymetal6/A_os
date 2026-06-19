@@ -69,11 +69,21 @@
 
 #define USBD_VID     1155
 #define USBD_LANGID_STRING     1033
+#ifndef		USBD_MANUFACTURER_STRING
 #define USBD_MANUFACTURER_STRING     "STMicroelectronics"
+#endif
+#ifndef		USBD_PID
 #define USBD_PID     22336
+#endif
+#ifndef		USBD_PRODUCT_STRING
 #define USBD_PRODUCT_STRING     "STM32 Virtual ComPort"
+#endif
+#ifndef		USBD_CONFIGURATION_STRING
 #define USBD_CONFIGURATION_STRING     "CDC Config"
+#endif
+#ifndef		USBD_INTERFACE_STRING
 #define USBD_INTERFACE_STRING     "CDC Interface"
+#endif
 
 /* USER CODE BEGIN PRIVATE_DEFINES */
 
