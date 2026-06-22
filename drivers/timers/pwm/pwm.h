@@ -34,12 +34,9 @@ typedef struct
 	uint8_t				timer_type;
 	/* timer internals */
 	uint8_t				handle;
-	GPIO_TypeDef	 	*enable_port;
-	uint16_t			enable_bit;
 	uint32_t 			prescaler;
 	uint32_t 			period;
 	uint32_t 			pulse_width[6];
-	uint8_t 			pwm_direction;
 }Pwm_Control_DriverStruct_t;
 
 /* status */

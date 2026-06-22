@@ -187,21 +187,6 @@ TIM_HandleTypeDef	*timer = pwm_drv->timer;
 	return 0;
 }
 
-ITCM_AREA_CODE uint32_t pwm_set_direction(Pwm_Control_DriverStruct_t *pwm_drv,uint8_t pwm_direction)
-{
-	if ( pwm_drv->enable_port != NULL )
-	{
-		pwm_drv->pwm_direction = pwm_direction;
-		if ( pwm_direction )
-			pwm_drv->enable_port->BSRR = pwm_drv->enable_bit;
-		else
-			pwm_drv->enable_port->BSRR = (uint32_t)pwm_drv->enable_bit << 16;
-		return 0;
-	}
-	else
-		return 1;
-}
-
 ITCM_AREA_CODE uint32_t pwm_init(Pwm_Control_DriverStruct_t *pwm_drv)
 {
 TIM_HandleTypeDef	*timer = pwm_drv->timer;
