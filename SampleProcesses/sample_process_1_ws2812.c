@@ -44,7 +44,7 @@ WS2812_DriverStruct_t	WS2812_Drv =
 		.ws2812_one_val  = WS2812_1,
 		.ws2812_zero_val = WS2812_0-10,
 		*/
-		.ws2812_arr_val = 204,
+		.ws2812_arr_val = 211,
 		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
 };
 

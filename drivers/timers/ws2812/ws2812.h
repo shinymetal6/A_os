@@ -35,6 +35,18 @@
 #define WS2812_0	68
 #define WS2812_1	136
 #define WS2812_ARR	211
+/* for timfreq = 80MHz */
+/*
+#define WS2812_0	32
+#define WS2812_1	64
+#define WS2812_ARR	99
+*/
+/* for timfreq = 480MHz */
+/*
+#define WS2812_0	192
+#define WS2812_1	384
+#define WS2812_ARR	596
+*/
 
 // Reset Head: 250 bits * 1.25µs = 312.5µs (Safely > 280µs for modern LEDs)
 #define WS2812_RESET_HEAD 250
