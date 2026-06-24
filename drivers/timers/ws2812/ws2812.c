@@ -28,47 +28,68 @@
 
 #include "ws2812.h"
 
-extern	uint32_t ws2812_lut_rom[256][8];
-__attribute__((section(".d2ram"))) __attribute__ ((aligned (32))) uint32_t ws2812_lut[256][8];
-
-ITCM_AREA_CODE void ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b)
+ITCM_AREA_CODE void ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint16_t index, uint8_t r, uint8_t g, uint8_t b)
 {
-int16_t	i;
-	for(i=0;i<8;i++)
-	{
-		ws2812_drv->ws2812_work_buf[RED_SHIFT   + (location*24) + i] = ws2812_lut[r][i];
-		ws2812_drv->ws2812_work_buf[GREEN_SHIFT + (location*24) + i] = ws2812_lut[g][i];
-		ws2812_drv->ws2812_work_buf[BLUE_SHIFT  + (location*24) + i] = ws2812_lut[b][i];
-	}
-}
+uint32_t color;
+uint16_t buffer_start_index = WS2812_RESET_HEAD + (index * 24);
+uint16_t buf_idx;
 
-ITCM_AREA_CODE void ws2812_UserFB_to_WorkBuf(WS2812_DriverStruct_t *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len)
-{
-int32_t	i;
-	if ( user_fb_len > ws2812_drv->ws2812_numleds)
-		return;
-	for(i=0;i<user_fb_len;i++)
-		ws2812_SetPixel(ws2812_drv,i, user_fb[i],user_fb[i+1],user_fb[i+2]);
+    if (index >= ws2812_drv->ws2812_numleds)
+    {
+    	return;
+    }
+
+    if ( ws2812_drv->ws2812_type == 0 )
+    	color = ((uint32_t)g << 16) | ((uint32_t)r << 8) | b; // GRB (Standard WS2812)
+    else
+    	color = ((uint32_t)r << 16) | ((uint32_t)g << 8) | b; // RGB (WS2811 or some clones)
+
+    for (int i = 23; i >= 0; i--)
+    {
+		buf_idx = buffer_start_index + (23 - i);
+		if ((color >> i) & 1)
+			ws2812_drv->ws2812_work_buf[buf_idx] = WS2812_1; // '1' duty cycle
+		else
+			ws2812_drv->ws2812_work_buf[buf_idx] = WS2812_0;  // '0' duty cycle
+
+    }
 }
 
 ITCM_AREA_CODE void ws2812_ClearPixels(WS2812_DriverStruct_t *ws2812_drv)
 {
-int16_t	location;
-	for(location=0;location<ws2812_drv->ws2812_numleds;location++)
-		ws2812_SetPixel(ws2812_drv,location, 0,0,0);
+uint32_t i;
+    // 1. Clear the HEAD with pure 0s (Strictly LOW for Reset Pulse)
+    for (i = 0; i < WS2812_RESET_HEAD; i++) {
+    	ws2812_drv->ws2812_work_buf[i] = 0;
+    }
+
+    // 2. Clear the DATA section with '0' bits (Duty cycle 68)
+    for (i = WS2812_RESET_HEAD; i < WS2812_RESET_HEAD + (ws2812_drv->ws2812_numleds * 24); i++) {
+    	ws2812_drv->ws2812_work_buf[i] = WS2812_0;
+    }
+
+    // 3. Clear the TAIL with pure 0s (Strictly LOW to end the frame cleanly)
+    for (i = WS2812_RESET_HEAD + (ws2812_drv->ws2812_numleds * 24); i < ws2812_drv->ws2812_work_buf_buflen; i++) {
+    	ws2812_drv->ws2812_work_buf[i] = 0;
+    }
+}
+
+ITCM_AREA_CODE uint32_t ws2812_update(WS2812_DriverStruct_t *ws2812_drv)
+{
+	ws2812_drv->ws2812_timer->Instance->CCR1 = WS2812_0;
+    return HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_timer_channel,(uint32_t*)ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 }
 
 ITCM_AREA_CODE uint32_t ws2812_init(WS2812_DriverStruct_t *ws2812_drv)
 {
 	bzero(ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 	ws2812_ClearPixels(ws2812_drv);
-	return HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_timer_channel,ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
+	return HAL_TIM_PWM_Start_DMA(ws2812_drv->ws2812_timer, ws2812_drv->ws2812_timer_channel,(uint32_t*)ws2812_drv->ws2812_work_buf,ws2812_drv->ws2812_work_buf_buflen);
 }
 
 ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_DriverStruct_t *ws2812_drv)
 {
 TIMER_DriverStruct_t *eptr, *pre_eptr;
-
 	if ( ws2812_drv->ws2812_timer == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( ws2812_drv->ws2812_work_buf == NULL)
@@ -95,10 +116,13 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 		ws2812_drv->next_timer = NULL;
 	}
 	ws2812_drv->process = get_current_process();
-	ws2812_drv->ws2812_timer->Instance->PSC = (HSI_CLOCK/(10000000U));
-	ws2812_drv->ws2812_timer->Instance->ARR = 12;
-	//A_copy32_32(&ws2812_lut_rom[0][0],&ws2812_lut[0][0],256*8);
-
+	ws2812_drv->timer_type = TIM_TYPE_PWM;
+	if ( ws2812_drv->ws2812_one_val == 0 )
+		ws2812_drv->ws2812_one_val = WS2812_1;
+	if ( ws2812_drv->ws2812_zero_val == 0 )
+		ws2812_drv->ws2812_zero_val = WS2812_0;
+	if ( ws2812_drv->ws2812_arr_val != 0 )
+		ws2812_drv->ws2812_timer->Instance->ARR = ws2812_drv->ws2812_arr_val;
 	return ws2812_init(ws2812_drv);
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED

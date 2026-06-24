@@ -47,6 +47,7 @@ void AD9837_SetFrequency(SPI_AD9837_DriverStruct_t *spi_ad9837_Drv, uint32_t fre
 {
     // Formula: FREQ_REG = (F_OUT * 2^28) / F_MCLK
     // 2^28 = 268435456
+	spi_ad9837_Drv->frequency = freq_hz;
     uint64_t freq_reg = ((uint64_t)spi_ad9837_Drv->frequency * 268435456ULL) / spi_ad9837_Drv->mclk_freq;
 
     // Split into two 14-bit writes (LSB first, then MSB)

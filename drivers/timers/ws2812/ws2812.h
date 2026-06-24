@@ -27,13 +27,19 @@
 #define	WS2812_MAX_NUMLEDS	10
 
 // Some WS2812 variants (especially clones or long strips) require ≥256 µs reset pulse instead of the standard 50 µs spec
-#define	WS2812_SYNCLEN		192
+#define	WS2812_SYNCLEN		500
 
 #define	WS2812_MAX_BUFLEN	((WS2812_SYNCLEN*WS2812_LEDBPP)+(WS2812_MAX_NUMLEDS*WS2812_LEDBPP))
 
-#define	GREEN_SHIFT		0
-#define	RED_SHIFT		8
-#define	BLUE_SHIFT		16
+/* for timfreq = 170MHz */
+#define WS2812_0	68
+#define WS2812_1	136
+#define WS2812_ARR	211
+
+// Reset Head: 250 bits * 1.25µs = 312.5µs (Safely > 280µs for modern LEDs)
+#define WS2812_RESET_HEAD 250
+// Reset Tail: 250 bits * 1.25µs = 312.5µs (Safely > 280µs for modern LEDs)
+#define WS2812_RESET_TAIL 250
 
 typedef struct
 {
@@ -47,15 +53,19 @@ typedef struct
 	/* timer internals */
 	uint8_t				handle;
 	uint32_t 			ws2812_timer_channel;
+	uint8_t 			ws2812_type;
 	uint32_t 			ws2812_numleds;
-	uint32_t 			*ws2812_work_buf;
+	uint16_t 			*ws2812_work_buf;
 	uint32_t 			ws2812_work_buf_buflen;
+	uint8_t 			ws2812_one_val;
+	uint8_t 			ws2812_zero_val;
+	uint8_t 			ws2812_arr_val;
 	uint32_t			wakeup_id;
 }WS2812_DriverStruct_t;
 
 extern uint32_t	ws2812_register(WS2812_DriverStruct_t *private_data);
 extern void 	ws2812_ClearPixels(WS2812_DriverStruct_t *ws2812_drv);
-extern void 	ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint32_t location, uint8_t r,uint8_t g,uint8_t b);
-extern void 	ws2812_UserFB_to_WorkBuf(WS2812_DriverStruct_t *ws2812_drv,uint8_t *user_fb,uint32_t user_fb_len);
+extern void 	ws2812_SetPixel(WS2812_DriverStruct_t *ws2812_drv,uint16_t index, uint8_t r, uint8_t g, uint8_t b);
+extern uint32_t ws2812_update(WS2812_DriverStruct_t *ws2812_drv);
 
 #endif /* DRIVERS_TIMERS_WS2812_WS2812_H_ */

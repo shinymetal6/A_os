@@ -26,19 +26,25 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_WS2812
 
-extern	TIM_HandleTypeDef htim3;
+extern	TIM_HandleTypeDef htim16;
 
 #define	NUM_LEDS		8
-#define	WS2812_WORK_BUF_LEN		((NUM_LEDS*WS2812_LEDBPP)+WS2812_SYNCLEN)
-uint32_t ws2812_work_buf[WS2812_WORK_BUF_LEN];
+#define WS2812_BUF_SIZE 		(WS2812_RESET_HEAD + (NUM_LEDS * WS2812_LEDBPP) + WS2812_RESET_TAIL)
+
+uint16_t ws2812_work_buf[WS2812_BUF_SIZE];
 
 WS2812_DriverStruct_t	WS2812_Drv =
 {
-		.ws2812_timer = &htim3,
+		.ws2812_timer = &htim16,
 		.ws2812_timer_channel = TIM_CHANNEL_1,
 		.ws2812_numleds = 8,
 		.ws2812_work_buf = &ws2812_work_buf[0],
-		.ws2812_work_buf_buflen = WS2812_WORK_BUF_LEN,
+		.ws2812_work_buf_buflen = WS2812_BUF_SIZE,
+		/*
+		.ws2812_one_val  = WS2812_1,
+		.ws2812_zero_val = WS2812_0-10,
+		*/
+		.ws2812_arr_val = 204,
 		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
 };
 
@@ -51,55 +57,49 @@ void sample_process_1_init(uint32_t process_id)
 void sample_process_1_ws2812(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	lednum=0;
+uint32_t	lednum=0 , startws=0 , up=1;
 
 	r=g=b= 0;
 	use_r=use_g=use_b=0;
 	use_r = 1;
-	create_timer(TIMER_ID_0,20,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	ws2812_register(&WS2812_Drv);
 
 	while(1)
 	{
-		wait_event(EVENT_TIMER);
+		wait_event(EVENT_TIMER | EVENT_TIM_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			process_led();
-			ws2812_SetPixel(&WS2812_Drv,lednum,r,g,b);
-			if ( use_r )
+			if ( startws == 0 )
 			{
-				r+=10;
-				if ( r > 0x70 )
-				{
-					r = 0;
-					use_r = 0;
-					use_g = 1;
-				}
+				ws2812_SetPixel(&WS2812_Drv,lednum,r,g,b);
+				ws2812_update(&WS2812_Drv);
+				startws=1;
 			}
-			if ( use_g )
-			{
-				g+=10;
-				if ( g > 0x70 )
-				{
-					g = 0;
-					use_g = 0;
-					use_b = 1;
-				}
-			}
-			if ( use_b )
-			{
-				b+=10;
-				if ( b > 0x70 )
-				{
-					b = 0;
-					use_b = 0;
-					use_r = 1;
-				}
-			}
+		}
+		if (( wakeup & WAKEUP_FROM_TIM_IRQ) == WAKEUP_FROM_TIM_IRQ)
+		{
 			lednum++;
-			lednum &= 0x07;
-
+			if( lednum == NUM_LEDS)
+			{
+				if ( up == 1 )
+				{
+					b+=0x08;
+					if ( b == 0xf8)
+						up = 0;
+				}
+				else
+				{
+					b-=0x08;
+					if ( b == 0x08)
+						up = 1;
+				}
+				lednum = 0;
+			}
+			ws2812_SetPixel(&WS2812_Drv,lednum,r,g,b);
+			ws2812_update(&WS2812_Drv);
 		}
 	}
 }
