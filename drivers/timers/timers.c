@@ -55,14 +55,15 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 	{
 		PERIODIC_Timer_DriverStruct_t *periodic_timer_drv = (PERIODIC_Timer_DriverStruct_t *)tim_ic;
 		if ( periodic_timer_drv->User_Callback != NULL)
-			periodic_timer_drv->User_Callback();
+			periodic_timer_drv->User_Callback((uint32_t )&periodic_timer_drv);
 	}
 	if ( tim_ic->timer_type == TIM_TYPE_STEPPER )
 	{
 		if ( tim_ic->timer == htim)
 		{
-			//Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
-			stepper_internal_callback((Stepper_Control_DriverStruct_t *)tim_ic);
+			Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
+			if ( stepper_drv->stepper_callback != NULL )
+				stepper_drv->stepper_callback((uint32_t )stepper_drv);
 		}
 	}
 }
@@ -96,7 +97,7 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 				encoder_driver_data->status |= ENCODER_READY;
 				encoder_driver_data->encoder_last_value = encoder_driver_data->encoder_value;
 				if ( encoder_driver_data->irq_encoder_callback != NULL )
-					encoder_driver_data->irq_encoder_callback(encoder_driver_data->encoder_value);
+					encoder_driver_data->irq_encoder_callback((uint32_t )&encoder_driver_data);
 				if ( encoder_driver_data->wakeup_id )
 					activate_process(encoder_driver_data->process,encoder_driver_data->wakeup_id,0x01);
 			}
@@ -116,6 +117,8 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 			WS2812_DriverStruct_t *ws2812_drv = (WS2812_DriverStruct_t *)tim_ic;
 			if ( ws2812_drv->wakeup_id )
 				activate_process(ws2812_drv->process,ws2812_drv->wakeup_id,0x01);
+			if ( ws2812_drv->irq_ws2812_callback != NULL )
+				ws2812_drv->irq_ws2812_callback((uint32_t )&ws2812_drv);
 		}
 	}
 }

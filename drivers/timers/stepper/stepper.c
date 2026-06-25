@@ -37,7 +37,7 @@ void stepper_internal_callback(Stepper_Control_DriverStruct_t *stepper_drv)
 	icount++;
 	if ( stepper_drv->number_of_steps < 0xff )
 	{
-		HAL_TIM_PWM_Stop(stepper_drv->timer, TIM_CHANNEL_1);
+		HAL_TIM_PWM_Stop(stepper_drv->timer, stepper_drv->timer_channel);
 		__HAL_TIM_DISABLE_IT(stepper_drv->timer, TIM_IT_UPDATE);
 		ccount++;
 		stepper_drv->status &= ~STEPPER_CHANNEL_STARTED;

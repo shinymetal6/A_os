@@ -69,9 +69,10 @@ typedef struct
 	uint32_t 			ws2812_numleds;
 	uint16_t 			*ws2812_work_buf;
 	uint32_t 			ws2812_work_buf_buflen;
-	uint8_t 			ws2812_one_val;
-	uint8_t 			ws2812_zero_val;
-	uint8_t 			ws2812_arr_val;
+	uint16_t 			ws2812_one_val;
+	uint16_t 			ws2812_zero_val;
+	uint16_t 			ws2812_arr_val;
+	void				(*irq_ws2812_callback)  (uint32_t parameter);
 	uint32_t			wakeup_id;
 }WS2812_DriverStruct_t;
 

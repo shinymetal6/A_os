@@ -34,7 +34,7 @@ typedef struct
 	uint8_t				timer_type;
 	/* timer internals */
 	uint32_t			timer_channel;
-	void				(*User_Callback)(void);
+	void				(*User_Callback)(uint32_t param);
 }PERIODIC_Timer_DriverStruct_t;
 /* status */
 #define	PERIODIC_TIMER_INITIALIZED		0x01

@@ -33,6 +33,7 @@ typedef struct
 	TIM_HandleTypeDef 	*timer;
 	uint8_t				timer_type;
 	/* timer internals */
+	uint32_t 			timer_channel;
 	GPIO_TypeDef	 	*tim_port;
 	uint16_t			tim_bit;
 	GPIO_TypeDef	 	*dir_port;
@@ -44,7 +45,7 @@ typedef struct
 	uint32_t			stored_number_of_steps;
 	uint32_t			steps_per_rotation;
 	uint32_t			number_of_rotation;
-	void				(*stepper_callback)  (uint32_t stepper_value);
+	void				(*stepper_callback)  (uint32_t param);
 }Stepper_Control_DriverStruct_t;
 #define	STEPPER_CHANNEL_ENABLED		0x01
 #define	STEPPER_CHANNEL_STARTED		0x20
@@ -52,6 +53,8 @@ typedef struct
 #define	STEPPER_CHANNEL_INITIALIZED	0x80
 
 #define	STEPPER_DEFAULT_STEP_PER_ROTATION	200
+#define	STEPPER_DIRECTION_FORWARD			0x01
+#define	STEPPER_DIRECTION_REVERSE			0x00
 
 
 extern	uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv);
