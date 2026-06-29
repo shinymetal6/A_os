@@ -240,6 +240,7 @@ DCC_DriverStruct_t *eptr, *pre_eptr;
 	}
 
 	dcc_drv->process = get_current_process();
+	dcc_drv->timer_type = TIM_TYPE_DCC;
 	if ((dcc_drv->flags & DCC_TIMER_DUAL_PHASE ) == DCC_TIMER_DUAL_PHASE)
 		dcc_drv->timer_180phase_dcc_channel = dcc_drv->timer_dcc_channel;
 	dcc_drv->status = DRIVER_STATUS_IN_USE;
@@ -273,6 +274,8 @@ DCC_DriverStruct_t *dcc_drv;
 
 	if ( (dcc_drv = driver_get_drv_from_dcc_dma_channel(hdma)) == NULL )
 		return;
+	if ( dcc_drv->timer_type != TIM_TYPE_DCC )
+			return;
 	if ( hdma == dcc_drv->hdma[0] )
 	{
 		if (( dcc_drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)
@@ -315,6 +318,8 @@ DCC_DriverStruct_t *dcc_drv;
 
 	if ( (dcc_drv = driver_get_drv_from_dcc_dma_channel(hdma)) == NULL )
 		return;
+	if ( dcc_drv->timer_type != TIM_TYPE_DCC )
+			return;
 	if ( hdma == dcc_drv->hdma[1] )
 	{
 		if (( dcc_drv->status & DCC_PACKET_PENDING) == DCC_PACKET_PENDING)

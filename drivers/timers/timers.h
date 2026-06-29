@@ -31,6 +31,7 @@
 #define TIM_TYPE_PERIODIC		3
 #define TIM_TYPE_PWM			4
 #define TIM_TYPE_STEPPER		5
+#define TIM_TYPE_DCC			6
 
 typedef struct
 {
@@ -41,6 +42,7 @@ typedef struct
 	uint32_t 				*next_timer;
 	TIM_HandleTypeDef 		*timer;
 	uint8_t					timer_type;
+	uint32_t				wakeup_id;
 }TIMER_DriverStruct_t;
 
 #include "dcc/dcc.h"

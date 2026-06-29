@@ -31,8 +31,8 @@ typedef struct
 	uint32_t 			*next_timer;
 	TIM_HandleTypeDef 	*timer;
 	uint8_t				timer_type;
+	uint32_t			wakeup_id;
 	/* timer internals */
-	uint8_t				handle;
 	uint8_t				repetition;
 	uint32_t			cycle_time;
 	uint16_t			min_time;

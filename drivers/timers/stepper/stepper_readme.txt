@@ -11,33 +11,40 @@ typedef struct
 	TIM_HandleTypeDef 	*timer;
 	uint8_t				timer_type;
 	/* timer internals */
+	uint32_t 			timer_channel;
 	GPIO_TypeDef	 	*tim_port;
 	uint16_t			tim_bit;
 	GPIO_TypeDef	 	*dir_port;
 	uint16_t			dir_bit;
+	GPIO_TypeDef	 	*enable_port;
+	uint16_t			enable_bit;
 	uint32_t 			prescaler;
 	uint32_t 			period;
 	uint32_t 			pulse_width;
 	uint32_t			number_of_steps;
 	uint32_t			stored_number_of_steps;
+	uint32_t			steps_correction_factor;
 	uint32_t			steps_per_rotation;
 	uint32_t			number_of_rotation;
-	void				(*stepper_callback)  (uint32_t stepper_value);
+	void				(*stepper_callback)  (uint32_t param);
 }Stepper_Control_DriverStruct_t;
 
 2) Example:
 a - define the control structure and the related handle for tim16:
 
-
 Stepper_Control_DriverStruct_t	Stepper_Control =
 {
 		.timer = &htim16,
-		.tim_port = STEP_TIM_16_CH1_GPIO_Port,
-		.tim_bit = STEP_TIM_16_CH1_Pin,
-		.dir_port = STEP_DIR_GPIO_Port,
-		.dir_bit = STEP_DIR_Pin,
+		.timer_channel = TIM_CHANNEL_1,
+		.tim_port = PERI_STEP_TIM16CH1_GPIO_Port,
+		.tim_bit = PERI_STEP_TIM16CH1_Pin,
+		.dir_port = PERI_DIR_GPIO_Port,
+		.dir_bit = PERI_DIR_Pin,
+		.enable_port = SLEEP_3G_GPIO_Port,
+		.enable_bit = SLEEP_3G_Pin,
 		.pulse_width = STEPPER_DEFAULT_PW,
-		.steps_per_rotation = 200,	//e.g. Nema motors
+		.prescaler = 480,
+		.steps_per_rotation = 200,
 		.stepper_callback = stepper_callback,
 };
 

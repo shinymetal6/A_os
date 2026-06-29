@@ -62,8 +62,8 @@ typedef struct
 	uint32_t 			*next_timer;
 	TIM_HandleTypeDef 	*ws2812_timer;
 	uint8_t				timer_type;
+	uint32_t			wakeup_id;
 	/* timer internals */
-	uint8_t				handle;
 	uint32_t 			ws2812_timer_channel;
 	uint8_t 			ws2812_type;
 	uint32_t 			ws2812_numleds;
@@ -73,7 +73,6 @@ typedef struct
 	uint16_t 			ws2812_zero_val;
 	uint16_t 			ws2812_arr_val;
 	void				(*irq_ws2812_callback)  (uint32_t parameter);
-	uint32_t			wakeup_id;
 }WS2812_DriverStruct_t;
 
 extern uint32_t	ws2812_register(WS2812_DriverStruct_t *private_data);

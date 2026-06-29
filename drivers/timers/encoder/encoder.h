@@ -32,9 +32,8 @@ typedef struct
 	uint32_t 			*next_timer;
 	TIM_HandleTypeDef 	*timer;
 	uint8_t				timer_type;
-	/* timer internals */
-	uint8_t				handle;
 	uint32_t			wakeup_id;
+	/* timer internals */
 	GPIO_TypeDef	 	*button_port;
 	uint16_t			button_bit;
 	uint32_t 			encoder_last_value;

@@ -49,18 +49,21 @@ typedef struct {
 
 typedef struct
 {
+	/* timer header */
 	uint8_t 				process;
 	uint8_t					status;
 	uint8_t					flags;
-	uint32_t 				wakeup_id;
 	uint32_t 				*next_dcc;
+	TIM_HandleTypeDef 		*dcc_timer;
+	uint8_t					timer_type;
+	uint32_t 				wakeup_id;
+	/* timer internals */
 	uint8_t					command_repeat_number;
 	uint8_t					command_repeat_counter;
 	uint32_t				dma_dcc_value;
 	uint32_t				dma_cutout_value;
 	uint32_t				dma_dcc_index;
 	uint32_t				dma_cutout_index;
-	TIM_HandleTypeDef 		*dcc_timer;
 	DMA_HandleTypeDef 		*hdma[2];
 	uint32_t				timer_180phase_dcc_channel;
 	uint32_t				timer_dcc_channel;
