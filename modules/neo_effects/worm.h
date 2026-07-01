@@ -14,33 +14,32 @@
  * Project : A_os
 */
 /*
- * modules.h
+ * worm.h
  *
- *  Created on: Nov 16, 2024
+ *  Created on: Jun 30, 2026
  *      Author: fil
  */
 
-#ifndef MODULES_MODULES_H_
-#define MODULES_MODULES_H_
+#ifndef MODULES_NEO_EFFECTS_WORM_H_
+#define MODULES_NEO_EFFECTS_WORM_H_
 
 typedef struct
 {
-	uint8_t 			process;
-	uint8_t				status;
-	uint8_t				flags;
-	uint8_t				handle;
-	uint32_t			*private_data;
-}MODULES_Struct_t;
+	/* timer header */
+	uint32_t 			position;
+	uint32_t 			worm_head;
+	uint32_t 			worm_len;
+	uint8_t 			direction;
+	uint32_t 			*led_buf;
+	uint8_t 			r;
+	uint8_t 			g;
+	uint8_t 			b;
+	void				(*worm_callback)  (uint32_t param);
+}Worm_Struct_t;
 
-#include "serial_transfers/xmodem_rx.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/ihex.h"
-#include "hex_decoders/hex_decoders_common.h"
-#include "hex_decoders/s3_hex.h"
-#include "modbus/modbus.h"
-#include "sound_engine/sound_engine.h"
-#include "midi_decoder/midi_decoder.h"
-#include "pid/pid.h"
-#include "neo_effects/neo_effects.h"
 
-#endif /* MODULES_MODULES_H_ */
+extern	uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
+extern	uint32_t	worm_advance(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
+
+
+#endif /* MODULES_NEO_EFFECTS_WORM_H_ */

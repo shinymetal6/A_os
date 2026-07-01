@@ -40,12 +40,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	icount++;
 	if ( stepper_drv->number_of_steps >= STEPPER_RCR_MAXVAL )
 		stepper_drv->number_of_steps -= STEPPER_RCR_MAXVAL;
-	if ( stepper_drv->number_of_steps > 0 )
-	{
-		timer->Instance->RCR = stepper_drv->number_of_steps;
-		stepper_drv->number_of_steps = 0;
-	}
-	else
+	if ( stepper_drv->number_of_steps == 0 )
 	{
 		HAL_TIM_PWM_Stop(stepper_drv->timer, stepper_drv->timer_channel);
 		__HAL_TIM_DISABLE_IT(stepper_drv->timer, TIM_IT_UPDATE);
@@ -55,6 +50,11 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 			stepper_drv->stepper_callback(stepper_drv->stored_number_of_steps);
 		HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_SET);
 		return;
+	}
+	if ( stepper_drv->number_of_steps > 0 )
+	{
+		timer->Instance->RCR = stepper_drv->number_of_steps;
+		stepper_drv->number_of_steps = 0;
 	}
 }
 
