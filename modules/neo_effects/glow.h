@@ -26,7 +26,7 @@
 typedef struct
 {
 	/* timer header */
-	uint32_t 			*led_buf;
+	NeoPixel_Struct_t	*led_buf;
 	uint8_t 			r;
 	uint8_t 			g;
 	uint8_t 			b;

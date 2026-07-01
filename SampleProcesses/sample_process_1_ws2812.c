@@ -34,25 +34,29 @@ extern	TIM_HandleTypeDef htim16;
 uint16_t ws2812_work_buf[WS2812_BUF_SIZE];
 uint32_t worm_led_buf[NUM_LEDS];
 uint32_t glow_led_buf[NUM_LEDS];
+
+NeoPixel_Struct_t	glow_buffer[NUM_LEDS];
+NeoPixel_Struct_t	worm_buffer[NUM_LEDS];
+
 Worm_Struct_t		WormBuf =
 {
-		.led_buf = worm_led_buf,
+		.led_buf = worm_buffer,
 		.r = 0,
 		.g = 0,
 		.b = 255,
-		.direction = 1,
+		.direction = WORM_WS2812_COUNTER_CLOCKWISE,
 		.worm_len = NUM_LEDS,
 };
 
 Glow_Struct_t		GlowBuf =
 {
-		.led_buf = glow_led_buf,
+		.led_buf = glow_buffer,
 		.r = 0,
 		.g = 0,
 		.b = 255,
 		.direction = 1,
 		.initial_brightness = 0,
-		.glow_step = 4,
+		.glow_step = 2,
 		.glow_len = NUM_LEDS,
 };
 
@@ -74,13 +78,13 @@ void sample_process_1_init(uint32_t process_id)
 
 }
 
-//#define	WORM_EFFECT	1
-#define	GLOW_EFFECT	1
+#define	WORM_EFFECT	1
+//#define	GLOW_EFFECT	1
 
 void sample_process_1_ws2812(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint32_t	lednum=0 , startws=0 , up=1;
+uint32_t	startws=0,lednum=0;
 
 	r=g=b= 0;
 	use_r=use_g=use_b=0;
@@ -102,21 +106,12 @@ uint32_t	lednum=0 , startws=0 , up=1;
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			process_led();
-			if ( startws == 0 )
-			{
-				ws2812_SetPixel(&WS2812_Drv,lednum,r,g,b);
-				ws2812_update(&WS2812_Drv);
-				startws=1;
-			}
-			else
-			{
 #ifdef WORM_EFFECT
-				worm_advance(&WS2812_Drv,&WormBuf);
+			worm_advance(&WS2812_Drv,&WormBuf);
 #endif //#ifdef WORM_EFFECT
 #ifdef GLOW_EFFECT
-				glow_apply(&WS2812_Drv,&GlowBuf);
+			glow_apply(&WS2812_Drv,&GlowBuf);
 #endif //#ifdef GLOW_EFFECT
-			}
 		}
 		if (( wakeup & WAKEUP_FROM_TIM_IRQ) == WAKEUP_FROM_TIM_IRQ)
 		{

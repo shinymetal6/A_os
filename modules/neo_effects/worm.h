@@ -25,18 +25,19 @@
 
 typedef struct
 {
-	/* timer header */
+	NeoPixel_Struct_t	*led_buf;
 	uint32_t 			position;
 	uint32_t 			worm_head;
 	uint32_t 			worm_len;
 	uint8_t 			direction;
-	uint32_t 			*led_buf;
 	uint8_t 			r;
 	uint8_t 			g;
 	uint8_t 			b;
 	void				(*worm_callback)  (uint32_t param);
 }Worm_Struct_t;
 
+#define	WORM_WS2812_CLOCKWISE			1
+#define	WORM_WS2812_COUNTER_CLOCKWISE	0
 
 extern	uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
 extern	uint32_t	worm_advance(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);

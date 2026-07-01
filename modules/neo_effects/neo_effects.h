@@ -23,6 +23,11 @@
 #ifndef MODULES_NEO_EFFECTS_NEO_EFFECTS_H_
 #define MODULES_NEO_EFFECTS_NEO_EFFECTS_H_
 
+typedef struct
+{
+	uint8_t 			r,g,b;
+}NeoPixel_Struct_t;
+
 #include "worm.h"
 #include "glow.h"
 
