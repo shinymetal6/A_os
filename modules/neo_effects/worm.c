@@ -26,29 +26,32 @@
 
 ITCM_AREA_CODE uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm)
 {
-int32_t i,k;
-	Worm->worm_head = 0;
-	for(i=0,k=7;i<=Worm->worm_len;i++,k--)
+int32_t i;
+	for(i=0;i<=Worm->worm_len;i++)
 	{
-		if ( Worm->direction == WORM_WS2812_COUNTER_CLOCKWISE )
-		{
-			Worm->led_buf[k].r = Worm->r >> i;
-			Worm->led_buf[k].g = Worm->g >> i;
-			Worm->led_buf[k].b = Worm->b >> i;
-		}
-		else
-		{
-			Worm->led_buf[i].r = Worm->r >> i;
-			Worm->led_buf[i].g = Worm->g >> i;
-			Worm->led_buf[i].b = Worm->b >> i;
-		}
+		Worm->led_buf[i].r = Worm->r >> i;
+		Worm->led_buf[i].g = Worm->g >> i;
+		Worm->led_buf[i].b = Worm->b >> i;
 	}
 	for(i=0;i<=Worm->worm_len;i++)
 	{
 		ws2812_SetPixel(ws2812_drv,i,Worm->led_buf[i].r,Worm->led_buf[i].g,Worm->led_buf[i].b);
 		ws2812_update(ws2812_drv);
 	}
+	Worm->worm_head = 0;
 	Worm->position = 0;
+	return 0;
+}
+
+ITCM_AREA_CODE uint32_t	worm_update_pixels_buffer(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm)
+{
+int32_t i;
+	for(i=0;i<=Worm->worm_len;i++)
+	{
+		Worm->led_buf[i].r = Worm->r >> i;
+		Worm->led_buf[i].g = Worm->g >> i;
+		Worm->led_buf[i].b = Worm->b >> i;
+	}
 	return 0;
 }
 

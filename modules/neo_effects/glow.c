@@ -45,25 +45,64 @@ ITCM_AREA_CODE uint32_t	glow_apply(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct
 {
 int32_t i;
 
-	for(i=0;i<=Glow->glow_len;i++)
+
+	if ( Glow->glow_mode == WS2812_GLOW_ONLY_UP)
 	{
-		if ( Glow->direction == WS2812_GLOW_UP)
+		for(i=0;i<=Glow->glow_len;i++)
 		{
-			if (( Glow->current_brightness + Glow->glow_step) < 0xff)
+			if (( Glow->current_brightness + Glow->glow_step) < Glow->final_brightness)
 				Glow->current_brightness += Glow->glow_step;
 			else
-				Glow->direction = WS2812_GLOW_DOWN;
+				Glow->current_brightness = Glow->initial_brightness;
+
+			Glow->led_buf[i].r = ((Glow->r * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].g = ((Glow->g * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].b = ((Glow->b * Glow->current_brightness) >> 8);
 		}
-		else
+	}
+
+	else if ( Glow->glow_mode == WS2812_GLOW_ONLY_DOWN)
+	{
+		for(i=0;i<=Glow->glow_len;i++)
 		{
-			if ( Glow->current_brightness > Glow->glow_step)
+			if ( Glow->current_brightness > (Glow->initial_brightness + Glow->glow_step))
 				Glow->current_brightness -= Glow->glow_step;
 			else
-				Glow->direction = WS2812_GLOW_UP;
+				Glow->current_brightness = Glow->final_brightness;
+
+			Glow->led_buf[i].r = ((Glow->r * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].g = ((Glow->g * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].b = ((Glow->b * Glow->current_brightness) >> 8);
 		}
-		Glow->led_buf[i].r = ((Glow->r * Glow->current_brightness) >> 8);
-		Glow->led_buf[i].g = ((Glow->g * Glow->current_brightness) >> 8);
-		Glow->led_buf[i].b = ((Glow->b * Glow->current_brightness) >> 8);
+	}
+
+	else if ( Glow->glow_mode == WS2812_GLOW_BIDIRECTIONAL)
+	{
+		for(i=0;i<=Glow->glow_len;i++)
+		{
+			if ( Glow->glow_direction == WS2812_GLOW_UP)
+			{
+				if (( Glow->current_brightness + Glow->glow_step) < Glow->final_brightness)
+					Glow->current_brightness += Glow->glow_step;
+				else
+					Glow->glow_direction = WS2812_GLOW_DOWN;
+			}
+			else
+			{
+				if ( Glow->current_brightness > (Glow->initial_brightness + Glow->glow_step))
+					Glow->current_brightness -= Glow->glow_step;
+				else
+					Glow->glow_direction = WS2812_GLOW_UP;
+			}
+			Glow->led_buf[i].r = ((Glow->r * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].g = ((Glow->g * Glow->current_brightness) >> 8);
+			Glow->led_buf[i].b = ((Glow->b * Glow->current_brightness) >> 8);
+		}
+	}
+	else
+		return 1;
+	for(i=0;i<=Glow->glow_len;i++)
+	{
 		ws2812_SetPixel(ws2812_drv,i,Glow->led_buf[i].r,Glow->led_buf[i].g,Glow->led_buf[i].b);
 		ws2812_update(ws2812_drv);
 	}

@@ -30,6 +30,7 @@ typedef struct
 
 #include "worm.h"
 #include "glow.h"
+#include "flasher.h"
 
 
 #endif /* MODULES_NEO_EFFECTS_NEO_EFFECTS_H_ */

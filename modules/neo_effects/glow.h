@@ -32,14 +32,20 @@ typedef struct
 	uint8_t 			b;
 	uint32_t 			glow_len;
 	uint32_t 			glow_step;
-	uint8_t 			direction;
+	uint8_t 			glow_direction;
+	uint8_t 			glow_mode;
 	uint8_t 			initial_brightness;
+	uint8_t 			final_brightness;
 	uint8_t 			current_brightness;
 	void				(*glow_callback)  (uint32_t param);
 }Glow_Struct_t;
 /* direction */
 #define	WS2812_GLOW_UP		1
 #define	WS2812_GLOW_DOWN	0
+/*glow_mode */
+#define	WS2812_GLOW_BIDIRECTIONAL	0
+#define	WS2812_GLOW_ONLY_UP			1
+#define	WS2812_GLOW_ONLY_DOWN		2
 
 extern uint32_t	glow_init(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct_t *Glow);
 extern uint32_t	glow_apply(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct_t *Glow);

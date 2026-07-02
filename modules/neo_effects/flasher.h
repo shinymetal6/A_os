@@ -14,34 +14,30 @@
  * Project : A_os
 */
 /*
- * worm.h
+ * flasher.h
  *
- *  Created on: Jun 30, 2026
+ *  Created on: Jul 1, 2026
  *      Author: fil
  */
 
-#ifndef MODULES_NEO_EFFECTS_WORM_H_
-#define MODULES_NEO_EFFECTS_WORM_H_
+#ifndef MODULES_NEO_EFFECTS_FLASHER_H_
+#define MODULES_NEO_EFFECTS_FLASHER_H_
 
 typedef struct
 {
+	/* timer header */
 	NeoPixel_Struct_t	*led_buf;
-	uint32_t 			position;
-	uint32_t 			worm_head;
-	uint32_t 			worm_len;
-	uint8_t 			direction;
-	uint8_t 			r;
-	uint8_t 			g;
-	uint8_t 			b;
-	void				(*worm_callback)  (uint32_t param);
-}Worm_Struct_t;
+	uint8_t 			r_on;
+	uint8_t 			g_on;
+	uint8_t 			b_on;
+	uint8_t 			r_off;
+	uint8_t 			g_off;
+	uint8_t 			b_off;
+	uint8_t 			brightness;
+	uint32_t 			flasher_len;
+	void				(*flasher_callback)  (uint32_t param);
+}Flasher_Struct_t;
+extern	uint32_t	flasher_init(WS2812_DriverStruct_t *ws2812_drv,Flasher_Struct_t *Flasher);
+extern	uint32_t	flasher_apply(WS2812_DriverStruct_t *ws2812_drv,Flasher_Struct_t *Flasher,uint8_t state);
 
-#define	WORM_WS2812_CLOCKWISE			1
-#define	WORM_WS2812_COUNTER_CLOCKWISE	0
-
-extern	uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
-extern	uint32_t	worm_advance(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
-extern	uint32_t	worm_update_pixels_buffer(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
-
-
-#endif /* MODULES_NEO_EFFECTS_WORM_H_ */
+#endif /* MODULES_NEO_EFFECTS_FLASHER_H_ */
