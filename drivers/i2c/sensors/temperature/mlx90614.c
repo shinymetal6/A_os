@@ -147,7 +147,7 @@ ITCM_AREA_CODE uint32_t mlx90614_get_id(I2C_Mlx90614_DriverStruct_t *mlx90614_Dr
 
 ITCM_AREA_CODE uint32_t mlx90614_register(I2C_Mlx90614_DriverStruct_t *mlx90614_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	if ( mlx90614_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( i2c_drv_ptr == NULL)
@@ -157,13 +157,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)mlx90614_Drv;
+		eptr->next_drv = (uint32_t *)mlx90614_Drv;
 		mlx90614_Drv->next_drv = NULL;
 	}
 	mlx90614_Drv->process = get_current_process();

@@ -32,7 +32,7 @@ GPIO_Interrupt_DriverStruct_t	*gpio_irq_drv_ptr = NULL;
 
 ITCM_AREA_CODE uint32_t	gpio_int_register(GPIO_Interrupt_DriverStruct_t *gpio_irq_Drv)
 {
-GPIO_Interrupt_DriverStruct_t *eptr, *pre_eptr;
+GPIO_Interrupt_DriverStruct_t *eptr;
 
 	if ( gpio_irq_Drv->IRQ_port == NULL )
 		return DRIVER_REQUEST_FAILED;
@@ -45,13 +45,10 @@ GPIO_Interrupt_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_drv_ptr;
+		eptr = (GPIO_Interrupt_DriverStruct_t *)gpio_irq_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (GPIO_Interrupt_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)gpio_irq_Drv;
+		eptr->next_drv = (uint32_t *)gpio_irq_Drv;
 		gpio_irq_Drv->next_drv = NULL;
 	}
 	gpio_irq_Drv->process = get_current_process();

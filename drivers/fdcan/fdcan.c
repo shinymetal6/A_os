@@ -59,7 +59,7 @@ ITCM_AREA_CODE uint32_t can_update_header(FDCAN_DriverStruct_t *fdcan_drv, FDCAN
 
 ITCM_AREA_CODE uint32_t	can_register(FDCAN_DriverStruct_t *fdcan_drv)
 {
-FDCAN_DriverStruct_t *eptr, *pre_eptr;
+FDCAN_DriverStruct_t *eptr;
 	if ( fdcan_drv->flags != 0 )
 	{
 		if ( fdcan_drv->wakeup_id == 0)
@@ -79,13 +79,10 @@ FDCAN_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = fdcan_drv_ptr;
+		eptr = fdcan_drv_ptr;
 		while(eptr->next_fdcan != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (FDCAN_DriverStruct_t *)eptr->next_fdcan;
-		}
-		pre_eptr->next_fdcan = (uint32_t *)fdcan_drv;
+		eptr->next_fdcan = (uint32_t *)fdcan_drv;
 		fdcan_drv->next_fdcan = NULL;
 	}
 
@@ -104,14 +101,13 @@ FDCAN_DriverStruct_t *eptr, *pre_eptr;
 
 ITCM_AREA_CODE FDCAN_DriverStruct_t *get_fdcan_ptr_from_workers(FDCAN_HandleTypeDef *hfdcan)
 {
-FDCAN_DriverStruct_t *eptr, *pre_eptr;
+FDCAN_DriverStruct_t *eptr;
 
-	eptr = pre_eptr = fdcan_drv_ptr;
+	eptr = fdcan_drv_ptr;
 	while(eptr != NULL)
 	{
 		if ( eptr->hfdcan == hfdcan )
 			return eptr;
-		pre_eptr = eptr;
 		if ( eptr->next_fdcan == NULL )
 			return NULL;
 		eptr = (FDCAN_DriverStruct_t *)eptr->next_fdcan;

@@ -345,7 +345,7 @@ ITCM_AREA_CODE uint32_t	spi_nrf24l01_goto_rx(SPI_NRF24L01_DriverStruct_t *spi_nr
 
 ITCM_AREA_CODE uint32_t	spi_nrf24l01_register(SPI_NRF24L01_DriverStruct_t *spi_nrf24l01_Drv)
 {
-SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
+SPI_NRF24L01_DriverStruct_t *eptr;
 
 	if ( spi_nrf24l01_Drv->cs_port == NULL )
 		return DRIVER_REQUEST_FAILED;
@@ -364,13 +364,10 @@ SPI_NRF24L01_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = (SPI_NRF24L01_DriverStruct_t *)spi_drv_ptr;
+		eptr = (SPI_NRF24L01_DriverStruct_t *)spi_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (SPI_NRF24L01_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)spi_nrf24l01_Drv;
+		eptr->next_drv = (uint32_t *)spi_nrf24l01_Drv;
 		spi_nrf24l01_Drv->next_drv = NULL;
 	}
 

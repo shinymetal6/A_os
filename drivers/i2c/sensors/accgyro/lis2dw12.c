@@ -116,7 +116,7 @@ ITCM_AREA_CODE uint32_t lis2dw12_init(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 
 ITCM_AREA_CODE uint32_t lis2dw12_register(I2C_Lis2DW12_DriverStruct_t *lis2dw12_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	if ( lis2dw12_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( i2c_drv_ptr == NULL)
@@ -126,13 +126,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)lis2dw12_Drv;
+		eptr->next_drv = (uint32_t *)lis2dw12_Drv;
 		lis2dw12_Drv->next_drv = NULL;
 	}
 	lis2dw12_Drv->process = get_current_process();

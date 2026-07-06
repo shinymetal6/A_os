@@ -73,7 +73,7 @@ uint16_t				servo_pulse_len;
 
 ITCM_AREA_CODE uint32_t	servo_register(SERVO_Control_DriverStruct_t *servo_drv)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
 	if ( servo_drv->timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -84,13 +84,10 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)servo_drv;
+		eptr->next_timer = (uint32_t *)servo_drv;
 		servo_drv->next_timer = NULL;
 	}
 	servo_drv->process = get_current_process();

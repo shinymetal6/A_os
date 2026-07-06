@@ -121,7 +121,7 @@ ITCM_AREA_CODE uint32_t	spi_lcd_off(SPI_LCD_DriverStruct_t *spi_lcd_Drv)
 
 ITCM_AREA_CODE uint32_t	spi_lcd_register(SPI_LCD_DriverStruct_t *spi_lcd_Drv)
 {
-SPI_LCD_DriverStruct_t *eptr, *pre_eptr;
+SPI_LCD_DriverStruct_t *eptr;
 
 	if ( spi_lcd_Drv->backlight_timer == NULL )
 		return DRIVER_REQUEST_FAILED;
@@ -141,13 +141,10 @@ SPI_LCD_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = (SPI_LCD_DriverStruct_t *)spi_drv_ptr;
+		eptr = (SPI_LCD_DriverStruct_t *)spi_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (SPI_LCD_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)spi_lcd_Drv;
+		eptr->next_drv = (uint32_t *)spi_lcd_Drv;
 		spi_lcd_Drv->next_drv = NULL;
 	}
 

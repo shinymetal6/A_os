@@ -72,7 +72,7 @@ uint32_t qspi_get_id(QSPI_DriverStruct_t *qspi_Drv,uint8_t *data)
 
 ITCM_AREA_CODE uint32_t	qspi_register(QSPI_DriverStruct_t *qspi_Drv)
 {
-QSPI_DriverStruct_t *eptr, *pre_eptr;
+QSPI_DriverStruct_t *eptr;
 uint8_t id = 0;
 
 	if ( qspi_Drv->wakeup_id == 0 )
@@ -89,13 +89,10 @@ uint8_t id = 0;
 	}
 	else
 	{
-		eptr = pre_eptr = (QSPI_DriverStruct_t *)qspi_drv_ptr;
+		eptr = (QSPI_DriverStruct_t *)qspi_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (QSPI_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)qspi_drv_ptr;
+		eptr->next_drv = (uint32_t *)qspi_drv_ptr;
 		qspi_Drv->next_drv = NULL;
 	}
 	qspi_Drv->process = get_current_process();

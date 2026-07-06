@@ -38,8 +38,6 @@ void stepper_internal_callback(Stepper_Control_DriverStruct_t *stepper_drv)
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
 
 	icount++;
-	if ( stepper_drv->number_of_steps >= STEPPER_RCR_MAXVAL )
-		stepper_drv->number_of_steps -= STEPPER_RCR_MAXVAL;
 	if ( stepper_drv->number_of_steps == 0 )
 	{
 		HAL_TIM_PWM_Stop(stepper_drv->timer, stepper_drv->timer_channel);
@@ -51,10 +49,16 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 		HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_SET);
 		return;
 	}
-	if ( stepper_drv->number_of_steps > 0 )
+
+	if ( stepper_drv->number_of_steps >= STEPPER_RCR_MAXVAL )
+		stepper_drv->number_of_steps -= STEPPER_RCR_MAXVAL;
+	else
 	{
-		timer->Instance->RCR = stepper_drv->number_of_steps;
-		stepper_drv->number_of_steps = 0;
+		if ( stepper_drv->number_of_steps > 0 )
+		{
+			timer->Instance->RCR = stepper_drv->number_of_steps;
+			stepper_drv->number_of_steps = 0;
+		}
 	}
 }
 
@@ -139,7 +143,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 
 ITCM_AREA_CODE uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
 	if ( stepper_drv->timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -158,13 +162,10 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)stepper_drv;
+		eptr->next_timer = (uint32_t *)stepper_drv;
 		stepper_drv->next_timer = NULL;
 	}
 	stepper_drv->process = get_current_process();

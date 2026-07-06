@@ -353,7 +353,7 @@ uint8_t 	gain				= (uint8_t  )param3;
 
 ITCM_AREA_CODE uint32_t	nau88c22_codec_register(Nau88C22_DriverStruct_t *codec_drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 
 	if ( codec_drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -364,13 +364,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)codec_drv;
+		eptr->next_drv = (uint32_t *)codec_drv;
 		codec_drv->next_drv = NULL;
 	}
 	return 0;

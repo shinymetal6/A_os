@@ -101,7 +101,7 @@ ITCM_AREA_CODE uint32_t	spi_ISO14443_BlockWrite(SPI_NFC_DriverStruct_t *spi_nfc_
 
 ITCM_AREA_CODE uint32_t	spi_nfc_register(SPI_NFC_DriverStruct_t *spi_nfc_Drv)
 {
-SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
+SPI_NFC_DriverStruct_t *eptr;
 
 	if ( spi_nfc_Drv->cs_port == NULL )
 		return DRIVER_REQUEST_FAILED;
@@ -130,13 +130,10 @@ SPI_NFC_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = (SPI_NFC_DriverStruct_t *)spi_drv_ptr;
+		eptr = (SPI_NFC_DriverStruct_t *)spi_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (SPI_NFC_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)spi_nfc_Drv;
+		eptr->next_drv = (uint32_t *)spi_nfc_Drv;
 		spi_nfc_Drv->next_drv = NULL;
 	}
 

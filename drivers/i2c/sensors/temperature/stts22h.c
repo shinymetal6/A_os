@@ -120,7 +120,7 @@ ITCM_AREA_CODE uint32_t stts22h_get_data(I2C_Stts22H_DriverStruct_t *stts22h_Drv
 
 ITCM_AREA_CODE uint32_t stts22h_register(I2C_Stts22H_DriverStruct_t *stts22h_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	if ( stts22h_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( i2c_drv_ptr == NULL)
@@ -130,13 +130,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)stts22h_Drv;
+		eptr->next_drv = (uint32_t *)stts22h_Drv;
 		stts22h_Drv->next_drv = NULL;
 	}
 	stts22h_Drv->process = get_current_process();

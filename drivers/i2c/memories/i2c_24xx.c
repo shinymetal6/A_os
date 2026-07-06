@@ -233,7 +233,7 @@ uint8_t	i;
 
 ITCM_AREA_CODE uint32_t	i2c_24xx_register(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	if ( i2c_24xx_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( i2c_drv_ptr == NULL)
@@ -243,13 +243,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)i2c_24xx_Drv;
+		eptr->next_drv = (uint32_t *)i2c_24xx_Drv;
 		i2c_24xx_Drv->next_drv = NULL;
 	}
 	i2c_24xx_Drv->process = get_current_process();

@@ -89,7 +89,7 @@ ITCM_AREA_CODE uint32_t ws2812_init(WS2812_DriverStruct_t *ws2812_drv)
 
 ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_DriverStruct_t *ws2812_drv)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 	if ( ws2812_drv->ws2812_timer == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( ws2812_drv->ws2812_work_buf == NULL)
@@ -106,15 +106,13 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)ws2812_drv;
+		eptr->next_timer = (uint32_t *)ws2812_drv;
 		ws2812_drv->next_timer = NULL;
 	}
+
 	ws2812_drv->process = get_current_process();
 	ws2812_drv->timer_type = TIM_TYPE_PWM;
 	if ( ws2812_drv->ws2812_one_val == 0 )

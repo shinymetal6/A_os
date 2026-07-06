@@ -146,7 +146,7 @@ SDCARD_DriverStruct_t *sdcard_Drv = sdcard_drv_ptr;
 
 ITCM_AREA_CODE uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv)
 {
-SDCARD_DriverStruct_t *eptr, *pre_eptr;
+SDCARD_DriverStruct_t *eptr;
 
 	if ( sdcard_Drv->sd_detect_port == NULL )
 		return DRIVER_REQUEST_FAILED;
@@ -160,13 +160,10 @@ SDCARD_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = sdcard_drv_ptr;
+		eptr = sdcard_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (SDCARD_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)sdcard_Drv;
+		eptr->next_drv = (uint32_t *)sdcard_Drv;
 		sdcard_Drv->next_drv = NULL;
 	}
 

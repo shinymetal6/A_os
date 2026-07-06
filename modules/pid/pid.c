@@ -122,7 +122,7 @@ ITCM_AREA_CODE void PID_Set(PIDController_TypeDef *pid, float kp, float ki, floa
 
 ITCM_AREA_CODE uint32_t	PID_register(PIDController_TypeDef *pid)
 {
-PIDController_TypeDef *eptr, *pre_eptr;
+PIDController_TypeDef *eptr;
 
 	if ( pid->periodic_timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -135,13 +135,10 @@ PIDController_TypeDef *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = pid_drv_ptr;
+		eptr = pid_drv_ptr;
 		while(eptr->next_pid != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (PIDController_TypeDef *)eptr->next_pid;
-		}
-		pre_eptr->next_pid = (uint32_t *)pid;
+		eptr->next_pid = (uint32_t *)pid;
 		pid->next_pid = NULL;
 	}
 	pid->process = get_current_process();

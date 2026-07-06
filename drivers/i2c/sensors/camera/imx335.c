@@ -444,7 +444,7 @@ uint8_t	IMX335_3_I2C_ADDRESS_present;
 
 ITCM_AREA_CODE uint32_t imx335_register(I2C_imx335_DriverStruct_t *imx335_Drv)
 {
-I2C_DriverStruct_t 	*eptr, *pre_eptr;
+I2C_DriverStruct_t 	*eptr;
 uint32_t			ret_val;
 uint8_t 			tmp;
 
@@ -474,13 +474,10 @@ uint8_t 			tmp;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)imx335_Drv;
+		eptr->next_drv = (uint32_t *)imx335_Drv;
 		imx335_Drv->next_drv = NULL;
 	}
 	imx335_Drv->process = get_current_process();

@@ -38,18 +38,13 @@ typedef struct
 	uint16_t			rx_num_chars;
 	uint8_t				*data;
 	uint16_t			timeout;
-	uint8_t				timeout_mask;
 	uint16_t			timeout_reload_value;
-	uint8_t				sentinel_start;
-	uint8_t				sentinel_end;
-	uint8_t				sentinel_flags;
 	uint32_t			uart_error;
 	UART_HandleTypeDef 	*uart;
 	GPIO_TypeDef	 	*tx_port;
 	uint16_t			tx_bit;
 	GPIO_TypeDef	 	*rx_port;
 	uint16_t			rx_bit;
-	uint32_t			param0;
 	uint32_t 			wakeup_id;
 	uint32_t			to_errors;
 	uint32_t			rx_errors;
@@ -71,10 +66,6 @@ typedef struct
 #define	UART_WAKEUP_ON_TIMEOUT		0x04
 #define	UART_WAKEUP_ON_ERRORS		0x02
 // #define	unused					0x01
-
-/* sentinel_flags */
-#define	UART_SENTINEL_END_FOUND		0x02
-#define	UART_SENTINEL_START_FOUND	0x01
 
 typedef struct
 {

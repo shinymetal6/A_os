@@ -128,7 +128,7 @@ ITCM_AREA_CODE uint32_t sht40_power_off(I2C_Sht40_DriverStruct_t *sht40_Drv)
 
 ITCM_AREA_CODE uint32_t sht40_register(I2C_Sht40_DriverStruct_t *sht40_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	if ( sht40_Drv->bus == NULL)
 		return DRIVER_REQUEST_FAILED;
 	if ( i2c_drv_ptr == NULL)
@@ -138,13 +138,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)sht40_Drv;
+		eptr->next_drv = (uint32_t *)sht40_Drv;
 		sht40_Drv->next_drv = NULL;
 	}
 	sht40_Drv->process = get_current_process();

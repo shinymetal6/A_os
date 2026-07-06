@@ -48,7 +48,7 @@ uint8_t cmd_byte = (wiper == 0) ? MCP4651_CMD_READ_DATA | (MCP4651_POT_WIPER_0<<
 
 ITCM_AREA_CODE uint32_t mcp4651_register(I2C_MCP4651_Drv_TypeDef *mcp4651_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 
 	mcp4651_Drv->dev_found = 0;
 	if ( mcp4651_Drv->bus == NULL)
@@ -67,13 +67,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)mcp4651_Drv;
+		eptr->next_drv = (uint32_t *)mcp4651_Drv;
 		mcp4651_Drv->next_drv = NULL;
 	}
 	mcp4651_Drv->process = get_current_process();

@@ -1225,7 +1225,7 @@ ITCM_AREA_CODE uint32_t mlx90640_run(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv,f
 
 ITCM_AREA_CODE uint32_t mlx90640_register(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 	/* sanity check */
 
 	if ( mlx90640_Drv->bus == NULL)
@@ -1257,13 +1257,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr  = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)mlx90640_Drv;
+		eptr->next_drv = (uint32_t *)mlx90640_Drv;
 		mlx90640_Drv->next_drv = NULL;
 	}
 	mlx90640_Drv->process = get_current_process();

@@ -214,7 +214,7 @@ extern void dcc_TIM_DMADelayPulseHalfCplt(DMA_HandleTypeDef *hdma);
 
  uint32_t	dcc_register(DCC_DriverStruct_t *dcc_drv)
 {
-DCC_DriverStruct_t *eptr, *pre_eptr;
+DCC_DriverStruct_t *eptr;
 	if ( dcc_drv->wakeup_id == 0)
 		return DRIVER_REQUEST_FAILED;
 	if ( dcc_drv->dcc_timer == NULL)
@@ -229,13 +229,10 @@ DCC_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = dcc_drv_ptr;
+		eptr = dcc_drv_ptr;
 		while(eptr->next_dcc != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (DCC_DriverStruct_t *)eptr->next_dcc;
-		}
-		pre_eptr->next_dcc = (uint32_t *)dcc_drv;
+		eptr->next_dcc = (uint32_t *)dcc_drv;
 		dcc_drv->next_dcc = NULL;
 	}
 
@@ -253,14 +250,13 @@ DCC_DriverStruct_t *eptr, *pre_eptr;
 
  DCC_DriverStruct_t *driver_get_drv_from_dcc_dma_channel(DMA_HandleTypeDef *hdma)
 {
-DCC_DriverStruct_t *eptr, *pre_eptr;
+DCC_DriverStruct_t *eptr;
 
-	eptr = pre_eptr = dcc_drv_ptr;
+	eptr = dcc_drv_ptr;
 	while(eptr != NULL)
 	{
 		if (( eptr->hdma[0] == hdma ) || ( eptr->hdma[1] == hdma ))
 			return eptr;
-		pre_eptr = eptr;
 		if ( eptr->next_dcc == NULL )
 			return NULL;
 		eptr = (DCC_DriverStruct_t *)eptr->next_dcc;

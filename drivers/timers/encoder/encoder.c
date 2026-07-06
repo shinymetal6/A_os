@@ -29,7 +29,7 @@
 
 ITCM_AREA_CODE uint32_t	encoder_register(Encoder_DriverStruct_t *encoder_drv)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
 	if ( encoder_drv->timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -40,13 +40,10 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)encoder_drv;
+		eptr->next_timer = (uint32_t *)encoder_drv;
 		encoder_drv->next_timer = NULL;
 	}
 	encoder_drv->timer_type = TIM_TYPE_ENCODER;

@@ -30,14 +30,13 @@ TIMER_DriverStruct_t	*timer_drv_ptr;
 
 ITCM_AREA_CODE TIMER_DriverStruct_t *get_ptr_from_workers(TIM_HandleTypeDef 	*timer)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
-	eptr = pre_eptr = timer_drv_ptr;
+	eptr = timer_drv_ptr;
 	while(eptr != NULL)
 	{
 		if ( eptr->timer == timer )
 			return eptr;
-		pre_eptr = eptr;
 		if ( eptr->next_timer == NULL )
 			return NULL;
 		eptr = (TIMER_DriverStruct_t *)eptr->next_timer;

@@ -145,7 +145,7 @@ ITCM_AREA_CODE uint32_t dhtxx_am230x_get_status(Dhtxx_am230x_DriverStruct_t *dht
 ITCM_AREA_CODE uint32_t	dhtxx_am230x_register(Dhtxx_am230x_DriverStruct_t *dhtxx_am230x_drv)
 {
 
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
 	if ( dhtxx_am230x_drv->timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -156,13 +156,10 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr  = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)dhtxx_am230x_drv;
+		eptr->next_timer = (uint32_t *)dhtxx_am230x_drv;
 		dhtxx_am230x_drv->next_timer = NULL;
 	}
 	dhtxx_am230x_drv->process = get_current_process();

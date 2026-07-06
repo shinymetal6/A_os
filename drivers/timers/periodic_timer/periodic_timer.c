@@ -41,7 +41,7 @@ ITCM_AREA_CODE uint32_t periodic_timer_start(PERIODIC_Timer_DriverStruct_t *peri
 
 ITCM_AREA_CODE uint32_t	periodic_timer_register(PERIODIC_Timer_DriverStruct_t *periodic_timer_drv)
 {
-TIMER_DriverStruct_t *eptr, *pre_eptr;
+TIMER_DriverStruct_t *eptr;
 
 	if ( periodic_timer_drv->timer == NULL)
 		return DRIVER_REQUEST_FAILED;
@@ -54,13 +54,10 @@ TIMER_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = timer_drv_ptr;
+		eptr = timer_drv_ptr;
 		while(eptr->next_timer != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		}
-		pre_eptr->next_timer = (uint32_t *)periodic_timer_drv;
+		eptr->next_timer = (uint32_t *)periodic_timer_drv;
 		periodic_timer_drv->next_timer = NULL;
 	}
 	periodic_timer_drv->process = get_current_process();

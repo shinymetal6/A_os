@@ -126,7 +126,7 @@ ITCM_AREA_CODE uint32_t mcp45xx_WlatHigh(I2C_MCP45xx_Drv_TypeDef *mcp45xx_Drv)
 
 ITCM_AREA_CODE uint32_t mcp45xx_register(I2C_MCP45xx_Drv_TypeDef *mcp45xx_Drv)
 {
-I2C_DriverStruct_t *eptr, *pre_eptr;
+I2C_DriverStruct_t *eptr;
 
 	mcp45xx_Drv->dev_found = 0;
 	if ( mcp45xx_Drv->bus == NULL)
@@ -149,13 +149,10 @@ I2C_DriverStruct_t *eptr, *pre_eptr;
 	}
 	else
 	{
-		eptr = pre_eptr = i2c_drv_ptr;
+		eptr = i2c_drv_ptr;
 		while(eptr->next_drv != NULL)
-		{
-			pre_eptr = eptr;
 			eptr = (I2C_DriverStruct_t *)eptr->next_drv;
-		}
-		pre_eptr->next_drv = (uint32_t *)mcp45xx_Drv;
+		eptr->next_drv = (uint32_t *)mcp45xx_Drv;
 		mcp45xx_Drv->next_drv = NULL;
 	}
 	mcp45xx_Drv->process = get_current_process();
