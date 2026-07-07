@@ -25,6 +25,11 @@ extern	void sample_process_1_gpio(uint32_t process_id);	//This is process1
 #ifdef	SAMPLEPROCESS_1_XMODEM_RX_UART
 extern	void sample_process_1_xmodem_rx_UART(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_XMODEM_RX_UART
+
+#ifdef	SAMPLEPROCESS_1_RX_UART_DMA
+extern	void sample_process_1_rx_UART_DMA(uint32_t process_id);	//This is process1
+#endif // #define	SAMPLEPROCESS_1_RX_UART_DMA
+
 #ifdef	SAMPLEPROCESS_1_PING_NRF24L01
 extern	void sample_process_1_ping_nrf24l01(uint32_t process_id);	//This is process1
 extern	void sample_process_1_ping_init(uint32_t process_id);
@@ -363,6 +368,9 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_stepper,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_STEPPER
+#ifdef	SAMPLEPROCESS_1_RX_UART_DMA
+				.user_process = sample_process_1_rx_UART_DMA,
+#endif // #define	SAMPLEPROCESS_1_RX_UART_DMA
 				.stack_size = 1024,
 		},
 		{

@@ -54,7 +54,15 @@ ITCM_AREA_CODE  uint32_t	uart_send(UART_DriverStruct_t *uart_drv, uint8_t *buffe
 
 ITCM_AREA_CODE  uint32_t	uart_start_receive(UART_DriverStruct_t *uart_drv)
 {
-	return HAL_UART_Receive_IT(uart_drv->uart, &uart_drv->rx_char, 1);
+uint32_t ret_val;
+	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+	{
+		ret_val = HAL_UARTEx_ReceiveToIdle_DMA(uart_drv->uart, uart_drv->data, uart_drv->rx_max_len);
+	    __HAL_DMA_DISABLE_IT(uart_drv->uart->hdmarx, DMA_IT_HT);
+	    return ret_val;
+	}
+	else
+		return HAL_UART_Receive_IT(uart_drv->uart, &uart_drv->rx_char, 1);
 }
 
 ITCM_AREA_CODE  uint32_t	uart_get_rxlen(UART_DriverStruct_t *uart_drv)
@@ -94,7 +102,13 @@ UART_DriverStruct_t *eptr;
 	}
 	uart_drv->process = get_current_process();
 	uart_drv->timeout_reload_value = uart_drv->timeout;
-	set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback,(uint32_t *)uart_drv);
+	if ( uart_drv->uart->hdmarx == NULL )
+		uart_drv->flags &= ~UART_USES_DMA_RX;
+	if ( uart_drv->uart->hdmatx == NULL )
+		uart_drv->flags &= ~UART_USES_DMA_TX;
+	uart_drv->uart->Instance->RTOR = ((uart_drv->timeout * 100) & 0x00FFFFFF);
+	if ( (uart_drv->flags & UART_USES_DMA_RX) == 0 )
+		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback,(uint32_t *)uart_drv);
 
 	return 0;
 }
@@ -168,6 +182,23 @@ UART_DriverStruct_t	*uart_drv;
 		}
 		uart_drv->timeout = uart_drv->timeout_reload_value;
 		HAL_UART_Receive_IT(uart_drv->uart, &uart_drv->rx_char, 1);
+	}
+	__enable_irq();
+}
+
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+UART_DriverStruct_t	*uart_drv;
+	__disable_irq();
+	if ( (uart_drv = find_uart(huart)) != NULL)
+	{
+		if (uart_drv->data != NULL )
+		{
+			uart_drv->rx_num_chars = uart_drv->rx_max_len - __HAL_DMA_GET_COUNTER(uart_drv->uart->hdmarx);
+			if (( uart_drv->flags & UART_WAKEUP_ON_RXFULL) == UART_WAKEUP_ON_RXFULL)
+				activate_process(uart_drv->process,uart_drv->wakeup_id,WAKEUP_FLAGS_UART_RX);
+			uart_start_receive(uart_drv);
+		}
 	}
 	__enable_irq();
 }
