@@ -81,7 +81,6 @@ extern void UART_Driver_RxTimeoutCheckCallback(uint32_t *param);
 
 ITCM_AREA_CODE uint32_t	uart_register(UART_DriverStruct_t *uart_drv)
 {
-
 UART_DriverStruct_t *eptr;
 
 	if ( uart_drv->uart == NULL)
@@ -106,8 +105,6 @@ UART_DriverStruct_t *eptr;
 		uart_drv->flags &= ~UART_USES_DMA_RX;
 	if ( uart_drv->uart->hdmatx == NULL )
 		uart_drv->flags &= ~UART_USES_DMA_TX;
-	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
-		uart_drv->uart->Instance->RTOR = ((uart_drv->timeout * 100) & 0x00FFFFFF);
 	if ( (uart_drv->flags & UART_USES_DMA_RX) == 0 )
 		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback,(uint32_t *)uart_drv);
 

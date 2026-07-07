@@ -105,7 +105,6 @@ UART_DriverStruct_t Uart_Drv =
 	.wakeup_id = UART_WAKEUP,
 	.timeout = 100,
 	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
 uint8_t		xmodem_rx_uart_enable_poll;
@@ -120,7 +119,6 @@ uint32_t	wakeup,flags;
 	xmodem_rx_uart_enable_poll = 1;
 
 	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
-	//xmodem_set_uart_response_delay(10);
 
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
