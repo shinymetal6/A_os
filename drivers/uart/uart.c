@@ -106,7 +106,8 @@ UART_DriverStruct_t *eptr;
 		uart_drv->flags &= ~UART_USES_DMA_RX;
 	if ( uart_drv->uart->hdmatx == NULL )
 		uart_drv->flags &= ~UART_USES_DMA_TX;
-	uart_drv->uart->Instance->RTOR = ((uart_drv->timeout * 100) & 0x00FFFFFF);
+	if ( (uart_drv->flags & UART_USES_DMA_RX) == UART_USES_DMA_RX )
+		uart_drv->uart->Instance->RTOR = ((uart_drv->timeout * 100) & 0x00FFFFFF);
 	if ( (uart_drv->flags & UART_USES_DMA_RX) == 0 )
 		set_before_check_timers_callback(UART_Driver_RxTimeoutCheckCallback,(uint32_t *)uart_drv);
 
