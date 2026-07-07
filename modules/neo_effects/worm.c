@@ -23,6 +23,7 @@
 
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+#ifdef A_OS_TIMERS_ENABLED
 
 ITCM_AREA_CODE uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm)
 {
@@ -91,3 +92,4 @@ int32_t i,k;
 	return 0;
 }
 
+#endif //#ifdef A_OS_TIMERS_ENABLED

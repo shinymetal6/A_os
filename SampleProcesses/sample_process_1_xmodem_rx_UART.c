@@ -27,20 +27,29 @@
 #ifdef SAMPLEPROCESS_1_XMODEM_RX_UART
 
 #ifdef	STM32H743xx
-#define	xmodem_rx_data_area	0x30000000
-#define	xmodem_rx_data_len		0x2ffff
-extern	UART_HandleTypeDef	huart3;
-#define	UART				huart3
-#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
-#define	UART_EVENT			EVENT_UART3_IRQ
+	#define	xmodem_rx_data_area	0x30000000
+	#define	xmodem_rx_data_len		0x2ffff
+	extern	UART_HandleTypeDef	huart3;
+	#define	UART				huart3
+	#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
+	#define	UART_EVENT			EVENT_UART3_IRQ
 #else
-#ifdef	STM32F446xx
-#define	xmodem_rx_data_len		0xffff
-uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
-#else
-#define	xmodem_rx_data_len		0x3fff
-uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
-#endif
+	#ifdef	STM32F446xx
+		#define	xmodem_rx_data_len		0xffff
+		uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
+	#else
+		#ifdef	STM32H753xx
+			#define	xmodem_rx_data_area	0x30000000
+			#define	xmodem_rx_data_len		0x2ffff
+			extern	UART_HandleTypeDef	huart3;
+			#define	UART				huart3
+			#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
+			#define	UART_EVENT			EVENT_UART3_IRQ
+		#else
+			#define	xmodem_rx_data_len		0x3fff
+			uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
+		#endif
+	#endif
 #endif
 
 #ifdef	STM32U575xx

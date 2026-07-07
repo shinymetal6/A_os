@@ -22,6 +22,7 @@
 
 #ifndef MODULES_NEO_EFFECTS_NEO_EFFECTS_H_
 #define MODULES_NEO_EFFECTS_NEO_EFFECTS_H_
+#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -32,5 +33,6 @@ typedef struct
 #include "glow.h"
 #include "flasher.h"
 
+#endif //#ifdef A_OS_TIMERS_ENABLED
 
 #endif /* MODULES_NEO_EFFECTS_NEO_EFFECTS_H_ */

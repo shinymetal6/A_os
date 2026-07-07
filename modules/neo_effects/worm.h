@@ -22,6 +22,7 @@
 
 #ifndef MODULES_NEO_EFFECTS_WORM_H_
 #define MODULES_NEO_EFFECTS_WORM_H_
+#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -42,6 +43,7 @@ typedef struct
 extern	uint32_t	worm_init(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
 extern	uint32_t	worm_advance(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
 extern	uint32_t	worm_update_pixels_buffer(WS2812_DriverStruct_t *ws2812_drv,Worm_Struct_t *Worm);
+#endif //#ifdef A_OS_TIMERS_ENABLED
 
 
 #endif /* MODULES_NEO_EFFECTS_WORM_H_ */

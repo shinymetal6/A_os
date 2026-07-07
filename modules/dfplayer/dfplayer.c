@@ -27,13 +27,6 @@
 #include "dfplayer.h"
 #include <string.h>
 
-// --- UART RX Variables ---
-static uint8_t rx_byte;
-static uint8_t rx_buffer[10];
-static uint8_t rx_index = 0;
-static uint8_t rx_state = 0; // 0: Waiting for start (0x7E), 1: Receiving payload
-UART_DriverStruct_t *uart_drv_df;
-
 // Calculate checksum (2's complement of sum of bytes 1 to 6)
 static uint16_t DFPlayer_CalcChecksum(uint8_t *data) {
     uint16_t sum = 0;
@@ -67,82 +60,82 @@ void DFPlayer_SendCommand(UART_DriverStruct_t *uart_drv,uint8_t cmd, uint16_t pa
 
 void DFPlayer_Init(UART_DriverStruct_t *uart_drv)
 {
-    // Request initialization status with feedback enabled
-	uart_drv_df = uart_drv;
 	uart_start_receive(uart_drv);
     DFPlayer_SendCommand(uart_drv,0x3F, 0);
 }
 
 // --- High-Level API ---
-void DFPlayer_PlayTrack(UART_DriverStruct_t *uart_drv,uint16_t track_num) {
+void DFPlayer_PlayTrack(UART_DriverStruct_t *uart_drv,uint16_t track_num)
+{
     DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY_TRACK, track_num); // Enable feedback to know when it finishes
 }
 
-void DFPlayer_SetVolume(UART_DriverStruct_t *uart_drv,uint8_t volume) {
+void DFPlayer_SetVolume(UART_DriverStruct_t *uart_drv,uint8_t volume)
+{
     if (volume > 30) volume = 30;
     DFPlayer_SendCommand(uart_drv,DF_CMD_SET_VOL, volume); // No need for feedback on volume
 }
 
-void DFPlayer_Play(UART_DriverStruct_t *uart_drv) {
+void DFPlayer_Play(UART_DriverStruct_t *uart_drv)
+{
     DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY, 0);
 }
 
-void DFPlayer_Pause(UART_DriverStruct_t *uart_drv) {
+void DFPlayer_Pause(UART_DriverStruct_t *uart_drv)
+{
     DFPlayer_SendCommand(uart_drv,DF_CMD_PAUSE, 0);
 }
 
-void DFPlayer_UART_IRQHandler(void) {
-    if (rx_state == 0) {
-        // Waiting for the start byte
-        if (rx_byte == 0x7E) {
-            rx_buffer[0] = rx_byte;
-            rx_index = 1;
-            rx_state = 1;
-        }
-    } else {
-        // Collecting the rest of the packet
-        rx_buffer[rx_index++] = rx_byte;
-
-        if (rx_index >= 10) {
-            // Packet complete, check if it ends with 0xEF
-            if (rx_buffer[9] == 0xEF) {
-                DFPlayer_Response_t resp;
-                resp.is_valid = false;
-
-                // Verify Checksum
-                uint16_t calc_checksum = DFPlayer_CalcChecksum(rx_buffer);
-                uint16_t recv_checksum = (rx_buffer[7] << 8) | rx_buffer[8];
-
-                if (calc_checksum == recv_checksum) {
-                    resp.command = rx_buffer[3];
-                    resp.parameter = (rx_buffer[5] << 8) | rx_buffer[6];
-                    resp.is_valid = true;
-                }
-
-                // Pass to user-defined processing function
-                DFPlayer_ProcessResponse(&resp);
-            }
-            // Reset state machine for next packet
-            rx_state = 0;
-            rx_index = 0;
-        }
-    }
+void DFPlayer_PlayFolderFile(UART_DriverStruct_t *uart_drv,uint8_t folder_num, uint8_t file_num)
+{
+    uint16_t param = ((uint16_t)folder_num << 8) | file_num;
+    DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY_FOLDER, param);
 }
 
-void DFPlayer_ProcessResponse(DFPlayer_Response_t *resp) {
-    if (!resp->is_valid) {
-        return; // Invalid checksum or malformed packet
+void DFPlayer_QueryStatus(UART_DriverStruct_t *uart_drv)
+{
+    // Notice the 'true' at the end! This enables feedback so the DFPlayer replies.
+    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_STATUS, 0x00);
+}
+
+void DFPlayer_QueryCurrentTrack(UART_DriverStruct_t *uart_drv)
+{
+    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_TRACK, 0x00);
+}
+
+void DFPlayer_QueryVolume(UART_DriverStruct_t *uart_drv)
+{
+    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_VOLUME, 0x00);
+}
+
+void DFPlayer_QuerySDTotalTracks(UART_DriverStruct_t *uart_drv)
+{
+    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_SD_TOTAL, 0x00);
+}
+
+void DFPlayer_ProcessResponse(UART_DriverStruct_t *uart_drv)
+{
+	DFPlayer_Reply_t	*reply = (DFPlayer_Reply_t *)uart_drv->data;
+	if ( reply->header != DF_HEADER)
+		return;
+    uint16_t calc_checksum = DFPlayer_CalcChecksum(uart_drv->data);
+    uint16_t recv_checksum = (uart_drv->data[7] << 8) | uart_drv->data[8];
+
+    if (calc_checksum == recv_checksum)
+    {
+    	reply->event = uart_drv->data[3];
+    	reply->parameter = (uart_drv->data[5] << 8) | uart_drv->data[6];
     }
 
-    switch (resp->command) {
+    switch (reply->event) {
         case DF_RESP_INIT_FINISHED: // 0x3F
             // DFPlayer has finished initializing and detected the media.
             // Parameter: 1=USB, 2=SD, 3=Flash
-            if (resp->parameter == 2) {
+            if (reply->parameter == 2) {
                 // SD Card detected!
-                DFPlayer_SetVolume(uart_drv_df,20);       // Set volume to 20 (out of 30)
+                DFPlayer_SetVolume(uart_drv,20);       // Set volume to 20 (out of 30)
                 HAL_Delay(100);               // Small delay between commands
-                DFPlayer_PlayTrack(uart_drv_df,1);        // Start playing track 0001.mp3
+                DFPlayer_PlayTrack(uart_drv,1);        // Start playing track 0001.mp3
             }
             break;
 
@@ -168,7 +161,7 @@ void DFPlayer_ProcessResponse(DFPlayer_Response_t *resp) {
 
         case DF_RESP_SD_INSERTED: // 0x3C
             // SD card was hot-swapped (inserted while powered on)
-            DFPlayer_PlayTrack(uart_drv_df,1);
+            DFPlayer_PlayTrack(uart_drv,1);
             break;
 
         default:

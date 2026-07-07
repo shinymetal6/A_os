@@ -24,6 +24,7 @@
 
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+#ifdef A_OS_TIMERS_ENABLED
 
 ITCM_AREA_CODE uint32_t	glow_init(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct_t *Glow)
 {
@@ -108,4 +109,5 @@ int32_t i;
 	}
 	return 0;
 }
+#endif //#ifdef A_OS_TIMERS_ENABLED
 

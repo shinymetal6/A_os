@@ -22,6 +22,7 @@
 
 #ifndef MODULES_NEO_EFFECTS_FLASHER_H_
 #define MODULES_NEO_EFFECTS_FLASHER_H_
+#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -39,5 +40,6 @@ typedef struct
 }Flasher_Struct_t;
 extern	uint32_t	flasher_init(WS2812_DriverStruct_t *ws2812_drv,Flasher_Struct_t *Flasher);
 extern	uint32_t	flasher_apply(WS2812_DriverStruct_t *ws2812_drv,Flasher_Struct_t *Flasher,uint8_t state);
+#endif //#ifdef A_OS_TIMERS_ENABLED
 
 #endif /* MODULES_NEO_EFFECTS_FLASHER_H_ */

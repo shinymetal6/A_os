@@ -22,6 +22,7 @@
 
 #ifndef MODULES_NEO_EFFECTS_GLOW_H_
 #define MODULES_NEO_EFFECTS_GLOW_H_
+#ifdef A_OS_TIMERS_ENABLED
 
 typedef struct
 {
@@ -50,5 +51,6 @@ typedef struct
 extern uint32_t	glow_init(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct_t *Glow);
 extern uint32_t	glow_apply(WS2812_DriverStruct_t *ws2812_drv,Glow_Struct_t *Glow);
 
+#endif //#ifdef A_OS_TIMERS_ENABLED
 
 #endif /* MODULES_NEO_EFFECTS_GLOW_H_ */
