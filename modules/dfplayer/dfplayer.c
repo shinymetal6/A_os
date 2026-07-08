@@ -24,148 +24,186 @@
 
 #include "../../kernel/A.h"
 #include "../../kernel/A_exported_functions.h"
+
+#ifdef A_OS_UART_ENABLED
 #include "dfplayer.h"
 #include <string.h>
 
-// Calculate checksum (2's complement of sum of bytes 1 to 6)
-static uint16_t DFPlayer_CalcChecksum(uint8_t *data) {
-    uint16_t sum = 0;
-    for (int i = 1; i <= 6; i++) {
-        sum += data[i];
-    }
-    return -sum;
-}
-
-// Send command (Updated to allow enabling feedback)
-uint8_t DFPlayer_buf[10];
-void DFPlayer_SendCommand(UART_DriverStruct_t *uart_drv,uint8_t cmd, uint16_t param)
+uint32_t DfPlayer_is_busy(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-
-	DFPlayer_buf[0] = 0x7E; // Start
-	DFPlayer_buf[1] = 0xFF; // Version
-	DFPlayer_buf[2] = 0x06; // Length
-	DFPlayer_buf[3] = cmd;  // Command
-	DFPlayer_buf[4] = 0x01; // Feedback enable
-	DFPlayer_buf[5] = (param >> 8) & 0xFF; // Param MSB
-	DFPlayer_buf[6] = param & 0xFF;        // Param LSB
-
-    uint16_t checksum = DFPlayer_CalcChecksum(DFPlayer_buf);
-    DFPlayer_buf[7] = (checksum >> 8) & 0xFF;
-    DFPlayer_buf[8] = checksum & 0xFF;
-    DFPlayer_buf[9] = 0xEF; // End
-
-    uart_send(uart_drv, DFPlayer_buf, 10);
-    //HAL_Delay(100); // Processing delay
+	/* Error case : busy forever */
+    if ( MODULE_DFPlayer->busy_port == NULL )
+    	return 1;
+    return (HAL_GPIO_ReadPin(MODULE_DFPlayer->busy_port, MODULE_DFPlayer->busy_bit) );
 }
 
-void DFPlayer_Init(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_send_cmd(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint8_t cmd, uint16_t param, uint8_t request_feedback)
 {
-	uart_start_receive(uart_drv);
-    DFPlayer_SendCommand(uart_drv,0x3F, 0);
+	MODULE_DFPlayer->DfPlayer_txbuffer[0] = 0x7E;
+	MODULE_DFPlayer->DfPlayer_txbuffer[1] = 0xFF;
+	MODULE_DFPlayer->DfPlayer_txbuffer[2] = 0x06;
+	MODULE_DFPlayer->DfPlayer_txbuffer[3] = cmd;
+	MODULE_DFPlayer->DfPlayer_txbuffer[4] = request_feedback ? 0x01 : 0x00; // <-- Feedback flag
+	MODULE_DFPlayer->DfPlayer_txbuffer[5] = (param >> 8) & 0xFF;
+	MODULE_DFPlayer->DfPlayer_txbuffer[6] = param & 0xFF;
+
+    uint16_t checksum = 0;
+    for (uint8_t i = 1; i < 7; i++)
+    	checksum += MODULE_DFPlayer->DfPlayer_txbuffer[i];
+    checksum = -checksum;
+
+    MODULE_DFPlayer->DfPlayer_txbuffer[7] = (checksum >> 8) & 0xFF;
+    MODULE_DFPlayer->DfPlayer_txbuffer[8] = checksum & 0xFF;
+    MODULE_DFPlayer->DfPlayer_txbuffer[9] = 0xEF;
+
+    uart_send(MODULE_DFPlayer->uart_drv, MODULE_DFPlayer->DfPlayer_txbuffer, 10);
+    HAL_Delay(50); // Allow time for the module to process
+    return 0;
 }
 
-// --- High-Level API ---
-void DFPlayer_PlayTrack(UART_DriverStruct_t *uart_drv,uint16_t track_num)
+/* Commands with reply */
+uint32_t DfPlayer_set_source(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint8_t source)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY_TRACK, track_num); // Enable feedback to know when it finishes
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_SET_SOURCE, source, 1);
 }
 
-void DFPlayer_SetVolume(UART_DriverStruct_t *uart_drv,uint8_t volume)
+uint32_t DfPlayer_send_query_total_tracks(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    if (volume > 30) volume = 30;
-    DFPlayer_SendCommand(uart_drv,DF_CMD_SET_VOL, volume); // No need for feedback on volume
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_QUERY_TF_TOTAL_TRACKS, 0x0000, 1);
 }
 
-void DFPlayer_Play(UART_DriverStruct_t *uart_drv)
+/* Commands with no reply */
+
+uint32_t DfPlayer_play_track(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint16_t track)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY, 0);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PLAY_TRACK, track, 0);
 }
 
-void DFPlayer_Pause(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_play(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_PAUSE, 0);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PLAY, 0x0000, 0);
 }
 
-void DFPlayer_PlayFolderFile(UART_DriverStruct_t *uart_drv,uint8_t folder_num, uint8_t file_num)
+uint32_t DfPlayer_stop(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    uint16_t param = ((uint16_t)folder_num << 8) | file_num;
-    DFPlayer_SendCommand(uart_drv,DF_CMD_PLAY_FOLDER, param);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_STOP, 0x0000, 0);
 }
 
-void DFPlayer_QueryStatus(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_pause(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    // Notice the 'true' at the end! This enables feedback so the DFPlayer replies.
-    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_STATUS, 0x00);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PAUSE, 0x0000, 0);
 }
 
-void DFPlayer_QueryCurrentTrack(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_next(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_TRACK, 0x00);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_NEXT, 0x0000, 0);
 }
 
-void DFPlayer_QueryVolume(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_prev(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_VOLUME, 0x00);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PREV, 0x0000, 0);
 }
 
-void DFPlayer_QuerySDTotalTracks(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_set_eq(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint16_t eq)
 {
-    DFPlayer_SendCommand(uart_drv,DF_CMD_QUERY_SD_TOTAL, 0x00);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PREV, eq, 0);
 }
 
-void DFPlayer_ProcessResponse(UART_DriverStruct_t *uart_drv)
+uint32_t DfPlayer_set_volume(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint8_t volume)
 {
-	DFPlayer_Reply_t	*reply = (DFPlayer_Reply_t *)uart_drv->data;
-	if ( reply->header != DF_HEADER)
-		return;
-    uint16_t calc_checksum = DFPlayer_CalcChecksum(uart_drv->data);
-    uint16_t recv_checksum = (uart_drv->data[7] << 8) | uart_drv->data[8];
-
-    if (calc_checksum == recv_checksum)
-    {
-    	reply->event = uart_drv->data[3];
-    	reply->parameter = (uart_drv->data[5] << 8) | uart_drv->data[6];
-    }
-
-    switch (reply->event) {
-        case DF_RESP_INIT_FINISHED: // 0x3F
-            // DFPlayer has finished initializing and detected the media.
-            // Parameter: 1=USB, 2=SD, 3=Flash
-            if (reply->parameter == 2) {
-                // SD Card detected!
-                DFPlayer_SetVolume(uart_drv,20);       // Set volume to 20 (out of 30)
-                HAL_Delay(100);               // Small delay between commands
-                DFPlayer_PlayTrack(uart_drv,1);        // Start playing track 0001.mp3
-            }
-            break;
-
-        case DF_RESP_TRACK_FINISHED: // 0x3D
-            // A track just finished playing.
-            // Parameter: The track number that just finished.
-
-            // Visual feedback: Toggle the LED when a track finishes
-
-            // Optional: Automatically play the next track
-            // DFPlayer_PlayTrack(resp->parameter + 1);
-            break;
-
-        case DF_RESP_ERROR: // 0x40
-            // An error occurred (e.g., SD card removed, file not found)
-            // Parameter: Error code (see DFPlayer datasheet for error codes)
-
-            // Visual feedback: Rapidly blink LED to indicate error
-            for (int i = 0; i < 5; i++) {
-                HAL_Delay(100);
-            }
-            break;
-
-        case DF_RESP_SD_INSERTED: // 0x3C
-            // SD card was hot-swapped (inserted while powered on)
-            DFPlayer_PlayTrack(uart_drv,1);
-            break;
-
-        default:
-            // Other responses (like volume query replies, etc.)
-            break;
-    }
+    if (volume > 30)
+    	volume = 30;
+    return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_SET_VOLUME, volume, 0);
 }
+
+uint32_t DFPlayer_ProcessResponse(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
+{
+	return 0;
+}
+
+uint32_t DfPlayer_register(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
+{
+    if ( MODULE_DFPlayer->busy_port == NULL )
+    	return 1;
+    if ( MODULE_DFPlayer->uart_drv == NULL )
+    	return 1;
+    MODULE_DFPlayer->DfPlayer_rxbuffer = MODULE_DFPlayer->uart_drv->data;
+	MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_INIT;
+    return 0;
+}
+
+uint32_t DfPlayer_state_machine(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
+{
+	switch(MODULE_DFPlayer->DfPlayer_sm)
+	{
+	case DFPLAYER_SM_INIT :
+		DfPlayer_stop(MODULE_DFPlayer);
+		MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_STOP;
+		break;
+	case DFPLAYER_SM_STOP :
+		if ( DfPlayer_is_busy(MODULE_DFPlayer) )
+		{
+			DfPlayer_stop(MODULE_DFPlayer);
+			MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_SETSOURCE;
+		}
+		break;
+	case DFPLAYER_SM_SETSOURCE :
+		if ( DfPlayer_is_busy(MODULE_DFPlayer) )
+		{
+			MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_QUERYTRACKS;
+			DfPlayer_set_source(MODULE_DFPlayer,DFPLAYER_CMD_SOURCE_SD);
+		}
+		break;
+	case DFPLAYER_SM_QUERYTRACKS :
+
+		if ( DfPlayer_is_busy(MODULE_DFPlayer) )
+		{
+			MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_SETVOLUME;
+			DfPlayer_send_query_total_tracks(MODULE_DFPlayer);
+		}
+		break;
+	case DFPLAYER_SM_SETVOLUME :
+		if ( DfPlayer_is_busy(MODULE_DFPlayer) )
+		{
+			MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_MAINLOOP;
+			DfPlayer_set_volume(MODULE_DFPlayer,DFPLAYER_CMD_DEFAULT_VOLUME);
+		}
+		break;
+	case DFPLAYER_SM_MAINLOOP :
+		if ( MODULE_DFPlayer->DfPlayer_command )
+		{
+			if ( MODULE_DFPlayer->DfPlayer_command ==  DFPLAYER_CMD_STOP)
+				DfPlayer_stop(MODULE_DFPlayer);
+			else if ( MODULE_DFPlayer->DfPlayer_command ==  DFPLAYER_CMD_REINIT)
+				MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_INIT;
+			else
+			{
+				if ( DfPlayer_is_busy(MODULE_DFPlayer) )
+				{
+					switch ( MODULE_DFPlayer->DfPlayer_command )
+					{
+					case	DFPLAYER_CMD_PLAY:
+						DfPlayer_play(MODULE_DFPlayer);
+						break;
+					case	DFPLAYER_CMD_PAUSE:
+						DfPlayer_pause(MODULE_DFPlayer);
+						break;
+					case	DFPLAYER_CMD_SET_VOLUME:
+						DfPlayer_set_volume(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+						break;
+					case	DFPLAYER_CMD_SET_EQ:
+						DfPlayer_set_eq(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+						break;
+					case	DFPLAYER_CMD_PLAY_TRACK:
+						DfPlayer_play_track(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+						break;
+					}
+				}
+			}
+			MODULE_DFPlayer->DfPlayer_command = 0;
+		}
+		break;
+	}
+    return MODULE_DFPlayer->DfPlayer_sm;
+}
+#endif //#ifdef A_OS_UART_ENABLED

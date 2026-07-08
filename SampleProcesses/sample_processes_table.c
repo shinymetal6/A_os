@@ -13,6 +13,9 @@
 #include "sample_processes_includes.h"
 #include "sample_user_config.h"
 
+#ifdef SAMPLEPROCESS_1_DFPLAYER
+extern	void sample_process_1_dfplayer(uint32_t process_id);	//This is process1
+#endif // #ifdef SAMPLEPROCESS_1_DFPLAYER
 #ifdef	SAMPLEPROCESS_1_HC05
 extern	void sample_process_1_hc05(uint32_t process_id);	//This is process1
 #endif // #define	SAMPLEPROCESS_1_HC05
@@ -203,6 +206,10 @@ VERSIONING	uint8_t	app_version[32] 	= "Sample Version";
 USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 {
 		{
+#ifdef SAMPLEPROCESS_1_DFPLAYER
+				.user_process = sample_process_1_dfplayer,
+#endif // #define	SAMPLEPROCESS_1_DFPLAYER
+
 #ifdef	SAMPLEPROCESS_1_HC05
 				.user_process = sample_process_1_hc05,
 #endif // #define	SAMPLEPROCESS_1_HC05
