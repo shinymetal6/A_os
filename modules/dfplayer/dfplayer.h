@@ -37,6 +37,7 @@ typedef struct
 	uint8_t 			DfPlayer_txbuffer[10];
 	uint8_t				*DfPlayer_rxbuffer;
 	uint8_t				DfPlayer_rxbuffer_len;
+	uint8_t				DfPlayer_query_tracks_command;
 	uint8_t				DfPlayer_sm;
 	uint8_t				DfPlayer_state;
 	uint8_t				DfPlayer_command;
@@ -70,11 +71,20 @@ typedef struct
 /* Cloned modules use this */
 #define DFPLAYER_CMD_QUERY_TOTAL_TRACKS  	0x48
 
+#define DFPLAYER_CMD_QUERY_TOTAL_TRACKS47  	0x47
+#define DFPLAYER_CMD_QUERY_TOTAL_TRACKS48  	0x48
+
 #define DFPLAYER_CMD_SET_PLAY_MODE_REPEAT	0x00
 #define DFPLAYER_CMD_SET_PLAY_FOLDER_REPEAT	0x01
 #define DFPLAYER_CMD_SET_PLAY_SINGLE_REPEAT	0x02
 #define DFPLAYER_CMD_SET_PLAY_RANDOM		0x03
 
+#define DFPLAYER_CMD_SET_EQ_NORMAL			0x00
+#define DFPLAYER_CMD_SET_EQ_POP				0x01
+#define DFPLAYER_CMD_SET_EQ_ROCK			0x02
+#define DFPLAYER_CMD_SET_EQ_JAZZ			0x03
+#define DFPLAYER_CMD_SET_EQ_CLASSIC			0x04
+#define DFPLAYER_CMD_SET_EQ_BASE			0x05
 /* sm only */
 #define DFPLAYER_CMD_REINIT					0xa5
 

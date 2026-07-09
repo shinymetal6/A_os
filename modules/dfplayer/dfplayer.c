@@ -112,7 +112,9 @@ uint32_t DfPlayer_prev(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 
 uint32_t DfPlayer_set_eq(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint16_t eq)
 {
-	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PREV, eq, 0);
+	if ( eq <= DFPLAYER_CMD_SET_EQ_BASE )
+		return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_PREV, eq, 0);
+	return 1;
 }
 
 uint32_t DfPlayer_set_play_mode(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint16_t play_mode)
@@ -132,7 +134,7 @@ uint32_t DfPlayer_set_volume(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint8_t 
 
 uint32_t DfPlayer_send_query_total_tracks(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 {
-	return DfPlayer_send_cmd(MODULE_DFPlayer,DFPLAYER_CMD_QUERY_TOTAL_TRACKS, 0x0000, 1);
+	return DfPlayer_send_cmd(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_query_tracks_command, 0x0000, 1);
 }
 
 uint32_t DFPlayer_ProcessResponse(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint32_t len)
@@ -163,7 +165,8 @@ uint32_t DfPlayer_register(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
     	return 1;
     if ( MODULE_DFPlayer->DfPlayer_rxbuffer_len == 0 )
     	return 1;
-
+    if ( MODULE_DFPlayer->DfPlayer_query_tracks_command == 0 )
+    	MODULE_DFPlayer->DfPlayer_query_tracks_command = DFPLAYER_CMD_QUERY_TOTAL_TRACKS48;
     MODULE_DFPlayer->DfPlayer_rxbuffer = MODULE_DFPlayer->uart_drv->data;
 	MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_INIT;
     return 0;
@@ -245,6 +248,9 @@ uint32_t DfPlayer_state_machine(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 						break;
 					case	DFPLAYER_CMD_PLAY_TRACK:
 						DfPlayer_play_track(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+						break;
+					case	DFPLAYER_CMD_SET_PLAY_MODE:
+						DfPlayer_set_play_mode(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
 						break;
 					}
 				}

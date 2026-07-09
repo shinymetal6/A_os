@@ -44,6 +44,7 @@ MODULES_DFPlayer_Struct_t	MODULE_DFPlayer =
 {
 	.uart_drv = &Uart1_MP3Player_Drv,
 	.DfPlayer_rxbuffer_len = UART_RX_BUF_SIZE,
+	.DfPlayer_query_tracks_command = DFPLAYER_CMD_QUERY_TOTAL_TRACKS48,
 	.busy_bit = MP3_BUSY_Pin,
 	.busy_port = MP3_BUSY_GPIO_Port,
 };
