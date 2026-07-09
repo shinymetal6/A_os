@@ -26,7 +26,7 @@
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_DFPLAYER
 extern	UART_HandleTypeDef	huart1;
-#define	UART_RX_BUF_SIZE	16
+#define	UART_RX_BUF_SIZE	32
 #define	UART_TX_BUF_SIZE	64
 uint8_t	uart_rx_buffer[UART_RX_BUF_SIZE];
 uint8_t	uart_tx_buffer[UART_TX_BUF_SIZE];
@@ -43,6 +43,7 @@ UART_DriverStruct_t Uart1_MP3Player_Drv =
 MODULES_DFPlayer_Struct_t	MODULE_DFPlayer =
 {
 	.uart_drv = &Uart1_MP3Player_Drv,
+	.DfPlayer_rxbuffer_len = UART_RX_BUF_SIZE,
 	.busy_bit = MP3_BUSY_Pin,
 	.busy_port = MP3_BUSY_GPIO_Port,
 };
@@ -74,12 +75,11 @@ uint32_t	dfcount=0;
 				else
 					dfcount ++;
 			}
-
 		}
 		if (( wakeup & WAKEUP_FROM_UART1_IRQ) == WAKEUP_FROM_UART1_IRQ)
 		{
 			if (( flags & WAKEUP_FLAGS_UART_RX) == WAKEUP_FLAGS_UART_RX)
-				DFPlayer_ProcessResponse(&MODULE_DFPlayer);
+				DFPlayer_ProcessResponse(&MODULE_DFPlayer,uart_get_rxlen(MODULE_DFPlayer.uart_drv));
 		}
 	}
 }
