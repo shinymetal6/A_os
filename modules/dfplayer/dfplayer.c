@@ -261,4 +261,11 @@ uint32_t DfPlayer_state_machine(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 	}
     return MODULE_DFPlayer->DfPlayer_sm;
 }
+
+uint32_t DfPlayer_command(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer , uint8_t command)
+{
+	MODULE_DFPlayer->DfPlayer_command = command;
+	return 0;
+}
+
 #endif //#ifdef A_OS_UART_ENABLED

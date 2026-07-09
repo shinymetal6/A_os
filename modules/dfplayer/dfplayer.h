@@ -117,6 +117,7 @@ extern	uint32_t DfPlayer_play_track(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,u
 extern	uint32_t DfPlayer_send_query_total_tracks(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer);
 extern	uint32_t DFPlayer_ProcessResponse(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer,uint32_t len);
 extern	uint32_t DfPlayer_state_machine(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer);
+extern	uint32_t DfPlayer_command(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer , uint8_t command);
 
 #endif //#ifdef A_OS_UART_ENABLED
 

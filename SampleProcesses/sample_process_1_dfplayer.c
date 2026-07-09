@@ -68,10 +68,10 @@ uint32_t	dfcount=0;
 			if ( DfPlayer_state_machine(&MODULE_DFPlayer) == DFPLAYER_SM_MAINLOOP)
 			{
 				if ( dfcount == 0 )
-					MODULE_DFPlayer.DfPlayer_command = DFPLAYER_CMD_PLAY;
+					DfPlayer_command(&MODULE_DFPlayer,DFPLAYER_CMD_PLAY);
 				if ( dfcount == 20 )
-					MODULE_DFPlayer.DfPlayer_command = DFPLAYER_CMD_STOP;
-				if ( dfcount >= 25 )
+					DfPlayer_command(&MODULE_DFPlayer,DFPLAYER_CMD_STOP);
+				if ( dfcount >= 30 )
 					dfcount = 0;
 				else
 					dfcount ++;
