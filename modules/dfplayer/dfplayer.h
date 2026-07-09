@@ -44,6 +44,7 @@ typedef struct
 	uint8_t				DfPlayer_last_command;
 	uint16_t			DfPlayer_reply_to_last_command;
 	uint8_t				DfPlayer_parameter;
+	uint16_t			DfPlayer_number_of_tracks;
 }MODULES_DFPlayer_Struct_t;
 
 /* DfPlayer_sm */

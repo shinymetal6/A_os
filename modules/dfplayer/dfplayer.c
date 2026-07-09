@@ -151,6 +151,8 @@ uint8_t		*data_ptr;
 		if ( data_ptr[3] == MODULE_DFPlayer->DfPlayer_last_command )
 		{
 			MODULE_DFPlayer->DfPlayer_reply_to_last_command = data_ptr[5]<<8 | data_ptr[6];
+			if ( MODULE_DFPlayer->DfPlayer_last_command == MODULE_DFPlayer->DfPlayer_query_tracks_command )
+				MODULE_DFPlayer->DfPlayer_number_of_tracks = MODULE_DFPlayer->DfPlayer_reply_to_last_command;
 			return MODULE_DFPlayer->DfPlayer_reply_to_last_command;
 		}
 	}
