@@ -29,19 +29,14 @@
 #include "stepper.h"
 #include <string.h>
 
-uint32_t	icount=0;
-uint32_t	ccount=0;
-
 void stepper_internal_callback(Stepper_Control_DriverStruct_t *stepper_drv)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
 
-	icount++;
 	if ( stepper_drv->number_of_steps == 0 )
 	{
 		HAL_TIM_PWM_Stop(stepper_drv->timer, stepper_drv->timer_channel);
 		__HAL_TIM_DISABLE_IT(stepper_drv->timer, TIM_IT_UPDATE);
-		ccount++;
 		stepper_drv->status &= ~STEPPER_CHANNEL_STARTED;
 		if ( stepper_drv->stepper_callback != NULL )
 			stepper_drv->stepper_callback(stepper_drv->stored_number_of_steps);
@@ -92,7 +87,6 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 
 	__HAL_TIM_ENABLE_IT(timer, TIM_IT_UPDATE);
 	stepper_drv->status |= STEPPER_CHANNEL_STARTED;
-	icount=0;
 	return 0;
 }
 
