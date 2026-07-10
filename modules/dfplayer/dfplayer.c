@@ -214,48 +214,44 @@ uint32_t DfPlayer_state_machine(MODULES_DFPlayer_Struct_t *MODULE_DFPlayer)
 	case DFPLAYER_SM_MAINLOOP :
 		if ( MODULE_DFPlayer->DfPlayer_command )
 		{
-			if ( MODULE_DFPlayer->DfPlayer_command ==  DFPLAYER_CMD_STOP)
-				DfPlayer_stop(MODULE_DFPlayer);
-			else if ( MODULE_DFPlayer->DfPlayer_command ==  DFPLAYER_CMD_REINIT)
-				MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_INIT;
-			else
+			switch ( MODULE_DFPlayer->DfPlayer_command )
 			{
-				if ( DfPlayer_is_busy(MODULE_DFPlayer) )
-				{
-					switch ( MODULE_DFPlayer->DfPlayer_command )
-					{
-					case	DFPLAYER_CMD_NEXT:
-						DfPlayer_next(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_PREV:
-						DfPlayer_prev(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_INCREASE_VOLUME:
-						DfPlayer_increase_volume(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_DECREASE_VOLUME:
-						DfPlayer_decrease_volume(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_PLAY:
-						DfPlayer_play(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_PAUSE:
-						DfPlayer_pause(MODULE_DFPlayer);
-						break;
-					case	DFPLAYER_CMD_SET_VOLUME:
-						DfPlayer_set_volume(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
-						break;
-					case	DFPLAYER_CMD_SET_EQ:
-						DfPlayer_set_eq(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
-						break;
-					case	DFPLAYER_CMD_PLAY_TRACK:
-						DfPlayer_play_track(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
-						break;
-					case	DFPLAYER_CMD_SET_PLAY_MODE:
-						DfPlayer_set_play_mode(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
-						break;
-					}
-				}
+			case	DFPLAYER_CMD_REINIT:
+				MODULE_DFPlayer->DfPlayer_sm = DFPLAYER_SM_INIT;
+				break;
+			case	DFPLAYER_CMD_STOP:
+				DfPlayer_stop(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_NEXT:
+				DfPlayer_next(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_PREV:
+				DfPlayer_prev(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_INCREASE_VOLUME:
+				DfPlayer_increase_volume(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_DECREASE_VOLUME:
+				DfPlayer_decrease_volume(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_PLAY:
+				DfPlayer_play(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_PAUSE:
+				DfPlayer_pause(MODULE_DFPlayer);
+				break;
+			case	DFPLAYER_CMD_SET_VOLUME:
+				DfPlayer_set_volume(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+				break;
+			case	DFPLAYER_CMD_SET_EQ:
+				DfPlayer_set_eq(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+				break;
+			case	DFPLAYER_CMD_PLAY_TRACK:
+				DfPlayer_play_track(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+				break;
+			case	DFPLAYER_CMD_SET_PLAY_MODE:
+				DfPlayer_set_play_mode(MODULE_DFPlayer,MODULE_DFPlayer->DfPlayer_parameter);
+				break;
 			}
 			MODULE_DFPlayer->DfPlayer_command = 0;
 		}

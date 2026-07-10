@@ -57,5 +57,11 @@ typedef struct
 #define SHT21_CMD_TRIG_HUM_NHM  0xF5
 #define SHT21_CMD_SOFT_RESET    0xFE
 
+extern uint8_t 	sht21s_checkCRC(uint8_t data[], uint8_t nbrOfBytes, uint8_t checksum);
+extern uint32_t sht21s_register(I2C_Sht21s_DriverStruct_t *sht21s_Drv);
+extern uint32_t sht21s_ReadHumidity(I2C_Sht21s_DriverStruct_t *sht21s_Drv);
+extern float 	sht21s_ConvertHumidity(I2C_Sht21s_DriverStruct_t *sht21s_Drv);
+extern uint32_t sht21s_ReadTemperature(I2C_Sht21s_DriverStruct_t *sht21s_Drv);
+extern float 	sht21s_ConvertTemperature(I2C_Sht21s_DriverStruct_t *sht21s_Drv);
 
 #endif /* DRIVERS_I2C_SENSORS_HUMIDITY_SHT21S_H_ */

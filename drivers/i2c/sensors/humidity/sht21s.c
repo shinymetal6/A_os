@@ -67,6 +67,27 @@ uint8_t	ret = HAL_BUSY;
 	return 0;
 }
 
+ITCM_AREA_CODE uint8_t sht21s_checkCRC(uint8_t data[], uint8_t nbrOfBytes, uint8_t checksum)
+{
+uint8_t crc = 0;
+    for (uint8_t i = 0; i < nbrOfBytes; i++)
+    {
+        crc ^= data[i];
+        for (uint8_t j = 8; j > 0; j--)
+        {
+            if (crc & 0x80)
+            {
+                crc = (crc << 1) ^ 0x31;
+            }
+            else
+            {
+                crc = (crc << 1);
+            }
+        }
+    }
+    return (crc == checksum);
+}
+
 ITCM_AREA_CODE uint32_t sht21s_ReadTemperature(I2C_Sht21s_DriverStruct_t *sht21s_Drv)
 {
 	return sht21s_i2cwrite(sht21s_Drv,SHT21_CMD_TRIG_TEMP_NHM);
