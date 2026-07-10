@@ -44,7 +44,7 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 		return;
 	}
 
-	if ( stepper_drv->number_of_steps >= STEPPER_RCR_MAXVAL )
+	if ( stepper_drv->number_of_steps > STEPPER_RCR_MAXVAL )
 		stepper_drv->number_of_steps -= STEPPER_RCR_MAXVAL;
 	else
 	{
