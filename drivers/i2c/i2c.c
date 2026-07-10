@@ -41,6 +41,9 @@ I2C_DriverStruct_t	*i2c_drv_ptr_L = i2c_drv_ptr;
 		if ( i2c_drv_ptr_L->process != 0 )
 			i2c_drv_ptr_L->flags |= flag;
 	}
+	if ( i2c_drv_ptr_L->wakeup_id )
+		activate_process(i2c_drv_ptr_L->process,i2c_drv_ptr_L->wakeup_id,flag);
+
 }
 
 void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)

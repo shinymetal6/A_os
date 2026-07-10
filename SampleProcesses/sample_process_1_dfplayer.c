@@ -25,6 +25,7 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
 #ifdef SAMPLEPROCESS_1_DFPLAYER
+
 extern	UART_HandleTypeDef	huart1;
 #define	UART_RX_BUF_SIZE	32
 #define	UART_TX_BUF_SIZE	64

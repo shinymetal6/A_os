@@ -39,6 +39,8 @@ typedef struct
 } I2C_DriverStruct_t;
 
 extern	I2C_DriverStruct_t	*i2c_drv_ptr;
+/* timer_type */
+#define I2C_TYPE_ENCODER		1
 
 #ifdef SOUND_ENGINE_ENABLED
 	#include "codecs/nau88c22.h"
