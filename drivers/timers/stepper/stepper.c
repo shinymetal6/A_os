@@ -28,7 +28,6 @@
 
 #include "stepper.h"
 #include <string.h>
-extern	TIM_HandleTypeDef htim16;
 
 uint32_t	icount=0;
 uint32_t	ccount=0;
@@ -55,10 +54,10 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	else
 	{
 		if ( stepper_drv->number_of_steps > 0 )
-		{
 			timer->Instance->RCR = stepper_drv->number_of_steps;
-			stepper_drv->number_of_steps = 0;
-		}
+		else
+			timer->Instance->RCR = STEPPER_RCR_MAXVAL;
+		stepper_drv->number_of_steps = 0;
 	}
 }
 
