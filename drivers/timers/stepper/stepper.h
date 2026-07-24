@@ -39,6 +39,7 @@ typedef struct
 	uint16_t			tim_bit;
 	GPIO_TypeDef	 	*dir_port;
 	uint16_t			dir_bit;
+	uint8_t				direction;
 	GPIO_TypeDef	 	*enable_port;
 	uint16_t			enable_bit;
 	uint32_t 			prescaler;

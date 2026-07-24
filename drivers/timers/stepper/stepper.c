@@ -59,25 +59,26 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 ITCM_AREA_CODE uint32_t stepper_start(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_rotation,uint8_t direction)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
-	if ( number_of_rotation == 0)
-		return 1;
-	if ( stepper_drv->dir_port == NULL)
-		return 1;
-	if ( stepper_drv->enable_port == NULL)
-		return 1;
 
 	if ( ( stepper_drv->status & (STEPPER_CHANNEL_READY | STEPPER_CHANNEL_INITIALIZED )) != (STEPPER_CHANNEL_READY | STEPPER_CHANNEL_INITIALIZED ) )
 		return 1;
-	if ( stepper_drv->dir_bit )
+
+	stepper_drv->direction = direction;
+	if ( stepper_drv->direction )
 		HAL_GPIO_WritePin(stepper_drv->dir_port, stepper_drv->dir_bit, GPIO_PIN_SET);
 	else
 		HAL_GPIO_WritePin(stepper_drv->dir_port, stepper_drv->dir_bit, GPIO_PIN_RESET);
 	stepper_drv->number_of_rotation = number_of_rotation;
-	stepper_drv->stored_number_of_steps = stepper_drv->number_of_steps = (stepper_drv->number_of_rotation * STEPPER_RCR_MAXVAL);
-	if ( stepper_drv->number_of_steps > STEPPER_RCR_MAXVAL )
-		timer->Instance->RCR = STEPPER_RCR_MAXVAL;
+	if ( stepper_drv->number_of_rotation )
+	{
+		stepper_drv->stored_number_of_steps = stepper_drv->number_of_steps = (stepper_drv->number_of_rotation * STEPPER_RCR_MAXVAL);
+		if ( stepper_drv->number_of_steps > STEPPER_RCR_MAXVAL )
+			timer->Instance->RCR = STEPPER_RCR_MAXVAL;
+		else
+			timer->Instance->RCR = stepper_drv->number_of_steps;
+	}
 	else
-		timer->Instance->RCR = stepper_drv->number_of_steps;
+		timer->Instance->RCR = 0;
 	if ( HAL_TIM_PWM_Start(timer,stepper_channel) )
 		return 1;
 	HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_RESET);

@@ -63,9 +63,12 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 		if ( tim_ic->timer == htim)
 		{
 			Stepper_Control_DriverStruct_t	*stepper_drv = (Stepper_Control_DriverStruct_t *)tim_ic;
-			stepper_internal_callback(stepper_drv);
-			if ( stepper_drv->wakeup_id )
-				activate_process(stepper_drv->process,stepper_drv->wakeup_id,TIM_TYPE_STEPPER);
+			if ( stepper_drv->number_of_rotation )
+			{
+				stepper_internal_callback(stepper_drv);
+				if ( stepper_drv->wakeup_id )
+					activate_process(stepper_drv->process,stepper_drv->wakeup_id,TIM_TYPE_STEPPER);
+			}
 		}
 	}
 }

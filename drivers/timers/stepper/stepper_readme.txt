@@ -52,10 +52,11 @@ b - register the driver and start it:
 
 	#define	STEPPER_FORWARD		1
 	#define	STEPPER_REVERSE		0
+	#define	STEPPER_NUMBER_OF_ROTATION		2
 
 	stepper_register(&Stepper_Control);
 	stepper_init(&Stepper_Control);
-	stepper_start(&Stepper_Control,TIM_CHANNEL_1,2,STEPPER_FORWARD); // do 2 rotation @Stepper_Control.steps_per_rotation , total 400 pulses FORWARD
+	stepper_start(&Stepper_Control,TIM_CHANNEL_1,STEPPER_NUMBER_OF_ROTATION,STEPPER_FORWARD); // do STEPPER_NUMBER_OF_ROTATION rotation @Stepper_Control.steps_per_rotation , total 400 pulses FORWARD
 
 	
 c - when needed stop it:
@@ -63,7 +64,7 @@ c - when needed stop it:
 	stepper_stop(&Stepper_Control,TIM_CHANNEL_1);	
 			
 Notes:
-
+Passing 0 for rotation parameter to stepper_start will run the stepper forever
 Use the "PWM Mode 2" to avoid the spike at the end of period
 There are no flags associated with this driver.
 The function pointed at .stepper_callback will be called at the end of the pulses needed to complete the rotations defined in the stepper_start call.
