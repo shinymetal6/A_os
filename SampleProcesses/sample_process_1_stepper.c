@@ -49,17 +49,18 @@ Stepper_Control_DriverStruct_t	Stepper_Control =
 		.prescaler = 480,
 		.steps_per_rotation = 200,
 		.stepper_callback = stepper_callback,
+		.wakeup_id = WAKEUP_FROM_SW_MODULES_IRQ,
 };
 
-uint8_t	stepper_running = 0;
-uint32_t prescaler;
+
+uint32_t	stepper_state=0;
+uint32_t	stepper_irq_received=0;
+uint32_t	stepper_irq_done=0;
+uint32_t	stepper_irq_err=0;
+
 void stepper_callback(uint32_t value)
 {
-	stepper_set_prescaler(&Stepper_Control,prescaler);
-	prescaler-=40;
-	if ( prescaler < 360 )
-		prescaler = 960;
-	stepper_running = 0;
+	stepper_irq_done=1;
 }
 
 void sample_process_1_init(uint32_t process_id)
@@ -67,39 +68,58 @@ void sample_process_1_init(uint32_t process_id)
 	stepper_register(&Stepper_Control);
 }
 
+
 void sample_process_1_stepper(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint32_t	count=0;
-	prescaler = 960;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
 	{
-		wait_event(EVENT_TIMER);
+		wait_event(EVENT_TIMER | EVENT_SW_MODULES);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			process_led();
-			count++;
-			if ( count == 1 )
-				stepper_start(&Stepper_Control,TIM_CHANNEL_1,0,STEPPER_DIRECTION_FORWARD); // do infinite rotation @Stepper_Control.steps_per_rotation 400 pulses
-			if ( count == 10 )
+			switch(stepper_state)
 			{
-				stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
-			}
-			if ( count == 11 )
-			{
-				stepper_set_prescaler(&Stepper_Control,240);
-				stepper_start(&Stepper_Control,TIM_CHANNEL_1,2,STEPPER_DIRECTION_FORWARD); // do 2 rotation @Stepper_Control.steps_per_rotation 400 pulses
-			}
-			if ( count == 14 )
-			{
-				stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
+			case 0:
 				stepper_set_prescaler(&Stepper_Control,480);
-				stepper_start(&Stepper_Control,TIM_CHANNEL_1,0,STEPPER_DIRECTION_FORWARD); // do infinite rotation @Stepper_Control.steps_per_rotation 400 pulses
+				stepper_start(&Stepper_Control,TIM_CHANNEL_1,0,STEPPER_DIRECTION_FORWARD); // do infinite rotation @Stepper_Control.steps_per_rotation 400 pulses , no interrupt
 				count = 0;
+				stepper_state ++;
+				break;
+			case 1:
+				count++;
+				if ( count >= 10 )
+				{
+					stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
+					stepper_state ++;
+				}
+				break;
+			case 2:
+				stepper_set_prescaler(&Stepper_Control,120);
+				stepper_start(&Stepper_Control,TIM_CHANNEL_1,2,STEPPER_DIRECTION_FORWARD); // do 2 rotation @Stepper_Control.steps_per_rotation 400 pulses, interrupt at end
+				stepper_state ++;
+				break;
+			case 3:
+				if (( stepper_irq_done == 1) && (stepper_irq_received == 1))
+				{
+					stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
+					stepper_irq_done=0;
+					stepper_irq_received=0;
+					stepper_state = 0;
+				}
+				break;
 			}
 		}
+		if (( wakeup & WAKEUP_FROM_SW_MODULES_IRQ) == WAKEUP_FROM_SW_MODULES_IRQ)
+		{
+			if ( stepper_state != 3)
+				stepper_irq_err++;
+			stepper_irq_received=1;
+		}
+
 	}
 }
 
