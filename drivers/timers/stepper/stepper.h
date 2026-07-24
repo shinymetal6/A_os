@@ -67,7 +67,6 @@ typedef struct
 #define	STEPPER_RCR_MAXVAL					199
 
 extern	uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv);
-extern	uint32_t 	stepper_init(Stepper_Control_DriverStruct_t *stepper_drv);
 extern	uint32_t	stepper_start(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel,uint8_t	number_of_rotation,uint8_t direction);
 extern	uint32_t	stepper_stop(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t stepper_channel);
 extern	uint32_t	stepper_set_prescaler(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t prescaler);

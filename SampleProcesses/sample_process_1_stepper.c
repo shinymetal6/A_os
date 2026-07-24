@@ -65,12 +65,12 @@ void stepper_callback(uint32_t value)
 void sample_process_1_init(uint32_t process_id)
 {
 	stepper_register(&Stepper_Control);
-	stepper_init(&Stepper_Control);
 }
 
 void sample_process_1_stepper(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
+uint32_t	count=0;
 	prescaler = 960;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	while(1)
@@ -80,12 +80,24 @@ uint32_t	wakeup,flags;
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			process_led();
-			HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_RESET);
-			if (stepper_running == 0 )
+			count++;
+			if ( count == 1 )
+				stepper_start(&Stepper_Control,TIM_CHANNEL_1,0,STEPPER_DIRECTION_FORWARD); // do infinite rotation @Stepper_Control.steps_per_rotation 400 pulses
+			if ( count == 10 )
 			{
-				stepper_running = 1;
+				stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
+			}
+			if ( count == 11 )
+			{
+				stepper_set_prescaler(&Stepper_Control,240);
 				stepper_start(&Stepper_Control,TIM_CHANNEL_1,2,STEPPER_DIRECTION_FORWARD); // do 2 rotation @Stepper_Control.steps_per_rotation 400 pulses
-				HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin, GPIO_PIN_SET);
+			}
+			if ( count == 14 )
+			{
+				stepper_stop(&Stepper_Control,TIM_CHANNEL_1);
+				stepper_set_prescaler(&Stepper_Control,480);
+				stepper_start(&Stepper_Control,TIM_CHANNEL_1,0,STEPPER_DIRECTION_FORWARD); // do infinite rotation @Stepper_Control.steps_per_rotation 400 pulses
+				count = 0;
 			}
 		}
 	}

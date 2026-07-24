@@ -79,14 +79,18 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	}
 	else
 		timer->Instance->RCR = 0;
+
+	HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_SET);
+
 	if ( HAL_TIM_PWM_Start(timer,stepper_channel) )
 		return 1;
 	HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_RESET);
-	timer->Instance->EGR = TIM_EVENTSOURCE_UPDATE;
-
-	__HAL_TIM_CLEAR_FLAG(timer, TIM_FLAG_UPDATE);
-
-	__HAL_TIM_ENABLE_IT(timer, TIM_IT_UPDATE);
+	if ( stepper_drv->number_of_rotation )
+	{
+		timer->Instance->EGR = TIM_EVENTSOURCE_UPDATE;
+		__HAL_TIM_CLEAR_FLAG(timer, TIM_FLAG_UPDATE);
+		__HAL_TIM_ENABLE_IT(timer, TIM_IT_UPDATE);
+	}
 	stepper_drv->status |= STEPPER_CHANNEL_STARTED;
 	return 0;
 }
@@ -105,7 +109,6 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	return 1;
 }
 
-
 ITCM_AREA_CODE uint32_t stepper_set_prescaler(Stepper_Control_DriverStruct_t *stepper_drv,uint32_t prescaler)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
@@ -118,21 +121,15 @@ TIM_HandleTypeDef	*timer = stepper_drv->timer;
 	return 1;
 }
 
-ITCM_AREA_CODE uint32_t stepper_init(Stepper_Control_DriverStruct_t *stepper_drv)
+ITCM_AREA_CODE static uint32_t stepper_init(Stepper_Control_DriverStruct_t *stepper_drv)
 {
 TIM_HandleTypeDef	*timer = stepper_drv->timer;
-	if (( stepper_drv->status & STEPPER_CHANNEL_READY ) == STEPPER_CHANNEL_READY)
-	{
-		if ( stepper_drv->prescaler )
-			timer->Instance->PSC = stepper_drv->prescaler;
-		if ( stepper_drv->period )
-			timer->Instance->ARR = stepper_drv->period;
-		stepper_drv->status |= STEPPER_CHANNEL_INITIALIZED;
-		HAL_GPIO_WritePin(stepper_drv->enable_port, stepper_drv->enable_bit, GPIO_PIN_SET);
-
-		return 0;
-	}
-	return 1;
+	if ( stepper_drv->prescaler )
+		timer->Instance->PSC = stepper_drv->prescaler;
+	if ( stepper_drv->period )
+		timer->Instance->ARR = stepper_drv->period;
+	stepper_drv->status |= STEPPER_CHANNEL_INITIALIZED;
+	return 0;
 }
 
 ITCM_AREA_CODE uint32_t	stepper_register(Stepper_Control_DriverStruct_t *stepper_drv)
@@ -165,6 +162,7 @@ TIMER_DriverStruct_t *eptr;
 	stepper_drv->process = get_current_process();
 	stepper_drv->timer_type = TIM_TYPE_STEPPER;
 	set_gpio_mode(stepper_drv->tim_port,stepper_drv->tim_bit,MODE_AF);
+	stepper_init(stepper_drv);
 	stepper_drv->status |= STEPPER_CHANNEL_READY;
 	return 0;
 }
