@@ -116,6 +116,7 @@ extern	uint32_t dac_get_status(DAC_DriverStruct_t *dac);
 extern	uint32_t dac_init(DAC_DriverStruct_t *dac);
 extern	uint32_t dac_play_wav(DAC_DriverStruct_t *dac,uint16_t *wav_ptr);
 extern	uint32_t dac_stop_wav(DAC_DriverStruct_t *dac);
+extern  uint32_t dac_timer_set(DAC_DriverStruct_t *dac_drv,float frequency);
 
 
 #endif /* DRIVERS_ANALOG_DAC_DAC_DRIVER_H_ */

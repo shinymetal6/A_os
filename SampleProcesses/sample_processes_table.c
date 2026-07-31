@@ -194,7 +194,10 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_stepper(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_STEPPER
-
+#ifdef	SAMPLEPROCESS_1_BASIC_DAC
+extern	void sample_process_1_basic_dac(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_BASIC_DAC
 
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
@@ -378,6 +381,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 #ifdef	SAMPLEPROCESS_1_RX_UART_DMA
 				.user_process = sample_process_1_rx_UART_DMA,
 #endif // #define	SAMPLEPROCESS_1_RX_UART_DMA
+#ifdef	SAMPLEPROCESS_1_BASIC_DAC
+				.user_init = sample_process_1_init,
+				.user_process = sample_process_1_basic_dac,
+#endif // #define	SAMPLEPROCESS_1_BASIC_DAC
 				.stack_size = 1024,
 		},
 		{
