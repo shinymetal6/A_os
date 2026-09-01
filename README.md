@@ -1,7 +1,6 @@
 # A_os
 v2026.09-rc0<br>
-!!! NOTE !!!<br>
-Still this runs with <br>
+Runs with <br>
 STM32CubeIDE Version: STM32CubeIDE Version: 2.2.0 Build: 29186_20260626_0934 (UTC)<br>
 OS: Linux, v.6.8.0-138-generic, x86_64 / gtk 3.24.33
 Java vendor: Eclipse Adoptium
