@@ -1,8 +1,13 @@
 # A_os
-v2026.06-rc1<br>
+v2026.09-rc0<br>
 !!! NOTE !!!<br>
 Still this runs with <br>
-STM32CubeIDE Version: 1.18.1 Build: 24813_20250409_2138 (UTC)<br>
+STM32CubeIDE Version: STM32CubeIDE Version: 2.2.0 Build: 29186_20260626_0934 (UTC)<br>
+OS: Linux, v.6.8.0-138-generic, x86_64 / gtk 3.24.33
+Java vendor: Eclipse Adoptium
+Java runtime version: 21.0.10+7-LTS
+Java version: 21.0.10
+<br>
 The developing machine is :<br>
 OS: Linux, v.5.15.0-139-generic, x86_64 / gtk 3.24.20<br>
 Java vendor: Eclipse Adoptium<br>
