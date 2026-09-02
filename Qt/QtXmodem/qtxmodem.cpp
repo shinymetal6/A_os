@@ -107,9 +107,9 @@ void QtXmodem::on_SelectFile_pushButton_clicked()
 {
     QPixmap redled (":/ledred.png");
     QPixmap greenled(":/ledgreen.png");
-    QString filters = "BIN/WAV/HEX files (*.bin , *.wav, *.hex)";
+    QString filters = "HEX files (*.hex)";
 
-    filename = QFileDialog::getOpenFileName(this, tr("Open bin/wav/hex File"), "/Devel/Stm32_16.1_A_os_2024.10-rc/Membrane-2412171-00-WSensor_03/Debug",filters);
+    filename = QFileDialog::getOpenFileName(this, tr("Open hex File"), "",filters);
 
     QFile file(filename);
 
@@ -226,7 +226,7 @@ void QtXmodem::on_SetTargetRX_pushButton_clicked()
 {
     char    command[128];
 
-    sprintf(command,"<h %d %s %s >",file_size,filename.toLatin1(),"0");
+    sprintf(command, "<h %d %s %s >", file_size, filename.toLatin1().constData(), "0");
     QByteArray ba1(QByteArray::fromRawData(command, strlen(command)));
     serial_tx(ba1);
 

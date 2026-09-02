@@ -71,11 +71,7 @@ uint8_t SD_GetCardState(void);
 void    SD_GetCardInfo(HAL_SD_CardInfoTypeDef *CardInfo);
 uint8_t SD_IsDetected(void);
 
-/* These functions can be modified in case the current settings (e.g. DMA stream)
-   need to be changed for specific application needs */
-void    BSP_SD_AbortCallback(void);
-void    BSP_SD_WriteCpltCallback(void);
-void    BSP_SD_ReadCpltCallback(void);
+extern	void MX_FATFS_Init(void);
 
 extern	uint8_t  WriteStatus, ReadStatus;
 
