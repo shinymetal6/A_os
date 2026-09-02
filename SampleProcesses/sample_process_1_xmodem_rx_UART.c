@@ -46,7 +46,7 @@
 			#define	UART_WAKEUP			WAKEUP_FROM_UART3_IRQ
 			#define	UART_EVENT			EVENT_UART3_IRQ
 		#else
-			#define	xmodem_rx_data_len		0x3fff
+			#define	xmodem_rx_data_len		0x1ffff
 			uint8_t	xmodem_rx_data_area[xmodem_rx_data_len];
 		#endif
 	#endif

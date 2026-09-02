@@ -65,7 +65,7 @@ STM32H743xx : Nucleo and other hardware<br>
 STM32H753xx : Nucleo and other hardware<br>
 STM32F722xx : Nucleo<br>
 STM32G474xx : Nucleo and other hardware<br>
-STM32U575xx : Nucleo and other hardware ( still DMA on uart RX not running )<br>
+STM32U575xx : Nucleo and other hardware<br>
 STM32F446xx : Nucleo<br>
 STM32L152xE : Nucleo and other hardware<br>
 STM32H563xx : Nucleo<br>

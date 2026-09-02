@@ -26,6 +26,12 @@
 #include "iodef_common.h"
 #include "memdef_common.h"
 
+#define	OUTPUT_OD	GPIO_MODE_OUTPUT_OD
+#define	MODE_INPUT	GPIO_MODE_INPUT
+#define	MODE_AF		GPIO_MODE_AF_PP
+#define	MODE_OUTPUT	GPIO_MODE_OUTPUT_PP
+#define	MODE_ANALOG	GPIO_MODE_ANALOG
+
 #define DTCM_VECTORS_DATA
 #define DWNLD_DATA_AREA
 #define ETH_DATA_AREA

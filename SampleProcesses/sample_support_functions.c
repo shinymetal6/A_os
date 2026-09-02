@@ -29,16 +29,16 @@
 
 uint8_t 	sample_led_cntr = 0;
 #ifdef	STM32U575xx
+/*
 #undef LED_GPIO_Port
 #undef LED_Pin
-/*
 #define	LED_GPIO_Port	LED_GREEN_GPIO_Port
 #define	LED_Pin			LED_GREEN_Pin
 #define	LED_GPIO_Port	LED_RED_GPIO_Port
 #define	LED_Pin			LED_RED_Pin
-*/
 #define	LED_GPIO_Port	LED_BLUE_GPIO_Port
 #define	LED_Pin			LED_BLUE_Pin
+*/
 
 #endif
 #ifdef	STM32G474xx
