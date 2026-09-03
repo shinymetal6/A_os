@@ -1,4 +1,4 @@
-mlx90614 driver usage
+vl53l5cx driver usage
 
 1) The control structure is:
 /* Motion detector results */

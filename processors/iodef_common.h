@@ -247,7 +247,7 @@
 	#ifdef HAL_UART_MODULE_ENABLED
 		#define A_OS_UART_ENABLED	1
 	#endif
-	#ifdef STM32G4xx_HAL_TIM_H
+	#ifdef HAL_TIM_MODULE_ENABLED
 		#define A_OS_TIMERS_ENABLED	1
 	#endif
 	#ifdef STM32G4xx_HAL_ADC_H
@@ -265,7 +265,7 @@
 	#ifdef STM32G4xx_HAL_I2C_H
 		#define A_OS_I2C_ENABLED	1
 	#endif
-	#ifdef STM32G4xx_HAL_SPI_H
+	#ifdef HAL_SPI_MODULE_ENABLED
 		#define A_OS_SPI_ENABLED	1
 	#endif
 #endif // #ifdef	STM32U575xx
