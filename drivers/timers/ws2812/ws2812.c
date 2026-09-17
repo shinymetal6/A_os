@@ -28,30 +28,30 @@
 
 #include "ws2812.h"
 
- /**
- * @brief  Translates structural array variables into serialized 16-bit duty cycles
- *         and triggers the background DMA streaming to the configured peripheral.
- * @param  ws2812_drv: Pointer to the driver handle structure tracking the targeted strip.
- */
 ITCM_AREA_CODE void ws2812_Show_Frame(WS2812_DriverStruct_t* ws2812_drv)
 {
 uint32_t i,	color_word,start_bit_index;
 	/* 1. Bit-pack structural RGB data items using native GRB sequence rules */
 	for (i = 0; i < ws2812_drv->num_leds; i++)
 	{
-		 color_word =	((uint32_t)ws2812_drv->led_strip_data[i].G << 16) |
-				 	 	((uint32_t)ws2812_drv->led_strip_data[i].R << 8)  |
-						ws2812_drv->led_strip_data[i].B;
+		/* High-speed bit-shifting (>> 8) replaces division execution clock overhead inside ITCM */
+			uint8_t scaled_g = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].G * ws2812_drv->brightness) >> 8);
+			uint8_t scaled_r = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].R * ws2812_drv->brightness) >> 8);
+			uint8_t scaled_b = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].B * ws2812_drv->brightness) >> 8);
 
-		start_bit_index = i * 24; // 24 bits per LED
+			color_word = ((uint32_t)scaled_g << 16) |
+						 ((uint32_t)scaled_r << 8)  |
+						 scaled_b;
 
-		for (int b = 0; b < 24; b++)
-		{
-			if (color_word & (1UL << (23 - b)))
-				ws2812_drv->dma_pwm_buffer[start_bit_index + b] = ws2812_drv->t1h_duty;
-			else
-				ws2812_drv->dma_pwm_buffer[start_bit_index + b] = ws2812_drv->t0h_duty;
-		}
+			start_bit_index = i * 24; // 24 bits per LED
+
+			for (int b = 0; b < 24; b++)
+			{
+				if (color_word & (1UL << (23 - b)))
+					ws2812_drv->dma_pwm_buffer[start_bit_index + b] = ws2812_drv->t1h_duty;
+				else
+					ws2812_drv->dma_pwm_buffer[start_bit_index + b] = ws2812_drv->t0h_duty;
+			}
 	}
 
 	/* 2. Build trailing zero-duty latch region (from end of active data to end of allocated buffer) */
@@ -82,55 +82,61 @@ uint32_t i,	color_word,start_bit_index;
 		__HAL_TIM_MOE_ENABLE(ws2812_drv->ws2812_timer);
 }
 
-
-ITCM_AREA_CODE uint32_t	ws2812_register(WS2812_DriverStruct_t *ws2812_drv)
+ITCM_AREA_CODE uint32_t ws2812_register(WS2812_DriverStruct_t *ws2812_drv)
 {
-TIMER_DriverStruct_t *eptr;
-	if ( ws2812_drv->ws2812_timer == NULL)
-		return DRIVER_REQUEST_FAILED;
-	if ( ws2812_drv->dma_instance == NULL)
-		return DRIVER_REQUEST_FAILED;
-	if ( ws2812_drv->dma_pwm_buffer == NULL)
-		return DRIVER_REQUEST_FAILED;
-	if (( ws2812_drv->dma_buf_size == 0 ) || ( ws2812_drv->dma_buf_size > WS2812_MAX_BUFLEN ) )
-		return DRIVER_REQUEST_FAILED;
-	if (( ws2812_drv->num_leds == 0 ) || ( ws2812_drv->num_leds > WS2812_MAX_NUMLEDS))
-		return DRIVER_REQUEST_FAILED;
+    TIMER_DriverStruct_t *eptr;
+    if ( ws2812_drv->ws2812_timer == NULL)
+        return DRIVER_REQUEST_FAILED;
+    if ( ws2812_drv->dma_instance == NULL)
+        return DRIVER_REQUEST_FAILED;
+    if ( ws2812_drv->dma_pwm_buffer == NULL)
+        return DRIVER_REQUEST_FAILED;
+    if ( ws2812_drv->led_strip_data == NULL)
+        return DRIVER_REQUEST_FAILED;
+    if (( ws2812_drv->dma_buf_size == 0 ) || ( ws2812_drv->dma_buf_size > WS2812_MAX_BUFLEN ) )
+        return DRIVER_REQUEST_FAILED;
+    if (( ws2812_drv->num_leds == 0 ) || ( ws2812_drv->num_leds > WS2812_MAX_NUMLEDS))
+        return DRIVER_REQUEST_FAILED;
 
-	if ( timer_drv_ptr == NULL)
-	{
-		timer_drv_ptr = (TIMER_DriverStruct_t *)ws2812_drv;
-		ws2812_drv->next_timer = NULL;
-	}
-	else
-	{
-		eptr = timer_drv_ptr;
-		while(eptr->next_timer != NULL)
-			eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
-		eptr->next_timer = (uint32_t *)ws2812_drv;
-		ws2812_drv->next_timer = NULL;
-	}
+    if ( timer_drv_ptr == NULL)
+    {
+        timer_drv_ptr = (TIMER_DriverStruct_t *)ws2812_drv;
+        ws2812_drv->next_timer = NULL;
+    }
+    else
+    {
+        eptr = timer_drv_ptr;
+        while(eptr->next_timer != NULL)
+            eptr = (TIMER_DriverStruct_t *)eptr->next_timer;
+        eptr->next_timer = (uint32_t *)ws2812_drv;
+        ws2812_drv->next_timer = NULL;
+    }
 
-	ws2812_drv->process = get_current_process();
-	ws2812_drv->timer_type = TIM_TYPE_PWM;
-	if ( ws2812_drv->t1h_duty == 0 )
-		ws2812_drv->t1h_duty = DRV_CALC_T1H;
-	if ( ws2812_drv->t0h_duty == 0 )
-		ws2812_drv->t0h_duty = DRV_CALC_T0H;
-	if ( ws2812_drv->arr_val != 0 )
-		ws2812_drv->ws2812_timer->Instance->ARR = ws2812_drv->arr_val;
-	else
-		ws2812_drv->ws2812_timer->Instance->ARR = ws2812_drv->arr_val = DRV_CALC_ARR;
-	__HAL_TIM_SET_AUTORELOAD(ws2812_drv->ws2812_timer, ws2812_drv->arr_val);
-	if ( ws2812_drv->psc_val != 0 )
-		ws2812_drv->ws2812_timer->Instance->PSC = ws2812_drv->psc_val;
-	else
-		ws2812_drv->ws2812_timer->Instance->PSC = ws2812_drv->psc_val= DRV_CALC_PSC;
-	ws2812_drv->moe = 0;
-	if ((ws2812_drv->tim_instance == TIM1) || (ws2812_drv->tim_instance == TIM8)  || (ws2812_drv->tim_instance == TIM15) || (ws2812_drv->tim_instance == TIM16) || (ws2812_drv->tim_instance == TIM17))
-		ws2812_drv->moe = 1;
+    ws2812_drv->process = get_current_process();
+    ws2812_drv->timer_type = TIM_TYPE_PWM;
 
-	return 0;
+    // Set up brightness structural default to maximum scale if unassigned
+    if ( ws2812_drv->brightness == 0 )
+        ws2812_drv->brightness = 255;
+
+    if ( ws2812_drv->t1h_duty == 0 )
+        ws2812_drv->t1h_duty = DRV_CALC_T1H;
+    if ( ws2812_drv->t0h_duty == 0 )
+        ws2812_drv->t0h_duty = DRV_CALC_T0H;
+    if ( ws2812_drv->arr_val != 0 )
+        ws2812_drv->ws2812_timer->Instance->ARR = ws2812_drv->arr_val;
+    else
+        ws2812_drv->ws2812_timer->Instance->ARR = ws2812_drv->arr_val = DRV_CALC_ARR;
+    __HAL_TIM_SET_AUTORELOAD(ws2812_drv->ws2812_timer, ws2812_drv->arr_val);
+    if ( ws2812_drv->psc_val != 0 )
+        ws2812_drv->ws2812_timer->Instance->PSC = ws2812_drv->psc_val;
+    else
+        ws2812_drv->ws2812_timer->Instance->PSC = ws2812_drv->psc_val= DRV_CALC_PSC;
+
+    ws2812_drv->moe = 0;
+    if ((ws2812_drv->tim_instance == TIM1) || (ws2812_drv->tim_instance == TIM8)  || (ws2812_drv->tim_instance == TIM15) || (ws2812_drv->tim_instance == TIM16) || (ws2812_drv->tim_instance == TIM17))
+        ws2812_drv->moe = 1;
+
+    return 0;
 }
 #endif // #ifdef A_OS_TIMERS_ENABLED
-

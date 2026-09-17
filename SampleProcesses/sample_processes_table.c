@@ -170,6 +170,12 @@ extern	void sample_process_1_init(uint32_t process_id);
 extern	void sample_process_1_ws2812(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_WS2812
+
+#ifdef	SAMPLEPROCESS_1_WS2812_TIM2
+extern	void sample_process_1_ws2812_tim2(uint32_t process_id);	//This is process1
+extern	void sample_process_1_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_WS2812_TIM2
+
 #ifdef	SAMPLEPROCESS_1_MLX90614
 extern	void sample_process_1_mlx90614(uint32_t process_id);	//This is process1
 extern	void sample_process_1_init(uint32_t process_id);
@@ -354,6 +360,10 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_ws2812,
 				.user_init = sample_process_1_init,
 #endif // #define	SAMPLEPROCESS_1_WS2812
+#ifdef	SAMPLEPROCESS_1_WS2812_TIM2
+				.user_process = sample_process_1_ws2812_tim2,
+				.user_init = sample_process_1_init,
+#endif // #define	SAMPLEPROCESS_1_WS2812_TIM2
 #ifdef	SAMPLEPROCESS_1_MLX90614
 				.user_process = sample_process_1_mlx90614,
 				.user_init = sample_process_1_init,

@@ -26,15 +26,16 @@
 #define	WS2812_LEDBPP		24
 #define	WS2812_MAX_NUMLEDS	10
 
-// Some WS2812 variants (especially clones or long strips) require ≥256 µs reset pulse instead of the standard 50 µs spec
-#define	WS2812_SYNCLEN		500
+#define WS2812_NUM_LEDS       8      // Set this to your specific strip length
+#define WS2812_BITS_PER_LED   24     // Fixed 24 bits per pixel (8 Green, 8 Red, 8 Blue)
 
-#define	WS2812_MAX_BUFLEN	((WS2812_SYNCLEN*WS2812_LEDBPP)+(WS2812_MAX_NUMLEDS*WS2812_LEDBPP))
+/* 240 bits @ 800kHz provides exactly a 300 microsecond flat-low protocol latch */
+#define WS2812_LATCH_BITS     240
 
-// Reset Head: 250 bits * 1.25µs = 312.5µs (Safely > 280µs for modern LEDs)
-#define WS2812_RESET_HEAD 250
-// Reset Tail: 250 bits * 1.25µs = 312.5µs (Safely > 280µs for modern LEDs)
-#define WS2812_RESET_TAIL 250
+/* The true minimum required allocation footprint size */
+#define WS2812_DMA_BUF_SIZE   ((WS2812_NUM_LEDS * WS2812_BITS_PER_LED) + WS2812_LATCH_BITS)
+
+#define	WS2812_MAX_BUFLEN	((WS2812_LATCH_BITS*WS2812_LEDBPP)+(WS2812_MAX_NUMLEDS*WS2812_LEDBPP))
 
 #define WS2812_TARGET_FREQ_HZ  800000UL      // Fixed protocol frequency (800 kHz)
 #define DRV_CALC_PSC           0
@@ -88,6 +89,7 @@ typedef struct
     /* 6. Runtime Allocation Memory Buffers */
     uint16_t*           dma_pwm_buffer;  // Pointer to localized 16-bit DMA output buffer array
     LED_Frame_Struct_t* led_strip_data;  // Pointer to localized RGB state structural data array
+	uint8_t				brightness;
 
     /* 7. Asynchronous Handshake Flags */
     uint8_t    			transmitting;     // Transmission tracking handle flag (1 = transmitting, 0 = idle)
