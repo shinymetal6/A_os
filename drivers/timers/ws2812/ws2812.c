@@ -35,9 +35,14 @@ uint32_t i,	color_word,start_bit_index;
 	for (i = 0; i < ws2812_drv->num_leds; i++)
 	{
 		/* High-speed bit-shifting (>> 8) replaces division execution clock overhead inside ITCM */
-			uint8_t scaled_g = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].G * ws2812_drv->brightness) >> 8);
-			uint8_t scaled_r = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].R * ws2812_drv->brightness) >> 8);
-			uint8_t scaled_b = (uint8_t)(((uint16_t)ws2812_drv->led_strip_data[i].B * ws2812_drv->brightness) >> 8);
+
+			uint16_t g_prod = (uint16_t)ws2812_drv->led_strip_data[i].G * ws2812_drv->brightness;
+			uint16_t r_prod = (uint16_t)ws2812_drv->led_strip_data[i].R * ws2812_drv->brightness;
+			uint16_t b_prod = (uint16_t)ws2812_drv->led_strip_data[i].B * ws2812_drv->brightness;
+
+			uint8_t scaled_g = (uint8_t)((g_prod + (g_prod >> 8) + 1) >> 8);
+			uint8_t scaled_r = (uint8_t)((r_prod + (r_prod >> 8) + 1) >> 8);
+			uint8_t scaled_b = (uint8_t)((b_prod + (b_prod >> 8) + 1) >> 8);
 
 			color_word = ((uint32_t)scaled_g << 16) |
 						 ((uint32_t)scaled_r << 8)  |
