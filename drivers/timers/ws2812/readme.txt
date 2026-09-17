@@ -50,8 +50,8 @@ As an example for Cube initialization the two images TimerSettings1.png and Time
 The driver will initialize the PSC and ARR registers of the selected timer, so there is no need to do calculation for Cube.
 
 Timing :
-The resolution must be 100 nSec
-The counter period must be 12
+The resolution must be 100 nSec, so prescaler must be set @48 for 480 MHz or @17 for 170 MHz 
+The counter period ( autoreload register ) must be 12, pulse in selected channel should be 4 in pwm mode 1
 	
 
   

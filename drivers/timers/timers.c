@@ -71,6 +71,21 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 			}
 		}
 	}
+	if ( tim_ic->timer_type == TIM_TYPE_PWM )
+	{
+		if ( tim_ic->timer == htim)
+		{
+			WS2812_DriverStruct_t *ws2812_drv = (WS2812_DriverStruct_t *)tim_ic;
+
+			__HAL_TIM_DISABLE_IT(ws2812_drv->ws2812_timer, TIM_IT_UPDATE);
+			  ws2812_drv->transmitting = 0;
+
+			if ( ws2812_drv->wakeup_id )
+				activate_process(ws2812_drv->process,ws2812_drv->wakeup_id,TIM_TYPE_PWM);
+			if ( ws2812_drv->irq_ws2812_callback != NULL )
+				ws2812_drv->irq_ws2812_callback((uint32_t )&ws2812_drv);
+		}
+	}
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
