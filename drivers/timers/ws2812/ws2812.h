@@ -73,9 +73,10 @@ typedef struct
     /* 3. Timer & DMA Configuration Properties */
     uint32_t            tim_channel;     // Output channel identifier (TIM_CHANNEL_4)
     uint32_t            tim_dma_cc_id;   // Timer DMA generation target flag (TIM_DMA_CC4)
+#ifdef NONONO
     uint32_t            dma_isr_tc_mask; // DMA controller status check mask flag (DMA_ISR_TCIF1)
     uint32_t            dma_ifcr_clear_mask; // DMA clear flag bit manipulation mask (DMA_IFCR_CTCIF1)
-
+#endif
     /* 4. Dynamic Protocol Timing Constants */
     uint16_t            t0h_duty;        // Logical 0 duty cycle value (60)
     uint16_t            t1h_duty;        // Logical 1 duty cycle value (120)

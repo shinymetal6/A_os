@@ -76,7 +76,9 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 		if ( tim_ic->timer == htim)
 		{
 			WS2812_DriverStruct_t *ws2812_drv = (WS2812_DriverStruct_t *)tim_ic;
+	        htim->Instance->DIER &= ~TIM_DIER_UDE;
 
+	        HAL_TIM_PWM_Stop_DMA(htim, htim->Channel);
 			__HAL_TIM_DISABLE_IT(ws2812_drv->ws2812_timer, TIM_IT_UPDATE);
 			  ws2812_drv->transmitting = 0;
 
@@ -135,6 +137,11 @@ TIMER_DriverStruct_t *tim_ic = get_ptr_from_workers(htim);
 		if ( tim_ic->timer == htim)
 		{
 			WS2812_DriverStruct_t *ws2812_drv = (WS2812_DriverStruct_t *)tim_ic;
+
+	        HAL_TIM_PWM_Stop_DMA(htim, htim->Channel);
+			__HAL_TIM_DISABLE_IT(ws2812_drv->ws2812_timer, TIM_IT_UPDATE);
+			  ws2812_drv->transmitting = 0;
+
 			if ( ws2812_drv->wakeup_id )
 				activate_process(ws2812_drv->process,ws2812_drv->wakeup_id,TIM_TYPE_PWM);
 			if ( ws2812_drv->irq_ws2812_callback != NULL )

@@ -14,7 +14,7 @@
  * Project : A_os
 */
 /*
- * sample_process_1_ws2812_TIM2.c
+ * sample_process_1_ws2812_TIM15.c
  *
  *  Created on: Sep 17, 2026
  *      Author: fil
@@ -23,20 +23,21 @@
 #include "sample_A_os_includes.h"
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_processes_includes.h"
-#ifdef SAMPLEPROCESS_1_WS2812_TIM2
+#ifdef SAMPLEPROCESS_1_WS2812_TIM15
 
-extern	TIM_HandleTypeDef htim2;
-extern	DMA_HandleTypeDef hdma_tim2_ch4;
+extern	TIM_HandleTypeDef htim15;
+extern	DMA_HandleTypeDef hdma_tim15_up;
 
 uint16_t ws2812_work_buf[WS2812_DMA_BUF_SIZE];
 LED_Frame_Struct_t		LED_Frame[WS2812_NUM_LEDS];
 WS2812_DriverStruct_t	WS2812_Drv =
 {
 	.wakeup_id 			 = WAKEUP_FROM_TIM_IRQ,
-	.ws2812_timer        = &htim2,
-	.hdma                = &hdma_tim2_ch4,
+	.ws2812_timer        = &htim15,
+	.hdma                = &hdma_tim15_up,
+	.tim_instance        = TIM15,
 	.dma_instance        = DMA1,
-	.tim_channel         = TIM_CHANNEL_4,
+	.tim_channel         = TIM_CHANNEL_2,
 	.num_leds            = WS2812_NUM_LEDS,
 	.dma_buf_size        = WS2812_DMA_BUF_SIZE,
 	.dma_pwm_buffer      = ws2812_work_buf,
@@ -49,17 +50,23 @@ void sample_process_1_init(uint32_t process_id)
 	ws2812_register(&WS2812_Drv);
 }
 
-void sample_process_1_ws2812_tim2(uint32_t process_id)
+void sample_process_1_ws2812_TIM15(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
 uint32_t	ledlit=0;
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	LED_Frame[ledlit] = (LED_Frame_Struct_t){0, 0, 255}; // Set first pixel Blue
+	ws2812_Show_Frame(&WS2812_Drv);
+	ledlit++;
 	while(1)
 	{
 		wait_event(EVENT_TIMER | EVENT_TIM_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
+		{
+		}
+		if (( wakeup & WAKEUP_FROM_TIM_IRQ) == WAKEUP_FROM_TIM_IRQ)
 		{
 			if (WS2812_Drv.transmitting == 0 )
 			{
@@ -73,6 +80,8 @@ uint32_t	ledlit=0;
 		}
 	}
 }
-#endif //#ifdef SAMPLEPROCESS_2_WS2812
+#endif //#ifdef SAMPLEPROCESS_1_WS2812_TIM15
 #endif //#ifdef SAMPLE_PROCESSES_ENABLED
+
+
 
