@@ -144,7 +144,7 @@ SDCARD_DriverStruct_t *sdcard_Drv = sdcard_drv_ptr;
 	HAL_SD_GetCardInfo(sdcard_Drv->hsd, CardInfo);
 }
 
-ITCM_AREA_CODE uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv)
+uint32_t	sdcard_register(SDCARD_DriverStruct_t *sdcard_Drv)
 {
 SDCARD_DriverStruct_t *eptr;
 
@@ -172,12 +172,6 @@ SDCARD_DriverStruct_t *eptr;
 
 	if (SD_IsDetected() != SD_PRESENT)
 		return 1;
-
-	if (HAL_SD_Init(sdcard_Drv->hsd) == 0)
-	{
-		if (HAL_SD_ConfigWideBusOperation(&hsd1, SDMMC_BUS_WIDE_4B) != HAL_OK)
-			return 1;
-	}
 
 	HAL_SD_GetCardCID(sdcard_Drv->hsd, &sdcard_Drv->pCID);
 	HAL_SD_GetCardCSD(sdcard_Drv->hsd, &sdcard_Drv->pCSD);

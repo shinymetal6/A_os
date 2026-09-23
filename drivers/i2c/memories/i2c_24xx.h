@@ -29,6 +29,8 @@
 #define	I2C_24XX_ADDRESS	0xa0
 #define	I2C_24XX_PAGESIZE	256
 #define	I2C_24XX_TIMEOUT	100
+#define	I2C_24XX_WRKTIME	10
+#define	I2C_24XX_WRKTIMEOUT	10
 
 typedef struct
 {
@@ -40,6 +42,7 @@ typedef struct
 	uint16_t 			device_address;
 	uint32_t 			wakeup_id;
 	I2C_DriverStruct_t	*next_drv;
+	void				(*i2c_callback)  (uint32_t parameter);
 	/* driver proprietary data */
 	uint8_t 			*read_buf;
 	uint8_t				*write_buf;
@@ -51,6 +54,7 @@ typedef struct
 	uint16_t			power_bit;
 	uint16_t			power_active_level;
 	uint32_t 			timeout;
+	uint8_t 			wrk_timeout;
 }I2C_24xx_DriverStruct_t;
 
 /* status */

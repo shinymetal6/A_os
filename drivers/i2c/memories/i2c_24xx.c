@@ -82,6 +82,16 @@ ITCM_AREA_CODE uint32_t i2c_24xx_read(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uin
 uint32_t ret_val;
 uint32_t p_data_len;
 
+	while(i2c_24xx_Drv->status & I2C_STATUS_BUSY )
+	{
+		task_delay(I2C_24XX_WRKTIME);
+		if ( i2c_24xx_Drv->wrk_timeout )
+			i2c_24xx_Drv->wrk_timeout--;
+		else
+			return 1;
+	}
+	i2c_24xx_Drv->wrk_timeout = I2C_24XX_WRKTIME;
+	i2c_24xx_Drv->status |= I2C_STATUS_BUSY;
 	if ( (address & 0xff ) != 0 )
 	{
 		if ( ((address & 0xff ) + data_len) <=  I2C_24XX_PAGESIZE)
@@ -147,6 +157,9 @@ uint32_t p_data_len;
 
 	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAKEUP_ON_READ) == I2C_FLAGS_WAKEUP_ON_READ)
 		activate_process(i2c_24xx_Drv->process,i2c_24xx_Drv->wakeup_id,WAKEUP_FLAGS_I2C_RX);
+	if ( i2c_24xx_Drv->i2c_callback != NULL )
+		i2c_24xx_Drv->i2c_callback(WAKEUP_FLAGS_I2C_RX);
+	i2c_24xx_Drv->status &= ~I2C_STATUS_BUSY;
 	return 0;
 }
 
@@ -154,49 +167,60 @@ uint32_t p_data_len;
 ITCM_AREA_CODE uint32_t i2c_24xx_write(I2C_24xx_DriverStruct_t *i2c_24xx_Drv, uint32_t address,uint8_t *data,uint16_t data_len)
 {
 uint32_t ret_val;
+	while(i2c_24xx_Drv->status & I2C_STATUS_BUSY )
 	{
-		while(data_len > I2C_24XX_PAGESIZE)
-		{
-			i2c_24xx_Drv->status &= ~I2C_STATUS_WRITE_COMPLETE;
-			if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_WRITE_DMA ) == I2C_FLAGS_USES_WRITE_DMA)
-				ret_val =   HAL_I2C_Mem_Write_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, I2C_24XX_PAGESIZE-1);
-			else
-				ret_val =   HAL_I2C_Mem_Write_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, I2C_24XX_PAGESIZE-1);
-			if ( ret_val )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-
-			if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-			if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-			data_len -= I2C_24XX_PAGESIZE;
-			address += I2C_24XX_PAGESIZE;
-			data += I2C_24XX_PAGESIZE;
-		}
-		if ( data_len)
-		{
-			i2c_24xx_Drv->status &= ~I2C_STATUS_WRITE_COMPLETE;
-			if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_WRITE_DMA ) == I2C_FLAGS_USES_WRITE_DMA)
-				ret_val =   HAL_I2C_Mem_Write_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len);
-			else
-				ret_val =   HAL_I2C_Mem_Write_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1);
-			if ( ret_val )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-
-			if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-
-			if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-		}
-		if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAIT_ON_WRITE_COMPLETE ) == I2C_FLAGS_WAIT_ON_WRITE_COMPLETE)
-			if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
-				return i2c_24xx_seterror(i2c_24xx_Drv);
-
-		if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAKEUP_ON_WRITE) == I2C_FLAGS_WAKEUP_ON_WRITE)
-			activate_process(i2c_24xx_Drv->process,i2c_24xx_Drv->wakeup_id,WAKEUP_FLAGS_I2C_TX);
-		return 0;
+		task_delay(I2C_24XX_WRKTIME);
+		if ( i2c_24xx_Drv->wrk_timeout )
+			i2c_24xx_Drv->wrk_timeout--;
+		else
+			return 1;
 	}
+	i2c_24xx_Drv->wrk_timeout = I2C_24XX_WRKTIME;
+	i2c_24xx_Drv->status |= I2C_STATUS_BUSY;
+	while(data_len > I2C_24XX_PAGESIZE)
+	{
+		i2c_24xx_Drv->status &= ~I2C_STATUS_WRITE_COMPLETE;
+		if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_WRITE_DMA ) == I2C_FLAGS_USES_WRITE_DMA)
+			ret_val =   HAL_I2C_Mem_Write_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, I2C_24XX_PAGESIZE-1);
+		else
+			ret_val =   HAL_I2C_Mem_Write_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, I2C_24XX_PAGESIZE-1);
+		if ( ret_val )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+		if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+		data_len -= I2C_24XX_PAGESIZE;
+		address += I2C_24XX_PAGESIZE;
+		data += I2C_24XX_PAGESIZE;
+	}
+	if ( data_len)
+	{
+		i2c_24xx_Drv->status &= ~I2C_STATUS_WRITE_COMPLETE;
+		if (( i2c_24xx_Drv->flags & I2C_FLAGS_USES_WRITE_DMA ) == I2C_FLAGS_USES_WRITE_DMA)
+			ret_val =   HAL_I2C_Mem_Write_DMA(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len);
+		else
+			ret_val =   HAL_I2C_Mem_Write_IT(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, address, i2c_24xx_Drv->device_address_size, data, data_len-1);
+		if ( ret_val )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
+		if ( i2c_24xx_wait_device_ready_timeout(i2c_24xx_Drv) )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+	}
+	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAIT_ON_WRITE_COMPLETE ) == I2C_FLAGS_WAIT_ON_WRITE_COMPLETE)
+		if ( i2c_24xx_wait_on_flag_timeout(i2c_24xx_Drv,I2C_STATUS_WRITE_COMPLETE) == 1 )
+			return i2c_24xx_seterror(i2c_24xx_Drv);
+
+	if (( i2c_24xx_Drv->flags & I2C_FLAGS_WAKEUP_ON_WRITE) == I2C_FLAGS_WAKEUP_ON_WRITE)
+		activate_process(i2c_24xx_Drv->process,i2c_24xx_Drv->wakeup_id,WAKEUP_FLAGS_I2C_TX);
+	if ( i2c_24xx_Drv->i2c_callback != NULL )
+		i2c_24xx_Drv->i2c_callback(WAKEUP_FLAGS_I2C_TX);
+
+	return 0;
 }
 
 ITCM_AREA_CODE uint32_t i2c_24xx_init(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
@@ -208,6 +232,9 @@ ITCM_AREA_CODE uint32_t i2c_24xx_init(I2C_24xx_DriverStruct_t *i2c_24xx_Drv)
 		else
 			  HAL_GPIO_WritePin(i2c_24xx_Drv->power_port, i2c_24xx_Drv->power_bit, GPIO_PIN_RESET);
 	}
+	i2c_24xx_Drv->status &= ~I2C_STATUS_BUSY;
+	i2c_24xx_Drv->wrk_timeout = I2C_24XX_WRKTIME;
+
 	return 0;
 }
 

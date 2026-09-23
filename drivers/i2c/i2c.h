@@ -35,7 +35,9 @@ typedef struct
 	uint16_t 			device_address;
 	uint32_t 			wakeup_id;
 	uint32_t			*next_drv;
+	void				(*irq_i2c_callback)  (uint32_t parameter);
 	/* driver proprietary data */
+
 } I2C_DriverStruct_t;
 
 extern	I2C_DriverStruct_t	*i2c_drv_ptr;
