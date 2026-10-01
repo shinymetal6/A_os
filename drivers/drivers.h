@@ -36,5 +36,7 @@
 #include "i2c/i2c.h"
 #include "fdcan/fdcan.h"
 #include "sdcard/sdcard.h"
+#include "sdcard/ffconf.h"
+#include "sdcard/fatfs.h"
 
 #endif /* DRIVERS_DRIVERS_H_ */

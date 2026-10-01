@@ -277,7 +277,7 @@ I2C_DriverStruct_t *eptr;
 		i2c_24xx_Drv->next_drv = NULL;
 	}
 	i2c_24xx_Drv->process = get_current_process();
-	return 0;
+	return HAL_I2C_IsDeviceReady(i2c_24xx_Drv->bus, i2c_24xx_Drv->device_address, 5, 2);
 }
 
 #endif // #ifdef A_OS_I2C_ENABLED

@@ -42,5 +42,6 @@ typedef struct
 #include "midi_decoder/midi_decoder.h"
 #include "pid/pid.h"
 #include "dfplayer/dfplayer.h"
+#include "fat/ff.h"
 
 #endif /* MODULES_MODULES_H_ */

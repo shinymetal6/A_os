@@ -1109,6 +1109,7 @@ uint8_t cnt = 0;
     mlx90640_Drv->frame_data[833] = MLX90640_GET_FRAME(statusRegister);
 
     error = ValidateAuxData(mlx90640_Drv);
+    bzero(data,sizeof(data));
     if(error == MLX90640_NO_ERROR)
     {
         for(cnt=0; cnt<MLX90640_AUX_NUM; cnt++)

@@ -44,26 +44,26 @@ FRESULT res;
 uint8_t buffer[512];
 UINT br;
 
+void sdcheck(void)
+{
+	res = f_mount(&fs, "", 1);
+	res = f_open(&file, "/PRESSO/BIO.CSV", FA_READ);
+	if (res == FR_OK)
+	{
+		f_read(&file, buffer, sizeof(buffer), &br);
+		f_close(&file);
+	}
+}
+
 void sample_process_1_init(uint32_t process_id)
 {
 	sdcard_register(&SDCARD);
-	FRESULT res = f_mount(&fs, "", 1);
-	if ( res == 0 )
-	{
-		// Open a file
-		res = f_open(&file, "FILE.TXT", FA_READ);
-		if (res == FR_OK)
-		{
-			f_read(&file, buffer, sizeof(buffer), &br);
-			f_close(&file);
-		}
-	}
 }
 
 void sample_process_1_sdcard(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		cntr = 0;
+uint8_t		cntr = 0,sd=0;
 
 
 	create_timer(TIMER_ID_0,10,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
@@ -79,6 +79,11 @@ uint8_t		cntr = 0;
 			{
 				cntr = 0;
 				process_led();
+				if (sd == 0 )
+				{
+					sd++;
+					sdcheck();
+				}
 			}
 		}
 	}
