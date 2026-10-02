@@ -222,7 +222,8 @@ TIM_HandleTypeDef	*timer = pwm_drv->timer;
 	}
 	if ( pwm_drv->prescaler )
 		timer->Instance->PSC = pwm_drv->prescaler;
-	timer->Instance->ARR = pwm_drv->period;
+	if ( pwm_drv->period )
+		timer->Instance->ARR = pwm_drv->period;
 	pwm_drv->status |= PWM_CHANNEL_INITIALIZED;
 	return 0;
 }
@@ -230,11 +231,8 @@ TIM_HandleTypeDef	*timer = pwm_drv->timer;
 ITCM_AREA_CODE uint32_t	pwm_register(Pwm_Control_DriverStruct_t *pwm_drv)
 {
 TIMER_DriverStruct_t *eptr;
-TIM_HandleTypeDef	*timer = pwm_drv->timer;
 
 	if ( pwm_drv->timer == NULL)
-		return DRIVER_REQUEST_FAILED;
-	if ( pwm_drv->period  == 0 )
 		return DRIVER_REQUEST_FAILED;
 	if ( timer_drv_ptr == NULL)
 	{
@@ -250,7 +248,6 @@ TIM_HandleTypeDef	*timer = pwm_drv->timer;
 		pwm_drv->next_timer = NULL;
 	}
 	pwm_drv->process = get_current_process();
-	timer->Instance->ARR = pwm_drv->period;
 
 	return 0;
 }
