@@ -48,8 +48,7 @@ MEMORY
   RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
   RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
   RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
-  ITCMRAM1 (xrw)  : ORIGIN = 0x00000000, LENGTH = 256
-  ITCMRAM (xrw)  : ORIGIN = 0x00000100, LENGTH = 64K - 256
+  ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
 }
 
 /* Define output sections */
@@ -89,9 +88,6 @@ SECTIONS
 	.framebuffer		0x38000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.framebuffer))}
     _framebuffer_end    = LOADADDR(.framebufferEnd);
 	.framebufferEnd  	0x38010000  (NOLOAD): {. = ALIGN(4); KEEP(*(.framebufferEnd))}
-	
-	func0_start 	= LOADADDR(.func0_start);
-	.func0_start	0x00000000  (NOLOAD): {. = ALIGN(4); KEEP(*(.func0_start))}
 	
 	_fdata_start = LOADADDR(.isr_vector);
 	
@@ -222,19 +218,7 @@ SECTIONS
     _eitcm_data = .;        /* define a global symbol at data end */
   } >ITCMRAM AT> FLASH
   
-    _siitcm_func0 = LOADADDR(.func0_area);
-  .func0_area :
-  {
-    . = ALIGN(4);
-    _siitcm_func0 = .;        /* create a global symbol at data start */
-    *(.data)           /* .data sections */
-    *(.data*)          /* .data* sections */
-    *(.RamITCMFunc1)        /* .RamFunc sections */
-    *(.RamITCMFunc1*)       /* .RamFunc* sections */
-    . = ALIGN(4);
-    _eitcm_data1 = .;        /* define a global symbol at data end */
-  } >ITCMRAM1 AT> FLASH
-  
+ 
     _fdata_end = LOADADDR(.flash_end);
   .flash_end :
   {
