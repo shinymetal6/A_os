@@ -226,7 +226,7 @@ void QtXmodem::on_SetTargetRX_pushButton_clicked()
 {
     char    command[128];
 
-    sprintf(command, "<h %d %s %s >", file_size, filename.toLatin1().constData(), "0");
+    sprintf(command, "<X %d >", file_size);
     QByteArray ba1(QByteArray::fromRawData(command, strlen(command)));
     serial_tx(ba1);
 

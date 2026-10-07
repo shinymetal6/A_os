@@ -89,7 +89,7 @@ uint32_t	wakeup,flags;
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'h'))
+			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'X'))
 			{
 				xmodem_rx_usb_enable = 1;
 				xmodem_rx_usb_enable_poll = 1;
