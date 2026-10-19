@@ -30,7 +30,7 @@
 USB_DriverStruct_t *usb_driver;
 
 /* callback from timer's timeout */
-ITCM_AREA_CODE void USB_Driver_RxTimeoutCheckCallback(uint32_t *param)
+void USB_Driver_RxTimeoutCheckCallback(uint32_t *param)
 {
 USB_DriverStruct_t	*usb_drv = (USB_DriverStruct_t	*)param;
 	if ( usb_drv->data_index )
@@ -69,20 +69,8 @@ ITCM_AREA_CODE uint32_t	usb_device_driver_register(USB_DriverStruct_t *usb_drv)
 	else
 		usb_drv->timeout_reload_value = usb_drv->timeout = 0;
 	set_before_check_timers_callback(USB_Driver_RxTimeoutCheckCallback,(uint32_t *)usb_drv);
-	if ( usb_drv->Rx_CallbackPtr != NULL)
-	{
-		if ( usb_drv->usb_interface_class == USB_CDC_CLASS )
-			CDCRx_CallbackPtr = usb_drv->Rx_CallbackPtr;
-		if ( usb_drv->usb_interface_class == USB_MIDI_CLASS )
-			MidiRx_CallbackPtr = usb_drv->Rx_CallbackPtr;
-	}
-	else
-	{
-		CDCRx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
-		MidiRx_CallbackPtr = (void *)usb_device_driver_pktreceived_callback;
-	}
 	usb_driver = usb_drv;
-	MX_Aos_USB_Device_Init(usb_drv->usb_interface_class);
+	//MX_Aos_USB_Device_Init(usb_drv->usb_interface_class);
 	return 0;
 }
 
@@ -143,7 +131,11 @@ USB_DriverStruct_t	*usb_drv = usb_driver;
 		activate_process(usb_drv->process,WAKEUP_FROM_USB_DEVICE_IRQ,WAKEUP_FLAGS_HW_USB_RX_COMPLETE);
 	}
 }
+#else // #ifdef USB_DEVICE_ENABLED
+ITCM_AREA_CODE void usb_device_driver_pktreceived_callback(uint8_t* Buf, uint32_t Len)
+{
 
+}
 #endif // #ifdef USB_DEVICE_ENABLED
 
 

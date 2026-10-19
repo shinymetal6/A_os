@@ -27,6 +27,10 @@
 #ifdef SAMPLEPROCESS_1_BASIC
 
 void	(*wku_error)  (void) = NULL;
+void sample_process_1_basic_init(uint32_t process_id)
+{
+
+}
 
 void sample_process_1_basic(uint32_t process_id)
 {

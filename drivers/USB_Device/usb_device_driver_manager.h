@@ -36,15 +36,8 @@ typedef struct
 	uint8_t		*data;
 	uint16_t	timeout;
 	uint16_t	timeout_reload_value;
-	uint16_t	usb_interface_class;
-	void		(*Rx_CallbackPtr)(uint8_t* buf, uint16_t len);
 	uint32_t 	wakeup_id;
 }USB_DriverStruct_t;
-
-
-#define	USB_CDC_CLASS	0
-#define	USB_MIDI_CLASS	1
-#define	USB_AUDIO_CLASS	2
 
 extern	uint32_t	usb_device_driver_register(USB_DriverStruct_t *usb_driver_private_data);
 extern	uint32_t	usb_device_driver_unregister(USB_DriverStruct_t *usb_drv);
@@ -52,6 +45,5 @@ extern	uint32_t	usb_device_driver_unregister(USB_DriverStruct_t *usb_drv);
 extern	uint32_t 	usb_device_driver_set_rx_buffer(USB_DriverStruct_t *usb_drv,uint8_t *rx_buf);
 extern 	uint16_t 	usb_get_rx_len(USB_DriverStruct_t *usb_drv);
 extern	uint32_t 	usb_send(USB_DriverStruct_t *usb_drv,uint8_t* ptr, uint16_t len);
-extern	uint8_t 	MX_Aos_USB_Device_Init(uint8_t usb_classdev);
 
 #endif /* DRIVERS_USB_DRIVER_MANAGER_H_ */
