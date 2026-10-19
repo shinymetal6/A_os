@@ -23,6 +23,11 @@ extern	void sample_process_1_usb_xmodem(uint32_t process_id);	//This is process1
 extern	void sample_process_1_usb_xmodem_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_USB_XMODEM
 
+#ifdef	SAMPLEPROCESS_1_UART_XMODEM
+extern	void sample_process_1_uart_xmodem(uint32_t process_id);	//This is process1
+extern	void sample_process_1_uart_xmodem_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_UART_XMODEM
+
 #ifdef	SAMPLEPROCESS_1_USB_TEST
 extern	void sample_process_1_usb_test(uint32_t process_id);	//This is process1
 extern	void sample_process_1_usb_test_init(uint32_t process_id);
@@ -56,6 +61,14 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_basic_dac,
 				.user_init = sample_process_1_basic_dac_init,
 #endif // #define	SAMPLEPROCESS_1_BASIC_DAC
+#ifdef	SAMPLEPROCESS_1_USB_XMODEM
+				.user_process = sample_process_1_usb_xmodem,
+				.user_init = sample_process_1_usb_xmodem_init,
+#endif // #define	SAMPLEPROCESS_1_USB_XMODEM
+#ifdef	SAMPLEPROCESS_1_UART_XMODEM
+				.user_process = sample_process_1_uart_xmodem,
+				.user_init = sample_process_1_uart_xmodem_init,
+#endif // #define	SAMPLEPROCESS_1_UART_XMODEM
 #ifdef	SAMPLEPROCESS_1_USB_XMODEM
 				.user_process = sample_process_1_usb_xmodem,
 				.user_init = sample_process_1_usb_xmodem_init,

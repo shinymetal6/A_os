@@ -42,13 +42,13 @@ __attribute__ ((aligned (32)))	DAC_DriverStruct_t DAC_Drv =
 	.dac_timer = &htim7,
 	.sample_rate = DEFAULT_SAMPLE_FREQUENCY,
 	.dac_buffer = audio_buffer,
+	.volume = 0.5F,
 	.channel = DAC_CHANNEL_1,
 	.dac_buf_size = AUDIO_BUF_SIZE,
 	.flags = DAC_FLAGS_WAKEUP,
 };
 
 FIL		wav_file;
-UINT	bytes_read;
 uint8_t isPlaying= 0 , sdMounted;
 FATFS	USERFATFS;					/* File system object for USER logical drive */
 char	USERPath[4]; 				/* USER logical drive path */
@@ -65,7 +65,7 @@ uint32_t	wakeup,flags;
 uint8_t tim_cntr=0;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	dac_init(&DAC_Drv);
-	sprintf(wav_filename,"/ALARM/s1k44100.wav");
+	sprintf(wav_filename,"/ALARM/s1k22050.wav");
     if ( f_mount(&SDFatFS, (TCHAR const*)SDPath, 1) == 0 )
     {
     	sdMounted = 1;

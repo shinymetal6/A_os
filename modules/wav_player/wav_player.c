@@ -34,17 +34,17 @@
 #include "fatfs.h"
 
 extern	FIL wav_file;
-extern	UINT bytes_read;
 extern	uint8_t sdMounted;
 extern	FATFS USERFATFS;  /* File system object for USER logical drive */
 extern	char USERPath[4]; /* USER logical drive path */
 
-uint32_t WAV_Player_Init(DAC_DriverStruct_t *dac_drv,char* filename)
+ITCM_AREA_CODE uint32_t WAV_Player_Init(DAC_DriverStruct_t *dac_drv,char* filename)
 {
 UINT header_bytes_read;
 uint32_t sample_rate;
 uint16_t num_channels;
 uint16_t bits_per_sample;
+UINT	bytes_read;
 
     if (f_open(&wav_file, filename, FA_READ) != FR_OK)
     	return 1;
@@ -81,8 +81,9 @@ uint16_t bits_per_sample;
     return 0;
 }
 
-void WAV_Player_Process(DAC_DriverStruct_t *dac_drv)
+ITCM_AREA_CODE uint32_t WAV_Player_Process(DAC_DriverStruct_t *dac_drv)
 {
+UINT	bytes_read;
 uint16_t *fill_ptr = ((dac_drv->status & DAC_STATUS_FULL) == 0) ? &dac_drv->dac_buffer[0] : &dac_drv->dac_buffer[dac_drv->dac_buf_size / 2];
 	if (f_read(&wav_file, fill_ptr, dac_drv->dac_buf_size, &bytes_read) == FR_OK)
 	{
@@ -90,14 +91,27 @@ uint16_t *fill_ptr = ((dac_drv->status & DAC_STATUS_FULL) == 0) ? &dac_drv->dac_
 		{
 			dac_stop(dac_drv);
 			f_close(&wav_file);
-			return;
+			return 1;
 		}
 		int16_t *pcm_ptr = (int16_t*)fill_ptr;
 		for(int i = 0; i < (dac_drv->dac_buf_size / 2); i++)
 		{
-			fill_ptr[i] = (uint16_t)((pcm_ptr[i] + 32768) >> 4);
+			if ( i > bytes_read)
+				fill_ptr[i] = 2047;
+			else
+			{
+				fill_ptr[i] = (uint16_t)((pcm_ptr[i] + 32768) >> 4);
+				fill_ptr[i] = (uint16_t)((float)fill_ptr[i]*dac_drv->volume);
+			}
 		}
+	    return 0;
 	}
+	else
+	{
+		dac_stop(dac_drv);
+		f_close(&wav_file);
+	}
+    return 1;
 }
 
 #endif //#ifdef A_OS_WAV_PLAYER_ENABLED
