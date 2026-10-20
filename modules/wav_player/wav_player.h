@@ -23,7 +23,9 @@
 #ifndef MODULES_WAV_PLAYER_WAV_PLAYER_H_
 #define MODULES_WAV_PLAYER_WAV_PLAYER_H_
 
+#ifdef A_OS_WAV_PLAYER_ENABLED
 extern	uint32_t WAV_Player_Init(DAC_DriverStruct_t *dac_drv,char* filename);
 extern	uint32_t WAV_Player_Process(DAC_DriverStruct_t *dac_drv);
+#endif
 
 #endif /* MODULES_WAV_PLAYER_WAV_PLAYER_H_ */

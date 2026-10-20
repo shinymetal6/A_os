@@ -27,7 +27,9 @@
 #ifdef SAMPLE_PROCESSES_ENABLED
 #include "sample_A_os_includes.h"
 
-uint8_t 	sample_led_cntr = 0;
+#ifdef LED_GPIO_Port
+uint32_t 	sample_led_cntr = 0;
+#endif // #ifdef LED_GPIO_Port
 
 void process_led(void)
 {

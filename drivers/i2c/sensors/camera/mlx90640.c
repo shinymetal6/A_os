@@ -26,6 +26,7 @@
 #ifdef A_OS_I2C_ENABLED
 #include "../../i2c.h"
 #include "mlx90640.h"
+#include "math.h"
 
 ITCM_AREA_CODE uint32_t mlx90640_read_eeprom(I2C_Mlx90640_DriverStruct_t *mlx90640_Drv)
 {

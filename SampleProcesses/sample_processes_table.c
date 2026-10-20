@@ -43,6 +43,11 @@ extern	void sample_process_1_sdcard_wav_reader(uint32_t process_id);	//This is p
 extern	void sample_process_1_sdcard_wav_reader_init(uint32_t process_id);
 #endif // #define	SAMPLEPROCESS_1_SDCARD_WAV_READER
 
+#ifdef	SAMPLEPROCESS_1_WS2812_TIM17
+extern	void sample_process_1_ws2812_TIM17(uint32_t process_id);	//This is process1
+extern	void sample_process_1_ws2812_TIM17_init(uint32_t process_id);
+#endif // #define	SAMPLEPROCESS_1_WS2812_TIM17
+
 extern	void sample_process_2(uint32_t process_id);	//This is process3
 extern	void sample_process_3(uint32_t process_id);	//This is process3
 extern	void sample_process_4(uint32_t process_id);	//This is process4 of the application
@@ -53,6 +58,10 @@ VERSIONING	uint8_t	app_version[32] 	= "Sample Version";
 USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 {
 		{
+#ifdef	SAMPLEPROCESS_1_WS2812_TIM17
+				.user_process = sample_process_1_ws2812_TIM17,
+				.user_init = sample_process_1_ws2812_TIM17_init,
+#endif // #define	SAMPLEPROCESS_1_WS2812_TIM17
 #ifdef	SAMPLEPROCESS_1_BASIC
 				.user_process = sample_process_1_basic,
 				.user_init = sample_process_1_basic_init,
@@ -81,7 +90,7 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.user_process = sample_process_1_sdcard_wav_reader,
 				.user_init = sample_process_1_sdcard_wav_reader_init,
 #endif // #define	SAMPLEPROCESS_1_SDCARD_WAV_READER
-				.stack_size = 1024,
+				.stack_size = 4096,
 		},
 		{
 				.user_process = sample_process_2,
