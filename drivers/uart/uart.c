@@ -45,6 +45,8 @@ ITCM_AREA_CODE  uint32_t uart_get_status(UART_DriverStruct_t *uart_drv)
 uint32_t ret_val = 0;
 ITCM_AREA_CODE  uint32_t	uart_send(UART_DriverStruct_t *uart_drv, uint8_t *buffer,uint16_t len)
 {
+	if ( uart_drv->quirk_hd_uart )
+			ATOMIC_CLEAR_BIT(uart_drv->uart->Instance->CR1, USART_CR1_RE);
 	if ( (uart_drv->flags & UART_USES_DMA_TX) == UART_USES_DMA_TX )
 		ret_val = HAL_UART_Transmit_DMA(uart_drv->uart , buffer, len);
 	else
@@ -151,6 +153,8 @@ UART_DriverStruct_t	*uart_drv;
 	__disable_irq();
 	if ( (uart_drv = find_uart(huart)) != NULL)
 	{
+		if ( uart_drv->quirk_hd_uart )
+			ATOMIC_SET_BIT(uart_drv->uart->Instance->CR1, USART_CR1_RE);
 		if (( uart_drv->flags & UART_WAKEUP_ON_TX) == UART_WAKEUP_ON_TX)
 			activate_process(uart_drv->process,uart_drv->wakeup_id,WAKEUP_FLAGS_UART_TX);
 	}

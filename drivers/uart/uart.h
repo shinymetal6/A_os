@@ -48,6 +48,7 @@ typedef struct
 	uint32_t 			wakeup_id;
 	uint32_t			to_errors;
 	uint32_t			rx_errors;
+	uint8_t				quirk_hd_uart;
 }UART_DriverStruct_t;
 /* status */
 #define	UART_DRIVER_STATUS_IN_USE		0x80
